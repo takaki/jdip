@@ -27,6 +27,7 @@ ext {
 }
 
 dependencies {
+    compile fileTree(dir: 'lib', include: '*.jar')
 
     compile 'org.codehaus.groovy:groovy-all:2.4.5'
 
