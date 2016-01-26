@@ -162,7 +162,7 @@ public class ClientFrame extends JFrame
 	
 	
 	// plugin directories
-	private static final String VARIANT_DIR	= "variants";
+	private static final String VARIANT_DIR	= "resource/variants";
 	private static final String TOOL_DIR		= "plugins";
 	private File variantDirPath	= null;
 	

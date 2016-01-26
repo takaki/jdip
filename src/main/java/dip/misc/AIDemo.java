@@ -62,7 +62,7 @@ public class AIDemo
 {
 	// constants
 	/** Directory name where variants are stored */
-	private static final String VARIANT_DIR	= "variants";
+	private static final String VARIANT_DIR	= "resource/variants";
 	private static final String VARIANT_NAME = "Standard";
 	
 	
