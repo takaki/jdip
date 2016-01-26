@@ -86,6 +86,6 @@ class BorderTest extends Specification {
         "year"        | "description" | "Army  " | [loc0] as Location[] | "dip.order.Move" | "1" | "Spring   Fall" | "Movement" | "11900,2000"
         "units"       | "description" | "Hoge  " | [loc0] as Location[] | "dip.order.Move" | "1" | "Spring   Fall" | "Movement" | "1900,2000"
         "orders"      | "description" | "Army  " | [loc0] as Location[] | "dip.order.Hoge" | "1" | "Spring   Fall" | "Movement" | "1900,2000"
-//        "empty order" | "description" | "Army  " | [loc0] as Location[] | ""               | "1" | "Spring   Fall" | "Movement" | "1900,2000"
+        // "empty order" | "description" | "Army  " | [loc0] as Location[] | ""               | "1" | "Spring   Fall" | "Movement" | "1900,2000"
     }
 }
