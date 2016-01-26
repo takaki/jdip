@@ -12,7 +12,6 @@ class CoastTest extends Specification {
         coast.getAbbreviation() == "ec"
         coast.getIndex() == 7
         coast.toString() == "East Coast"
-        coast.hashCode() == "East Coast".hashCode()
 
     }
 
