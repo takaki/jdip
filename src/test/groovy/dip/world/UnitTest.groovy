@@ -15,6 +15,17 @@ class UnitTest extends Specification {
         unit.getType() == Unit.Type.ARMY
     }
 
+    def "test equals"() {
+        def power0 = new Power(["aaa", "000"] as String[], "adj", true)
+        def power1 = new Power(["aaa0", "000"] as String[], "adj", true)
+        expect:
+        power.equals(power)
+        //power.equals(power0)
+        //power0.equals(power)
+        !power.equals(power1)
+        !power1.equals(power)
+    }
+
     def "test clone"() {
         def clone = unit.clone()
         expect:
