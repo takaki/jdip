@@ -29,46 +29,36 @@ import dip.misc.Utils;
 import dip.order.Orderable;
 
 
-
 /**
-*
-*	UndoDeleteOrder is created any time an order is deleted.
-*	This handles a *single* delete. 
-*	<p>	
-*	Multiple deletes / clears must be coalesced via a CompoundEdit
-*	
-*	
-*/	
-public class UndoDeleteOrder extends XAbstractUndoableEdit
-{
-	// instance variables
-	private final static String PRESENTATION_NAME_PREFIX = "Undo.order.delete";
-	private Orderable order;
-	
-	
-	public UndoDeleteOrder(UndoRedoManager urm, Orderable order)
-	{
-		super(urm);
-		this.order = order;
-	}// UndoDeleteOrder()
-	
-	public String getPresentationName()
-	{
-		return Utils.getLocalString(PRESENTATION_NAME_PREFIX)+" "+order.getFullName();
-	}// getPresentationName()
-	
-	public void redo()
-	throws CannotRedoException
-	{
-		super.redo();
-		undoRedoManager.getOrderDisplayPanel().removeOrder(order, false);
-	}// redo()
-	
-	public void undo()
-	throws CannotUndoException
-	{
-		super.undo();
-		undoRedoManager.getOrderDisplayPanel().addOrder(order, false);
-	}// undo()
- 	
+ * UndoDeleteOrder is created any time an order is deleted.
+ * This handles a *single* delete.
+ * <p>
+ * Multiple deletes / clears must be coalesced via a CompoundEdit
+ */
+public class UndoDeleteOrder extends XAbstractUndoableEdit {
+    // instance variables
+    private final static String PRESENTATION_NAME_PREFIX = "Undo.order.delete";
+    private Orderable order;
+
+
+    public UndoDeleteOrder(UndoRedoManager urm, Orderable order) {
+        super(urm);
+        this.order = order;
+    }// UndoDeleteOrder()
+
+    public String getPresentationName() {
+        return Utils.getLocalString(PRESENTATION_NAME_PREFIX) + " " + order
+                .getFullName();
+    }// getPresentationName()
+
+    public void redo() throws CannotRedoException {
+        super.redo();
+        undoRedoManager.getOrderDisplayPanel().removeOrder(order, false);
+    }// redo()
+
+    public void undo() throws CannotUndoException {
+        super.undo();
+        undoRedoManager.getOrderDisplayPanel().addOrder(order, false);
+    }// undo()
+
 }// class UndoDeleteOrder

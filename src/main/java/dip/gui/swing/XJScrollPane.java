@@ -29,28 +29,29 @@ import javax.swing.JScrollPane;
 import dip.misc.Utils;
 
 /**
-*	eXtended JScrollPane.
-*	<p>
-*	Modified to always show scrollbars (both) on Mac OS X. Other platforms
-*	default to AS_NEEDED.
-*/
-public class XJScrollPane extends JScrollPane
-{
-	private final static int defaultHsbPolicy = ((Utils.isOSX()) ? 
-		JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS : JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-	private final static int defaultVsbPolicy = ((Utils.isOSX()) ? 
-		JScrollPane.VERTICAL_SCROLLBAR_ALWAYS : JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-	
-	/** Create an XJScrollPane */
-	public XJScrollPane()
-	{
-		super(defaultVsbPolicy, defaultHsbPolicy);
-	}// XJScrollPane()
-	
-	/** Create an XJScrollPane */
-	public XJScrollPane(Component view)
-	{
-		super(view, defaultVsbPolicy, defaultHsbPolicy);
-	}// XJScrollPane()
-	
+ * eXtended JScrollPane.
+ * <p>
+ * Modified to always show scrollbars (both) on Mac OS X. Other platforms
+ * default to AS_NEEDED.
+ */
+public class XJScrollPane extends JScrollPane {
+    private final static int defaultHsbPolicy = ((Utils
+            .isOSX()) ? JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS : JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    private final static int defaultVsbPolicy = ((Utils
+            .isOSX()) ? JScrollPane.VERTICAL_SCROLLBAR_ALWAYS : JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+
+    /**
+     * Create an XJScrollPane
+     */
+    public XJScrollPane() {
+        super(defaultVsbPolicy, defaultHsbPolicy);
+    }// XJScrollPane()
+
+    /**
+     * Create an XJScrollPane
+     */
+    public XJScrollPane(Component view) {
+        super(view, defaultVsbPolicy, defaultHsbPolicy);
+    }// XJScrollPane()
+
 }// class XJScrollPane

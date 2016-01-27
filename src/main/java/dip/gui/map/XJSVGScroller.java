@@ -31,43 +31,40 @@ import org.apache.batik.swing.JSVGCanvas;
 import org.apache.batik.swing.JSVGScrollPane;
 
 
-
-
 /**
-*	Modified Batik JSVGScrollPane class
-*
-*/
-public class XJSVGScroller extends JSVGScrollPane
-{
-	
-	/**
-	*	Creates a XJSVGScroller. This adds support for Wheel mice, too.
-	*/
-	public XJSVGScroller(JSVGCanvas canvas)
-	{
-		super(canvas);
-		addMouseWheelListener(new WheelListener());
-	}// XJSVGScroller()
-	
-	/** Inner class to catch mouse wheel events */
-	private class WheelListener implements MouseWheelListener
-	{
-		public void mouseWheelMoved(MouseWheelEvent e)
-		{
-			final JScrollBar sb = (vertical.isVisible()) ? 
-				vertical : horizontal;	// vertical is preferred
-			
-			if(sb.isVisible())
-			{
-				if(e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL) {
-					final int amt = e.getUnitsToScroll() * sb.getUnitIncrement();
-					sb.setValue(sb.getValue() + amt);
-				} else if(e.getScrollType() == MouseWheelEvent.WHEEL_BLOCK_SCROLL){
-					final int amt = e.getWheelRotation() * sb.getBlockIncrement();
-					sb.setValue(sb.getValue() + amt);
-				}
-			}
-		}// mouseWheelMoved()
-	}// inner class WheelListener
-	
+ * Modified Batik JSVGScrollPane class
+ */
+public class XJSVGScroller extends JSVGScrollPane {
+
+    /**
+     * Creates a XJSVGScroller. This adds support for Wheel mice, too.
+     */
+    public XJSVGScroller(JSVGCanvas canvas) {
+        super(canvas);
+        addMouseWheelListener(new WheelListener());
+    }// XJSVGScroller()
+
+    /**
+     * Inner class to catch mouse wheel events
+     */
+    private class WheelListener implements MouseWheelListener {
+        public void mouseWheelMoved(MouseWheelEvent e) {
+            final JScrollBar sb = (vertical
+                    .isVisible()) ? vertical : horizontal;    // vertical is preferred
+
+            if (sb.isVisible()) {
+                if (e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL) {
+                    final int amt = e.getUnitsToScroll() * sb
+                            .getUnitIncrement();
+                    sb.setValue(sb.getValue() + amt);
+                } else if (e
+                        .getScrollType() == MouseWheelEvent.WHEEL_BLOCK_SCROLL) {
+                    final int amt = e.getWheelRotation() * sb
+                            .getBlockIncrement();
+                    sb.setValue(sb.getValue() + amt);
+                }
+            }
+        }// mouseWheelMoved()
+    }// inner class WheelListener
+
 }// class XJSVGScroller

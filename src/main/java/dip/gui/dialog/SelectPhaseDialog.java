@@ -41,124 +41,108 @@ import dip.misc.Utils;
 import dip.world.Phase;
 
 /**
-*
-*	Shows a list of Phases, for a given world, so that the user
-*	may select a Phase.
-*
-*
-*
-*/
-public class SelectPhaseDialog extends HeaderDialog
-{
-	// i18n constants
-	private static final String TITLE = "SPD.title";
-	private static final String HEADER_LOCATION = "SPD.location.header";
-	
-	// instance variables
-	private ClientFrame		clientFrame;
-	private JScrollPane		phaseScrollPane = null;
-	private JList 			list = null;
-	
-	
-	/**
-	*	Displays the Phases for the current World object.
-	*	<p>
-	*	Returns the Phase selected, or <code>null</code> if no 
-	* 	Phase was selected, or dialog was cancelled.
-	*/
-	public static Phase displayDialog(ClientFrame cf)
-	{
-		SelectPhaseDialog spd = new SelectPhaseDialog(cf);
-		spd.pack();		
-		spd.setSize(new Dimension(500, 450));
-		Utils.centerInScreen(spd);
-		spd.setVisible(true);		
-		return spd.getSelectedPhase();
-	}// displayDialog()
-	
-	
-	private SelectPhaseDialog(ClientFrame clientFrame)
-	{
-		super(clientFrame, Utils.getLocalString(TITLE), true);
-		this.clientFrame = clientFrame;
-		
-		makePhaseList();
-		
-		setHeaderText( Utils.getText(Utils.getLocalString(HEADER_LOCATION)) );
-		
-		// if we don't put the scroller in a JPanel, the scroller's border
-		// isn't drawn.
-		JPanel contentPanel = new JPanel(new BorderLayout());
-		contentPanel.add(phaseScrollPane, BorderLayout.CENTER);
-		createDefaultContentBorder(contentPanel);
-		setContentPane(contentPanel);
-		
-		addTwoButtons( makeCancelButton(), makeOKButton(), false, true );
-		setHelpID(dip.misc.Help.HelpID.Dialog_PhaseSelect);
-	}// SelectPhaseDialog()
-	
-	
-	private Phase getSelectedPhase()
-	{
-		if(getReturnedActionCommand().equals(ACTION_OK))
-		{
-			ListRow lr = (ListRow) list.getSelectedValue();
-			if(lr != null)
-			{
-				return lr.getPhase();
-			}
-		}
-		
-		return null;
-	}// getSelectedPhase()
-	
-	
-	private void makePhaseList()
-	{
-		// create ListRows
-		List lrList = new LinkedList();
-		Set phaseSet = clientFrame.getWorld().getPhaseSet();
-		int idx = 1;
-		Iterator iter = phaseSet.iterator();
-		while(iter.hasNext())
-		{
-			Phase phase = (Phase) iter.next();
-			lrList.add(new ListRow(phase, idx++));
-		}
-		
-		// create & populate JList
-		list = new JList(lrList.toArray(new ListRow[lrList.size()]));
-		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		phaseScrollPane = new XJScrollPane(list);
-	}// makePhaseList()
-	
-	
-	private class ListRow
-	{
-		private final Phase phase;
-		private final int num;
-		
-		public ListRow(Phase phase, int n)
-		{
-			this.phase = phase;
-			this.num = n;
-		}// ListRow()
-		
-		public Phase getPhase()
-		{
-			return phase;
-		}// getPhase()
-		
-		public String toString()
-		{
-			StringBuffer sb = new StringBuffer(64);
-			sb.append(String.valueOf(num));
-			sb.append(".  ");
-			sb.append(phase);
-			return sb.toString();
-		}// toString()
-		
-	}// inner class ListRow
-	
-	
+ * Shows a list of Phases, for a given world, so that the user
+ * may select a Phase.
+ */
+public class SelectPhaseDialog extends HeaderDialog {
+    // i18n constants
+    private static final String TITLE = "SPD.title";
+    private static final String HEADER_LOCATION = "SPD.location.header";
+
+    // instance variables
+    private ClientFrame clientFrame;
+    private JScrollPane phaseScrollPane = null;
+    private JList list = null;
+
+
+    /**
+     * Displays the Phases for the current World object.
+     * <p>
+     * Returns the Phase selected, or <code>null</code> if no
+     * Phase was selected, or dialog was cancelled.
+     */
+    public static Phase displayDialog(ClientFrame cf) {
+        SelectPhaseDialog spd = new SelectPhaseDialog(cf);
+        spd.pack();
+        spd.setSize(new Dimension(500, 450));
+        Utils.centerInScreen(spd);
+        spd.setVisible(true);
+        return spd.getSelectedPhase();
+    }// displayDialog()
+
+
+    private SelectPhaseDialog(ClientFrame clientFrame) {
+        super(clientFrame, Utils.getLocalString(TITLE), true);
+        this.clientFrame = clientFrame;
+
+        makePhaseList();
+
+        setHeaderText(Utils.getText(Utils.getLocalString(HEADER_LOCATION)));
+
+        // if we don't put the scroller in a JPanel, the scroller's border
+        // isn't drawn.
+        JPanel contentPanel = new JPanel(new BorderLayout());
+        contentPanel.add(phaseScrollPane, BorderLayout.CENTER);
+        createDefaultContentBorder(contentPanel);
+        setContentPane(contentPanel);
+
+        addTwoButtons(makeCancelButton(), makeOKButton(), false, true);
+        setHelpID(dip.misc.Help.HelpID.Dialog_PhaseSelect);
+    }// SelectPhaseDialog()
+
+
+    private Phase getSelectedPhase() {
+        if (getReturnedActionCommand().equals(ACTION_OK)) {
+            ListRow lr = (ListRow) list.getSelectedValue();
+            if (lr != null) {
+                return lr.getPhase();
+            }
+        }
+
+        return null;
+    }// getSelectedPhase()
+
+
+    private void makePhaseList() {
+        // create ListRows
+        List lrList = new LinkedList();
+        Set phaseSet = clientFrame.getWorld().getPhaseSet();
+        int idx = 1;
+        Iterator iter = phaseSet.iterator();
+        while (iter.hasNext()) {
+            Phase phase = (Phase) iter.next();
+            lrList.add(new ListRow(phase, idx++));
+        }
+
+        // create & populate JList
+        list = new JList(lrList.toArray(new ListRow[lrList.size()]));
+        list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        phaseScrollPane = new XJScrollPane(list);
+    }// makePhaseList()
+
+
+    private class ListRow {
+        private final Phase phase;
+        private final int num;
+
+        public ListRow(Phase phase, int n) {
+            this.phase = phase;
+            this.num = n;
+        }// ListRow()
+
+        public Phase getPhase() {
+            return phase;
+        }// getPhase()
+
+        public String toString() {
+            StringBuffer sb = new StringBuffer(64);
+            sb.append(String.valueOf(num));
+            sb.append(".  ");
+            sb.append(phase);
+            return sb.toString();
+        }// toString()
+
+    }// inner class ListRow
+
+
 }// class SelectPhaseDialog

@@ -23,36 +23,37 @@ package dip.order;
 
 
 /**
-*	An OrderException indicates that an Order could not be created,
-*	or contains invalid parameters.
-*	<p>
-*
-*/
-public class OrderException extends Exception implements Cloneable
-{
-	private Order order = null;
-	
-	
-	/** Create an OrderException, with a Message only. */
-	public OrderException(String text)
-	{
-		super(text);
-	}// OrderException()
-	
-	
-	/** Create an OrderException, with the given Order and Message. */
-	public OrderException(Order order, String text)
-	{
-		super(text);
-		this.order = order;
-	}// OrderException()
-	
-	
-	/** The Order that generated the Exception; null if not set. */
-	public Order getOrder()
-	{
-		return order;
-	}// getOrder()
-	
-	
+ * An OrderException indicates that an Order could not be created,
+ * or contains invalid parameters.
+ * <p>
+ */
+public class OrderException extends Exception implements Cloneable {
+    private Order order = null;
+
+
+    /**
+     * Create an OrderException, with a Message only.
+     */
+    public OrderException(String text) {
+        super(text);
+    }// OrderException()
+
+
+    /**
+     * Create an OrderException, with the given Order and Message.
+     */
+    public OrderException(Order order, String text) {
+        super(text);
+        this.order = order;
+    }// OrderException()
+
+
+    /**
+     * The Order that generated the Exception; null if not set.
+     */
+    public Order getOrder() {
+        return order;
+    }// getOrder()
+
+
 }// class OrderException

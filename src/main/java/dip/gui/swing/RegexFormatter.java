@@ -84,9 +84,9 @@ public class RegexFormatter extends DefaultFormatter {
      * completely matches the regular expression this will invoke
      * <code>setMatcher</code>.
      *
-     * @throws ParseException if there is an error in the conversion
      * @param text String to convert
      * @return Object representation of text
+     * @throws ParseException if there is an error in the conversion
      */
     public Object stringToValue(String text) throws ParseException {
         Pattern pattern = getPattern();

@@ -28,34 +28,32 @@ import javax.swing.undo.CompoundEdit;
 import dip.misc.Utils;
 
 /**
-*	UndoClearAll
-*	<p>
-*	Just a fancy name for a compound edit.
-*/
-public class UndoClearAll extends CompoundEdit implements java.io.Serializable
-{
-	private final static String PRESENTATION_NAME = "Undo.order.clearall";
-	
-	public UndoClearAll()
-	{
-		super();
-	}// UndoClearAll()
-	
-	public String getPresentationName()
-	{
-		return Utils.getLocalString(PRESENTATION_NAME);
-	}// getPresentationName()
-	
-	public String getRedoPresentationName() 
-	{
-		return UIManager.getString("AbstractUndoableEdit.redoText") + " " + Utils.getLocalString(PRESENTATION_NAME);
-	}// getRedoPresentationName()
-	
-	public String getUndoPresentationName() 
-	{
-		return UIManager.getString("AbstractUndoableEdit.undoText") + " " + Utils.getLocalString(PRESENTATION_NAME);
-	}// getUndoPresentationName()
-	
-	
- 	
+ * UndoClearAll
+ * <p>
+ * Just a fancy name for a compound edit.
+ */
+public class UndoClearAll extends CompoundEdit implements java.io.Serializable {
+    private final static String PRESENTATION_NAME = "Undo.order.clearall";
+
+    public UndoClearAll() {
+        super();
+    }// UndoClearAll()
+
+    public String getPresentationName() {
+        return Utils.getLocalString(PRESENTATION_NAME);
+    }// getPresentationName()
+
+    public String getRedoPresentationName() {
+        return UIManager
+                .getString("AbstractUndoableEdit.redoText") + " " + Utils
+                .getLocalString(PRESENTATION_NAME);
+    }// getRedoPresentationName()
+
+    public String getUndoPresentationName() {
+        return UIManager
+                .getString("AbstractUndoableEdit.undoText") + " " + Utils
+                .getLocalString(PRESENTATION_NAME);
+    }// getUndoPresentationName()
+
+
 }// class UndoClearAll
