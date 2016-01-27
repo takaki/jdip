@@ -22,7 +22,7 @@
 //
 package dip.misc;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 

@@ -21,14 +21,10 @@
 //
 package dip.order;
 
-import java.util.StringTokenizer;
-
 import dip.misc.Log;
-import dip.world.Coast;
-import dip.world.Location;
-import dip.world.Power;
-import dip.world.Province;
-import dip.world.Unit;
+import dip.world.*;
+
+import java.util.StringTokenizer;
 
 /**
  * OrderFormat formats orders according to the specified format string.

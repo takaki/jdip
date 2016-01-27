@@ -22,13 +22,9 @@
 //
 package dip.gui.map;
 
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.geom.AffineTransform;
-
-import javax.swing.AbstractAction;
-import javax.swing.JButton;
-
+import dip.gui.order.GUIOrder;
+import dip.misc.Utils;
+import dip.world.Location;
 import org.apache.batik.bridge.ViewBox;
 import org.apache.batik.dom.events.DOMKeyEvent;
 import org.apache.batik.gvt.CanvasGraphicsNode;
@@ -36,9 +32,10 @@ import org.apache.batik.swing.JSVGCanvas;
 import org.w3c.dom.events.MouseEvent;
 import org.w3c.dom.svg.SVGSVGElement;
 
-import dip.gui.order.GUIOrder;
-import dip.misc.Utils;
-import dip.world.Location;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.geom.AffineTransform;
 
 
 /**

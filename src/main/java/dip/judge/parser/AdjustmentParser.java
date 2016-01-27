@@ -22,6 +22,9 @@
 //
 package dip.judge.parser;
 
+import dip.world.Map;
+import dip.world.Power;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
@@ -31,9 +34,6 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import dip.world.Map;
-import dip.world.Power;
 
 /**
  * Parses the Adjustment information block.
@@ -71,7 +71,7 @@ public class AdjustmentParser {
     private AdjustInfo[] adjustInfo = null;
 
 	/*
-	// TEST
+    // TEST
 	public static void main(String args[])
 	throws IOException
 	{

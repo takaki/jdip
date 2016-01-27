@@ -23,22 +23,17 @@
 
 package dip.gui.dialog;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
-
 import dip.gui.ClientFrame;
 import dip.gui.swing.XJScrollPane;
 import dip.misc.Utils;
 import dip.world.Phase;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Shows a list of Phases, for a given world, so that the user

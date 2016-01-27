@@ -22,11 +22,11 @@
 //
 package dip.world;
 
+import dip.order.OrderException;
+
 import java.io.InvalidObjectException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import dip.order.OrderException;
 
 /**
  * Coasts are essential to determining connectivity between Provinces.
@@ -61,7 +61,7 @@ public final class Coast implements java.io.Serializable {
     private static final String UNDEFINED_ABBREV = "?";    // perhaps make it "?c" ??
 
 	/* To be used in the future .... parsing to accomodate
-	private static final String NW_FULL 		= "Northwest Coast";
+    private static final String NW_FULL 		= "Northwest Coast";
 	private static final String NE_FULL 		= "Northeast Coast";
 	private static final String SW_FULL 		= "Southwest Coast";
 	private static final String SE_FULL 		= "Southeast Coast";

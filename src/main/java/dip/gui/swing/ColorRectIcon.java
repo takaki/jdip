@@ -22,11 +22,8 @@
 //
 package dip.gui.swing;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Graphics;
-
-import javax.swing.Icon;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * Creates an Icon that is a solid color within

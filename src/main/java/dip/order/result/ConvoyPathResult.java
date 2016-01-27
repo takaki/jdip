@@ -21,13 +21,13 @@
 //
 package dip.order.result;
 
-import java.util.List;
-
 import dip.misc.Utils;
 import dip.order.OrderFormat;
 import dip.order.OrderFormatOptions;
 import dip.order.Orderable;
 import dip.world.Province;
+
+import java.util.List;
 
 /**
  * An OrderResult that contains the path taken by a successfully
@@ -80,7 +80,7 @@ public class ConvoyPathResult extends OrderResult {
      */
     public String getMessage(OrderFormatOptions ofo) {
         /*
-		arguments:
+        arguments:
 			{0}	: convoy path taken.
 		*/
 

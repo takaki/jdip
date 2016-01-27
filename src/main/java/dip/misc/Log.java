@@ -63,7 +63,7 @@ public final class Log {
     private static int bufferNext = 0;
 
 	/*
-		HOW the buffer works
+        HOW the buffer works
 		a) string array of given size
 		b) two position (start, next)
 			start: start of buffer

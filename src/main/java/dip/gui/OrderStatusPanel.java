@@ -22,12 +22,6 @@
 //
 package dip.gui;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-
 import cz.autel.dmi.HIGConstraints;
 import cz.autel.dmi.HIGLayout;
 import dip.gui.swing.XJPanel;
@@ -36,6 +30,10 @@ import dip.order.Orderable;
 import dip.world.Phase;
 import dip.world.TurnState;
 import dip.world.World;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * OrderStatusPanel: contains a label that displays the current phase,

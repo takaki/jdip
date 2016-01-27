@@ -22,41 +22,7 @@
 //
 package dip.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.dnd.DropTarget;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.util.Locale;
-
-import javax.swing.JFrame;
-import javax.swing.JSplitPane;
-import javax.swing.UIManager;
-import javax.swing.WindowConstants;
-import javax.xml.parsers.SAXParserFactory;
-
-import jcmdline.BooleanParam;
-import jcmdline.CmdLineHandler;
-import jcmdline.FileParam;
-import jcmdline.HelpCmdLineHandler;
-import jcmdline.Parameter;
-import jcmdline.StringParam;
-import jcmdline.VersionCmdLineHandler;
-
-import org.apache.batik.util.XMLResourceDescriptor;
-import org.xml.sax.XMLReader;
-
-import dip.gui.dialog.AboutDialog;
-import dip.gui.dialog.ErrorDialog;
-import dip.gui.dialog.FileDropTargetListener;
-import dip.gui.dialog.MapPicker;
-import dip.gui.dialog.MetadataDialog;
-import dip.gui.dialog.MultiOrderEntry;
-import dip.gui.dialog.SelectPhaseDialog;
-import dip.gui.dialog.ValidationOptionsDialog;
+import dip.gui.dialog.*;
 import dip.gui.dialog.newgame.NewGameDialog;
 import dip.gui.dialog.prefs.DisplayPreferencePanel;
 import dip.gui.dialog.prefs.GeneralPreferencePanel;
@@ -66,11 +32,7 @@ import dip.gui.map.MapPanel;
 import dip.gui.map.MapRenderer2;
 import dip.gui.map.RenderCommandFactory.RenderCommand;
 import dip.gui.order.GUIOrderFactory;
-import dip.gui.report.OrderStatsWriter;
-import dip.gui.report.ResultWriter;
-import dip.gui.report.SCHistoryWriter;
-import dip.gui.report.StateWriter;
-import dip.gui.report.VariantInfoWriter;
+import dip.gui.report.*;
 import dip.gui.swing.XJFileChooser;
 import dip.gui.undo.UndoRedoManager;
 import dip.gui.undo.UndoResolve;
@@ -89,6 +51,20 @@ import dip.world.Power;
 import dip.world.TurnState;
 import dip.world.World;
 import dip.world.variant.VariantManager;
+import jcmdline.*;
+import org.apache.batik.util.XMLResourceDescriptor;
+import org.xml.sax.XMLReader;
+
+import javax.swing.*;
+import javax.xml.parsers.SAXParserFactory;
+import java.awt.*;
+import java.awt.dnd.DropTarget;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.util.Locale;
 
 /**
  * The main class for starting the client... everything starts here.
@@ -288,7 +264,7 @@ public class ClientFrame extends JFrame {
                 System.setProperty("apple.awt.showGrowBox",
                         "true");    // may no longer need
                 /*
-				NOTE: brushed metal is disabled; a bug in the Cocoa implementation causes 
+                NOTE: brushed metal is disabled; a bug in the Cocoa implementation causes
 				dialogs to behave strangely when this is enabled.
 				//
 				//System.setProperty("apple.awt.brushMetalLook", "true");

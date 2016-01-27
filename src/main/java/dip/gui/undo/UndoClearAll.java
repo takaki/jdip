@@ -22,10 +22,10 @@
 //
 package dip.gui.undo;
 
-import javax.swing.UIManager;
-import javax.swing.undo.CompoundEdit;
-
 import dip.misc.Utils;
+
+import javax.swing.*;
+import javax.swing.undo.CompoundEdit;
 
 /**
  * UndoClearAll

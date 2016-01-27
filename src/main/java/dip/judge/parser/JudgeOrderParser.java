@@ -22,6 +22,13 @@
 //
 package dip.judge.parser;
 
+import dip.misc.Log;
+import dip.order.NJudgeOrderParser;
+import dip.order.NJudgeOrderParser.NJudgeOrder;
+import dip.order.OrderException;
+import dip.order.OrderFactory;
+import dip.world.Phase.PhaseType;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
@@ -30,13 +37,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-
-import dip.misc.Log;
-import dip.order.NJudgeOrderParser;
-import dip.order.OrderException;
-import dip.order.OrderFactory;
-import dip.order.NJudgeOrderParser.NJudgeOrder;
-import dip.world.Phase.PhaseType;
 
 
 /**

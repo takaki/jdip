@@ -141,7 +141,7 @@ public class DislodgedResult extends OrderResult {
      */
     public String getMessage(OrderFormatOptions ofo) {
         /*
-		0 : province not specified
+        0 : province not specified
 		1 : province specified
 		
 		{0} : dislodge province yes/no (1/0)

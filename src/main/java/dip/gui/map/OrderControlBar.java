@@ -22,29 +22,18 @@
 //
 package dip.gui.map;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.ButtonGroup;
-import javax.swing.JToggleButton;
-
-import org.apache.batik.dom.events.DOMKeyEvent;
-import org.w3c.dom.events.MouseEvent;
-
-import dip.gui.order.GUIBuild;
-import dip.gui.order.GUIMove;
-import dip.gui.order.GUIOrder;
-import dip.gui.order.GUIOrderFactory;
-import dip.gui.order.GUIRetreat;
+import dip.gui.order.*;
 import dip.misc.Log;
 import dip.misc.Utils;
 import dip.order.ValidationOptions;
 import dip.process.Adjustment;
-import dip.world.Location;
-import dip.world.Phase;
-import dip.world.Power;
-import dip.world.RuleOptions;
-import dip.world.Unit;
+import dip.world.*;
+import org.apache.batik.dom.events.DOMKeyEvent;
+import org.w3c.dom.events.MouseEvent;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 
 /*
@@ -461,7 +450,7 @@ public class OrderControlBar extends ViewControlBar {
         mapPanel.getClientFrame().getOrderStatusPanel().clearOrderText();
 
 		/*
-		 *  This is amateurish but effective. Should probably be replaced by
+         *  This is amateurish but effective. Should probably be replaced by
 		 *  an object-oriented approach
 		 */
         if (currentAction == MODE_HOLD) {

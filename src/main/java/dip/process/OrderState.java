@@ -22,15 +22,15 @@
 //
 package dip.process;
 
-import java.util.Iterator;
-import java.util.List;
-
 import dip.order.Move;
 import dip.order.Order;
 import dip.order.Support;
 import dip.world.Location;
 import dip.world.Power;
 import dip.world.Province;
+
+import java.util.Iterator;
+import java.util.List;
 
 
 /**

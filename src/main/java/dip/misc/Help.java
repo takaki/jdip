@@ -22,14 +22,12 @@
 //
 package dip.misc;
 
-import java.net.URL;
+import dip.gui.swing.SwingWorker;
 
 import javax.help.HelpBroker;
 import javax.help.HelpSet;
-import javax.swing.AbstractButton;
-import javax.swing.JDialog;
-
-import dip.gui.swing.SwingWorker;
+import javax.swing.*;
+import java.net.URL;
 
 /**
  * Encapsulates JavaHelp for the utmost in simplicity of adding

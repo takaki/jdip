@@ -22,11 +22,9 @@
 //
 package dip.gui.dialog.newgame;
 
-import javax.swing.AbstractSpinnerModel;
-import javax.swing.JFormattedTextField;
-import javax.swing.JSpinner;
-
 import dip.world.Phase.YearType;
+
+import javax.swing.*;
 
 /**
  * Creates a Year spinner that (if enabled) correctly handles

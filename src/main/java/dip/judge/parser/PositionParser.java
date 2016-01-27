@@ -22,6 +22,9 @@
 //
 package dip.judge.parser;
 
+import dip.misc.Utils;
+import dip.world.Phase;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
@@ -30,9 +33,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-
-import dip.misc.Utils;
-import dip.world.Phase;
 
 /**
  * Parses static position list, if present. This is in game listings and also
@@ -69,7 +69,7 @@ public class PositionParser {
     private Phase phase = null;
 
 	/*
-	// for testing only
+    // for testing only
 	public static void main(String args[])
 	throws IOException, PatternSyntaxException
 	{

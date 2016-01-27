@@ -23,14 +23,13 @@
 package dip.gui.map;
 
 
-import java.awt.Color;
-
+import dip.misc.Utils;
 import org.apache.batik.css.engine.value.FloatValue;
 import org.apache.batik.css.engine.value.RGBColorValue;
 import org.apache.batik.css.engine.value.StringMap;
 import org.apache.batik.css.engine.value.svg.ColorManager;
 
-import dip.misc.Utils;
+import java.awt.*;
 
 /**
  * Parses SVG colors, and returns a java.awt.Color color.

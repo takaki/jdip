@@ -23,19 +23,6 @@
 package dip.gui.dialog;
 
 
-import java.awt.Color;
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextField;
-import javax.swing.JTextPane;
-import javax.swing.border.EtchedBorder;
-
 import cz.autel.dmi.HIGConstraints;
 import cz.autel.dmi.HIGLayout;
 import dip.gui.AbstractCFPListener;
@@ -49,6 +36,12 @@ import dip.world.Power;
 import dip.world.World;
 import dip.world.metadata.GameMetadata;
 import dip.world.metadata.PlayerMetadata;
+
+import javax.swing.*;
+import javax.swing.border.EtchedBorder;
+import java.awt.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * Metadata Editing/Viewing dialog

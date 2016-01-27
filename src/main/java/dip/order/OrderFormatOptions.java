@@ -21,13 +21,9 @@
 //
 package dip.order;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-
 import dip.misc.Log;
+
+import java.io.*;
 
 /**
  * This object controls, in detail, how orders are formatted.

@@ -22,25 +22,20 @@
 //
 package dip.gui.order;
 
-import java.awt.geom.Point2D;
-
-import org.apache.batik.dom.svg.SVGDOMImplementation;
-import org.apache.batik.util.SVGConstants;
-import org.w3c.dom.svg.SVGElement;
-import org.w3c.dom.svg.SVGGElement;
-import org.w3c.dom.svg.SVGLineElement;
-
 import dip.gui.map.MapMetadata;
 import dip.misc.Utils;
 import dip.order.Orderable;
 import dip.order.Retreat;
 import dip.order.ValidationOptions;
 import dip.process.RetreatChecker;
-import dip.world.Location;
-import dip.world.Position;
-import dip.world.Power;
-import dip.world.Province;
-import dip.world.Unit;
+import dip.world.*;
+import org.apache.batik.dom.svg.SVGDOMImplementation;
+import org.apache.batik.util.SVGConstants;
+import org.w3c.dom.svg.SVGElement;
+import org.w3c.dom.svg.SVGGElement;
+import org.w3c.dom.svg.SVGLineElement;
+
+import java.awt.geom.Point2D;
 
 /**
  * GUIOrder subclass of Retreat order.

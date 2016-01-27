@@ -10,24 +10,15 @@
 //
 package dip.misc;
 
+import dip.order.OrderFactory;
+import dip.world.*;
+import dip.world.variant.VariantManager;
+import dip.world.variant.data.Variant;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import dip.order.OrderFactory;
-import dip.world.Coast;
-import dip.world.Location;
-import dip.world.Map;
-import dip.world.Position;
-import dip.world.Power;
-import dip.world.Province;
-import dip.world.RuleOptions;
-import dip.world.Unit;
-import dip.world.World;
-import dip.world.WorldFactory;
-import dip.world.variant.VariantManager;
-import dip.world.variant.data.Variant;
 
 /**
  * This class is meant to be an illustrative example of how to use
@@ -382,7 +373,7 @@ public class AIDemo {
     private void evaluateOrders(World world, Position position,
                                 List[] orderSets) {
         /*
-			we will evaluate by finding the BEST order that takes the sc
+            we will evaluate by finding the BEST order that takes the sc
 			(first check via hasUnit())
 			
 			then the one with the most attack strength

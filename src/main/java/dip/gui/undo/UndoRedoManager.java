@@ -22,16 +22,14 @@
 //
 package dip.gui.undo;
 
+import dip.gui.ClientFrame;
 import dip.gui.ClientMenu;
 import dip.gui.OrderDisplayPanel;
-import dip.gui.ClientFrame;
 import dip.misc.Log;
 
 import javax.swing.undo.UndoManager;
 import javax.swing.undo.UndoableEdit;
-
-
-import java.util.*;
+import java.util.ListIterator;
 
 /**
  * Manages Undo/Redo events, and associated Edit menu items involving

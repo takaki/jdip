@@ -22,14 +22,14 @@
 //
 package dip.gui.map;
 
-import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
+import dip.gui.ClientMenu;
+import dip.gui.map.RenderCommandFactory.RenderCommand;
+import dip.gui.order.GUIOrder;
+import dip.gui.order.GUIOrder.MapInfo;
+import dip.misc.Log;
+import dip.order.Orderable;
+import dip.world.*;
+import dip.world.variant.data.SymbolPack;
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.util.CSSConstants;
 import org.apache.batik.util.RunnableQueue;
@@ -40,21 +40,9 @@ import org.w3c.dom.svg.SVGDocument;
 import org.w3c.dom.svg.SVGElement;
 import org.w3c.dom.svg.SVGGElement;
 
-import dip.gui.ClientMenu;
-import dip.gui.map.RenderCommandFactory.RenderCommand;
-import dip.gui.order.GUIOrder;
-import dip.gui.order.GUIOrder.MapInfo;
-import dip.misc.Log;
-import dip.order.Orderable;
-import dip.world.Coast;
-import dip.world.Location;
-import dip.world.Phase;
-import dip.world.Position;
-import dip.world.Power;
-import dip.world.Province;
-import dip.world.TurnState;
-import dip.world.Unit;
-import dip.world.variant.data.SymbolPack;
+import java.awt.geom.Point2D;
+import java.util.*;
+import java.util.Map;
 
 
 /**

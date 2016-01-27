@@ -22,15 +22,14 @@
 //
 package dip.gui.undo;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
-
 import dip.misc.Utils;
 import dip.world.TurnState;
 import dip.world.World;
+
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+import java.util.LinkedList;
+import java.util.List;
 
 
 /**

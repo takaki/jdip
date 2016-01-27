@@ -22,19 +22,14 @@
 //
 package dip.world;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
 import dip.order.Convoy;
 import dip.order.Move;
 import dip.order.Orderable;
 import dip.process.Adjudicator;
 import dip.process.OrderState;
 import dip.process.Tristate;
+
+import java.util.*;
 
 /**
  * Determines Convoy paths between points on a Map, and also minimum distances
@@ -807,7 +802,7 @@ public class Path extends Object {
                 }
 
 				/* OLD CODE: before Coast.WING (TOUCHING) available
-				for(int i=0; i<Coast.ALL_COASTS.length; i++)
+                for(int i=0; i<Coast.ALL_COASTS.length; i++)
 				{
 					Location[] locs = p.getAdjacentLocations(Coast.ALL_COASTS[i]);
 					for(int j=0; j<locs.length; j++)

@@ -22,15 +22,6 @@
 //
 package dip.gui.report;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.swing.JScrollPane;
-
 import dip.gui.ClientFrame;
 import dip.gui.dialog.TextViewer;
 import dip.misc.Help;
@@ -38,12 +29,10 @@ import dip.misc.Utils;
 import dip.order.Order;
 import dip.order.OrderFormatOptions;
 import dip.process.Adjustment;
-import dip.world.Phase;
-import dip.world.Position;
-import dip.world.Power;
-import dip.world.Province;
-import dip.world.TurnState;
-import dip.world.Unit;
+import dip.world.*;
+
+import javax.swing.*;
+import java.util.*;
 
 
 /**

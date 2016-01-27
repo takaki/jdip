@@ -22,6 +22,9 @@
 //
 package dip.judge.parser;
 
+import dip.misc.Log;
+import dip.world.Phase;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
@@ -30,9 +33,6 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import dip.world.Phase;
-import dip.misc.Log;
 
 /**
  * Parses the Dislodged block
@@ -87,7 +87,7 @@ public class DislodgedParser {
     private String inputText = null;
 
 	/*	// TEST PATTERN: DO NOT DELETE
-	public static void main(String args[])
+    public static void main(String args[])
 	throws IOException
 	{
 		

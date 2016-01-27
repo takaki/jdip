@@ -22,51 +22,16 @@
 //
 package dip.process;
 
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import dip.misc.Log;
 import dip.misc.Utils;
-import dip.order.Build;
-import dip.order.Convoy;
-import dip.order.Disband;
-import dip.order.Hold;
-import dip.order.Move;
-import dip.order.Order;
-import dip.order.OrderException;
-import dip.order.OrderFactory;
-import dip.order.OrderFormatOptions;
-import dip.order.OrderWarning;
-import dip.order.Orderable;
-import dip.order.Remove;
-import dip.order.Retreat;
-import dip.order.Support;
-import dip.order.ValidationOptions;
-import dip.order.result.BouncedResult;
-import dip.order.result.DislodgedResult;
-import dip.order.result.OrderResult;
-import dip.order.result.Result;
-import dip.order.result.SubstitutedResult;
-import dip.order.result.TimeResult;
+import dip.order.*;
+import dip.order.result.*;
 import dip.order.result.OrderResult.ResultType;
-import dip.world.Location;
-import dip.world.Path;
-import dip.world.Phase;
-import dip.world.Position;
-import dip.world.Power;
-import dip.world.Province;
-import dip.world.RuleOptions;
-import dip.world.TurnState;
-import dip.world.Unit;
-import dip.world.VictoryConditions;
-import dip.world.World;
+import dip.world.*;
+
+import java.text.MessageFormat;
+import java.util.*;
+import java.util.Map;
 
 /**
  * StdAjudicator is adjudicates all phases of a typical game, using
@@ -478,7 +443,7 @@ public class StdAdjudicator implements Adjudicator {
 
         // step 5: Order verification / automatic failures
         /*
-			What is an Automatic Failure?
+            What is an Automatic Failure?
 			============================
 				1) convoyed move with a partial or no convoy between src & dest
 				2) mismatched supports

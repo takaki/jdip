@@ -22,17 +22,14 @@
 //
 package dip.gui.swing;
 
-import java.awt.FileDialog;
-import java.awt.Frame;
-import java.io.File;
-
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-import javax.swing.filechooser.FileFilter;
-
 import dip.misc.Log;
 import dip.misc.SimpleFileFilter;
 import dip.misc.Utils;
+
+import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import java.awt.*;
+import java.io.File;
 
 /**
  * A simplified and extended JFileChooser for single-file (only!)
@@ -57,7 +54,7 @@ public class XJFileChooser {
     private static final String TITLE_SAVE_AS = "XJFileChooser.title.saveas";
 
 	/* 
-	//simple test...
+    //simple test...
 	public static void main(String[] dsf)
 	throws Exception
 	{

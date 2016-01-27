@@ -22,21 +22,6 @@
 //
 package dip.gui.dialog;
 
-import java.awt.Dimension;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.Properties;
-
-import javax.swing.DefaultListSelectionModel;
-import javax.swing.JEditorPane;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTable;
-import javax.swing.border.EtchedBorder;
-import javax.swing.table.DefaultTableModel;
-
 import cz.autel.dmi.HIGConstraints;
 import cz.autel.dmi.HIGLayout;
 import dip.gui.ClientFrame;
@@ -44,6 +29,14 @@ import dip.gui.swing.SwingWorker;
 import dip.gui.swing.XJScrollPane;
 import dip.misc.Log;
 import dip.misc.Utils;
+
+import javax.swing.*;
+import javax.swing.border.EtchedBorder;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.Properties;
 
 
 /**

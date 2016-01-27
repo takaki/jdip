@@ -22,26 +22,6 @@
 //
 package dip.gui.dialog.newgame;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.GridLayout;
-import java.net.URL;
-
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JEditorPane;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ListCellRenderer;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingConstants;
-import javax.swing.border.EmptyBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
 import cz.autel.dmi.HIGConstraints;
 import cz.autel.dmi.HIGLayout;
 import dip.gui.swing.GradientJLabel;
@@ -51,6 +31,13 @@ import dip.world.variant.VariantManager;
 import dip.world.variant.data.MapGraphic;
 import dip.world.variant.data.SymbolPack;
 import dip.world.variant.data.Variant;
+
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.net.URL;
 
 
 /**
@@ -87,7 +74,7 @@ public class NGDMapAndUnits extends JPanel implements NewGameDialog.NGDTabPane {
 
 		
 		/*
-			ListSelectionListener for MapGraphics:
+            ListSelectionListener for MapGraphics:
 			This will change the SymbolPack to the preferred
 			SymbolPack, if any; if there isn't a preferred Symbolpack, 
 			then no SymbolPack change is made.

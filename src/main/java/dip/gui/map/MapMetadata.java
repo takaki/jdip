@@ -22,21 +22,20 @@
 //
 package dip.gui.map;
 
-import java.awt.geom.Point2D;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.StringTokenizer;
-
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
 import dip.misc.Log;
 import dip.world.Coast;
 import dip.world.Power;
 import dip.world.Province;
 import dip.world.variant.data.Symbol;
 import dip.world.variant.data.SymbolPack;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import java.awt.geom.Point2D;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 
 /**
@@ -242,7 +241,7 @@ public class MapMetadata {
     private SymbolPack sp = null;
 
 	/*
-	*	Display Props is also used for order info. Except that
+    *	Display Props is also used for order info. Except that
 	*	there are 2 keys (element, attribute), and no default value, since 
 	*	all values are required. 
 	*

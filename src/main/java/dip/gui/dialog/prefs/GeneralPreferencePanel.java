@@ -23,8 +23,21 @@
 
 package dip.gui.dialog.prefs;
 
-import java.awt.Component;
-import java.awt.FlowLayout;
+import com.l2fprod.common.swing.JDirectoryChooser;
+import cz.autel.dmi.HIGConstraints;
+import cz.autel.dmi.HIGLayout;
+import dip.gui.ClientFrame;
+import dip.gui.OrderDisplayPanel;
+import dip.gui.map.MapRenderer2;
+import dip.gui.swing.AssocJComboBox;
+import dip.gui.swing.XJFileChooser;
+import dip.misc.LRUCache;
+import dip.misc.Log;
+import dip.misc.SharedPrefs;
+import dip.misc.Utils;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -35,29 +48,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
-
-import javax.swing.Box;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JSeparator;
-import javax.swing.JTextField;
-
-import com.l2fprod.common.swing.JDirectoryChooser;
-
-import cz.autel.dmi.HIGConstraints;
-import cz.autel.dmi.HIGLayout;
-import dip.gui.ClientFrame;
-import dip.gui.OrderDisplayPanel;
-import dip.gui.map.MapRenderer2;
-import dip.gui.swing.AssocJComboBox;
-import dip.gui.swing.XJFileChooser;
-import dip.misc.Log;
-import dip.misc.LRUCache;
-import dip.misc.SharedPrefs;
-import dip.misc.Utils;
 
 /**
  * General preferences.

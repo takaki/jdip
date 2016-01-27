@@ -22,36 +22,16 @@
 //
 package dip.gui.dialog;
 
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.Frame;
-import java.awt.Insets;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Transferable;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringWriter;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import dip.gui.ClientMenu;
+import dip.gui.dialog.prefs.GeneralPreferencePanel;
+import dip.gui.swing.XJEditorPane;
+import dip.gui.swing.XJFileChooser;
+import dip.gui.swing.XJScrollPane;
+import dip.misc.Log;
+import dip.misc.SimpleFileFilter;
+import dip.misc.Utils;
 
-import javax.swing.Action;
-import javax.swing.JComponent;
-import javax.swing.JEditorPane;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
-import javax.swing.TransferHandler;
+import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
@@ -63,15 +43,16 @@ import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLWriter;
-
-import dip.gui.ClientMenu;
-import dip.gui.dialog.prefs.GeneralPreferencePanel;
-import dip.gui.swing.XJEditorPane;
-import dip.gui.swing.XJFileChooser;
-import dip.gui.swing.XJScrollPane;
-import dip.misc.Log;
-import dip.misc.SimpleFileFilter;
-import dip.misc.Utils;
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Display and (optionally) edit Text inside a HeaderDialog.

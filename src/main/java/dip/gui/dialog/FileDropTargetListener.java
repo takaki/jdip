@@ -22,6 +22,8 @@
 //
 package dip.gui.dialog;
 
+import dip.misc.Utils;
+
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -32,8 +34,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
-
-import dip.misc.Utils;
 
 /**
  * DND (drag-and-drop) DropTarget listener that can accept drops
@@ -99,7 +99,7 @@ public abstract class FileDropTargetListener extends DropTargetAdapter {
         if (Utils.isWindows() && file.getPath().toLowerCase()
                 .endsWith(".lnk")) {
             /*
-			try
+            try
 			{
 				return sun.awt.shell.ShellFolder.getShellFolder(file).getLinkLocation();
 			}	

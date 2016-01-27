@@ -63,7 +63,7 @@ public class DependentMoveFailedResult extends OrderResult {
      */
     public String getMessage(OrderFormatOptions ofo) {
         /*
-		{0} : the dependent order, formatted with OrderFormat
+        {0} : the dependent order, formatted with OrderFormat
 		*/
 
         // return formatted message

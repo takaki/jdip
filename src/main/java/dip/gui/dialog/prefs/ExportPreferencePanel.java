@@ -23,23 +23,6 @@
 
 package dip.gui.dialog.prefs;
 
-import java.awt.FlowLayout;
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
-
-import javax.swing.ButtonGroup;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JSlider;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
-
-import org.apache.batik.transcoder.Transcoder;
-import org.apache.batik.transcoder.image.ImageTranscoder;
-import org.apache.batik.transcoder.image.JPEGTranscoder;
-import org.apache.batik.transcoder.image.PNGTranscoder;
-
 import cz.autel.dmi.HIGConstraints;
 import cz.autel.dmi.HIGLayout;
 import dip.gui.ClientFrame;
@@ -47,6 +30,15 @@ import dip.gui.swing.AssocJComboBox;
 import dip.gui.swing.GradientJLabel;
 import dip.misc.SharedPrefs;
 import dip.misc.Utils;
+import org.apache.batik.transcoder.Transcoder;
+import org.apache.batik.transcoder.image.ImageTranscoder;
+import org.apache.batik.transcoder.image.JPEGTranscoder;
+import org.apache.batik.transcoder.image.PNGTranscoder;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 
 /**

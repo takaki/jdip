@@ -381,7 +381,7 @@ public class Location implements Cloneable {
 
                 // the commented-out code is more strict (too strict)
                 /*
-				if(coast.equals(Coast.UNDEFINED))
+                if(coast.equals(Coast.UNDEFINED))
 				{
 					// no coast specified; derive coast from unit
 					coast = origCoast;

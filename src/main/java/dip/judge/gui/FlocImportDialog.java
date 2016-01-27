@@ -23,15 +23,6 @@
 
 package dip.judge.gui;
 
-import java.io.IOException;
-import java.util.prefs.Preferences;
-
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.JTextField;
-
 import cz.autel.dmi.HIGConstraints;
 import cz.autel.dmi.HIGLayout;
 import dip.gui.ClientFrame;
@@ -43,6 +34,10 @@ import dip.misc.Help;
 import dip.misc.SharedPrefs;
 import dip.misc.Utils;
 import dip.world.World;
+
+import javax.swing.*;
+import java.io.IOException;
+import java.util.prefs.Preferences;
 
 
 /**

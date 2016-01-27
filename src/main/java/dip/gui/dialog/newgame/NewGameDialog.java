@@ -22,13 +22,6 @@
 //
 package dip.gui.dialog.newgame;
 
-import java.awt.Component;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-
-import javax.swing.JButton;
-import javax.swing.JTabbedPane;
-
 import dip.gui.ClientFrame;
 import dip.gui.dialog.HeaderDialog;
 import dip.gui.swing.SwingWorker;
@@ -37,6 +30,11 @@ import dip.misc.Log;
 import dip.misc.Utils;
 import dip.world.World;
 import dip.world.variant.data.Variant;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 /**
  * The New game dialog, for starting new games.

@@ -21,9 +21,9 @@
 //
 package dip.order.result;
 
-import java.io.Serializable;
-
 import dip.order.Orderable;
+
+import java.io.Serializable;
 
 /**
  * A message sent to a specific Power that refers to a specific order.
@@ -229,7 +229,7 @@ public class OrderResult extends Result {
 
 		
 		/*
-			equals():
+            equals():
 			
 			We use Object.equals(), which just does a test of 
 			referential equality. 

@@ -22,14 +22,12 @@
 //
 package dip.gui;
 
-import java.awt.BorderLayout;
-
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
-
 import dip.gui.map.MapPanel;
 import dip.gui.undo.UndoRedoManager;
 import dip.world.World;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * The Default GameSetup. This is used when we are not in face-

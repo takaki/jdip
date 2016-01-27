@@ -23,13 +23,12 @@
 
 package dip.gui.dialog.prefs;
 
-import java.awt.Dimension;
-
-import javax.swing.JTabbedPane;
-
 import dip.gui.ClientFrame;
 import dip.gui.dialog.HeaderDialog;
 import dip.misc.Utils;
+
+import javax.swing.*;
+import java.awt.*;
 
 
 /**

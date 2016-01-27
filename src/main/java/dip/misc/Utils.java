@@ -22,52 +22,25 @@
 //
 package dip.misc;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Image;
-import java.awt.Insets;
-import java.awt.MediaTracker;
-import java.awt.Point;
-import java.awt.Toolkit;
+import dip.gui.dialog.ErrorDialog;
+import dip.gui.swing.XJEditorPane;
+
+import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
+import javax.swing.text.*;
+import javax.swing.text.html.HTMLDocument;
+import java.awt.*;
 import java.awt.image.AreaAveragingScaleFilter;
 import java.awt.image.FilteredImageSource;
 import java.awt.image.ImageProducer;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JEditorPane;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
-import javax.swing.UIManager;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
-import javax.swing.text.AbstractDocument;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
-import javax.swing.text.DocumentFilter;
-import javax.swing.text.html.HTMLDocument;
-
-import dip.gui.dialog.ErrorDialog;
-import dip.gui.swing.XJEditorPane;
 
 
 /**
@@ -1299,7 +1272,7 @@ public class Utils {
                 // step 2: replace double quotes (excel-style) with single quote
                 // disabled. if this is enabled, step 3 should probably be disabled.
                 /*
-				int idx = 0;
+                int idx = 0;
 				while( (idx = sb.indexOf("\"\"", idx)) != -1 )
 				{
 					idx += 1;

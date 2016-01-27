@@ -122,7 +122,7 @@ public class Power implements Comparable, java.io.Serializable {
 
 	
 	/* 	
-		Implementation of Object.equals()
+        Implementation of Object.equals()
 	 	NOTE: we just use default referential equality, since these objects are immutable!
 	*/
 

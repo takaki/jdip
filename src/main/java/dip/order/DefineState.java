@@ -24,11 +24,7 @@ package dip.order;
 import dip.misc.Utils;
 import dip.process.Adjudicator;
 import dip.process.OrderState;
-import dip.world.Location;
-import dip.world.Power;
-import dip.world.RuleOptions;
-import dip.world.TurnState;
-import dip.world.Unit;
+import dip.world.*;
 
 /**
  * Implementation of the Setup (DefineState) order.

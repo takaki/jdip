@@ -45,7 +45,7 @@ public abstract class XAbstractUndoableEdit extends AbstractUndoableEdit impleme
     }// XAbstractUndoableEdit()
 
 	/*
-	
+
 	for debugging. uniqueNum is a incrementing number
 	to track edits.
 	

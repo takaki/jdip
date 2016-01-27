@@ -22,14 +22,9 @@
 //
 package dip.process;
 
-import java.util.HashMap;
+import dip.world.*;
 
-import dip.world.Position;
-import dip.world.Power;
-import dip.world.Province;
-import dip.world.RuleOptions;
-import dip.world.TurnState;
-import dip.world.Unit;
+import java.util.HashMap;
 
 
 /**

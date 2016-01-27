@@ -22,19 +22,11 @@
 //
 package dip.world;
 
+import dip.order.OrderException;
+
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import dip.order.OrderException;
+import java.util.*;
 
 
 /**
@@ -370,7 +362,7 @@ public class Map implements Serializable {
         }
 
 		/*
-		System.out.println("LD input: "+input);
+        System.out.println("LD input: "+input);
 		System.out.println("   ties: "+ties);
 		System.out.println("   bestDist: "+bestDist);
 		System.out.println("   maxbest: "+((int) (input.length() / 2)));

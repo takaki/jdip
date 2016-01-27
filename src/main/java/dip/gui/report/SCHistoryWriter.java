@@ -22,26 +22,17 @@
 //
 package dip.gui.report;
 
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.swing.JScrollPane;
-
 import dip.gui.ClientFrame;
 import dip.gui.dialog.TextViewer;
 import dip.gui.map.MapMetadata;
 import dip.gui.map.SVGColorParser;
 import dip.misc.Utils;
-import dip.world.Phase;
-import dip.world.Position;
-import dip.world.Power;
-import dip.world.Province;
-import dip.world.TurnState;
-import dip.world.World;
+import dip.world.*;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.*;
+import java.util.List;
 
 
 /**
@@ -419,7 +410,7 @@ public class SCHistoryWriter {
     }// makeFontColorOpen()
 
 /*	
-		Historical Supply Center Summary
+        Historical Supply Center Summary
 		--------------------------------
 		    Ven Nap Edi Lvp Par Por Bel Mun Ber Swe Stp Mos Con Smy Rum Ser Vie
 		Year  Rom Tun Lon Bre Mar Spa Hol Kie Den Nor War Sev Ank Bul Gre Bud Tri

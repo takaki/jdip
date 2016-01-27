@@ -22,15 +22,12 @@
 //
 package dip.world;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import dip.order.Orderable;
 import dip.order.result.OrderResult;
+
+import java.io.Serializable;
+import java.util.*;
+import java.util.Map;
 
 /**
  * A TurnState represents a snapshot of the game for the given Phase.

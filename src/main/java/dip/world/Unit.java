@@ -22,7 +22,6 @@
 //
 package dip.world;
 
-import dip.order.Order;
 import dip.misc.Utils;
 
 
@@ -236,7 +235,7 @@ public class Unit implements java.io.Serializable, Cloneable {
         }// hashCode()
 
 		/*
-			equals():
+            equals():
 			
 			We use Object.equals(), which just does a test of 
 			referential equality. 

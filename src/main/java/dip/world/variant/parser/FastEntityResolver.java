@@ -22,14 +22,12 @@
 //
 package dip.world.variant.parser;
 
-import java.io.StringReader;
-
-import javax.xml.parsers.DocumentBuilder;
-
+import dip.misc.Log;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 
-import dip.misc.Log;
+import javax.xml.parsers.DocumentBuilder;
+import java.io.StringReader;
 
 /**
  * Resolves Entity definitions to an empty InputSource, unless validation

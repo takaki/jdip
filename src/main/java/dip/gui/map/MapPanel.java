@@ -22,23 +22,18 @@
 //
 package dip.gui.map;
 
-import java.awt.BorderLayout;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.net.URL;
-
-import javax.swing.ImageIcon;
-import javax.swing.JPanel;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
+import dip.gui.*;
+import dip.gui.dialog.ErrorDialog;
+import dip.gui.dialog.prefs.GeneralPreferencePanel;
+import dip.gui.map.RenderCommandFactory.RenderCommand;
+import dip.misc.Log;
+import dip.misc.Utils;
+import dip.order.ValidationOptions;
+import dip.world.*;
+import dip.world.variant.VariantManager;
+import dip.world.variant.data.MapGraphic;
+import dip.world.variant.data.SymbolPack;
+import dip.world.variant.data.Variant;
 import org.apache.batik.bridge.UpdateManagerListener;
 import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
 import org.apache.batik.dom.svg.SVGOMDocument;
@@ -53,26 +48,18 @@ import org.apache.batik.util.XMLResourceDescriptor;
 import org.w3c.dom.Document;
 import org.w3c.dom.svg.SVGDocument;
 
-import dip.gui.AbstractCFPListener;
-import dip.gui.ClientFrame;
-import dip.gui.ClientMenu;
-import dip.gui.OrderDisplayPanel;
-import dip.gui.StatusBar;
-import dip.gui.dialog.ErrorDialog;
-import dip.gui.dialog.prefs.GeneralPreferencePanel;
-import dip.gui.map.RenderCommandFactory.RenderCommand;
-import dip.misc.Log;
-import dip.misc.Utils;
-import dip.order.ValidationOptions;
-import dip.world.Position;
-import dip.world.Province;
-import dip.world.RuleOptions;
-import dip.world.TurnState;
-import dip.world.World;
-import dip.world.variant.VariantManager;
-import dip.world.variant.data.MapGraphic;
-import dip.world.variant.data.SymbolPack;
-import dip.world.variant.data.Variant;
+import javax.swing.*;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.awt.*;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.net.URL;
 
 /**
  * The Main Map display component.

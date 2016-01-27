@@ -22,11 +22,11 @@
 //
 package dip.world;
 
+import dip.order.Order;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-
-import dip.order.Order;
 
 
 /**
@@ -347,7 +347,7 @@ public class Province implements java.io.Serializable, Comparable {
      */
     public boolean isTouching(Province province) {
         /* old code: prior to createWingCoasts()
-		for(int i=0; i<Coast.ALL_COASTS.length; i++)
+        for(int i=0; i<Coast.ALL_COASTS.length; i++)
 		{
 			Location[] locations = adjacency.getLocations(Coast.ALL_COASTS[i]);
 			for(int locIdx=0; locIdx<locations.length; locIdx++)

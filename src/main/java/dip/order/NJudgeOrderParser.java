@@ -21,25 +21,16 @@
 //
 package dip.order;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import dip.misc.Utils;
 import dip.order.result.DislodgedResult;
 import dip.order.result.OrderResult;
 import dip.order.result.Result;
 import dip.order.result.SubstitutedResult;
-import dip.world.Coast;
-import dip.world.Location;
-import dip.world.Phase;
-import dip.world.Power;
-import dip.world.Province;
-import dip.world.Unit;
+import dip.world.*;
+
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Parses nJudge-format orders into Orders and Results
@@ -97,7 +88,7 @@ public class NJudgeOrderParser {
 
     // TEST harness
     /*
-	public static void main(String args[])
+    public static void main(String args[])
 	throws OrderException
 	{
 		final String variantName = "Chaos";

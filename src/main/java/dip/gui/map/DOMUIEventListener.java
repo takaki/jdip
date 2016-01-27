@@ -22,14 +22,13 @@
 //
 package dip.gui.map;
 
+import dip.world.Location;
 import org.apache.batik.dom.events.DOMKeyEvent;
 import org.apache.batik.util.SVGConstants;
 import org.w3c.dom.events.Event;
 import org.w3c.dom.events.EventListener;
 import org.w3c.dom.events.MouseEvent;
 import org.w3c.dom.svg.SVGElement;
-
-import dip.world.Location;
 
 
 /**
@@ -106,7 +105,7 @@ public class DOMUIEventListener implements EventListener {
             final String type = evt.getType();
 
 			/* NOTE: if we enable this, also register event to DMR2
-			if(type == SVGConstants.SVG_MOUSEMOVE_EVENT_TYPE)
+            if(type == SVGConstants.SVG_MOUSEMOVE_EVENT_TYPE)
 			{
 				handler.mouseMoved(me, location);
 			}

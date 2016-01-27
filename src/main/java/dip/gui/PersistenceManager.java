@@ -22,16 +22,6 @@
 //
 package dip.gui;
 
-import java.awt.Dimension;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.util.Iterator;
-import java.util.LinkedList;
-
-import javax.swing.Box;
-import javax.swing.JOptionPane;
-
 import dip.gui.dialog.ErrorDialog;
 import dip.gui.dialog.newgame.NewGameDialog;
 import dip.gui.dialog.prefs.GeneralPreferencePanel;
@@ -47,6 +37,14 @@ import dip.world.TurnState;
 import dip.world.World;
 import dip.world.variant.VariantManager;
 import dip.world.variant.data.Variant;
+
+import javax.swing.*;
+import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 
 /**

@@ -22,12 +22,11 @@
 //
 package dip.gui.map;
 
-import org.w3c.dom.svg.SVGElement;
-
 import dip.misc.Log;
 import dip.world.Power;
 import dip.world.Province;
 import dip.world.TurnState;
+import org.w3c.dom.svg.SVGElement;
 
 public class DMR2RenderCommandFactory extends RenderCommandFactory {
 

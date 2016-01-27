@@ -22,44 +22,23 @@
 //
 package dip.judge.parser;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
-
 import dip.judge.parser.TurnParser.Turn;
 import dip.misc.Log;
 import dip.misc.Utils;
-import dip.order.Build;
-import dip.order.Disband;
-import dip.order.Move;
-import dip.order.OrderException;
-import dip.order.OrderFactory;
-import dip.order.Orderable;
-import dip.order.Remove;
-import dip.order.ValidationOptions;
+import dip.order.*;
 import dip.order.NJudgeOrderParser.NJudgeOrder;
 import dip.order.result.DislodgedResult;
 import dip.order.result.OrderResult;
 import dip.order.result.Result;
 import dip.order.result.SubstitutedResult;
 import dip.process.Adjustment;
-import dip.world.Location;
-import dip.world.Phase;
-import dip.world.Position;
-import dip.world.Power;
-import dip.world.Province;
-import dip.world.RuleOptions;
-import dip.world.TurnState;
-import dip.world.Unit;
-import dip.world.VictoryConditions;
-import dip.world.World;
+import dip.world.*;
+
+import java.io.IOException;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * Processes an entire game history to create a world.
@@ -321,7 +300,7 @@ final class JudgeImportHistory {
             } else if (phaseType == Phase.PhaseType.RETREAT) {
                 Log.println("JIH:procTurn():RETREAT START");
                     /*
-					 * Set the proper positionPlacement value depending on if the turn being
+                     * Set the proper positionPlacement value depending on if the turn being
 					 * processed is the final turn. Set it back again when done. 
 					 */
                 if (!finalTurn) {

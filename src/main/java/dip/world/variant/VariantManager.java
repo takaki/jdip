@@ -22,26 +22,6 @@
 //
 package dip.world.variant;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import dip.gui.dialog.ErrorDialog;
 import dip.misc.Log;
 import dip.misc.Utils;
@@ -50,6 +30,17 @@ import dip.world.variant.data.SymbolPack;
 import dip.world.variant.data.Variant;
 import dip.world.variant.parser.XMLSymbolParser;
 import dip.world.variant.parser.XMLVariantParser;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.*;
 
 
 /**
@@ -901,7 +892,7 @@ public class VariantManager {
      */
     private static URL getWSResource(URL packURL, URI uri) {
         /*
-			NOTE: this method is used by getResource(URL, URI), which is
+            NOTE: this method is used by getResource(URL, URI), which is
 			chiefly used by VariantManager and associated parsers; a VariantRecord
 			has not yet been created. So we cannot use that; the internal
 			logic here is slightly different.

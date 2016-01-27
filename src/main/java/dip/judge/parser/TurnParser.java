@@ -22,6 +22,9 @@
 //
 package dip.judge.parser;
 
+import dip.misc.Utils;
+import dip.world.Phase;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
@@ -29,9 +32,6 @@ import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-
-import dip.misc.Utils;
-import dip.world.Phase;
 
 /**
  * Parses the Turns of a History file.

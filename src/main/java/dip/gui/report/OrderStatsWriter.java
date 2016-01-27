@@ -22,29 +22,19 @@
 //
 package dip.gui.report;
 
+import dip.gui.ClientFrame;
+import dip.gui.dialog.TextViewer;
+import dip.misc.Utils;
+import dip.order.*;
+import dip.order.result.OrderResult;
+import dip.world.*;
+
+import javax.swing.*;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-
-import javax.swing.JScrollPane;
-
-import dip.gui.ClientFrame;
-import dip.gui.dialog.TextViewer;
-import dip.misc.Utils;
-import dip.order.Convoy;
-import dip.order.Hold;
-import dip.order.Move;
-import dip.order.OrderFormatOptions;
-import dip.order.Orderable;
-import dip.order.Support;
-import dip.order.result.OrderResult;
-import dip.world.Phase;
-import dip.world.Power;
-import dip.world.TurnState;
-import dip.world.Unit;
-import dip.world.World;
 
 /**
  * Order Statistics

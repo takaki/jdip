@@ -22,32 +22,20 @@
 //
 package dip.gui.dialog;
 
-import java.awt.Dimension;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Properties;
-
-import javax.swing.JButton;
-import javax.swing.JFrame;
-
 import dip.gui.ClientFrame;
 import dip.misc.Log;
 import dip.misc.Utils;
 import dip.world.World;
+
+import javax.swing.*;
+import java.awt.*;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.net.UnknownHostException;
+import java.util.*;
+import java.util.List;
 
 /**
  * Various error dialogs, which use HTML templates to display errors.
@@ -101,7 +89,7 @@ public class ErrorDialog extends TextViewer {
     // simple testing
 
 	/*
-	public static void main(String args[])
+    public static void main(String args[])
 	{
 		Exception ex = new NegativeArraySizeException("just a test");
 		java.io.IOException ioe = new java.io.FileNotFoundException("just a test");

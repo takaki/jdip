@@ -23,12 +23,12 @@
 
 package dip.gui;
 
-import java.util.Arrays;
-import java.util.Set;
-
 import dip.world.Phase;
 import dip.world.TurnState;
 import dip.world.World;
+
+import java.util.Arrays;
+import java.util.Set;
 
 /**
  * Manages all (except for select) items in the History menu.

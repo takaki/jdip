@@ -22,10 +22,9 @@
 //
 package dip.misc;
 
+import javax.swing.filechooser.FileFilter;
 import java.io.File;
 import java.io.FilenameFilter;
-
-import javax.swing.filechooser.FileFilter;
 
 /**
  * Simple File Filter class.

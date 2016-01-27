@@ -22,6 +22,8 @@
 //
 package dip.tool;
 
+import dip.misc.Log;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -31,8 +33,6 @@ import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
-
-import dip.misc.Log;
 
 /**
  * Manages Tool plugins.

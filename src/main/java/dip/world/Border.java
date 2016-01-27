@@ -22,13 +22,13 @@
 //
 package dip.world;
 
+import dip.misc.Utils;
+import dip.order.Order;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.StringTokenizer;
-
-import dip.misc.Utils;
-import dip.order.Order;
 
 /**
  * A Border limits movement or support between 2 provinces.
@@ -180,7 +180,7 @@ public class Border implements Serializable {
         this.description = description;
 
 		/*
-		System.out.println("BORDER created:");
+        System.out.println("BORDER created:");
 		System.out.println("    ID: "+id);
 		System.out.println("    from: "+toList(from));
 		System.out.println("    seasons: "+toList(seasons));

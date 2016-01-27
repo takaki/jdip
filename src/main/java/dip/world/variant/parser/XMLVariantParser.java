@@ -22,6 +22,24 @@
 //
 package dip.world.variant.parser;
 
+import dip.misc.LRUCache;
+import dip.misc.Log;
+import dip.misc.Utils;
+import dip.world.Coast;
+import dip.world.Phase;
+import dip.world.Power;
+import dip.world.Unit;
+import dip.world.variant.VariantManager;
+import dip.world.variant.data.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,31 +50,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
-import dip.misc.LRUCache;
-import dip.misc.Log;
-import dip.misc.Utils;
-import dip.world.Coast;
-import dip.world.Phase;
-import dip.world.Power;
-import dip.world.Unit;
-import dip.world.variant.VariantManager;
-import dip.world.variant.data.BorderData;
-import dip.world.variant.data.InitialState;
-import dip.world.variant.data.MapGraphic;
-import dip.world.variant.data.ProvinceData;
-import dip.world.variant.data.SupplyCenter;
-import dip.world.variant.data.Variant;
 
 
 /**
@@ -121,7 +114,7 @@ public class XMLVariantParser implements VariantParser {
 
     /** Create an XMLVariantParser */
     /*
-	public XMLVariantParser(boolean isValidating)
+    public XMLVariantParser(boolean isValidating)
 	throws ParserConfigurationException
 	{
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();

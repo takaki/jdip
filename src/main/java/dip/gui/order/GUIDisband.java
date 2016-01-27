@@ -22,24 +22,19 @@
 //
 package dip.gui.order;
 
-import java.awt.geom.Point2D;
-
-import org.apache.batik.dom.svg.SVGDOMImplementation;
-import org.apache.batik.util.SVGConstants;
-import org.w3c.dom.svg.SVGElement;
-import org.w3c.dom.svg.SVGGElement;
-
 import dip.gui.map.DefaultMapRenderer2;
 import dip.gui.map.MapMetadata;
 import dip.gui.map.SVGUtils;
 import dip.misc.Utils;
 import dip.order.Disband;
 import dip.order.Orderable;
-import dip.world.Location;
-import dip.world.Position;
-import dip.world.Power;
-import dip.world.Province;
-import dip.world.Unit;
+import dip.world.*;
+import org.apache.batik.dom.svg.SVGDOMImplementation;
+import org.apache.batik.util.SVGConstants;
+import org.w3c.dom.svg.SVGElement;
+import org.w3c.dom.svg.SVGGElement;
+
+import java.awt.geom.Point2D;
 
 /**
  * GUIOrder implementation of Disband order.

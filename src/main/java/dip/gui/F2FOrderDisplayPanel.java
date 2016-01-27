@@ -22,28 +22,6 @@
 //
 package dip.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.FlowLayout;
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import javax.swing.SwingUtilities;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
 import cz.autel.dmi.HIGConstraints;
 import cz.autel.dmi.HIGLayout;
 import dip.gui.map.MapMetadata;
@@ -56,6 +34,15 @@ import dip.world.Position;
 import dip.world.Power;
 import dip.world.TurnState;
 
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.*;
+import java.util.List;
+
 
 /**
  * The F2FOrderDisplayPanel: displayer of orders for Face-to-Face (F2F) games.
@@ -64,7 +51,7 @@ import dip.world.TurnState;
  */
 public class F2FOrderDisplayPanel extends OrderDisplayPanel {
     /*
-	
+
 	This version if from the old, unused (16_17) source tree, and is revision 1.3.
 	This fixes several NPEs and other F2F issues.
 	

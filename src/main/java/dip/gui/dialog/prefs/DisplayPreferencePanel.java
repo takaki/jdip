@@ -22,23 +22,6 @@
 
 package dip.gui.dialog.prefs;
 
-import java.awt.Component;
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
-
-import javax.swing.Box;
-import javax.swing.ButtonGroup;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
 import cz.autel.dmi.HIGConstraints;
 import cz.autel.dmi.HIGLayout;
 import dip.gui.ClientFrame;
@@ -48,6 +31,15 @@ import dip.misc.SharedPrefs;
 import dip.misc.Utils;
 import dip.order.OrderFormat;
 import dip.order.OrderFormatOptions;
+
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 /**
  * Display preferences
@@ -132,7 +124,7 @@ public class DisplayPreferencePanel extends PreferencePanel {
 
         add(csPower.getLabel(), c.rcwh(6, 3, 1, 1, "l"));
         /* power names cannot be full/brief (yet); show no radiobuttons
-		add(csPower.getChoice1(), c.rcwh(6,5,1,1,"l"));
+        add(csPower.getChoice1(), c.rcwh(6,5,1,1,"l"));
 		add(csPower.getChoice2(), c.rcwh(6,7,1,1,"l"));
 		*/
         add(new JLabel(Utils.getLocalString(I18N_STYLE)),

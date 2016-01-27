@@ -22,10 +22,10 @@
 //
 package dip.gui.undo;
 
+import dip.order.Orderable;
+
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
-
-import dip.order.Orderable;
 
 
 /**

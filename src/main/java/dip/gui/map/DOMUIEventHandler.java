@@ -22,10 +22,9 @@
 //
 package dip.gui.map;
 
+import dip.world.Location;
 import org.apache.batik.dom.events.DOMKeyEvent;
 import org.w3c.dom.events.MouseEvent;
-
-import dip.world.Location;
 
 /**
  * Handles MapPanel DOM UI Events, such as
@@ -67,7 +66,7 @@ public interface DOMUIEventHandler {
     public void mouseUp(MouseEvent me, Location loc);
 
 	/* Mouse moved 
-	public void mouseMoved(MouseEvent me, Location loc)
+    public void mouseMoved(MouseEvent me, Location loc)
 	*/
 
 

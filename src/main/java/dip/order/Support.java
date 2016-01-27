@@ -27,15 +27,7 @@ import dip.order.result.OrderResult.ResultType;
 import dip.process.Adjudicator;
 import dip.process.OrderState;
 import dip.process.Tristate;
-import dip.world.Border;
-import dip.world.Coast;
-import dip.world.Location;
-import dip.world.Path;
-import dip.world.Position;
-import dip.world.Power;
-import dip.world.RuleOptions;
-import dip.world.TurnState;
-import dip.world.Unit;
+import dip.world.*;
 
 
 /**
@@ -514,7 +506,7 @@ public class Support extends Order {
         // 1) calculate support (to prevent dislodgement)
 
 		/* 
-		 * The baseMoveModifier is identified here. It is used later in the code to determine
+         * The baseMoveModifier is identified here. It is used later in the code to determine
 		 * if support was given over a DPB
 		 * If there is a border baseMoveModifer, it needs to be recompensated here.
 		 * If the modification was negitive, subtract it to add it back.

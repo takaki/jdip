@@ -21,10 +21,10 @@
 //
 package dip.order;
 
+import dip.misc.Utils;
+
 import java.io.Serializable;
 import java.util.Hashtable;
-
-import dip.misc.Utils;
 
 /**
  * Controls how orders are validated.

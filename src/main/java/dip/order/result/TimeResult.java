@@ -22,11 +22,11 @@
 package dip.order.result;
 
 
-import java.util.Date;
-
 import dip.misc.Utils;
 import dip.order.OrderFormatOptions;
 import dip.world.Power;
+
+import java.util.Date;
 
 /**
  * TimeResult<p>

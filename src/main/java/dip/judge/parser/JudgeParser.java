@@ -22,6 +22,10 @@
 //
 package dip.judge.parser;
 
+import dip.misc.Utils;
+import dip.order.OrderFactory;
+import dip.world.Phase;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -30,10 +34,6 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-
-import dip.misc.Utils;
-import dip.order.OrderFactory;
-import dip.world.Phase;
 
 /**
  * First stage of Judge output parsing. Looks for the "::" line, determines

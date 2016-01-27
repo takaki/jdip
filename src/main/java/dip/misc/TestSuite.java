@@ -22,43 +22,21 @@
 //
 package dip.misc;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import dip.order.DefineState;
-import dip.order.Move;
-import dip.order.Order;
-import dip.order.OrderException;
-import dip.order.OrderFactory;
-import dip.order.OrderParser;
+import dip.order.*;
 import dip.order.result.ConvoyPathResult;
 import dip.order.result.OrderResult;
 import dip.order.result.Result;
 import dip.process.StdAdjudicator;
-import dip.world.Location;
-import dip.world.Phase;
-import dip.world.Position;
-import dip.world.Power;
-import dip.world.Province;
-import dip.world.RuleOptions;
-import dip.world.TurnState;
-import dip.world.Unit;
-import dip.world.World;
-import dip.world.WorldFactory;
+import dip.world.*;
 import dip.world.variant.VariantManager;
 import dip.world.variant.data.Variant;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.*;
+import java.util.Map;
 
 
 /**
@@ -1473,7 +1451,7 @@ public final class TestSuite {
     // fast operation in java. If logging is turned off, no string concatenation need be
     // performed.
     /*
-		-perftest speed increased from 550 orders/second to about 700 orders/second. That's
+        -perftest speed increased from 550 orders/second to about 700 orders/second. That's
 		a HUGE speedup (~33%); this is just on the DATC.txt test case set.
 	
 	

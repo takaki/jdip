@@ -21,10 +21,6 @@
 //
 package dip.order;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import dip.misc.Log;
 import dip.misc.Utils;
 import dip.order.result.ConvoyPathResult;
@@ -33,15 +29,11 @@ import dip.order.result.OrderResult.ResultType;
 import dip.process.Adjudicator;
 import dip.process.OrderState;
 import dip.process.Tristate;
-import dip.world.Border;
-import dip.world.Location;
-import dip.world.Path;
-import dip.world.Position;
-import dip.world.Power;
-import dip.world.Province;
-import dip.world.RuleOptions;
-import dip.world.TurnState;
-import dip.world.Unit;
+import dip.world.*;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 
 /**
@@ -53,7 +45,7 @@ import dip.world.Unit;
 public class Move extends Order {
     // il8n constants
     /*
-	private static final String MOVE_VAL_CONVOY_WARNING = "MOVE_VAL_CONVOY_WARNING";
+    private static final String MOVE_VAL_CONVOY_WARNING = "MOVE_VAL_CONVOY_WARNING";
 	private static final String MOVE_VAL_ARMY_CONVOY = "MOVE_VAL_ARMY_CONVOY";
 	*/
     private static final String MOVE_VAL_SRC_EQ_DEST = "MOVE_VAL_SRC_EQ_DEST";

@@ -22,7 +22,17 @@
 //
 package dip.gui;
 
-import java.awt.Toolkit;
+import dip.gui.dialog.ErrorDialog;
+import dip.gui.dialog.prefs.GeneralPreferencePanel;
+import dip.gui.map.MapRenderer2;
+import dip.misc.Utils;
+import dip.tool.Tool;
+import dip.tool.ToolManager;
+import dip.world.Power;
+import dip.world.World;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
@@ -33,25 +43,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-
-import javax.swing.ButtonGroup;
-import javax.swing.Icon;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JSeparator;
-import javax.swing.KeyStroke;
-
-import dip.gui.dialog.ErrorDialog;
-import dip.gui.dialog.prefs.GeneralPreferencePanel;
-import dip.gui.map.MapRenderer2;
-import dip.misc.Utils;
-import dip.tool.Tool;
-import dip.tool.ToolManager;
-import dip.world.Power;
-import dip.world.World;
 
 /**
  * Implements many menu methods, and constructs the menus.

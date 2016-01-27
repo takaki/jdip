@@ -21,19 +21,18 @@
 //
 package dip.judge.net;
 
+import dip.judge.parser.JudgeImport;
+import dip.misc.Utils;
+import dip.order.OrderFactory;
+import dip.world.World;
+
+import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.parser.ParserDelegator;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.URL;
-
-import javax.swing.text.html.HTMLEditorKit;
-import javax.swing.text.html.parser.ParserDelegator;
-
-import dip.judge.parser.JudgeImport;
-import dip.misc.Utils;
-import dip.order.OrderFactory;
-import dip.world.World;
 
 /**
  * @author Mannkind aka Dustin Brewer, Zach DelProposto
@@ -232,7 +231,7 @@ public class FlocImporter implements Runnable {
 
 	
 	/*
-	public String registerGame(String nameOfGame, String judgeName) {
+    public String registerGame(String nameOfGame, String judgeName) {
 		URL u = null;
 		BufferedReader reader = null;
 		try {

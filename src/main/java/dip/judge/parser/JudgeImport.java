@@ -22,33 +22,19 @@
 //
 package dip.judge.parser;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-import java.util.Iterator;
-import java.util.regex.PatternSyntaxException;
-
 import dip.misc.Log;
 import dip.misc.Utils;
 import dip.order.OrderException;
 import dip.order.OrderFactory;
-import dip.world.InvalidWorldException;
-import dip.world.Location;
-import dip.world.Phase;
-import dip.world.Position;
-import dip.world.Power;
-import dip.world.Province;
-import dip.world.RuleOptions;
-import dip.world.TurnState;
-import dip.world.Unit;
-import dip.world.World;
-import dip.world.WorldFactory;
+import dip.world.*;
 import dip.world.metadata.GameMetadata;
 import dip.world.metadata.PlayerMetadata;
 import dip.world.variant.VariantManager;
 import dip.world.variant.data.Variant;
+
+import java.io.*;
+import java.util.Iterator;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * Imports text or reads a file, that is a Judge history file or listing.
