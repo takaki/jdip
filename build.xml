@@ -186,17 +186,17 @@
 		<!-- Copy a resources to another directory -->
         <!-- exclude files ending in ~ (editor backup files) -->
 		<copy todir="${build.dir}/resource/il8n">
-			<fileset dir="/il8n">
+			<fileset dir="${resource.dir}/il8n">
 				<patternset refid="exclude.backup.files"/>
 			</fileset>
 		</copy>
 		<copy todir="${build.dir}/resource/common">
-			<fileset dir="/common">
+			<fileset dir="${resource.dir}/common">
 				<patternset refid="exclude.backup.files"/>
 			</fileset>
 		</copy>
 		<copy todir="${build.dir}/resource/help">
-			<fileset dir="/help">
+			<fileset dir="${resource.dir}/help">
 				<patternset refid="exclude.backup.files"/>
 			</fileset>
 		</copy>
@@ -204,115 +204,115 @@
         <!-- build the variants -->
         <!-- Variant Package: Standard Variants -->
 		<zip  compress="true" destfile="${variant.dir}/stdVariants.zip"
-				basedir="/variants/stdVariants"
+				basedir="${resource.dir}/variants/stdVariants"
 				excludes="*~ *.zip"
 				includes="*.xml *.jpg *.png *.svg *.gif"/>
 
        <!-- Variant Package: 1900 -->
 		<zip  compress="true" destfile="${variant.dir}/1900Variants.zip"
-				basedir="/variants/1900"
+				basedir="${resource.dir}/variants/1900"
 				excludes="*~ *.zip"
 				includes="*.xml *.jpg *.png *.svg *.gif"/>
 
          <!-- Variant Package: SailHo! -->
 		<zip compress="true"   destfile="${variant.dir}/sailhoVariants.zip"
-				basedir="/variants/sailho"
+				basedir="${resource.dir}/variants/sailho"
 				excludes="*~ *.zip"
 				includes="*.xml *.jpg *.png *.svg *.gif"/>
 
         <!-- Variant Package: Pure -->
 		<zip compress="true"   destfile="${variant.dir}/pureVariants.zip"
-				basedir="/variants/pure"
+				basedir="${resource.dir}/variants/pure"
 				excludes="*~ *.zip"
 				includes="*.xml *.jpg *.png *.svg *.gif"/>
         
 		<!-- Variant Package: Hundred -->
 		<zip compress="true"   destfile="${variant.dir}/hundredVariants.zip"
-				basedir="/variants/hundred"
+				basedir="${resource.dir}/variants/hundred"
 				excludes="*~ *.zip"
 				includes="*.xml *.jpg *.png *.svg *.gif"/>
         
 		<!-- Variant Package: Youngstown -->
 		<zip compress="true"   destfile="${variant.dir}/youngstownVariants.zip"
-				basedir="/variants/youngstown"
+				basedir="${resource.dir}/variants/youngstown"
 				excludes="*~ *.zip"
 				includes="*.xml *.jpg *.png *.svg *.gif"/>
 
         <!-- Variant Package: Test -->
 		<zip compress="true"   destfile="${variant.dir}/testVariants.zip"
-				basedir="/variants/test"
+				basedir="${resource.dir}/variants/test"
 				excludes="*~ *.zip"
 				includes="*.xml *.jpg *.png *.svg *.gif"/>
 
  		<!-- Variant Package: Loeb9 -->
 		<zip compress="true"   destfile="${variant.dir}/loeb9Variants.zip"
-				basedir="/variants/loeb9"
+				basedir="${resource.dir}/variants/loeb9"
 				excludes="*~ *.zip"
 				includes="*.xml *.jpg *.png *.svg *.gif"/>
 		
 		<!-- Variant Package: RootZ -->
 		<zip compress="true"   destfile="${variant.dir}/rootzVariants.zip"
-				basedir="/variants/rootz"
+				basedir="${resource.dir}/variants/rootz"
 				excludes="*~ *.zip"
 				includes="*.xml *.jpg *.png *.svg *.gif"/>
 		
 		<!-- Variant Package: Milan -->
 		<zip compress="true"   destfile="${variant.dir}/milanVariants.zip"
-				basedir="/variants/milan"
+				basedir="${resource.dir}/variants/milan"
 				excludes="*~ *.zip"
 				includes="*.xml *.jpg *.png *.svg *.gif"/>
 				
 		<!-- Variant Package: Chaos (nJudge compatible) -->
 		<zip compress="true"   destfile="${variant.dir}/ChaosNJudgeVariant.zip"
-				basedir="/variants/chaos"
+				basedir="${resource.dir}/variants/chaos"
 				excludes="*~ *.zip"
 				includes="*.xml *.jpg *.png *.svg *.gif"/>
 				
 		<!-- Variant Package: Chaos (DPJudge compatible) -->
 		<zip compress="true"   destfile="${variant.dir}/ChaosDPJudgeVariant.zip"
-				basedir="/variants/chaos_dp"
+				basedir="${resource.dir}/variants/chaos_dp"
 				excludes="*~ *.zip"
 				includes="*.xml *.jpg *.png *.svg *.gif"/>
 				
 		<!-- Variant Package: Imperium -->
 		<zip compress="true"   destfile="${variant.dir}/ImperiumVariants.zip"
-				basedir="/variants/imperium"
+				basedir="${resource.dir}/variants/imperium"
 				excludes="*~ *.zip"
 				includes="*.xml *.jpg *.png *.svg *.gif"/>
 				
 		<!-- Variant Package: Octarine -->
 		<zip compress="true"   destfile="${variant.dir}/octarineVariants.zip"
-				basedir="/variants/octarine"
+				basedir="${resource.dir}/variants/octarine"
 				excludes="*~ *.zip"
 				includes="*.xml *.jpg *.png *.svg *.gif"/>
 				
 		<!-- Variant Package: Asia -->
 		<zip compress="true"   destfile="${variant.dir}/AsiaVariants.zip"
-				basedir="/variants/asia"
+				basedir="${resource.dir}/variants/asia"
 				excludes="*~ *.zip"
 				includes="*.xml *.jpg *.png *.svg *.gif"/>
 				
 		<!-- Variant Package: Modern -->
 		<zip compress="true"   destfile="${variant.dir}/modernVariants.zip"
-				basedir="/variants/modern"
+				basedir="${resource.dir}/variants/modern"
 				excludes="*~ *.zip"
 				includes="*.xml *.jpg *.png *.svg *.gif"/>
 				
 		<!-- Variant Package: Ancient Med -->
 		<zip compress="true"   destfile="${variant.dir}/ancmedVariant.zip"
-				basedir="/variants/ancient_med"
+				basedir="${resource.dir}/variants/ancient_med"
 				excludes="*~ *.zip"
 				includes="*.xml *.jpg *.png *.svg *.gif"/>
 				
 		<!-- Variant Package: Renaissance -->
 		<zip compress="true"   destfile="${variant.dir}/renaissanceVariant.zip"
-				basedir="/variants/renaissance"
+				basedir="${resource.dir}/variants/renaissance"
 				excludes="*~ *.zip"
 				includes="*.xml *.jpg *.png *.svg *.gif"/>
 				
 		<!-- Variant Package: Aberration V -->
 		<zip compress="true"   destfile="${variant.dir}/aberrationVariant.zip"
-				basedir="/variants/aberration"
+				basedir="${resource.dir}/variants/aberration"
 				excludes="*~ *.zip"
 				includes="*.xml *.jpg *.png *.svg *.gif"/>
 		
@@ -320,31 +320,31 @@
 		
 		<!-- SymbolPack: simple -->
 		<zip compress="true"   destfile="${variant.dir}/simpleSymbols.zip"
-				basedir="/variants/symbols/simple"
+				basedir="${resource.dir}/variants/symbols/simple"
 				excludes="*~ *.zip"
 				includes="*.xml *.jpg *.png *.svg *.gif"/>
        
 		<!-- SymbolPack: period -->
 		<zip compress="true"   destfile="${variant.dir}/periodSymbols.zip"
-				basedir="/variants/symbols/period"
+				basedir="${resource.dir}/variants/symbols/period"
 				excludes="*~ *.zip"
 				includes="*.xml *.jpg *.png *.svg *.gif"/>
 		
 		<!-- SymbolPack: modern -->
 		<zip compress="true"   destfile="${variant.dir}/modernSymbols.zip"
-				basedir="/variants/symbols/modern"
+				basedir="${resource.dir}/variants/symbols/modern"
 				excludes="*~ *.zip"
 				includes="*.xml *.jpg *.png *.svg *.gif"/>
 		
 		<!-- SymbolPack: imperium -->
 		<zip compress="true"   destfile="${variant.dir}/imperiumSymbols.zip"
-				basedir="/variants/symbols/imperium"
+				basedir="${resource.dir}/variants/symbols/imperium"
 				excludes="*~ *.zip"
 				includes="*.xml *.jpg *.png *.svg *.gif"/>
 		
 		<!-- SymbolPack: ancmed -->
 		<zip compress="true"   destfile="${variant.dir}/ancmedSymbols.zip"
-				basedir="/variants/symbols/ancient_med"
+				basedir="${resource.dir}/variants/symbols/ancient_med"
 				excludes="*~ *.zip"
 				includes="*.xml *.jpg *.png *.svg *.gif"/>
 				
