@@ -3,8 +3,22 @@ package dip.world
 import spock.lang.Specification
 
 class PowerTest extends Specification {
-    def names = ["000", "111"] as String[]
-    def power = new Power(names, "adj", true)
+    def names0 = ["000", "111"] as String[]
+    def power = new Power(names0, "adj", true)
+    static String[] n0 = ["000", "111"]
+
+    def "constructor check arguments"() {
+        when:
+        new Power(names, adjective, isActive)
+        then:
+        thrown(IllegalArgumentException)
+        where:
+        names          | adjective | isActive
+        null           | "adj"     | true
+        n0             | null      | true
+        n0             | ""        | true
+        [] as String[] | "a"       | true
+    }
 
     def "test methods"() {
         expect:
