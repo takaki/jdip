@@ -24,16 +24,15 @@ package dip.world.variant.data;
 
 import dip.world.Phase;
 import dip.world.Power;
+import javafx.util.Pair;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A Variant.
  */
-public class Variant implements Cloneable, Comparable {
+public class Variant implements Cloneable, Comparable<Variant> {
     // the arrays in general should not be null. They are defined as null initially
     // to make it more apparent should a field not be initialized properly.
     //
@@ -59,8 +58,7 @@ public class Variant implements Cloneable, Comparable {
      * Class of Rule Option name/value pairs
      */
     public static class NameValuePair {
-        private final String name;
-        private final String value;
+        private final Pair<String, String> pair;
 
         /**
          * Create a NameValuePair. Neither name or value may be null.
@@ -69,22 +67,21 @@ public class Variant implements Cloneable, Comparable {
             if (name == null || value == null) {
                 throw new IllegalArgumentException();
             }
-            this.name = name;
-            this.value = value;
+            pair = new Pair<>(name, value);
         }// NameValuePair()
 
         /**
          * Return the Name
          */
         public String getName() {
-            return name;
+            return pair.getKey();
         }
 
         /**
          * Return the Value
          */
         public String getValue() {
-            return value;
+            return pair.getValue();
         }
     }// nested class NameValuePair
 
@@ -362,8 +359,8 @@ public class Variant implements Cloneable, Comparable {
      * Compares based on Name
      */
     @Override
-    public int compareTo(final Object o) {
-        return getName().compareTo(((Variant) o).getName());
+    public int compareTo(final Variant o) {
+        return name.compareTo(o.name);
     }// compareTo()
 
 
@@ -372,11 +369,9 @@ public class Variant implements Cloneable, Comparable {
      */
     public MapGraphic getMapGrapic(final String mgName) {
         if (mapGraphics != null) {
-            for (int i = 0; i < mapGraphics.size(); i++) {
-                if (mapGraphics.get(i).getName().equalsIgnoreCase(mgName)) {
-                    return mapGraphics.get(i);
-                }
-            }
+            return mapGraphics.stream()
+                    .filter(mapGraphic -> mapGraphic.getName()
+                            .equalsIgnoreCase(mgName)).findFirst().orElse(null);
         }
         return null;
     }// getVariant()
@@ -389,14 +384,8 @@ public class Variant implements Cloneable, Comparable {
         MapGraphic mg = null;
 
         if (mapGraphics != null && mapGraphics.size() > 0) {
-            mg = mapGraphics.get(0);
-
-            for (int i = 0; i < mapGraphics.size(); i++) {
-                if (mapGraphics.get(i).isDefault()) {
-                    mg = mapGraphics.get(i);
-                    break;
-                }
-            }
+            mg = mapGraphics.stream().filter(MapGraphic::isDefault).findFirst()
+                    .orElse(mapGraphics.get(0));
         }
 
         return mg;
@@ -422,39 +411,27 @@ public class Variant implements Cloneable, Comparable {
      * 8 arguments are given in total.
      */
     public Object[] getHTMLSummaryArguments() {
-        final Object[] args = new Object[8];
-        args[0] = getName();
-        args[1] = getDescription();
-        args[2] = String.valueOf(getNumSCForVictory());
-        if (getStartingPhase() == null) {
-            args[3] = "{bad phase}";
-            args[4] = "{bad phase}";
-            args[5] = "{bad phase}";
+        final Collection<Object> args = new ArrayList<>(8);
+        args.add(name);
+        args.add(description);
+        args.add(String.valueOf(vcNumSCForVictory));
+        if (phase == null) {
+            args.add("{bad phase}");
+            args.add("{bad phase}");
+            args.add("{bad phase}");
         } else {
-            args[3] = getStartingPhase().getSeasonType();
-            args[4] = getStartingPhase().getYearType();
-            args[5] = getStartingPhase().getPhaseType();
+            args.add(phase.getSeasonType());
+            args.add(phase.getYearType());
+            args.add(phase.getPhaseType());
         }
-
         // create list of powers
-        final StringBuffer sb = new StringBuffer(512);
-        for (int i = 0; i < powers.size(); i++) {
-            if (powers.get(i).isActive()) {
-                sb.append(powers.get(i).getName());
-            } else {
-                sb.append('(');
-                sb.append(powers.get(i).getName());
-                sb.append(')');
-            }
+        args.add(powers.stream()
+                .map(power -> power.isActive() ? power.getName() : String
+                        .join("", "(", power.getName(), ")"))
+                .collect(Collectors.joining(", ")));
+        args.add(String.valueOf(powers.size()));
 
-            if (i < powers.size() - 1) {
-                sb.append(", ");
-            }
-        }
-        args[6] = sb.toString();
-        args[7] = String.valueOf(powers.size());
-
-        return args;
+        return args.toArray(new Object[args.size()]);
     }// getHTMLSummaryArguments()
 
 
@@ -476,12 +453,10 @@ public class Variant implements Cloneable, Comparable {
 
         // powers
         if (powers != null) {
-            variant.powers = new ArrayList<>();
-            for (int i = 0; i < powers.size(); i++) {
-                final Power thisPower = powers.get(i);
-                variant.powers.add(new Power(thisPower.getNames(),
-                        thisPower.getAdjective(), thisPower.isActive()));
-            }
+            variant.powers = powers.stream()
+                    .map(thisPower -> new Power(thisPower.getNames(),
+                            thisPower.getAdjective(), thisPower.isActive()))
+                    .collect(Collectors.toList());
         }
 
         return variant;
@@ -490,47 +465,25 @@ public class Variant implements Cloneable, Comparable {
     /**
      * For debugging only!
      */
+    @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer(256);
-        sb.append(getClass().getName());
-        sb.append('[');
-        sb.append("name=");
-        sb.append(name);
-        sb.append(",isDefault=");
-        sb.append(isDefault);
-        sb.append("powers=");
-        for (final Power power : powers) {
-            sb.append(power);
-            sb.append(',');
-        }
-        sb.append(",phase=");
-        sb.append(phase);
-        sb.append(",istate=");
-        for (final InitialState anIstate : istate) {
-            System.out.println(anIstate);
-        }
-        sb.append(",supplyCenters=");
-        for (final SupplyCenter supplyCenter : supplyCenters) {
-            System.out.println(supplyCenter);
-        }
-        sb.append(",provinceData=");
-        for (final ProvinceData aProvinceData : provinceData) {
-            System.out.println(aProvinceData);
-        }
-        sb.append("mapGraphics=");
-        for (final MapGraphic mapGraphic : mapGraphics) {
-            System.out.println(mapGraphic);
-        }
-        sb.append(",vcNumSCForVictory=");
-        sb.append(vcNumSCForVictory);
-        sb.append(",vcMaxGameTimeYears=");
-        sb.append(vcMaxGameTimeYears);
-        sb.append(",vcMaxYearsNoSCChange=");
-        sb.append(vcMaxYearsNoSCChange);
-        sb.append(",version=");
-        sb.append(version);
-        sb.append(']');
-        return sb.toString();
+        istate.stream().forEach(System.out::println);
+        supplyCenters.stream().forEach(System.out::println);
+        provinceData.stream().forEach(System.out::println);
+        mapGraphics.stream().forEach(System.out::println);
+        return String
+                .join("", getClass().getName(), "[", "name=", name.toString(),
+                        ",isDefault=", Boolean.toString(isDefault), "powers=",
+                        powers.stream().map(power -> power.toString())
+                                .collect(Collectors.joining(",")), ",phase=",
+                        phase.toString(), ",istate=", ",supplyCenters=",
+                        ",provinceData=", "mapGraphics=", ",vcNumSCForVictory=",
+                        Integer.toString(vcNumSCForVictory),
+                        ",vcMaxGameTimeYears=",
+                        Integer.toString(vcMaxGameTimeYears),
+                        ",vcMaxYearsNoSCChange=",
+                        Integer.toString(vcMaxYearsNoSCChange), ",version=",
+                        Float.toString(version), "]");
     }// toString()
 }// class Variant
 

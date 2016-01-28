@@ -22,6 +22,8 @@
 //
 package dip.world.variant.data;
 
+import javafx.util.Pair;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -173,13 +175,13 @@ public class SymbolPack implements Comparable<SymbolPack> {
      */
     @Override
     public int compareTo(final SymbolPack o) {
-        return getName().compareTo(o.getName());
+        return name.compareTo(o.name);
     }// compareTo()
 
     /**
      * Make a URI from a String
      */
-    private URI makeURI(final String uri) {
+    private static URI makeURI(final String uri) {
         try {
             return new URI(uri);
         } catch (final URISyntaxException ignored) {
@@ -192,8 +194,7 @@ public class SymbolPack implements Comparable<SymbolPack> {
      * SymbolPack CSS data styles.
      */
     public static class CSSStyle {
-        private final String name;
-        private final String style;
+        private final Pair<String, String> pair;
 
         /**
          * Create a CSS style
@@ -202,23 +203,21 @@ public class SymbolPack implements Comparable<SymbolPack> {
             if (name == null || style == null) {
                 throw new IllegalArgumentException();
             }
-
-            this.name = name;
-            this.style = style;
+            pair = new Pair<>(name, style);
         }// CSSStyle()
 
         /**
          * Get the CSS Style name. This will have the '.' in front of it.
          */
         public String getName() {
-            return name;
+            return pair.getKey();
         }
 
         /**
          * Get the CSS Style value.
          */
         public String getStyle() {
-            return style;
+            return pair.getValue();
         }
     }// nested class CSSStyle
 
