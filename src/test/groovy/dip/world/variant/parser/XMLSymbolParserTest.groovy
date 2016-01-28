@@ -18,14 +18,19 @@
 
 package dip.world.variant.parser
 
+import dip.world.variant.VariantManager
 import spock.lang.Specification
 
 import javax.xml.parsers.DocumentBuilderFactory
+import java.nio.file.Paths
 
 class XMLSymbolParserTest extends Specification {
     def instance = new XMLSymbolParser(DocumentBuilderFactory.newInstance())
 
     def "parse"() {
+        setup:
+        VariantManager.init([Paths.get(System.getProperty("user.dir"), "src/test/resources/variants").
+                                     toFile()] as File[], false) // TODO: fix
         def pluginUrl = getClass().getResource("/variants/simpleSymbols.zip")
         URLClassLoader urlCL = new URLClassLoader(pluginUrl);
         URL variantXMLURL = urlCL.findResource("symbols.xml")
@@ -35,9 +40,9 @@ class XMLSymbolParserTest extends Specification {
 
         when:
         instance.parse(is, pluginUrl)
+        def symbolpack = instance.getSymbolPack()
         then:
-        def ex = thrown(IllegalArgumentException)
-        ex.getMessage() == "not initialized"
+        symbolpack.getName() == "Simple"
     }
 
 }

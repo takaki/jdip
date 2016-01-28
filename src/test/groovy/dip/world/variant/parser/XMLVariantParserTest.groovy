@@ -18,14 +18,19 @@
 
 package dip.world.variant.parser
 
+import dip.world.variant.VariantManager
 import spock.lang.Specification
 
 import javax.xml.parsers.DocumentBuilderFactory
+import java.nio.file.Paths
 
 class XMLVariantParserTest extends Specification {
     def instance = new XMLVariantParser(DocumentBuilderFactory.newInstance())
 
     def "parse"() {
+        setup:
+        VariantManager.init([Paths.get(System.getProperty("user.dir"), "src/test/resources/variants").
+                                     toFile()] as File[], false) // TODO: fix
         def pluginUrl = getClass().getResource("/variants/testVariants.zip")
         URLClassLoader urlCL = new URLClassLoader(pluginUrl);
         URL variantXMLURL = urlCL.findResource("variants.xml")
@@ -35,8 +40,8 @@ class XMLVariantParserTest extends Specification {
 
         when:
         instance.parse(is, pluginUrl)
+        def variants = instance.getVariants()
         then:
-        def ex = thrown(IllegalArgumentException)
-        ex.getMessage() == "not initialized"
+        variants.size() == 9
     }
 }
