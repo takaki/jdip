@@ -73,7 +73,7 @@ public class TestParser {
     ValidationOptions valOpts = null;    // validation options
 
     // constants
-    private static final String VARIANT_DIR = "resource/variants";
+    private static final String VARIANT_DIR = "variants";
 
     private static final String KEY_VARIANT = "variant";
     private static final String KEY_SETUP = "setup";

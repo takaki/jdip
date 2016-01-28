@@ -177,7 +177,7 @@ public final class TestSuite {
 
 
     private static float parseTime = -1;
-    private static final String VARIANT_DIR = "resource/variants";
+    private static final String VARIANT_DIR = "variants";
 
     private Map keyMap = null;
 

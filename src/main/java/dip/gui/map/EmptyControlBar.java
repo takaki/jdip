@@ -33,7 +33,7 @@ import java.awt.event.ActionEvent;
  */
 public class EmptyControlBar extends ControlBar {
     // same icon as used by 'best fit' in ViewControlBar
-    private static final String ICON_ZOOM_FIT = "resource/common/icons/24x24/Refresh24.gif";
+    private static final String ICON_ZOOM_FIT = "common/icons/24x24/Refresh24.gif";
 
     /**
      * Create an EmptyControlBar

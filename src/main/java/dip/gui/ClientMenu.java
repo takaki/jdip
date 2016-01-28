@@ -50,7 +50,7 @@ import java.util.HashMap;
  * This is fully internationlizable (il8n) via the il8n.properties file
  */
 public class ClientMenu {
-    private static final String BLANK_ICON = "resource/common/icons/16x16/blank.gif";
+    private static final String BLANK_ICON = "common/icons/16x16/blank.gif";
 
     // MENU CONSTANTS
     //

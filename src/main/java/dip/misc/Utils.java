@@ -70,14 +70,14 @@ public class Utils {
     public static final String UTILS_RES_ERR_DLG_TITLE = "UTILS_RES_ERR_DLG_TITLE";
     public static final String UTILS_RES_ERR_DLG_TEXT = "UTILS_RES_ERR_DLG_TEXT";
 
-    public static final String FRAME_ICON = "resource/common/icons/frame-corner.png";
+    public static final String FRAME_ICON = "common/icons/frame-corner.png";
 
     // private constants
     private static final int TEXT_INSETS = 5;
     private static final String HEX[] = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"};
     private static final String RESOURCE_BASE_DIR = "resource/";
-    private static final String BASE_RESOURCE_FILE = "resource/il8n/i18ntext";
-    private static final String COMMON_RESOURCE_FILE = "resource/common/common";
+    private static final String BASE_RESOURCE_FILE = "il8n/i18ntext";
+    private static final String COMMON_RESOURCE_FILE = "common/common";
     private static final char[] EMAIL_ALLOWED = {'@', '.', '-', '_', '+', '!'};
     private static final char[] URL_ALLOWED = {' ', ';', '/', '?', ':', '@', '&', '=', '+', '$', ',', '-', '_', '.', '!', '~', '*', '\'', '|', '%', '#'};
 

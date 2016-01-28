@@ -167,7 +167,7 @@ public class MapPanel extends JPanel {
         // determine if the platform supports custom cursors.
         if (!d.equals(new Dimension(0, 0)) && (colors != 0)) {
             ImageIcon ii = Utils
-                    .getImageIcon("resource/common/cursors/nodrop.gif");
+                    .getImageIcon("common/cursors/nodrop.gif");
             if (ii == null) {
                 // error loading cursor! just use default cursor.
                 // this may not be the best cursor to use.
@@ -179,7 +179,7 @@ public class MapPanel extends JPanel {
 
             // Drag cursors
             ii = Utils.getImageIcon(
-                    "resource/common/cursors/drag_army" + (colors == 2 ? "_2" : "") + ".gif");
+                    "common/cursors/drag_army" + (colors == 2 ? "_2" : "") + ".gif");
             if (ii == null) {
                 // error loading cursor! just use default cursor.
                 // this may not be the best cursor to use.
@@ -190,7 +190,7 @@ public class MapPanel extends JPanel {
             }
 
             ii = Utils.getImageIcon(
-                    "resource/common/cursors/drag_fleet" + (colors == 2 ? "_2" : "") + ".gif");
+                    "common/cursors/drag_fleet" + (colors == 2 ? "_2" : "") + ".gif");
             if (ii == null) {
                 // error loading cursor! just use default cursor.
                 CURSOR_DRAG_FLEET = DEFAULT_CURSOR;
@@ -200,7 +200,7 @@ public class MapPanel extends JPanel {
             }
 
             ii = Utils.getImageIcon(
-                    "resource/common/cursors/drag_wing" + (colors == 2 ? "_2" : "") + ".gif");
+                    "common/cursors/drag_wing" + (colors == 2 ? "_2" : "") + ".gif");
             if (ii == null) {
                 // error loading cursor! just use default cursor.
                 CURSOR_DRAG_WING = DEFAULT_CURSOR;
@@ -210,7 +210,7 @@ public class MapPanel extends JPanel {
             }
 
             ii = Utils.getImageIcon(
-                    "resource/common/cursors/drag_army_no" + (colors == 2 ? "_2" : "") + ".gif");
+                    "common/cursors/drag_army_no" + (colors == 2 ? "_2" : "") + ".gif");
             if (ii == null) {
                 // error loading cursor! just use default cursor.
                 CURSOR_DRAG_ARMY_NO = DEFAULT_CURSOR;
@@ -220,7 +220,7 @@ public class MapPanel extends JPanel {
             }
 
             ii = Utils.getImageIcon(
-                    "resource/common/cursors/drag_fleet_no" + (colors == 2 ? "_2" : "") + ".gif");
+                    "common/cursors/drag_fleet_no" + (colors == 2 ? "_2" : "") + ".gif");
             if (ii == null) {
                 // error loading cursor! just use default cursor.
                 CURSOR_DRAG_FLEET_NO = DEFAULT_CURSOR;
@@ -230,7 +230,7 @@ public class MapPanel extends JPanel {
             }
 
             ii = Utils.getImageIcon(
-                    "resource/common/cursors/drag_wing_no" + (colors == 2 ? "_2" : "") + ".gif");
+                    "common/cursors/drag_wing_no" + (colors == 2 ? "_2" : "") + ".gif");
             if (ii == null) {
                 // error loading cursor! just use default cursor.
                 CURSOR_DRAG_WING_NO = DEFAULT_CURSOR;

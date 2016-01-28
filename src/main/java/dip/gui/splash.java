@@ -33,7 +33,7 @@ import java.lang.reflect.Method;
  * A very fast statup Splash screen, using AWT.
  */
 public final class splash {
-    private static final String SPLASH_GRAPHIC = "resource/common/splash/splash.jpg";
+    private static final String SPLASH_GRAPHIC = "common/splash/splash.jpg";
     private static splashRunner sprunner = null;
 
 
