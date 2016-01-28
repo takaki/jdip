@@ -24,6 +24,7 @@ package dip.world.variant.data;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.function.Function;
 
 /**
 
@@ -44,8 +45,9 @@ public class MapGraphic {
      * If the preferred Symbol Pack Name (prefSPName) is an empty string, it will
      * be converted to a null String.
      */
-    public MapGraphic(String uri, boolean isDefault, String name,
-                      String description, String thumbURI, String prefSPName) {
+    public MapGraphic(final String uri, final boolean isDefault,
+                      final String name, final String description,
+                      final String thumbURI, final String prefSPName) {
         if (name == null) {
             throw new IllegalArgumentException();
         }
@@ -53,24 +55,20 @@ public class MapGraphic {
         this.name = name;
         this.isDefault = isDefault;
         desc = description;
-        this.prefSPName = "".equals(prefSPName) ? null : prefSPName;
+        this.prefSPName = prefSPName != null && prefSPName
+                .isEmpty() ? null : prefSPName;
 
         // set URI
-        URI tmpURI = null;
-        try {
-            tmpURI = new URI(uri);
-        } catch (URISyntaxException e) {
-            tmpURI = null;
-        }
-        this.uri = tmpURI;
+        Function<String, URI> setURI = u -> {
+            try {
+                return new URI(u);
+            } catch (final URISyntaxException ignored) {
+                return null;
+            }
+        };
 
-        tmpURI = null;
-        try {
-            tmpURI = new URI(thumbURI);
-        } catch (URISyntaxException e) {
-            tmpURI = null;
-        }
-        this.thumbURI = tmpURI;
+        this.uri = setURI.apply(uri);
+        this.thumbURI = setURI.apply(thumbURI);
     }// MapGraphic()
 
     /**
@@ -118,22 +116,13 @@ public class MapGraphic {
     /**
      * For debugging only!
      */
+    @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer(256);
-        sb.append(getClass().getName());
-        sb.append('[');
-        sb.append("uri=");
-        sb.append(uri);
-        sb.append(",isDefault=");
-        sb.append(isDefault);
-        sb.append(",name=");
-        sb.append(name);
-        sb.append(",desc=");
-        sb.append(desc);
-        sb.append(",thumbURI=");
-        sb.append(thumbURI);
-        sb.append(']');
-        return sb.toString();
+        return String
+                .join("", getClass().getName(), "[", "uri=", uri.toString(),
+                        ",isDefault=", Boolean.toString(isDefault), ",name=",
+                        name, ",desc=", desc, ",thumbURI=", thumbURI.toString(),
+                        "]");
     }// toString()
 }// nested class MapGraphic
 

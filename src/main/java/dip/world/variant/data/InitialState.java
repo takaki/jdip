@@ -94,20 +94,11 @@ public class InitialState {
     /**
      * For debugging only!
      */
+    @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer(256);
-        sb.append(getClass().getName());
-        sb.append('[');
-        sb.append("provinceName=");
-        sb.append(provinceName);
-        sb.append(",power=");
-        sb.append(power);
-        sb.append(",unit=");
-        sb.append(unit);
-        sb.append(",coast=");
-        sb.append(coast);
-        sb.append(']');
-        return sb.toString();
+        return String.join("", getClass().getName(), "[", "provinceName=",
+                provinceName, ",power=", power, ",unit=", unit.toString(),
+                ",coast=", coast.toString(), "]");
     }// toString()
 }// nested class InitialState
 

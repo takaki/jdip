@@ -24,19 +24,22 @@ package dip.world.variant.data;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * A SymbolPack
  */
-public class SymbolPack implements Comparable {
+public class SymbolPack implements Comparable<SymbolPack> {
     private String name;
     private float version;
     private String description = "";
     private URI thumbURI;
     private URI svgURI;
-    private Symbol[] symbols;
-    private CSSStyle[] cssStyles = new CSSStyle[0];
+    private List<Symbol> symbols;
+    private List<CSSStyle> cssStyles = Collections.emptyList();
 
     /**
      * The name of the SymbolPack.
@@ -63,21 +66,21 @@ public class SymbolPack implements Comparable {
     /**
      * Set the SymbolPack name.
      */
-    public void setName(String value) {
+    public void setName(final String value) {
         name = value;
     }
 
     /**
      * Set the SymbolPack of this variant
      */
-    public void setVersion(float value) {
+    public void setVersion(final float value) {
         version = value;
     }
 
     /**
      * Set the SymbolPack description
      */
-    public void setDescription(String value) {
+    public void setDescription(final String value) {
         description = value;
     }
 
@@ -99,14 +102,14 @@ public class SymbolPack implements Comparable {
     /**
      * Set the URI for the thumbnail image
      */
-    public void setThumbnailURI(String value) {
+    public void setThumbnailURI(final String value) {
         thumbURI = makeURI(value);
     }
 
     /**
      * Set the URI for the Symbol SVG data
      */
-    public void setSVGURI(String value) {
+    public void setSVGURI(final String value) {
         svgURI = makeURI(value);
     }
 
@@ -115,76 +118,71 @@ public class SymbolPack implements Comparable {
      * Get the Symbols
      */
     public Symbol[] getSymbols() {
-        return symbols;
+        return symbols.toArray(new Symbol[symbols.size()]);
     }
 
     /**
      * Get the CSS Style data (if any)
      */
     public CSSStyle[] getCSSStyles() {
-        return cssStyles;
+        return cssStyles.toArray(new CSSStyle[cssStyles.size()]);
     }
 
     /**
      * Do we have any CSS data?
      */
     public boolean hasCSSStyles() {
-        return cssStyles.length > 0;
+        return cssStyles.size() > 0;
     }
 
     /**
      * Set the CSS Style data
      */
-    public void setCSSStyles(CSSStyle[] styles) {
+    public void setCSSStyles(final CSSStyle[] styles) {
         if (styles == null) {
             throw new IllegalArgumentException();
         }
 
-        cssStyles = styles;
+        cssStyles = Arrays.asList(styles);
     }// setCSSStyles()
 
     /**
      * Set the Symbols
      */
-    public void setSymbols(Symbol[] symbols) {
-        this.symbols = symbols;
+    public void setSymbols(final Symbol[] symbols) {
+        this.symbols = Arrays.asList(symbols);
     }
 
     /**
      * Set the Symbols
      */
-    public void setSymbols(List list) {
-        symbols = (Symbol[]) list.toArray(new Symbol[list.size()]);
+    public void setSymbols(final List list) {
+        symbols = new ArrayList<>(list);
     }
 
     /**
      * Find the Symbol with the given Name (case sensitive); returns null if name not found.
      */
-    public Symbol getSymbol(String name) {
-        for (int i = 0; i < symbols.length; i++) {
-            if (symbols[i].getName().equals(name)) {
-                return symbols[i];
-            }
-        }
-
-        return null;
+    public Symbol getSymbol(final String name) {
+        return symbols.stream().filter(symbol -> symbol.getName().equals(name))
+                .findFirst().orElse(null);
     }// getSymbol()
 
     /**
      * Comparison, based on Name. Only compares to other SymbolPack objects.
      */
     @Override
-    public int compareTo(Object o) {
-        return getName().compareTo(((SymbolPack) o).getName());
+    public int compareTo(final SymbolPack o) {
+        return getName().compareTo(o.getName());
     }// compareTo()
 
     /**
      * Make a URI from a String
      */
-    private URI makeURI(String uri) {
+    private URI makeURI(final String uri) {
         try {
             return new URI(uri);
-        } catch (URISyntaxException e) {
+        } catch (final URISyntaxException ignored) {
             return null;
         }
     }// makeURI()
@@ -200,7 +198,7 @@ public class SymbolPack implements Comparable {
         /**
          * Create a CSS style
          */
-        public CSSStyle(String name, String style) {
+        public CSSStyle(final String name, final String style) {
             if (name == null || style == null) {
                 throw new IllegalArgumentException();
             }

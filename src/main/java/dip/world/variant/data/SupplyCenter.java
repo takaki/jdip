@@ -43,7 +43,7 @@ public class SupplyCenter {
     /**
      * Sets the name of the home supply center.
      */
-    public void setHomePowerName(String value) {
+    public void setHomePowerName(final String value) {
         powerName = value;
     }
 
@@ -58,7 +58,7 @@ public class SupplyCenter {
     /**
      * Set the province name of this supply center.
      */
-    public void setProvinceName(String value) {
+    public void setProvinceName(final String value) {
         provinceName = value;
     }
 
@@ -75,7 +75,7 @@ public class SupplyCenter {
      * <p>
      * "none" is acceptable, but "any" is not.
      */
-    public void setOwnerName(String value) {
+    public void setOwnerName(final String value) {
         if ("any".equalsIgnoreCase(value)) {
             throw new IllegalArgumentException();
         }
@@ -86,18 +86,11 @@ public class SupplyCenter {
     /**
      * For debugging only!
      */
+    @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer(256);
-        sb.append(getClass().getName());
-        sb.append('[');
-        sb.append("provinceName=");
-        sb.append(provinceName);
-        sb.append(",powerName=");
-        sb.append(powerName);
-        sb.append(",ownerName=");
-        sb.append(ownerName);
-        sb.append(']');
-        return sb.toString();
+        return String.join("", getClass().getName(), "[", "provinceName=",
+                provinceName, ",powerName=", powerName, ",ownerName=",
+                ownerName, "]");
     }// toString()
 }// nested class SupplyCenter
 

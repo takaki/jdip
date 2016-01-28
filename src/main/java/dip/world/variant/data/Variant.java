@@ -25,6 +25,9 @@ package dip.world.variant.data;
 import dip.world.Phase;
 import dip.world.Power;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -37,20 +40,20 @@ public class Variant implements Cloneable, Comparable {
     private String name;
     private boolean isDefault;
     private String description;
-    private Power[] powers;
+    private List<Power> powers;
     private Phase phase;
-    private InitialState[] istate;
-    private SupplyCenter[] supplyCenters;
-    private ProvinceData[] provinceData;
+    private List<InitialState> istate;
+    private List<SupplyCenter> supplyCenters;
+    private List<ProvinceData> provinceData;
     private int vcNumSCForVictory;
     private int vcMaxYearsNoSCChange;
     private int vcMaxGameTimeYears;
-    private MapGraphic[] mapGraphics;
+    private List<MapGraphic> mapGraphics;
     private float version;
-    private NameValuePair[] roNVPs;
-    private BorderData[] borderData;
+    private List<NameValuePair> roNVPs;
+    private List<BorderData> borderData;
     private boolean allowBCYears;
-    private String[] aliases = new String[0];
+    private List<String> aliases = Collections.emptyList();
 
     /**
      * Class of Rule Option name/value pairs
@@ -62,7 +65,7 @@ public class Variant implements Cloneable, Comparable {
         /**
          * Create a NameValuePair. Neither name or value may be null.
          */
-        public NameValuePair(String name, String value) {
+        public NameValuePair(final String name, final String value) {
             if (name == null || value == null) {
                 throw new IllegalArgumentException();
             }
@@ -103,7 +106,7 @@ public class Variant implements Cloneable, Comparable {
      * The aliases (alternate names) of the variant. Never null.
      */
     public String[] getAliases() {
-        return aliases;
+        return aliases.toArray(new String[aliases.size()]);
     }
 
     /**
@@ -138,21 +141,21 @@ public class Variant implements Cloneable, Comparable {
      * The starting InitialStates.
      */
     public InitialState[] getInitialStates() {
-        return istate;
+        return istate.toArray(new InitialState[istate.size()]);
     }
 
     /**
      * Returns Powers associated with this Variant.
      */
     public Power[] getPowers() {
-        return powers;
+        return powers.toArray(new Power[powers.size()]);
     }
 
     /**
      * Returns SupplyCenter objects
      */
     public SupplyCenter[] getSupplyCenters() {
-        return supplyCenters;
+        return supplyCenters.toArray(new SupplyCenter[supplyCenters.size()]);
     }
 
     /**
@@ -180,28 +183,28 @@ public class Variant implements Cloneable, Comparable {
      * The mapGraphics associated with this Variant.
      */
     public MapGraphic[] getMapGraphics() {
-        return mapGraphics;
+        return mapGraphics.toArray(new MapGraphic[mapGraphics.size()]);
     }
 
     /**
      * The ProvinceData associated with this Variant
      */
     public ProvinceData[] getProvinceData() {
-        return provinceData;
+        return provinceData.toArray(new ProvinceData[provinceData.size()]);
     }
 
     /**
      * The RuleOptions (as name-value pairs) associated with this Variant
      */
     public NameValuePair[] getRuleOptionNVPs() {
-        return roNVPs;
+        return roNVPs.toArray(new NameValuePair[roNVPs.size()]);
     }
 
     /**
      * Gets the BorderData associated with this Variant
      */
     public BorderData[] getBorderData() {
-        return borderData;
+        return borderData.toArray(new BorderData[borderData.size()]);
     }
 
     /**
@@ -215,87 +218,87 @@ public class Variant implements Cloneable, Comparable {
     /**
      * Set the variant name.
      */
-    public void setName(String value) {
+    public void setName(final String value) {
         name = value;
     }
 
     /**
      * Set the alises. Null is not allowed.
      */
-    public void setAliases(String[] aliases) {
+    public void setAliases(final String[] aliases) {
         if (aliases == null) {
             throw new IllegalArgumentException();
         }
-        this.aliases = aliases;
+        this.aliases = Arrays.asList(aliases);
     }
 
     /**
      * Set the version of this variant
      */
-    public void setVersion(float value) {
+    public void setVersion(final float value) {
         version = value;
     }
 
     /**
      * Set if this variant is the default variant.
      */
-    public void setDefault(boolean value) {
+    public void setDefault(final boolean value) {
         isDefault = value;
     }
 
     /**
      * Set the description for this variant.
      */
-    public void setDescription(String value) {
+    public void setDescription(final String value) {
         description = value;
     }
 
     /**
      * Set the starting phase for this variant.
      */
-    public void setStartingPhase(Phase value) {
+    public void setStartingPhase(final Phase value) {
         phase = value;
     }
 
     /**
      * Victory Conditions: Number of Supply Centers required for victory.
      */
-    public void setNumSCForVictory(int value) {
+    public void setNumSCForVictory(final int value) {
         vcNumSCForVictory = value;
     }
 
     /**
      * Victory Conditions: Maximum years without a supply-center ownership change before game ends.
      */
-    public void setMaxYearsNoSCChange(int value) {
+    public void setMaxYearsNoSCChange(final int value) {
         vcMaxYearsNoSCChange = value;
     }
 
     /**
      * Victory Conditions: Maximum game duration, in years.
      */
-    public void setMaxGameTimeYears(int value) {
+    public void setMaxGameTimeYears(final int value) {
         vcMaxGameTimeYears = value;
     }
 
     /**
      * Sets the ProvinceData associated with this Variant
      */
-    public void setProvinceData(ProvinceData[] value) {
-        provinceData = value;
+    public void setProvinceData(final ProvinceData[] value) {
+        provinceData = Arrays.asList(value);
     }
 
     /**
      * Sets the BorderData associated with this Variant
      */
-    public void setBorderData(BorderData[] value) {
-        borderData = value;
+    public void setBorderData(final BorderData[] value) {
+        borderData = Arrays.asList(value);
     }
 
     /**
      * Sets whether BC years (negative years) are allowed
      */
-    public void setBCYearsAllowed(boolean value) {
+    public void setBCYearsAllowed(final boolean value) {
         allowBCYears = value;
     }
 
@@ -303,57 +306,53 @@ public class Variant implements Cloneable, Comparable {
     /**
      * Sets the MapGraphics, from a List
      */
-    public void setMapGraphics(List mgList) {
-        mapGraphics = (MapGraphic[]) mgList
-                .toArray(new MapGraphic[mgList.size()]);
+    public void setMapGraphics(final List mgList) {
+        mapGraphics = new ArrayList<>(mgList);
     }// setPowers()
 
     /**
      * Sets the Powers, from a List
      */
-    public void setPowers(List powerList) {
-        powers = (Power[]) powerList.toArray(new Power[powerList.size()]);
+    public void setPowers(final List powerList) {
+        powers = new ArrayList<>(powerList);
     }// setPowers()
 
     /**
      * Sets the InitialStates, from a List
      */
-    public void setInitialStates(List stateList) {
-        istate = (InitialState[]) stateList
-                .toArray(new InitialState[stateList.size()]);
+    public void setInitialStates(final List stateList) {
+        istate = new ArrayList<>(stateList);
     }// setInitialStates()
 
     /**
      * Sets the supply centers, from a List
      */
-    public void setSupplyCenters(List supplyCenterList) {
-        supplyCenters = (SupplyCenter[]) supplyCenterList
-                .toArray(new SupplyCenter[supplyCenterList.size()]);
+    public void setSupplyCenters(final List supplyCenterList) {
+        supplyCenters = new ArrayList<>(supplyCenterList);
     }// setSupplyCenters()
 
     /**
      * Sets the RuleOptions (as a List of name-value pairs) associated with this Variant
      */
-    public void setRuleOptionNVPs(List nvpList) {
-        roNVPs = (NameValuePair[]) nvpList
-                .toArray(new NameValuePair[nvpList.size()]);
+    public void setRuleOptionNVPs(final List nvpList) {
+        roNVPs = new ArrayList<>(nvpList);
     }// setRuleOptionNVPs()
 
 
     /**
      * Changes the active/inactive state of a power. The number of values <b>must</b> equal the number of powers.
      */
-    public void setActiveState(boolean[] values) {
-        if (values.length != powers.length) {
+    public void setActiveState(final boolean[] values) {
+        if (values.length != powers.size()) {
             throw new IllegalArgumentException();
         }
 
-        for (int i = 0; i < powers.length; i++) {
-            if (powers[i].isActive() != values[i]) {
+        for (int i = 0; i < powers.size(); i++) {
+            if (powers.get(i).isActive() != values[i]) {
                 // Powers are constant; we must create a new one.
-                Power old = powers[i];
-                powers[i] = new Power(old.getNames(), old.getAdjective(),
-                        values[i]);
+                final Power old = powers.get(i);
+                powers.set(i, new Power(old.getNames(), old.getAdjective(),
+                        values[i]));
             }
         }
     }// setActiveState()
@@ -363,7 +362,7 @@ public class Variant implements Cloneable, Comparable {
      * Compares based on Name
      */
     @Override
-    public int compareTo(Object o) {
+    public int compareTo(final Object o) {
         return getName().compareTo(((Variant) o).getName());
     }// compareTo()
 
@@ -371,11 +370,11 @@ public class Variant implements Cloneable, Comparable {
     /**
      * Finds the MapGraphic by name; case insensitive.
      */
-    public MapGraphic getMapGrapic(String mgName) {
+    public MapGraphic getMapGrapic(final String mgName) {
         if (mapGraphics != null) {
-            for (int i = 0; i < mapGraphics.length; i++) {
-                if (mapGraphics[i].getName().equalsIgnoreCase(mgName)) {
-                    return mapGraphics[i];
+            for (int i = 0; i < mapGraphics.size(); i++) {
+                if (mapGraphics.get(i).getName().equalsIgnoreCase(mgName)) {
+                    return mapGraphics.get(i);
                 }
             }
         }
@@ -389,12 +388,12 @@ public class Variant implements Cloneable, Comparable {
     public MapGraphic getDefaultMapGraphic() {
         MapGraphic mg = null;
 
-        if (mapGraphics != null && mapGraphics.length > 0) {
-            mg = mapGraphics[0];
+        if (mapGraphics != null && mapGraphics.size() > 0) {
+            mg = mapGraphics.get(0);
 
-            for (int i = 0; i < mapGraphics.length; i++) {
-                if (mapGraphics[i].isDefault()) {
-                    mg = mapGraphics[i];
+            for (int i = 0; i < mapGraphics.size(); i++) {
+                if (mapGraphics.get(i).isDefault()) {
+                    mg = mapGraphics.get(i);
                     break;
                 }
             }
@@ -423,7 +422,7 @@ public class Variant implements Cloneable, Comparable {
      * 8 arguments are given in total.
      */
     public Object[] getHTMLSummaryArguments() {
-        Object args[] = new Object[8];
+        final Object[] args = new Object[8];
         args[0] = getName();
         args[1] = getDescription();
         args[2] = String.valueOf(getNumSCForVictory());
@@ -438,22 +437,22 @@ public class Variant implements Cloneable, Comparable {
         }
 
         // create list of powers
-        StringBuffer sb = new StringBuffer(512);
-        for (int i = 0; i < powers.length; i++) {
-            if (powers[i].isActive()) {
-                sb.append(powers[i].getName());
+        final StringBuffer sb = new StringBuffer(512);
+        for (int i = 0; i < powers.size(); i++) {
+            if (powers.get(i).isActive()) {
+                sb.append(powers.get(i).getName());
             } else {
                 sb.append('(');
-                sb.append(powers[i].getName());
+                sb.append(powers.get(i).getName());
                 sb.append(')');
             }
 
-            if (i < powers.length - 1) {
+            if (i < powers.size() - 1) {
                 sb.append(", ");
             }
         }
         args[6] = sb.toString();
-        args[7] = String.valueOf(powers.length);
+        args[7] = String.valueOf(powers.size());
 
         return args;
     }// getHTMLSummaryArguments()
@@ -465,7 +464,7 @@ public class Variant implements Cloneable, Comparable {
     @Override
     public Object clone() throws CloneNotSupportedException {
         // shallow clone
-        Variant variant = (Variant) super.clone();
+        final Variant variant = (Variant) super.clone();
 
         // deep clone
         //
@@ -477,11 +476,11 @@ public class Variant implements Cloneable, Comparable {
 
         // powers
         if (powers != null) {
-            variant.powers = new Power[powers.length];
-            for (int i = 0; i < powers.length; i++) {
-                Power thisPower = powers[i];
-                variant.powers[i] = new Power(thisPower.getNames(),
-                        thisPower.getAdjective(), thisPower.isActive());
+            variant.powers = new ArrayList<>();
+            for (int i = 0; i < powers.size(); i++) {
+                final Power thisPower = powers.get(i);
+                variant.powers.add(new Power(thisPower.getNames(),
+                        thisPower.getAdjective(), thisPower.isActive()));
             }
         }
 
@@ -492,7 +491,7 @@ public class Variant implements Cloneable, Comparable {
      * For debugging only!
      */
     public String toString() {
-        StringBuffer sb = new StringBuffer(256);
+        final StringBuffer sb = new StringBuffer(256);
         sb.append(getClass().getName());
         sb.append('[');
         sb.append("name=");
@@ -500,27 +499,27 @@ public class Variant implements Cloneable, Comparable {
         sb.append(",isDefault=");
         sb.append(isDefault);
         sb.append("powers=");
-        for (int i = 0; i < powers.length; i++) {
-            sb.append(powers[i]);
+        for (final Power power : powers) {
+            sb.append(power);
             sb.append(',');
         }
         sb.append(",phase=");
         sb.append(phase);
         sb.append(",istate=");
-        for (int i = 0; i < istate.length; i++) {
-            System.out.println(istate[i]);
+        for (final InitialState anIstate : istate) {
+            System.out.println(anIstate);
         }
         sb.append(",supplyCenters=");
-        for (int i = 0; i < supplyCenters.length; i++) {
-            System.out.println(supplyCenters[i]);
+        for (final SupplyCenter supplyCenter : supplyCenters) {
+            System.out.println(supplyCenter);
         }
         sb.append(",provinceData=");
-        for (int i = 0; i < provinceData.length; i++) {
-            System.out.println(provinceData[i]);
+        for (final ProvinceData aProvinceData : provinceData) {
+            System.out.println(aProvinceData);
         }
         sb.append("mapGraphics=");
-        for (int i = 0; i < mapGraphics.length; i++) {
-            System.out.println(mapGraphics[i]);
+        for (final MapGraphic mapGraphic : mapGraphics) {
+            System.out.println(mapGraphic);
         }
         sb.append(",vcNumSCForVictory=");
         sb.append(vcNumSCForVictory);

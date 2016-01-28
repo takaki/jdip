@@ -22,6 +22,8 @@
 //
 package dip.world.variant.data;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -32,11 +34,11 @@ import java.util.List;
  */
 public class ProvinceData {
     private String fullName;
-    private String[] shortNames;
-    private String[] adj_provinces;
-    private String[] adj_types;
+    private List<String> shortNames;
+    private List<String> adj_provinces;
+    private List<String> adj_types;
     private boolean isConvoyableCoast;
-    private String[] borders;
+    private List<String> borders;
 
     /**
      * Full name of Province (e.g., Mid-Atlantic Ocean)
@@ -49,55 +51,55 @@ public class ProvinceData {
      * Short (abbreviated) name of Province; (e.g., "mao" or "mid-atlantic")
      */
     public String[] getShortNames() {
-        return shortNames;
+        return shortNames.toArray(new String[shortNames.size()]);
     }
 
     /**
      * Province Adjacency array.
      */
     public String[] getAdjacentProvinceNames() {
-        return adj_provinces;
+        return adj_provinces.toArray(new String[adj_provinces.size()]);
     }
 
     /**
      * Prvoince Adjacency type array.
      */
     public String[] getAdjacentProvinceTypes() {
-        return adj_types;
+        return adj_types.toArray(new String[adj_types.size()]);
     }
 
     /**
      * Set full name of province.
      */
-    public void setFullName(String value) {
+    public void setFullName(final String value) {
         fullName = value;
     }
 
     /**
      * Set all adjacent province names.
      */
-    public void setAdjacentProvinceNames(String[] values) {
-        adj_provinces = values;
+    public void setAdjacentProvinceNames(final String[] values) {
+        adj_provinces = Arrays.asList(values);
     }
 
     /**
      * Set all adjacent province types.
      */
-    public void setAdjacentProvinceTypes(String[] values) {
-        adj_types = values;
+    public void setAdjacentProvinceTypes(final String[] values) {
+        adj_types = Arrays.asList(values);
     }
 
     /**
      * Set all short (abbreviated) names, from a List.
      */
-    public void setShortNames(List list) {
-        shortNames = (String[]) list.toArray(new String[list.size()]);
+    public void setShortNames(final List list) {
+        shortNames = new ArrayList<>(list);
     }// setShortNames()
 
     /**
      * Sets whether this Province is a convoyable coastal province.
      */
-    public void setConvoyableCoast(boolean value) {
+    public void setConvoyableCoast(final boolean value) {
         isConvoyableCoast = value;
     }
 
@@ -111,39 +113,29 @@ public class ProvinceData {
     /**
      * Sets the Border ID names for this province (if any)
      */
-    public void setBorders(List list) {
-        borders = (String[]) list.toArray(new String[list.size()]);
+    public void setBorders(final List list) {
+        borders = new ArrayList<>(list);
     }// setBorders()
 
     /**
      * Gets the Border ID names for this province (if any)
      */
     public String[] getBorders() {
-        return borders;
+        return borders.toArray(new String[borders.size()]);
     }
 
 
     /**
      * For debugging only!
      */
+    @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer(256);
-        sb.append(getClass().getName());
-        sb.append('[');
-        sb.append("fullName=");
-        sb.append(fullName);
-        sb.append(",#shortNames=");
-        sb.append(shortNames.length);
-        sb.append(",#adj_provinces=");
-        sb.append(adj_provinces.length);
-        sb.append(",#adj_types=");
-        sb.append(adj_types.length);
-        sb.append(",isConvoyableCoast=");
-        sb.append(isConvoyableCoast);
-        sb.append(",#borders=");
-        sb.append(borders.length);
-        sb.append(']');
-        return sb.toString();
+        return String.join("", getClass().getName(), "[", "fullName=", fullName,
+                ",#shortNames=", Integer.toString(shortNames.size()),
+                ",#adj_provinces=", Integer.toString(adj_provinces.size()),
+                ",#adj_types=", Integer.toString(adj_types.size()),
+                ",isConvoyableCoast=", Boolean.toString(isConvoyableCoast),
+                ",#borders=", Integer.toString(borders.size()), "]");
     }// toString()
 }// nested class ProvinceData	
 
