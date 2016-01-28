@@ -108,9 +108,9 @@ public class XMLVariantParser implements VariantParser {
 
     // instance variables
     private Document doc;
-    private DocumentBuilder docBuilder;
-    private List<Variant> variantList;
-    private XMLProvinceParser provinceParser;
+    private final DocumentBuilder docBuilder;
+    private final List<Variant> variantList;
+    private final XMLProvinceParser provinceParser;
 
 
     /** Create an XMLVariantParser */
@@ -200,7 +200,8 @@ public class XMLVariantParser implements VariantParser {
      */
     private void procVariants() throws IOException, SAXException {
         // setup map definition ID hashmap
-        final HashMap mapDefTable = new HashMap(7);    // maps String ID -> MapDef
+        final HashMap mapDefTable = new HashMap(
+                7);    // maps String ID -> MapDef
 
 
         // find the root element (VARIANTS), and all VARIANT elements underneath.
@@ -213,7 +214,8 @@ public class XMLVariantParser implements VariantParser {
 
             // get description
             String description = null;
-            final Element element = getSingleElementByName(elMapDef, EL_DESCRIPTION);
+            final Element element = getSingleElementByName(elMapDef,
+                    EL_DESCRIPTION);
             if (element != null) {
                 final Node text = element.getFirstChild();
                 description = text.getNodeValue();
@@ -264,7 +266,7 @@ public class XMLVariantParser implements VariantParser {
             variant.setStartingPhase(
                     Phase.parse(element.getAttribute(ATT_TURN)));
             variant.setBCYearsAllowed(
-                        Boolean.valueOf(element.getAttribute(ATT_ALLOW_BC_YEARS))
+                    Boolean.valueOf(element.getAttribute(ATT_ALLOW_BC_YEARS))
                             .booleanValue());
 
             // if start is BC, and BC years are not allowed, then BC years ARE allowed.
@@ -297,60 +299,14 @@ public class XMLVariantParser implements VariantParser {
 
 
             // powers (multiple)
-            NodeList nodes = elVariant.getElementsByTagName(EL_POWER);
-            final int nodeListLen = nodes.getLength();
-            final List powerList = new ArrayList(nodeListLen);
-            for (int j = 0; j < nodeListLen; j++) {
-                element = (Element) nodes.item(j);
-                final String name = element.getAttribute(ATT_NAME);
-                final boolean isActive = Boolean
-                        .valueOf(element.getAttribute(ATT_ACTIVE))
-                        .booleanValue();
-                final String adjective = element.getAttribute(ATT_ADJECTIVE);
-                final String[] altNames = Utils
-                        .parseCSVXE(element.getAttribute(ATT_ALTNAMES));
-
-                final String[] names = new String[altNames.length + 1];
-                names[0] = name;
-                System.arraycopy(altNames, 0, names, 1, altNames.length);
-
-                final Power power = new Power(names, adjective, isActive);
-                powerList.add(power);
-            }
-            variant.setPowers(powerList);
+            variant.setPowers(makePowers(elVariant));
 
 
             // supply centers (multiple)
-            nodes = elVariant.getElementsByTagName(EL_SUPPLYCENTER);
-            final List supplyCenterList = new ArrayList(nodes.getLength());
-            for (int j = 0; j < nodes.getLength(); j++) {
-                element = (Element) nodes.item(j);
-                final SupplyCenter supplyCenter = new SupplyCenter();
-                supplyCenter
-                        .setProvinceName(element.getAttribute(ATT_PROVINCE));
-                supplyCenter
-                        .setHomePowerName(element.getAttribute(ATT_HOMEPOWER));
-                supplyCenter.setOwnerName(element.getAttribute(ATT_OWNER));
-                supplyCenterList.add(supplyCenter);
-            }
-            variant.setSupplyCenters(supplyCenterList);
+            variant.setSupplyCenters(makeSupplyCenters(elVariant));
 
             // initial state (multiple)
-            nodes = elVariant.getElementsByTagName(EL_INITIALSTATE);
-            final List stateList = new ArrayList(nodes.getLength());
-            for (int j = 0; j < nodes.getLength(); j++) {
-                element = (Element) nodes.item(j);
-                    final InitialState initialState = new InitialState();
-                initialState
-                        .setProvinceName(element.getAttribute(ATT_PROVINCE));
-                initialState.setPowerName(element.getAttribute(ATT_POWER));
-                initialState.setUnitType(
-                        Type.parse(element.getAttribute(ATT_UNIT)));
-                initialState.setCoast(
-                        Coast.parse(element.getAttribute(ATT_UNITCOAST)));
-                stateList.add(initialState);
-            }
-            variant.setInitialStates(stateList);
+            variant.setInitialStates(makeInitialStates(elVariant));
 
             // MAP element and children
             element = getSingleElementByName(elVariant, EL_MAP);
@@ -367,56 +323,129 @@ public class XMLVariantParser implements VariantParser {
 
 
             // MAP_GRAPHIC element (multiple)
-            nodes = element.getElementsByTagName(EL_MAP_GRAPHIC);
-            final List graphicList = new ArrayList(nodes.getLength());
-            for (int j = 0; j < nodes.getLength(); j++) {
-                final Element mgElement = (Element) nodes.item(j);
-                final String refID = mgElement.getAttribute(ATT_REF);
-                final boolean isDefault = Boolean
-                        .valueOf(mgElement.getAttribute(ATT_DEFAULT))
-                        .booleanValue();
-                final String preferredUnitStyle = mgElement
-                        .getAttribute(ATT_PREFERRED_UNIT_STYLE);
-
-                        // lookup; if we didn't find it, throw an exception
-                final MapDef md = (MapDef) mapDefTable.get(refID);
-                if (md == null) {
-                    throw new IOException(
-                            "MAP_GRAPHIC refers to unknown ID: \"" + refID + "\"");
-                }
-
-                // create the MapGraphic object
-                final MapGraphic mapGraphic = new MapGraphic(md.getMapURI(),
-                        isDefault, md.getTitle(), md.getDescription(),
-                        md.getThumbURI(), "".equals(preferredUnitStyle) ? md
-                        .getPrefUnitStyle() : preferredUnitStyle);
-
-                graphicList.add(mapGraphic);
-            }
-            variant.setMapGraphics(graphicList);
+            NodeList nodes = element.getElementsByTagName(EL_MAP_GRAPHIC);
+            variant.setMapGraphics(makeMapGraphic(mapDefTable, nodes));
 
             // rule options (if any have been set)
             // this element is optional.
-            element = getSingleElementByName(elVariant, EL_RULEOPTIONS);
-            if (element != null) {
-                nodes = element.getElementsByTagName(EL_RULEOPTION);
-                final List ruleNVPList = new ArrayList(nodes.getLength());
-                for (int j = 0; j < nodes.getLength(); j++) {
-                    final Element rElement = (Element) nodes.item(j);
-                    final NameValuePair nvp = new NameValuePair(
-                            rElement.getAttribute(ATT_NAME),
-                            rElement.getAttribute(ATT_VALUE));
-                    ruleNVPList.add(nvp);
-                }
-                variant.setRuleOptionNVPs(ruleNVPList);
-            } else {
-                variant.setRuleOptionNVPs(new ArrayList(0));
-            }
+            variant.setRuleOptionNVPs(makeRuleOptionNVPs(elVariant));
 
             // add variant to list of variants
             variantList.add(variant);
         }// for(i)
     }// procVariants()
+
+    private List makePowers(Element elVariant) {
+        Element element;NodeList nodes = elVariant.getElementsByTagName(EL_POWER);
+        final int nodeListLen = nodes.getLength();
+        final List powerList = new ArrayList(nodeListLen);
+        for (int j = 0; j < nodeListLen; j++) {
+            element = (Element) nodes.item(j);
+            final String name = element.getAttribute(ATT_NAME);
+            final boolean isActive = Boolean
+                    .valueOf(element.getAttribute(ATT_ACTIVE))
+                    .booleanValue();
+            final String adjective = element.getAttribute(ATT_ADJECTIVE);
+            final String[] altNames = Utils
+                    .parseCSVXE(element.getAttribute(ATT_ALTNAMES));
+
+            final String[] names = new String[altNames.length + 1];
+            names[0] = name;
+            System.arraycopy(altNames, 0, names, 1, altNames.length);
+
+            final Power power = new Power(names, adjective, isActive);
+            powerList.add(power);
+        }
+        return powerList;
+    }
+
+    private List makeSupplyCenters(Element elVariant) {
+        NodeList nodes;
+        Element element;
+        nodes = elVariant.getElementsByTagName(EL_SUPPLYCENTER);
+        final List supplyCenterList = new ArrayList(nodes.getLength());
+        for (int j = 0; j < nodes.getLength(); j++) {
+            element = (Element) nodes.item(j);
+            final SupplyCenter supplyCenter = new SupplyCenter();
+            supplyCenter
+                    .setProvinceName(element.getAttribute(ATT_PROVINCE));
+            supplyCenter
+                    .setHomePowerName(element.getAttribute(ATT_HOMEPOWER));
+            supplyCenter.setOwnerName(element.getAttribute(ATT_OWNER));
+            supplyCenterList.add(supplyCenter);
+        }
+        return supplyCenterList;
+    }
+
+    private List makeInitialStates(Element elVariant) {
+        NodeList nodes;
+        Element element;
+        nodes = elVariant.getElementsByTagName(EL_INITIALSTATE);
+        final List stateList = new ArrayList(nodes.getLength());
+        for (int j = 0; j < nodes.getLength(); j++) {
+            element = (Element) nodes.item(j);
+            final InitialState initialState = new InitialState();
+            initialState
+                    .setProvinceName(element.getAttribute(ATT_PROVINCE));
+            initialState.setPowerName(element.getAttribute(ATT_POWER));
+            initialState.setUnitType(
+                    Type.parse(element.getAttribute(ATT_UNIT)));
+            initialState.setCoast(
+                    Coast.parse(element.getAttribute(ATT_UNITCOAST)));
+            stateList.add(initialState);
+        }
+        return stateList;
+    }
+
+    private List makeMapGraphic(HashMap mapDefTable,
+                                NodeList nodes) throws IOException {
+        final List graphicList = new ArrayList(nodes.getLength());
+        for (int j = 0; j < nodes.getLength(); j++) {
+            final Element mgElement = (Element) nodes.item(j);
+            final String refID = mgElement.getAttribute(ATT_REF);
+            final boolean isDefault = Boolean
+                    .valueOf(mgElement.getAttribute(ATT_DEFAULT))
+                    .booleanValue();
+            final String preferredUnitStyle = mgElement
+                    .getAttribute(ATT_PREFERRED_UNIT_STYLE);
+
+            // lookup; if we didn't find it, throw an exception
+            final MapDef md = (MapDef) mapDefTable.get(refID);
+            if (md == null) {
+                throw new IOException(
+                        "MAP_GRAPHIC refers to unknown ID: \"" + refID + "\"");
+            }
+
+            // create the MapGraphic object
+            final MapGraphic mapGraphic = new MapGraphic(md.getMapURI(),
+                    isDefault, md.getTitle(), md.getDescription(),
+                    md.getThumbURI(), "".equals(preferredUnitStyle) ? md
+                    .getPrefUnitStyle() : preferredUnitStyle);
+
+            graphicList.add(mapGraphic);
+        }
+        return graphicList;
+    }
+
+    private List makeRuleOptionNVPs(Element elVariant) {
+        Element element;
+        NodeList nodes;
+        element = getSingleElementByName(elVariant, EL_RULEOPTIONS);
+        if (element != null) {
+            nodes = element.getElementsByTagName(EL_RULEOPTION);
+            final List ruleNVPList = new ArrayList(nodes.getLength());
+            for (int j = 0; j < nodes.getLength(); j++) {
+                final Element rElement = (Element) nodes.item(j);
+                final NameValuePair nvp = new NameValuePair(
+                        rElement.getAttribute(ATT_NAME),
+                        rElement.getAttribute(ATT_VALUE));
+                ruleNVPList.add(nvp);
+            }
+            return ruleNVPList;
+        } else {
+            return new ArrayList(0);
+        }
+    }
 
 
     /**
@@ -432,7 +461,8 @@ public class XMLVariantParser implements VariantParser {
     /**
      * Get an Element by name; only returns a single element.
      */
-    private Element getSingleElementByName(final Element parent, final String name) {
+    private Element getSingleElementByName(final Element parent,
+                                           final String name) {
         final NodeList nodes = parent.getElementsByTagName(name);
         return (Element) nodes.item(0);
     }// getSingleElementByName()
@@ -597,8 +627,9 @@ public class XMLVariantParser implements VariantParser {
         private final String preferredUnitStyle;
         private final String description;
 
-        public MapDef(final String id, final String title, final String mapURI, final String thumbURI,
-                      final String preferredUnitStyle, final String description) {
+        public MapDef(final String id, final String title, final String mapURI,
+                      final String thumbURI, final String preferredUnitStyle,
+                      final String description) {
             this.id = id;
             this.title = title;
             this.mapURI = mapURI;
