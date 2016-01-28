@@ -27,15 +27,15 @@ package dip.world.variant.data;
  * Temporary holder for Border data after XML parsing.
  */
 public class BorderData {
-    private String id = null;
-    private String description = null;
-    private String unitTypes = null;
-    private String from = null;
-    private String orderTypes = null;
-    private String baseMoveModifier = null;
-    private String year = null;
-    private String phase = null;
-    private String season = null;
+    private String id;
+    private String description;
+    private String unitTypes;
+    private String from;
+    private String orderTypes;
+    private String baseMoveModifier;
+    private String year;
+    private String phase;
+    private String season;
 
     /**
      * Sets the Border ID

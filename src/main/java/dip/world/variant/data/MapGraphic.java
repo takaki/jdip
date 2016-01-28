@@ -52,8 +52,8 @@ public class MapGraphic {
 
         this.name = name;
         this.isDefault = isDefault;
-        this.desc = description;
-        this.prefSPName = ("".equals(prefSPName)) ? null : prefSPName;
+        desc = description;
+        this.prefSPName = "".equals(prefSPName) ? null : prefSPName;
 
         // set URI
         URI tmpURI = null;
@@ -120,7 +120,7 @@ public class MapGraphic {
      */
     public String toString() {
         StringBuffer sb = new StringBuffer(256);
-        sb.append(this.getClass().getName());
+        sb.append(getClass().getName());
         sb.append('[');
         sb.append("uri=");
         sb.append(uri);

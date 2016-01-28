@@ -30,8 +30,8 @@ import java.util.List;
  * A SymbolPack
  */
 public class SymbolPack implements Comparable {
-    private String name = null;
-    private float version = 0.0f;
+    private String name;
+    private float version;
     private String description = "";
     private URI thumbURI;
     private URI svgURI;
@@ -129,7 +129,7 @@ public class SymbolPack implements Comparable {
      * Do we have any CSS data?
      */
     public boolean hasCSSStyles() {
-        return (cssStyles.length > 0);
+        return cssStyles.length > 0;
     }
 
     /**
@@ -140,7 +140,7 @@ public class SymbolPack implements Comparable {
             throw new IllegalArgumentException();
         }
 
-        this.cssStyles = styles;
+        cssStyles = styles;
     }// setCSSStyles()
 
     /**
@@ -154,7 +154,7 @@ public class SymbolPack implements Comparable {
      * Set the Symbols
      */
     public void setSymbols(List list) {
-        this.symbols = (Symbol[]) list.toArray(new Symbol[list.size()]);
+        symbols = (Symbol[]) list.toArray(new Symbol[list.size()]);
     }
 
     /**
@@ -173,8 +173,9 @@ public class SymbolPack implements Comparable {
     /**
      * Comparison, based on Name. Only compares to other SymbolPack objects.
      */
+    @Override
     public int compareTo(Object o) {
-        return this.getName().compareTo(((SymbolPack) o).getName());
+        return getName().compareTo(((SymbolPack) o).getName());
     }// compareTo()
 
     /**

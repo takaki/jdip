@@ -23,16 +23,16 @@
 package dip.world.variant.data;
 
 import dip.world.Coast;
-import dip.world.Unit;
+import dip.world.Unit.Type;
 
 /**
  * Sets the Initial State (position) for a province.
  */
 public class InitialState {
-    private String provinceName = null;
-    private String power = null;
-    private Unit.Type unit = null;
-    private Coast coast = null;
+    private String provinceName;
+    private String power;
+    private Type unit;
+    private Coast coast;
 
     /**
      * Name of province to which this InitialState refers.
@@ -51,7 +51,7 @@ public class InitialState {
     /**
      * Type of unit
      */
-    public Unit.Type getUnitType() {
+    public Type getUnitType() {
         return unit;
     }
 
@@ -79,7 +79,7 @@ public class InitialState {
     /**
      * Sets the unit type.
      */
-    public void setUnitType(Unit.Type value) {
+    public void setUnitType(Type value) {
         unit = value;
     }
 
@@ -96,7 +96,7 @@ public class InitialState {
      */
     public String toString() {
         StringBuffer sb = new StringBuffer(256);
-        sb.append(this.getClass().getName());
+        sb.append(getClass().getName());
         sb.append('[');
         sb.append("provinceName=");
         sb.append(provinceName);

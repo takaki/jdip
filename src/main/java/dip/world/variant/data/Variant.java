@@ -34,22 +34,22 @@ public class Variant implements Cloneable, Comparable {
     // the arrays in general should not be null. They are defined as null initially
     // to make it more apparent should a field not be initialized properly.
     //
-    private String name = null;
-    private boolean isDefault = false;
-    private String description = null;
-    private Power[] powers = null;
-    private Phase phase = null;
-    private InitialState[] istate = null;
-    private SupplyCenter[] supplyCenters = null;
-    private ProvinceData[] provinceData = null;
-    private int vcNumSCForVictory = 0;
-    private int vcMaxYearsNoSCChange = 0;
-    private int vcMaxGameTimeYears = 0;
-    private MapGraphic[] mapGraphics = null;
-    private float version = 0.0f;
-    private NameValuePair[] roNVPs = null;
-    private BorderData[] borderData = null;
-    private boolean allowBCYears = false;
+    private String name;
+    private boolean isDefault;
+    private String description;
+    private Power[] powers;
+    private Phase phase;
+    private InitialState[] istate;
+    private SupplyCenter[] supplyCenters;
+    private ProvinceData[] provinceData;
+    private int vcNumSCForVictory;
+    private int vcMaxYearsNoSCChange;
+    private int vcMaxGameTimeYears;
+    private MapGraphic[] mapGraphics;
+    private float version;
+    private NameValuePair[] roNVPs;
+    private BorderData[] borderData;
+    private boolean allowBCYears;
     private String[] aliases = new String[0];
 
     /**
@@ -362,8 +362,9 @@ public class Variant implements Cloneable, Comparable {
     /**
      * Compares based on Name
      */
+    @Override
     public int compareTo(Object o) {
-        return this.getName().compareTo(((Variant) o).getName());
+        return getName().compareTo(((Variant) o).getName());
     }// compareTo()
 
 
@@ -447,7 +448,7 @@ public class Variant implements Cloneable, Comparable {
                 sb.append(')');
             }
 
-            if (i < (powers.length - 1)) {
+            if (i < powers.length - 1) {
                 sb.append(", ");
             }
         }
@@ -461,6 +462,7 @@ public class Variant implements Cloneable, Comparable {
     /**
      * Creates a deep clone of all data EXCEPT InitialState / SupplyCenter data / Name / Description
      */
+    @Override
     public Object clone() throws CloneNotSupportedException {
         // shallow clone
         Variant variant = (Variant) super.clone();
@@ -468,13 +470,13 @@ public class Variant implements Cloneable, Comparable {
         // deep clone
         //
         // phase
-        if (this.phase != null) {
+        if (phase != null) {
             // cheap...
-            variant.phase = Phase.parse(this.phase.toString());
+            variant.phase = Phase.parse(phase.toString());
         }
 
         // powers
-        if (this.powers != null) {
+        if (powers != null) {
             variant.powers = new Power[powers.length];
             for (int i = 0; i < powers.length; i++) {
                 Power thisPower = powers[i];
@@ -491,7 +493,7 @@ public class Variant implements Cloneable, Comparable {
      */
     public String toString() {
         StringBuffer sb = new StringBuffer(256);
-        sb.append(this.getClass().getName());
+        sb.append(getClass().getName());
         sb.append('[');
         sb.append("name=");
         sb.append(name);

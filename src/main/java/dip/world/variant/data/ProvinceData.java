@@ -31,12 +31,12 @@ import java.util.List;
 
  */
 public class ProvinceData {
-    private String fullName = null;
-    private String[] shortNames = null;
-    private String[] adj_provinces = null;
-    private String[] adj_types = null;
-    private boolean isConvoyableCoast = false;
-    private String[] borders = null;
+    private String fullName;
+    private String[] shortNames;
+    private String[] adj_provinces;
+    private String[] adj_types;
+    private boolean isConvoyableCoast;
+    private String[] borders;
 
     /**
      * Full name of Province (e.g., Mid-Atlantic Ocean)
@@ -128,7 +128,7 @@ public class ProvinceData {
      */
     public String toString() {
         StringBuffer sb = new StringBuffer(256);
-        sb.append(this.getClass().getName());
+        sb.append(getClass().getName());
         sb.append('[');
         sb.append("fullName=");
         sb.append(fullName);

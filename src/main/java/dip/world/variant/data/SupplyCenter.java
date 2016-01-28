@@ -29,9 +29,9 @@ package dip.world.variant.data;
 
  */
 public class SupplyCenter {
-    private String provinceName = null;
-    private String powerName = null;
-    private String ownerName = null;
+    private String provinceName;
+    private String powerName;
+    private String ownerName;
 
     /**
      * Get name of the home supply center; if "none" if none, "any" if any.
@@ -88,7 +88,7 @@ public class SupplyCenter {
      */
     public String toString() {
         StringBuffer sb = new StringBuffer(256);
-        sb.append(this.getClass().getName());
+        sb.append(getClass().getName());
         sb.append('[');
         sb.append("provinceName=");
         sb.append(provinceName);
