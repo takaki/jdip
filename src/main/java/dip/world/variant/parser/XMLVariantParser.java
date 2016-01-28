@@ -28,9 +28,10 @@ import dip.misc.Utils;
 import dip.world.Coast;
 import dip.world.Phase;
 import dip.world.Power;
-import dip.world.Unit;
+import dip.world.Unit.Type;
 import dip.world.variant.VariantManager;
 import dip.world.variant.data.*;
+import dip.world.variant.data.Variant.NameValuePair;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -106,10 +107,10 @@ public class XMLVariantParser implements VariantParser {
     private static final String ERR_NO_ELEMENT = "XMLVariantParser.noelement";
 
     // instance variables
-    private Document doc = null;
-    private DocumentBuilder docBuilder = null;
-    private List variantList = null;
-    private XMLProvinceParser provinceParser = null;
+    private Document doc;
+    private DocumentBuilder docBuilder;
+    private List<Variant> variantList;
+    private XMLProvinceParser provinceParser;
 
 
     /** Create an XMLVariantParser */
@@ -153,10 +154,10 @@ public class XMLVariantParser implements VariantParser {
      * Note that when this method is called, any previous Variants (if any exist) are
      * cleared.
      */
-    public void parse(InputStream is,
-                      URL variantPackageURL) throws IOException, SAXException {
+    public void parse(final InputStream is,
+                      final URL variantPackageURL) throws IOException, SAXException {
         Log.println("XMLVariantParser: Parsing: ", variantPackageURL);
-        long time = System.currentTimeMillis();
+        final long time = System.currentTimeMillis();
 
         // cleanup cache (very important to remove references!)
         AdjCache.clear();
@@ -188,8 +189,9 @@ public class XMLVariantParser implements VariantParser {
      * Will never return null. Note that parse() must be called before
      * this will return any information.
      */
+    @Override
     public Variant[] getVariants() {
-        return (Variant[]) variantList.toArray(new Variant[variantList.size()]);
+        return variantList.toArray(new Variant[variantList.size()]);
     }// getVariants()
 
 
@@ -198,27 +200,27 @@ public class XMLVariantParser implements VariantParser {
      */
     private void procVariants() throws IOException, SAXException {
         // setup map definition ID hashmap
-        HashMap mapDefTable = new HashMap(7);    // maps String ID -> MapDef
+        final HashMap mapDefTable = new HashMap(7);    // maps String ID -> MapDef
 
 
         // find the root element (VARIANTS), and all VARIANT elements underneath.
-        Element root = doc.getDocumentElement();
+        final Element root = doc.getDocumentElement();
 
         // get map definitions (at least one, under VARIANT)
-        NodeList mapDefEls = root.getElementsByTagName(EL_MAP_DEFINITION);
+        final NodeList mapDefEls = root.getElementsByTagName(EL_MAP_DEFINITION);
         for (int i = 0; i < mapDefEls.getLength(); i++) {
-            Element elMapDef = (Element) mapDefEls.item(i);
+            final Element elMapDef = (Element) mapDefEls.item(i);
 
             // get description
             String description = null;
-            Element element = getSingleElementByName(elMapDef, EL_DESCRIPTION);
+            final Element element = getSingleElementByName(elMapDef, EL_DESCRIPTION);
             if (element != null) {
-                Node text = element.getFirstChild();
+                final Node text = element.getFirstChild();
                 description = text.getNodeValue();
             }
 
             // create MapDef
-            MapDef md = new MapDef(elMapDef.getAttribute(ATT_ID),
+            final MapDef md = new MapDef(elMapDef.getAttribute(ATT_ID),
                     elMapDef.getAttribute(ATT_TITLE),
                     elMapDef.getAttribute(ATT_URI),
                     elMapDef.getAttribute(ATT_THUMBURI),
@@ -236,10 +238,10 @@ public class XMLVariantParser implements VariantParser {
         }
 
         // search for variant data
-        NodeList variantElements = root.getElementsByTagName(EL_VARIANT);
+        final NodeList variantElements = root.getElementsByTagName(EL_VARIANT);
         for (int i = 0; i < variantElements.getLength(); i++) {
-            Variant variant = new Variant();
-            Element elVariant = (Element) variantElements.item(i);
+            final Variant variant = new Variant();
+            final Element elVariant = (Element) variantElements.item(i);
 
             // VARIANT attributes
             variant.setName(elVariant.getAttribute(ATT_NAME));
@@ -253,7 +255,7 @@ public class XMLVariantParser implements VariantParser {
             // description
             Element element = getSingleElementByName(elVariant, EL_DESCRIPTION);
             checkElement(element, EL_DESCRIPTION);
-            Node text = element.getFirstChild();
+            final Node text = element.getFirstChild();
             variant.setDescription(text.getNodeValue());
 
             // starting time
@@ -262,7 +264,7 @@ public class XMLVariantParser implements VariantParser {
             variant.setStartingPhase(
                     Phase.parse(element.getAttribute(ATT_TURN)));
             variant.setBCYearsAllowed(
-                    Boolean.valueOf(element.getAttribute(ATT_ALLOW_BC_YEARS))
+                        Boolean.valueOf(element.getAttribute(ATT_ALLOW_BC_YEARS))
                             .booleanValue());
 
             // if start is BC, and BC years are not allowed, then BC years ARE allowed.
@@ -297,22 +299,22 @@ public class XMLVariantParser implements VariantParser {
             // powers (multiple)
             NodeList nodes = elVariant.getElementsByTagName(EL_POWER);
             final int nodeListLen = nodes.getLength();
-            List powerList = new ArrayList(nodeListLen);
+            final List powerList = new ArrayList(nodeListLen);
             for (int j = 0; j < nodeListLen; j++) {
                 element = (Element) nodes.item(j);
-                String name = element.getAttribute(ATT_NAME);
+                final String name = element.getAttribute(ATT_NAME);
                 final boolean isActive = Boolean
                         .valueOf(element.getAttribute(ATT_ACTIVE))
                         .booleanValue();
-                String adjective = element.getAttribute(ATT_ADJECTIVE);
-                String[] altNames = Utils
+                final String adjective = element.getAttribute(ATT_ADJECTIVE);
+                final String[] altNames = Utils
                         .parseCSVXE(element.getAttribute(ATT_ALTNAMES));
 
-                String[] names = new String[altNames.length + 1];
+                final String[] names = new String[altNames.length + 1];
                 names[0] = name;
                 System.arraycopy(altNames, 0, names, 1, altNames.length);
 
-                Power power = new Power(names, adjective, isActive);
+                final Power power = new Power(names, adjective, isActive);
                 powerList.add(power);
             }
             variant.setPowers(powerList);
@@ -320,10 +322,10 @@ public class XMLVariantParser implements VariantParser {
 
             // supply centers (multiple)
             nodes = elVariant.getElementsByTagName(EL_SUPPLYCENTER);
-            List supplyCenterList = new ArrayList(nodes.getLength());
+            final List supplyCenterList = new ArrayList(nodes.getLength());
             for (int j = 0; j < nodes.getLength(); j++) {
                 element = (Element) nodes.item(j);
-                SupplyCenter supplyCenter = new SupplyCenter();
+                final SupplyCenter supplyCenter = new SupplyCenter();
                 supplyCenter
                         .setProvinceName(element.getAttribute(ATT_PROVINCE));
                 supplyCenter
@@ -335,15 +337,15 @@ public class XMLVariantParser implements VariantParser {
 
             // initial state (multiple)
             nodes = elVariant.getElementsByTagName(EL_INITIALSTATE);
-            List stateList = new ArrayList(nodes.getLength());
+            final List stateList = new ArrayList(nodes.getLength());
             for (int j = 0; j < nodes.getLength(); j++) {
                 element = (Element) nodes.item(j);
-                InitialState initialState = new InitialState();
+                    final InitialState initialState = new InitialState();
                 initialState
                         .setProvinceName(element.getAttribute(ATT_PROVINCE));
                 initialState.setPowerName(element.getAttribute(ATT_POWER));
                 initialState.setUnitType(
-                        Unit.Type.parse(element.getAttribute(ATT_UNIT)));
+                        Type.parse(element.getAttribute(ATT_UNIT)));
                 initialState.setCoast(
                         Coast.parse(element.getAttribute(ATT_UNITCOAST)));
                 stateList.add(initialState);
@@ -355,20 +357,20 @@ public class XMLVariantParser implements VariantParser {
 
             // MAP adjacency URI; process it using ProvinceData parser
             try {
-                URI adjacencyURI = new URI(
+                final URI adjacencyURI = new URI(
                         element.getAttribute(ATT_ADJACENCYURI));
                 variant.setProvinceData(AdjCache.getProvinceData(adjacencyURI));
                 variant.setBorderData(AdjCache.getBorderData(adjacencyURI));
-            } catch (URISyntaxException e) {
+            } catch (final URISyntaxException e) {
                 throw new IOException(e.getMessage());
             }
 
 
             // MAP_GRAPHIC element (multiple)
             nodes = element.getElementsByTagName(EL_MAP_GRAPHIC);
-            List graphicList = new ArrayList(nodes.getLength());
+            final List graphicList = new ArrayList(nodes.getLength());
             for (int j = 0; j < nodes.getLength(); j++) {
-                Element mgElement = (Element) nodes.item(j);
+                final Element mgElement = (Element) nodes.item(j);
                 final String refID = mgElement.getAttribute(ATT_REF);
                 final boolean isDefault = Boolean
                         .valueOf(mgElement.getAttribute(ATT_DEFAULT))
@@ -376,17 +378,17 @@ public class XMLVariantParser implements VariantParser {
                 final String preferredUnitStyle = mgElement
                         .getAttribute(ATT_PREFERRED_UNIT_STYLE);
 
-                // lookup; if we didn't find it, throw an exception
-                MapDef md = (MapDef) mapDefTable.get(refID);
+                        // lookup; if we didn't find it, throw an exception
+                final MapDef md = (MapDef) mapDefTable.get(refID);
                 if (md == null) {
                     throw new IOException(
                             "MAP_GRAPHIC refers to unknown ID: \"" + refID + "\"");
                 }
 
                 // create the MapGraphic object
-                MapGraphic mapGraphic = new MapGraphic(md.getMapURI(),
+                final MapGraphic mapGraphic = new MapGraphic(md.getMapURI(),
                         isDefault, md.getTitle(), md.getDescription(),
-                        md.getThumbURI(), ("".equals(preferredUnitStyle)) ? md
+                        md.getThumbURI(), "".equals(preferredUnitStyle) ? md
                         .getPrefUnitStyle() : preferredUnitStyle);
 
                 graphicList.add(mapGraphic);
@@ -398,10 +400,10 @@ public class XMLVariantParser implements VariantParser {
             element = getSingleElementByName(elVariant, EL_RULEOPTIONS);
             if (element != null) {
                 nodes = element.getElementsByTagName(EL_RULEOPTION);
-                List ruleNVPList = new ArrayList(nodes.getLength());
+                final List ruleNVPList = new ArrayList(nodes.getLength());
                 for (int j = 0; j < nodes.getLength(); j++) {
-                    Element rElement = (Element) nodes.item(j);
-                    Variant.NameValuePair nvp = new Variant.NameValuePair(
+                    final Element rElement = (Element) nodes.item(j);
+                    final NameValuePair nvp = new NameValuePair(
                             rElement.getAttribute(ATT_NAME),
                             rElement.getAttribute(ATT_VALUE));
                     ruleNVPList.add(nvp);
@@ -420,8 +422,8 @@ public class XMLVariantParser implements VariantParser {
     /**
      * Checks that an element is present
      */
-    private void checkElement(Element element,
-                              String name) throws SAXException {
+    private void checkElement(final Element element,
+                              final String name) throws SAXException {
         if (element == null) {
             throw new SAXException(Utils.getLocalString(ERR_NO_ELEMENT, name));
         }
@@ -430,8 +432,8 @@ public class XMLVariantParser implements VariantParser {
     /**
      * Get an Element by name; only returns a single element.
      */
-    private Element getSingleElementByName(Element parent, String name) {
-        NodeList nodes = parent.getElementsByTagName(name);
+    private Element getSingleElementByName(final Element parent, final String name) {
+        final NodeList nodes = parent.getElementsByTagName(name);
         return (Element) nodes.item(0);
     }// getSingleElementByName()
 
@@ -439,12 +441,12 @@ public class XMLVariantParser implements VariantParser {
     /**
      * Integer parser; throws an exception if number cannot be parsed.
      */
-    private int parseInt(String value) throws IOException {
+    private int parseInt(final String value) throws IOException {
         String message = "";
 
         try {
             return Integer.parseInt(value);
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             message = e.toString();
         }
 
@@ -455,7 +457,7 @@ public class XMLVariantParser implements VariantParser {
     /**
      * Float parser; throws an exception if number cannot be parsed. Value must be >= 0.0
      */
-    private float parseFloat(String value) throws IOException {
+    private float parseFloat(final String value) throws IOException {
         String message = "";
 
         try {
@@ -465,7 +467,7 @@ public class XMLVariantParser implements VariantParser {
             }
 
             return floatValue;
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             message = e.toString();
         }
 
@@ -483,9 +485,9 @@ public class XMLVariantParser implements VariantParser {
      * this is a simpler solution)
      */
     private static class AdjCache {
-        private static URL vpURL = null;
-        private static XMLProvinceParser pp = null;
-        private static LRUCache adjCache = null;    // URI -> AdjCache objects
+        private static URL vpURL;
+        private static XMLProvinceParser pp;
+        private static LRUCache adjCache;    // URI -> AdjCache objects
 
         // instance variables
         private ProvinceData[] provinceData;
@@ -498,7 +500,7 @@ public class XMLVariantParser implements VariantParser {
         /**
          * initialization
          */
-        public static void init(XMLProvinceParser provinceParser) {
+        public static void init(final XMLProvinceParser provinceParser) {
             pp = provinceParser;
             adjCache = new LRUCache(6);
         }// AdjCache()
@@ -506,7 +508,7 @@ public class XMLVariantParser implements VariantParser {
         /**
          * Sets the variant package URL
          */
-        public static void setVariantPackageURL(URL variantPackageURL) {
+        public static void setVariantPackageURL(final URL variantPackageURL) {
             vpURL = variantPackageURL;
         }// setVariantPackageURL()
 
@@ -523,8 +525,8 @@ public class XMLVariantParser implements VariantParser {
          * Gets the ProvinceData for a given adjacency URI
          */
         public static ProvinceData[] getProvinceData(
-                URI adjacencyURI) throws IOException, SAXException {
-            AdjCache ac = get(adjacencyURI);
+                final URI adjacencyURI) throws IOException, SAXException {
+            final AdjCache ac = get(adjacencyURI);
             return ac.provinceData;
         }// getProvinceData()
 
@@ -533,8 +535,8 @@ public class XMLVariantParser implements VariantParser {
          * Gets the BorderData for a given adjacency URI
          */
         public static BorderData[] getBorderData(
-                URI adjacencyURI) throws IOException, SAXException {
-            AdjCache ac = get(adjacencyURI);
+                final URI adjacencyURI) throws IOException, SAXException {
+            final AdjCache ac = get(adjacencyURI);
             return ac.borderData;
         }// getBorderData()
 
@@ -543,7 +545,7 @@ public class XMLVariantParser implements VariantParser {
          * Gets the AdjCache object from the cache, or parses from the URI, as appropriate
          */
         private static AdjCache get(
-                URI adjacencyURI) throws IOException, SAXException {
+                final URI adjacencyURI) throws IOException, SAXException {
             // see if we already have the URI data cached.
             if (adjCache.get(adjacencyURI) != null) {
                 //Log.println("  AdjCache: using cached adjacency data: ", adjacencyURI);
@@ -551,7 +553,7 @@ public class XMLVariantParser implements VariantParser {
             }
 
             // it's not cached. resolve URI.
-            URL url = VariantManager.getResource(vpURL, adjacencyURI);
+            final URL url = VariantManager.getResource(vpURL, adjacencyURI);
             if (url == null) {
                 throw new IOException(
                         "Could not convert URI: " + adjacencyURI + " from variant package: " + vpURL);
@@ -567,13 +569,13 @@ public class XMLVariantParser implements VariantParser {
                 if (is != null) {
                     try {
                         is.close();
-                    } catch (IOException e) {
+                    } catch (final IOException e) {
                     }
                 }
             }
 
             // cache and return parsed data.
-            AdjCache ac = new AdjCache();
+            final AdjCache ac = new AdjCache();
             ac.provinceData = pp.getProvinceData();
             ac.borderData = pp.getBorderData();
             adjCache.put(adjacencyURI, ac);
@@ -595,8 +597,8 @@ public class XMLVariantParser implements VariantParser {
         private final String preferredUnitStyle;
         private final String description;
 
-        public MapDef(String id, String title, String mapURI, String thumbURI,
-                      String preferredUnitStyle, String description) {
+        public MapDef(final String id, final String title, final String mapURI, final String thumbURI,
+                      final String preferredUnitStyle, final String description) {
             this.id = id;
             this.title = title;
             this.mapURI = mapURI;
