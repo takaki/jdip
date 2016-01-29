@@ -41,7 +41,15 @@ class XMLVariantParserTest extends Specification {
         when:
         instance.parse(is, pluginUrl)
         def variants = instance.getVariants()
+        def std = variants[0]
         then:
         variants.size() == 9
+        std.getName() == "DATC_Standard"
+        std.getMaxYearsNoSCChange() == 7
+        std.getMapGraphics()[0].getName() == "Simple"
+        std.getMapGraphics()[0].isDefault()
+        std.getMapGraphics()[0].getURI() == new URI("simple_std.svg")
+
+
     }
 }
