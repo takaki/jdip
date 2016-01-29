@@ -26,10 +26,6 @@ More information may be found at http://jdip.sf.net/
     * Remove delayed initialization
 * JSON: replace XML-based data files
 
-# Current branch policy
-* master - add unit test, gradle related changes.
-* internal-rafactoring - don't change API; merge from master
- 
 # License
 
 This code is released under the GNU GPL version 2. If this is not acceptable,
