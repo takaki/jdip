@@ -108,10 +108,10 @@ public class VariantManager {
      * <p>
      * Loaded XML may be validated if the isValidating flag is set to true.
      */
-    public static synchronized void init(File[] searchPaths,
-                                         boolean isValidating) throws javax.xml.parsers.ParserConfigurationException, NoVariantsException {
-        long ttime = System.currentTimeMillis();
-        long vptime = ttime;
+    public static synchronized void init(final File[] searchPaths,
+                                         final boolean isValidating) throws javax.xml.parsers.ParserConfigurationException, NoVariantsException {
+        final long ttime = System.currentTimeMillis();
+        final long vptime = ttime;
         Log.println("VariantManager.init()");
 
         if (searchPaths == null || searchPaths.length == 0) {
@@ -135,7 +135,7 @@ public class VariantManager {
         URL[] pluginURLs = vm.searchForFiles(searchPaths, VARIANT_EXTENSIONS);
 
         // setup document builder
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
         try {
             // this may improve performance, and really only apply to Xerces
@@ -148,7 +148,7 @@ public class VariantManager {
             dbf.setAttribute(
                     "http://apache.org/xml/features/nonvalidating/load-external-dtd",
                     Boolean.FALSE);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             Log.println("VM: Could not set XML feature.", e);
         }
 
@@ -157,32 +157,32 @@ public class VariantManager {
         dbf.setIgnoringComments(true);
 
         // setup variant parser
-        XMLVariantParser variantParser = new XMLVariantParser(dbf);
+        final XMLVariantParser variantParser = new XMLVariantParser(dbf);
 
         // for each plugin, attempt to find the "variants.xml" file inside.
         // if it does not exist, we will not load the file. If it does, we will parse it,
         // and associate the variant with the URL in a hashtable.
-        for (URL pluginURL1 : pluginURLs) {
-            URLClassLoader urlCL = new URLClassLoader(new URL[]{pluginURL1});
-            URL variantXMLURL = urlCL.findResource(VARIANT_FILE_NAME);
+        for (final URL pluginURL1 : pluginURLs) {
+            final URLClassLoader urlCL = new URLClassLoader(new URL[]{pluginURL1});
+            final URL variantXMLURL = urlCL.findResource(VARIANT_FILE_NAME);
             if (variantXMLURL != null) {
-                String pluginName = getFile(pluginURL1);
+                final String pluginName = getFile(pluginURL1);
 
                 // parse variant description file, and create hash entry of variant object -> URL
                 try (InputStream is = new BufferedInputStream(
                         variantXMLURL.openStream())) {
                     variantParser.parse(is, pluginURL1);
-                    Variant[] variants = variantParser.getVariants();
+                    final Variant[] variants = variantParser.getVariants();
 
                     // add variants; variants with same name (but older versions) are
                     // replaced with same-name newer versioned variants
-                    for (Variant variant : variants) {
+                    for (final Variant variant : variants) {
                         addVariant(variant, pluginName, pluginURL1);
                     }
-                } catch (IOException e) {
+                } catch (final IOException e) {
                     // display error dialog
                     ErrorDialog.displayFileIO(null, e, pluginURL1.toString());
-                } catch (SAXException e) {
+                } catch (final SAXException e) {
                     // display error dialog
                     ErrorDialog.displayGeneral(null, e);
                 }
@@ -199,31 +199,31 @@ public class VariantManager {
 
             try {
                 enm = cl.getResources(VARIANT_FILE_NAME);
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 enm = null;
             }
 
             if (enm != null) {
                 while (enm.hasMoreElements()) {
-                    URL variantURL = (URL) enm.nextElement();
+                    final URL variantURL = (URL) enm.nextElement();
 
                     // parse variant description file, and create hash entry of variant object -> URL
                     try (InputStream is = new BufferedInputStream(
                             variantURL.openStream())) {
-                        String pluginName = getWSPluginName(variantURL);
+                        final String pluginName = getWSPluginName(variantURL);
                         variantParser.parse(is, variantURL);
-                        Variant[] variants = variantParser.getVariants();
+                        final Variant[] variants = variantParser.getVariants();
 
                         // add variants; variants with same name (but older versions) are
                         // replaced with same-name newer versioned variants
-                        for (Variant variant : variants) {
+                        for (final Variant variant : variants) {
                             addVariant(variant, pluginName, variantURL);
                         }
-                    } catch (IOException e) {
+                    } catch (final IOException e) {
                         // display error dialog
                         ErrorDialog
                                 .displayFileIO(null, e, variantURL.toString());
-                    } catch (org.xml.sax.SAXException e) {
+                    } catch (final org.xml.sax.SAXException e) {
                         // display error dialog
                         ErrorDialog.displayGeneral(null, e);
                     }
@@ -233,9 +233,9 @@ public class VariantManager {
 
         // check: did we find *any* variants? Throw an exception.
         if (vm.variantMap.isEmpty()) {
-            StringBuffer msg = new StringBuffer(256);
+            final StringBuffer msg = new StringBuffer(256);
             msg.append("No variants found on path: ");
-            for (File searchPath : searchPaths) {
+            for (final File searchPath : searchPaths) {
                 msg.append(searchPath);
                 msg.append("; ");
             }
@@ -249,7 +249,7 @@ public class VariantManager {
 
 
         // now, parse symbol packs
-        XMLSymbolParser symbolParser = new XMLSymbolParser(dbf);
+        final XMLSymbolParser symbolParser = new XMLSymbolParser(dbf);
 
         // find plugins, create plugin loader
         pluginURLs = vm.searchForFiles(searchPaths, SYMBOL_EXTENSIONS);
@@ -257,11 +257,11 @@ public class VariantManager {
         // for each plugin, attempt to find the "variants.xml" file inside.
         // if it does not exist, we will not load the file. If it does, we will parse it,
         // and associate the variant with the URL in a hashtable.
-        for (URL pluginURL : pluginURLs) {
-            URLClassLoader urlCL = new URLClassLoader(new URL[]{pluginURL});
-            URL symbolXMLURL = urlCL.findResource(SYMBOL_FILE_NAME);
+        for (final URL pluginURL : pluginURLs) {
+            final URLClassLoader urlCL = new URLClassLoader(new URL[]{pluginURL});
+            final URL symbolXMLURL = urlCL.findResource(SYMBOL_FILE_NAME);
             if (symbolXMLURL != null) {
-                String pluginName = getFile(pluginURL);
+                final String pluginName = getFile(pluginURL);
 
                 // parse variant description file, and create hash entry of variant object -> URL
                 try (InputStream is = new BufferedInputStream(
@@ -269,10 +269,10 @@ public class VariantManager {
                     symbolParser.parse(is, pluginURL);
                     addSymbolPack(symbolParser.getSymbolPack(), pluginName,
                             pluginURL);
-                } catch (IOException e) {
+                } catch (final IOException e) {
                     // display error dialog
                     ErrorDialog.displayFileIO(null, e, pluginURL.toString());
-                } catch (SAXException e) {
+                } catch (final SAXException e) {
                     // display error dialog
                     ErrorDialog.displayGeneral(null, e);
                 }
@@ -288,27 +288,27 @@ public class VariantManager {
 
             try {
                 enm = cl.getResources(SYMBOL_FILE_NAME);
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 enm = null;
             }
 
             if (enm != null) {
                 while (enm.hasMoreElements()) {
-                    URL symbolURL = (URL) enm.nextElement();
+                    final URL symbolURL = (URL) enm.nextElement();
 
                     // parse variant description file, and create hash entry of variant object -> URL
 
-                    String pluginName = getWSPluginName(symbolURL);
+                    final String pluginName = getWSPluginName(symbolURL);
 
                     try (InputStream is = new BufferedInputStream(symbolURL.openStream())){
                         symbolParser.parse(is, symbolURL);
                         addSymbolPack(symbolParser.getSymbolPack(), pluginName,
                                 symbolURL);
-                    } catch (IOException e) {
+                    } catch (final IOException e) {
                         // display error dialog
                         ErrorDialog
                                 .displayFileIO(null, e, symbolURL.toString());
-                    } catch (org.xml.sax.SAXException e) {
+                    } catch (final org.xml.sax.SAXException e) {
                         // display error dialog
                         ErrorDialog.displayGeneral(null, e);
                     }
@@ -319,9 +319,9 @@ public class VariantManager {
 
         // check: did we find *any* symbol packs? Throw an exception.
         if (vm.symbolMap.isEmpty()) {
-            StringBuffer msg = new StringBuffer(256);
+            final StringBuffer msg = new StringBuffer(256);
             msg.append("No SymbolPacks found on path: ");
-            for (File searchPath : searchPaths) {
+            for (final File searchPath : searchPaths) {
                 msg.append(searchPath);
                 msg.append("; ");
             }
@@ -344,15 +344,15 @@ public class VariantManager {
             // note that we need to avoid putting duplicates
             // into the array.
             //
-            ArrayList list = new ArrayList();        // list of variants
-            Set set = new HashSet();                // a set of MapRecs
+            final ArrayList list = new ArrayList();        // list of variants
+            final Set set = new HashSet();                // a set of MapRecs
             set.addAll(vm.variantMap.values());
 
             // fill variant list with variants.
-            Iterator iter = set.iterator();
+            final Iterator iter = set.iterator();
             while (iter.hasNext()) {
-                MapRec mr = (MapRec) iter.next();
-                MapRecObj mro = mr.get(VERSION_NEWEST);
+                final MapRec mr = (MapRec) iter.next();
+                final MapRecObj mro = mr.get(VERSION_NEWEST);
                 assert (mro != null);
                 list.add(((VRec) mro).getVariant());
             }
@@ -374,15 +374,15 @@ public class VariantManager {
 
         if (vm.symbolPacks.length != vm.symbolMap.size()) {
             // avoid putting duplicates into the array.
-            ArrayList list = new ArrayList();        // list of SymbolPacks
-            Set set = new HashSet();                // a set of MapRecs
+            final ArrayList list = new ArrayList();        // list of SymbolPacks
+            final Set set = new HashSet();                // a set of MapRecs
             set.addAll(vm.symbolMap.values());
 
             // fill variant list with variants.
-            Iterator iter = set.iterator();
+            final Iterator iter = set.iterator();
             while (iter.hasNext()) {
-                MapRec mr = (MapRec) iter.next();
-                MapRecObj mro = mr.get(VERSION_NEWEST);
+                final MapRec mr = (MapRec) iter.next();
+                final MapRecObj mro = mr.get(VERSION_NEWEST);
                 assert (mro != null);
                 list.add(((SPRec) mro).getSymbolPack());
             }
@@ -403,9 +403,9 @@ public class VariantManager {
      * <p>
      * Note: Name is <b>not</b> case-sensitive.
      */
-    public static synchronized Variant getVariant(String name, float version) {
+    public static synchronized Variant getVariant(final String name, final float version) {
         checkVM();
-        MapRec mr = (MapRec) vm.variantMap.get(name.toLowerCase());
+        final MapRec mr = (MapRec) vm.variantMap.get(name.toLowerCase());
         if (mr != null) {
             return (Variant) ((VRec) mr.get(version)).getVariant();
         }
@@ -421,14 +421,14 @@ public class VariantManager {
      * <p>
      * Note: Name is <b>not</b> case-sensitive.
      */
-    public static synchronized SymbolPack getSymbolPack(String name,
-                                                        float version) {
+    public static synchronized SymbolPack getSymbolPack(final String name,
+                                                        final float version) {
         checkVM();
         if (name == null) {
             return null;
         }
 
-        MapRec mr = (MapRec) vm.symbolMap.get(name.toLowerCase());
+        final MapRec mr = (MapRec) vm.symbolMap.get(name.toLowerCase());
         if (mr != null) {
             return (SymbolPack) ((SPRec) mr.get(version)).getSymbolPack();
         }
@@ -447,8 +447,8 @@ public class VariantManager {
      * <p>
      * Thus it is assured that a SymbolPack will always be obtained.
      */
-    public static synchronized SymbolPack getSymbolPack(MapGraphic mg,
-                                                        String symbolPackName,
+    public static synchronized SymbolPack getSymbolPack(final MapGraphic mg,
+                                                        final String symbolPackName,
                                                         final float symbolPackVersion) {
         if (mg == null) {
             throw new IllegalArgumentException();
@@ -510,7 +510,7 @@ public class VariantManager {
      */
     public synchronized static float[] getVariantVersions(final String name) {
         checkVM();
-        MapRec mr = (MapRec) vm.variantMap.get(name.toLowerCase());
+        final MapRec mr = (MapRec) vm.variantMap.get(name.toLowerCase());
         if (mr != null) {
             return (mr.getVersions());
         }
@@ -522,9 +522,9 @@ public class VariantManager {
      * Returns the versions of a SymbolPack that are available.
      * If the SymbolPack is not found, a zero-length array is returned.
      */
-    public synchronized static float[] getSymbolPackVersions(String name) {
+    public synchronized static float[] getSymbolPackVersions(final String name) {
         checkVM();
-        MapRec mr = (MapRec) vm.symbolMap.get(name.toLowerCase());
+        final MapRec mr = (MapRec) vm.symbolMap.get(name.toLowerCase());
         if (mr != null) {
             return (mr.getVersions());
         }
@@ -536,7 +536,7 @@ public class VariantManager {
     /**
      * Ensures version is positive OR VERSION_NEWEST or VERSION_OLDEST
      */
-    private static void checkVersionConstant(float version) {
+    private static void checkVersionConstant(final float version) {
         if (version <= 0.0f && (version != VERSION_NEWEST && version != VERSION_OLDEST)) {
             throw new IllegalArgumentException(
                     "invalid version or version constant: " + version);
@@ -550,13 +550,13 @@ public class VariantManager {
      * Typically, getResource(Variant, URI) or getResource(SymbolPack, URI) is
      * preferred to this method.
      */
-    public static synchronized URL getResource(URL packURL, URI uri) {
+    public static synchronized URL getResource(final URL packURL, final URI uri) {
         // ensure we have been initialized...
         checkVM();
 
         // if we are in webstart, assume that this is a webstart jar.
         if (vm.isInWebstart) {
-            URL url = getWSResource(packURL, uri);
+            final URL url = getWSResource(packURL, uri);
 
             // if cannot get it, fall through.
             if (url != null) {
@@ -568,13 +568,13 @@ public class VariantManager {
         if (uri.getScheme() != null) {
             try {
                 return uri.toURL();
-            } catch (MalformedURLException e) {
+            } catch (final MalformedURLException e) {
                 return null;
             }
         }
 
         // resolve & load.
-        URLClassLoader classLoader = getClassLoader(packURL);
+        final URLClassLoader classLoader = getClassLoader(packURL);
         return classLoader.findResource(uri.toString());
     }// getResource()
 
@@ -584,7 +584,7 @@ public class VariantManager {
      * to this Variant. Null arguments are illegal. Returns
      * null if the resource cannot be resolved. Threadsafe.
      */
-    public static URL getResource(Variant variant, URI uri) {
+    public static URL getResource(final Variant variant, final URI uri) {
         if (variant == null) {
             throw new IllegalArgumentException();
         }
@@ -597,7 +597,7 @@ public class VariantManager {
      * to this SymbolPack. Null arguments are illegal. Returns
      * null if the resource cannot be resolved. Threadsafe.
      */
-    public static URL getResource(SymbolPack symbolPack, URI uri) {
+    public static URL getResource(final SymbolPack symbolPack, final URI uri) {
         if (symbolPack == null) {
             throw new IllegalArgumentException();
         }
@@ -614,26 +614,26 @@ public class VariantManager {
      * e.g.: <code>jar:http:/the.location/ajar.zip!/</code>
      * or <code>jar:file:/c:/plugins/ajar.zip!/</code>
      */
-    public static URL getVariantPackageJarURL(Variant variant) {
+    public static URL getVariantPackageJarURL(final Variant variant) {
         if (variant != null) {
-            VRec vr = getVRec(variant);
+            final VRec vr = getVRec(variant);
             if (vr != null) {
                 assert (vr.getURL() != null);
 
-                URL url = vr.getURL();
-                String txtUrl = url.toString();
+                final URL url = vr.getURL();
+                final String txtUrl = url.toString();
 
                 if (txtUrl.startsWith("jar:")) {
                     return url;
                 } else {
-                    StringBuffer sb = new StringBuffer(txtUrl.length() + 8);
+                    final StringBuffer sb = new StringBuffer(txtUrl.length() + 8);
                     sb.append("jar:");
                     sb.append(txtUrl);
                     sb.append("!/");
 
                     try {
                         return new URL(sb.toString());
-                    } catch (MalformedURLException e) {
+                    } catch (final MalformedURLException e) {
                         Log.println("Could not convert ", url,
                                 " to a JAR url.");
                         Log.println("Exception: ", e);
@@ -648,7 +648,7 @@ public class VariantManager {
     /**
      * Internal getResource() implementation
      */
-    private static synchronized URL getResource(MapRecObj mro, URI uri) {
+    private static synchronized URL getResource(final MapRecObj mro, final URI uri) {
         // ensure we have been initialized...
         checkVM();
         assert (mro != null);
@@ -659,7 +659,7 @@ public class VariantManager {
 
         // if we are in webstart, assume that this is a webstart jar.
         if (vm.isInWebstart) {
-            URL url = getWSResource(mro, uri);
+            final URL url = getWSResource(mro, uri);
 
             // if cannot get it, fall through.
             if (url != null) {
@@ -672,7 +672,7 @@ public class VariantManager {
         if (uri.getScheme() != null) {
             try {
                 return uri.toURL();
-            } catch (MalformedURLException e) {
+            } catch (final MalformedURLException e) {
                 return null;
             }
         }
@@ -712,22 +712,22 @@ public class VariantManager {
      */
     private URL[] searchForFiles(final File[] searchPaths,
                                  final String[] extensions) {
-        List urlList = new LinkedList();
+        final List urlList = new LinkedList();
 
-        for (File searchPath : searchPaths) {
-            File[] list = searchPath.listFiles();
+        for (final File searchPath : searchPaths) {
+            final File[] list = searchPath.listFiles();
 
             // internal error if list == null; means that
             // searchPaths[] is not a directory!
             if (list != null) {
-                for (File aList : list) {
+                for (final File aList : list) {
                     if (aList.isFile()) {
-                        String fileName = aList.getPath();
+                        final String fileName = aList.getPath();
 
                         if (checkFileName(fileName, extensions)) {
                             try {
                                 urlList.add(aList.toURL());
-                            } catch (MalformedURLException e) {
+                            } catch (final MalformedURLException e) {
                                 // do nothing; we just won't add it
                             }
                         }
@@ -743,7 +743,7 @@ public class VariantManager {
     /**
      * Returns the URLClassLoader for a given URL, or creates a new one....
      */
-    private static URLClassLoader getClassLoader(URL packageURL) {
+    private static URLClassLoader getClassLoader(final URL packageURL) {
         // WARNING: this method is not (itself) threadsafe
         if (packageURL == null) {
             throw new IllegalArgumentException();
@@ -763,15 +763,15 @@ public class VariantManager {
     /**
      * Returns the "file" part of the URL; e.g.: x/y/z.jar, returns z.jar
      */
-    private static String getFile(URL url) {
-        String s = url.toString();
+    private static String getFile(final URL url) {
+        final String s = url.toString();
         return s.substring(s.lastIndexOf("/") + 1, s.length());
     }// getFile()
 
     /**
      * Get the webstart plugin name
      */
-    private static String getWSPluginName(URL url) {
+    private static String getWSPluginName(final URL url) {
         final String s = url.toString();
         final int idxExclam = s.indexOf('!');
         if (idxExclam >= 0) {
@@ -784,8 +784,8 @@ public class VariantManager {
     /**
      * Checks if the fileName ends with an allowed extension; if so, returns true.
      */
-    private boolean checkFileName(String fileName, String[] extensions) {
-        for (String extension : extensions) {
+    private boolean checkFileName(final String fileName, final String[] extensions) {
+        for (final String extension : extensions) {
             if (fileName.endsWith(extension)) {
                 return true;
             }
@@ -804,26 +804,26 @@ public class VariantManager {
      * <p>
      * This primarily applies to Webstart resources
      */
-    private static URL getWSResource(MapRecObj mro, URI uri) {
+    private static URL getWSResource(final MapRecObj mro, final URI uri) {
         assert (vm.isInWebstart);
 
         if (uri == null) {
             return null;
         }
 
-        ClassLoader cl = vm.getClass().getClassLoader();
+        final ClassLoader cl = vm.getClass().getClassLoader();
 
         if (mro != null) {
             Enumeration enm = null;
 
             try {
                 enm = cl.getResources(uri.toString());
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 return null;
             }
 
             while (enm.hasMoreElements()) {
-                URL url = (URL) enm.nextElement();
+                final URL url = (URL) enm.nextElement();
 
                 // deconflict. Note that this is not, and cannot be, foolproof;
                 // due to name-mangling by webstart. For example, if two plugins
@@ -833,8 +833,8 @@ public class VariantManager {
                 // however, if we can get the mangled name and set it as the
                 // 'pluginName', we can be foolproof.
                 //
-                String lcPath = url.getPath();
-                String search = mro.getPluginName() + "!";
+                final String lcPath = url.getPath();
+                final String search = mro.getPluginName() + "!";
 
                 if (lcPath.indexOf(search) >= 0) {
                     return url;
@@ -855,7 +855,7 @@ public class VariantManager {
      * <p>
      * This primarily applies to Webstart resources
      */
-    private static URL getWSResource(URL packURL, URI uri) {
+    private static URL getWSResource(final URL packURL, final URI uri) {
         /*
             NOTE: this method is used by getResource(URL, URI), which is
 			chiefly used by VariantManager and associated parsers; a VariantRecord
@@ -864,19 +864,19 @@ public class VariantManager {
 		*/
         assert (vm.isInWebstart);
 
-        ClassLoader cl = vm.getClass().getClassLoader();
-        String deconflictName = getWSPluginName(packURL);
+        final ClassLoader cl = vm.getClass().getClassLoader();
+        final String deconflictName = getWSPluginName(packURL);
 
         Enumeration enm = null;
 
         try {
             enm = cl.getResources(uri.toString());
-        } catch (IOException e) {
+        } catch (final IOException e) {
             return null;
         }
 
         while (enm.hasMoreElements()) {
-            URL url = (URL) enm.nextElement();
+            final URL url = (URL) enm.nextElement();
 
             // deconflict. Note that this is not, and cannot be, foolproof;
             // due to name-mangling by webstart. For example, if two plugins
@@ -886,7 +886,7 @@ public class VariantManager {
             // however, if we can get the mangled name and set it as the
             // 'pluginName', we can be foolproof.
             //
-            String lcPath = url.getPath();
+            final String lcPath = url.getPath();
             if (lcPath.indexOf(deconflictName) >= 0) {
                 return url;
             }
@@ -909,13 +909,13 @@ public class VariantManager {
      * <p>
      * NOTE: names and aliases are always mapped in all lower case.
      */
-    private static void addVariant(Variant v, String pluginName,
-                                   URL pluginURL) throws IOException {
+    private static void addVariant(final Variant v, final String pluginName,
+                                   final URL pluginURL) throws IOException {
         if (v == null || pluginName == null || pluginURL == null) {
             throw new IllegalArgumentException();
         }
 
-        VRec vr = new VRec();
+        final VRec vr = new VRec();
         vr.setPluginName(pluginName);
         vr.setURL(pluginURL);
         vr.setVariant(v);
@@ -958,11 +958,11 @@ public class VariantManager {
         // alias from causing a subtle error)
         //
         final String[] aliases = v.getAliases();
-        for (String aliase : aliases) {
+        for (final String aliase : aliases) {
             // not if it's "" though...
             if (!"".equals(aliase)) {
                 final String alias = aliase.toLowerCase();
-                MapRec testMapRec = (MapRec) vm.variantMap.get(alias);
+                final MapRec testMapRec = (MapRec) vm.variantMap.get(alias);
                 if (testMapRec == null) {
                     // add alias
                     vm.variantMap.put(alias, mapRec);
@@ -994,13 +994,13 @@ public class VariantManager {
      * <p>
      * Names are always mapped in all lower case.
      */
-    private static void addSymbolPack(SymbolPack sp, String pluginName,
-                                      URL pluginURL) throws IOException {
+    private static void addSymbolPack(final SymbolPack sp, final String pluginName,
+                                      final URL pluginURL) throws IOException {
         if (sp == null || pluginName == null || pluginURL == null) {
             throw new IllegalArgumentException();
         }
 
-        SPRec spRec = new SPRec();
+        final SPRec spRec = new SPRec();
         spRec.setPluginName(pluginName);
         spRec.setURL(pluginURL);
         spRec.setSymbolPack(sp);
@@ -1017,7 +1017,7 @@ public class VariantManager {
         } else {
             // we are mapped. See if this version has been added.
             if (!mapRec.add(spRec) && !vm.isInWebstart) {
-                SPRec spRec2 = (SPRec) mapRec.get(sp.getVersion());
+                final SPRec spRec2 = (SPRec) mapRec.get(sp.getVersion());
                 final SymbolPack sp2 = spRec2.getSymbolPack();
                 if (sp2.getVersion() == sp.getVersion()) {
                     // 2 SymbolPacks with identical versions! we are confused!
@@ -1046,8 +1046,8 @@ public class VariantManager {
     /**
      * Gets the VRec associated with a Variant (via name and version)
      */
-    private static VRec getVRec(Variant v) {
-        MapRec mapRec = (MapRec) vm.variantMap.get(v.getName().toLowerCase());
+    private static VRec getVRec(final Variant v) {
+        final MapRec mapRec = (MapRec) vm.variantMap.get(v.getName().toLowerCase());
         return (VRec) mapRec.get(v.getVersion());
     }// getVRec()
 
@@ -1055,8 +1055,8 @@ public class VariantManager {
     /**
      * Gets the SPRec associated with a SymbolPack (via name and version)
      */
-    private static SPRec getSPRec(SymbolPack sp) {
-        MapRec mapRec = (MapRec) vm.symbolMap.get(sp.getName().toLowerCase());
+    private static SPRec getSPRec(final SymbolPack sp) {
+        final MapRec mapRec = (MapRec) vm.symbolMap.get(sp.getName().toLowerCase());
         return (SPRec) mapRec.get(sp.getVersion());
     }// getSPRec()
 
@@ -1067,7 +1067,7 @@ public class VariantManager {
         private ArrayList list = new ArrayList(2);
 
         // this constructor prevents us from having an empty list.
-        public MapRec(MapRecObj obj) {
+        public MapRec(final MapRecObj obj) {
             if (obj == null) {
                 throw new IllegalArgumentException();
             }
@@ -1083,9 +1083,9 @@ public class VariantManager {
          * a unique version. If it is not, returns false. Otherwise,
          * the MapRecObj is added and returns true.
          */
-        public boolean add(MapRecObj obj) {
-            for (Object aList : list) {
-                MapRecObj temp = (MapRecObj) aList;
+        public boolean add(final MapRecObj obj) {
+            for (final Object aList : list) {
+                final MapRecObj temp = (MapRecObj) aList;
                 if (temp.getVersion() == obj.getVersion()) {
                     return false;
                 }
@@ -1101,7 +1101,7 @@ public class VariantManager {
         public float[] getVersions() {
             final float[] versions = new float[list.size()];
             for (int i = 0; i < list.size(); i++) {
-                MapRecObj mro = (MapRecObj) list.get(i);
+                final MapRecObj mro = (MapRecObj) list.get(i);
                 versions[i] = mro.getVersion();
             }
 
@@ -1124,8 +1124,8 @@ public class VariantManager {
             }
 
             MapRecObj selected = null;
-            for (Object aList : list) {
-                MapRecObj mro = (MapRecObj) aList;
+            for (final Object aList : list) {
+                final MapRecObj mro = (MapRecObj) aList;
                 selected = (selected == null) ? mro : selected;
 
                 if ((version == VERSION_OLDEST && mro.getVersion() < selected
@@ -1154,7 +1154,7 @@ public class VariantManager {
             return pluginName;
         }
 
-        public void setPluginName(String value) {
+        public void setPluginName(final String value) {
             pluginName = value;
         }
 
@@ -1162,7 +1162,7 @@ public class VariantManager {
             return fileURL;
         }
 
-        public void setURL(URL value) {
+        public void setURL(final URL value) {
             fileURL = value;
         }
 
@@ -1181,7 +1181,7 @@ public class VariantManager {
             return variant;
         }
 
-        public void setVariant(Variant value) {
+        public void setVariant(final Variant value) {
             variant = value;
         }
 
@@ -1200,7 +1200,7 @@ public class VariantManager {
             return symbolPack;
         }
 
-        public void setSymbolPack(SymbolPack value) {
+        public void setSymbolPack(final SymbolPack value) {
             symbolPack = value;
         }
 
