@@ -342,23 +342,22 @@ public class XMLVariantParser implements VariantParser {
     }// procVariants()
 
     private static List<Power> makePowers(final Element elVariant) {
+        final Unmarshaller mapDefUnmarshaller;
+        try {
+            mapDefUnmarshaller = JAXBContext.newInstance(Power.class)
+                    .createUnmarshaller();
+        } catch (final JAXBException e) {
+            throw new IllegalArgumentException(e);
+        }
+
         final NodeList nodes = elVariant.getElementsByTagName(EL_POWER);
         return IntStream.range(0, nodes.getLength())
                 .mapToObj(j -> (Element) nodes.item(j)).map(element -> {
-                    final String name = element.getAttribute(ATT_NAME);
-                    final boolean isActive = Boolean
-                            .valueOf(element.getAttribute(ATT_ACTIVE));
-                    final String adjective = element
-                            .getAttribute(ATT_ADJECTIVE);
-                    final List<String> altNames = Arrays.asList(Utils
-                            .parseCSVXE(element.getAttribute(ATT_ALTNAMES)));
-
-                    final List<String> names = new ArrayList<>();
-                    names.add(name);
-                    names.addAll(altNames);
-
-                    return new Power(names.toArray(new String[names.size()]),
-                            adjective, isActive);
+                    try {
+                        return (Power) mapDefUnmarshaller.unmarshal(element);
+                    } catch (JAXBException e) {
+                        throw new IllegalArgumentException(e);
+                    }
                 }).collect(Collectors.toList());
     }
 

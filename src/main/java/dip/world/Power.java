@@ -23,10 +23,18 @@
 package dip.world;
 
 
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * A Power represents player in the game.
  */
-public class Power implements Comparable, java.io.Serializable {
+@XmlRootElement(name = "POWER")
+public class Power implements Comparable, Serializable {
     /**
      * An empty array of Power objects.
      */
@@ -37,13 +45,21 @@ public class Power implements Comparable, java.io.Serializable {
 
 
     // immutable fields
-    private final String[] names;        // length >= 1
-    private final boolean isActive;
-    private final String adjective;
+    @XmlAttribute(required = true)
+    private String name;
+    @XmlAttribute(name = "default", required = true)
+    private boolean isActive;
+    @XmlAttribute(required = true)
+    private String adjective;
+    @XmlAttribute
+    private List<String> altnames;
 
 
     // transient fields
-    private transient int hashCode = 0;
+    private transient int hashCode;
+
+    public Power() {
+    }
 
     /**
      * Create a new Power.
@@ -73,7 +89,8 @@ public class Power implements Comparable, java.io.Serializable {
             throw new IllegalArgumentException("empty adjective");
         }
 
-        this.names = names;
+        name = names[0];
+        altnames = Arrays.asList(Arrays.copyOfRange(names, 1, names.length));
         this.adjective = adjective;
         this.isActive = isActive;
     }// Power()
@@ -83,7 +100,7 @@ public class Power implements Comparable, java.io.Serializable {
      * Returns the name of the power. Never returns null.
      */
     public String getName() {
-        return names[FULL_NAME];
+        return name;
     }// getName()
 
     /**
@@ -97,7 +114,10 @@ public class Power implements Comparable, java.io.Serializable {
      * Get all names. There is always at least one. Does not include adjectives.
      */
     public String[] getNames() {
-        return names;
+        List<String> names = new ArrayList<>();
+        names.add(name);
+        names.addAll(altnames);
+        return names.toArray(new String[names.size()]);
     }// getAllNames()
 
 
@@ -137,6 +157,7 @@ public class Power implements Comparable, java.io.Serializable {
     /**
      * Implementation of Comparable interface
      */
+    @Override
     public int compareTo(Object obj) {
         Power power = (Power) obj;
         return getName().compareTo(power.getName());
