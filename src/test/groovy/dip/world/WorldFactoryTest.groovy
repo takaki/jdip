@@ -18,8 +18,12 @@
 
 package dip.world
 
+import dip.order.Move
+import dip.world.variant.VariantManager
 import dip.world.variant.data.Variant
 import spock.lang.Specification
+
+import java.nio.file.Paths
 
 class WorldFactoryTest extends Specification {
     def "getInstance"() {
@@ -33,5 +37,43 @@ class WorldFactoryTest extends Specification {
         def world = WorldFactory.getInstance().createWorld(variant)
 //        expect:
 //        world.getMap() != null
+    }
+
+    def "check standard map"() {
+        setup:
+        VariantManager.init([Paths.get(System.getProperty("user.dir"), "src/test/resources/variants").
+                                     toFile()] as File[], false)
+        when:
+        def variant = VariantManager.getVariants()[7]
+        def world = WorldFactory.getInstance().createWorld(variant)
+        world.getPhaseSet()
+        def mos = world.getMap().getProvince("mos")
+        def stp = world.getMap().getProvince("stp")
+        def ank = world.getMap().getProvince("ank")
+        then:
+        mos.getFullName() == "Moscow"
+        mos.isAdjacent(Coast.NONE, stp)
+        !mos.isAdjacent(Coast.NONE, ank)
+        !stp.isAdjacent(Coast.SINGLE, mos)
+        mos.getAllAdjacent().size() == 5
+        stp.getAllAdjacent().size() == 9
+        stp.getAdjacentLocations(Coast.SOUTH).size() == 3
+        mos.isTouching(stp)
+        !mos.isTouching(ank)
+        mos.isLandLocked()
+        !mos.isCoastal()
+        stp.isCoastal()
+        stp.getValidDirectionalCoasts() == [Coast.NORTH, Coast.SOUTH] as Coast[]
+        mos.getValidDirectionalCoasts() == [] as Coast[]
+        !mos.isCoastValid(Coast.NORTH)
+        stp.isCoastValid(Coast.NORTH)
+        !stp.isCoastValid(Coast.EAST)
+        mos.getBaseMoveModifier() == 0
+
+        mos.canTransit(new Location(stp, Coast.SOUTH), Unit.Type.ARMY, Phase.parse("S1900M"), Move.class)
+        mos.canTransit(new Location(stp, Coast.SOUTH), Unit.Type.FLEET, Phase.parse("S1900M"), Move.class)
+
+        stp.canTransit(new Location(mos, Coast.LAND), Unit.Type.ARMY, Phase.parse("S1900M"), Move.class)
+        stp.canTransit(new Location(mos, Coast.LAND), Unit.Type.FLEET, Phase.parse("S1900M"), Move.class)
     }
 }
