@@ -112,13 +112,8 @@ public class Province implements Serializable, Comparable<Province> {
          * If no locations are adjacent, a zero-length array is returned.
          */
         protected Location[] getLocations(final Coast coast) {
-            Location[] locations = adjLoc.get(coast);
-
-            if (locations == null) {
-                locations = Location.EMPTY;
-            }
-
-            return locations;
+            final Location[] locations = adjLoc.get(coast);
+            return locations == null ? Location.EMPTY : locations;
         }// getLocations()
 
 
@@ -369,10 +364,8 @@ public class Province implements Serializable, Comparable<Province> {
      */
     public boolean isCoastal() {
         return adjacency.getLocations(Coast.LAND).length > 0 && Arrays
-                .stream(Coast.ANY_SEA).anyMatch(coast -> {
-                    final Location[] locations = adjacency.getLocations(coast);
-                    return locations.length > 0;
-                });
+                .stream(Coast.ANY_SEA)
+                .anyMatch(coast -> adjacency.getLocations(coast).length > 0);
 
     }// isCoastal()
 
@@ -401,10 +394,8 @@ public class Province implements Serializable, Comparable<Province> {
      */
     public boolean isMultiCoastal() {
         return adjacency.getLocations(Coast.SEA).length == 0 && Arrays
-                .stream(Coast.ANY_DIRECTIONAL).anyMatch(coast -> {
-                    return adjacency.getLocations(coast).length > 0;
-                });
-
+                .stream(Coast.ANY_DIRECTIONAL)
+                .anyMatch(coast -> adjacency.getLocations(coast).length > 0);
     }// isMultiCoastal()
 
 
@@ -428,7 +419,6 @@ public class Province implements Serializable, Comparable<Province> {
      */
     public boolean isCoastValid(final Coast coast) {
         return adjacency.getLocations(coast).length != 0;
-
     }// isCoastValid()
 
 
