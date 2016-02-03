@@ -30,6 +30,7 @@ import dip.world.variant.data.SymbolPack;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
+import javax.xml.bind.JAXB;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -43,20 +44,11 @@ import java.util.*;
  */
 public class XMLSymbolParser implements SymbolParser {
     // Element constants
-    public static final String EL_SYMBOLS = "SYMBOLS";
-    public static final String EL_DESCRIPTION = "DESCRIPTION";
-    public static final String EL_SCALING = "SCALING";
-    public static final String EL_SCALE = "SCALE";
     private static final String EL_DEFS = "defs";
     private static final String EL_STYLE = "style";
 
 
     // Attribute constants
-    public static final String ATT_NAME = "name";
-    public static final String ATT_VERSION = "version";
-    public static final String ATT_THUMBURI = "thumbURI";
-    public static final String ATT_SVGURI = "svgURI";
-    public static final String ATT_VALUE = "value";
     private static final String ATT_ID = "id";
     private static final String ATT_TYPE = "type";
 
@@ -68,8 +60,6 @@ public class XMLSymbolParser implements SymbolParser {
     private static final String CDATA_NODE_NAME = "#cdata-section";
 
 
-    // instance variables
-    private Document doc = null;
     private DocumentBuilder docBuilder = null;
     private SymbolPack symbolPack = null;
     private URL symbolPackURL = null;
@@ -80,7 +70,7 @@ public class XMLSymbolParser implements SymbolParser {
      */
     public XMLSymbolParser(
             final DocumentBuilderFactory dbf) throws ParserConfigurationException {
-        boolean oldNSvalue = dbf.isNamespaceAware();
+        final boolean oldNSvalue = dbf.isNamespaceAware();
 
         dbf.setNamespaceAware(true);    // essential!
         docBuilder = dbf.newDocumentBuilder();
@@ -95,14 +85,15 @@ public class XMLSymbolParser implements SymbolParser {
     /**
      * Parse the given input stream
      */
-    public synchronized void parse(InputStream is,
-                                   URL symbolPackURL) throws IOException, SAXException {
+    public synchronized void parse(final InputStream is,
+                                   final URL symbolPackURL) throws IOException, SAXException {
         Log.println("XMLSymbolParser: Parsing: ", symbolPackURL);
-        long time = System.currentTimeMillis();
-        symbolPack = null;
+        final long time = System.currentTimeMillis();
         this.symbolPackURL = symbolPackURL;
-        doc = docBuilder.parse(is);
-        procSymbolData();
+        symbolPack = JAXB.unmarshal(is, SymbolPack.class);
+        // extract symbol SVG into symbols
+        // add symbols to SymbolPack
+        procAndAddSymbolSVG(symbolPack, symbolPack.getScaleMap());
         Log.printTimed(time, "    time: ");
     }// parse()
 
@@ -112,7 +103,6 @@ public class XMLSymbolParser implements SymbolParser {
      */
     public void close() {
         symbolPack = null;
-        doc = null;
     }// close()
 
     /**
@@ -127,57 +117,12 @@ public class XMLSymbolParser implements SymbolParser {
     /**
      * Parse the symbol data into Symbols and SymbolPacks
      */
-    private void procSymbolData() throws IOException, SAXException {
-        // create a symbolPack
-        symbolPack = new SymbolPack();
-
-        // find root element
-        Element root = doc.getDocumentElement();    // root: EL_SYMBOLS
-        symbolPack.setName(root.getAttribute(ATT_NAME).trim());
-        symbolPack.setVersion(parseFloat(root, ATT_VERSION));
-        symbolPack.setThumbnailURI(root.getAttribute(ATT_THUMBURI).trim());
-        symbolPack.setSVGURI(root.getAttribute(ATT_SVGURI).trim());
-
-        // parse description
-        Element element = getSingleElementByName(root, EL_DESCRIPTION);
-        if (element != null) {
-            Node text = element.getFirstChild();
-            symbolPack.setDescription(text.getNodeValue());
-        }
-
-
-        // setup a hashmap: maps symbol names (case-preserved) to
-        // scale factors (Float). If hashmap is empty, we have no
-        // scaling factors to worry about
-        HashMap scaleMap = new HashMap();
-
-        // is SCALING element present? if so, parse it.
-        NodeList scalingNodes = root.getElementsByTagName(EL_SCALING);
-        if (scalingNodes.getLength() == 1) {
-            NodeList scNodes = ((Element) scalingNodes.item(0))
-                    .getElementsByTagName(EL_SCALE);
-            for (int i = 0; i < scNodes.getLength(); i++) {
-                Element elScale = (Element) scNodes.item(i);
-                scaleMap.put(elScale.getAttribute(ATT_NAME).trim(),
-                        parseScaleFactor(elScale, ATT_VALUE));
-            }
-        }
-
-        // extract symbol SVG into symbols
-        // add symbols to SymbolPack
-        procAndAddSymbolSVG(symbolPack, scaleMap);
-    }// procSymbolData()
-
-
-    /**
-     * Parse the symbol data into Symbols and SymbolPacks
-     */
-    private void procAndAddSymbolSVG(SymbolPack symbolPack,
-                                     HashMap scaleMap) throws IOException, SAXException {
+    private void procAndAddSymbolSVG(final SymbolPack symbolPack,
+                                     final Map<String, Float> scaleMap) throws IOException, SAXException {
         Document svgDoc = null;
 
         // resolve SVG URI
-        URL url = VariantManager
+        final URL url = VariantManager
                 .getResource(symbolPackURL, symbolPack.getSVGURI());
         if (url == null) {
             throw new IOException("Could not convert URI: " +
@@ -186,29 +131,22 @@ public class XMLSymbolParser implements SymbolParser {
         }
 
         // parse resolved URI into a Document
-        InputStream is = null;
-        try {
-            is = new BufferedInputStream(url.openStream());
+
+        try (InputStream is = new BufferedInputStream(url.openStream())) {
             svgDoc = docBuilder.parse(is);
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                }
-            }
         }
 
         // find defs section, if any, and style attribute
         //
-        Element defs = XMLUtils
+        final Element defs = XMLUtils
                 .findChildElementMatching(svgDoc.getDocumentElement(), EL_DEFS);
         if (defs != null) {
-            Element style = XMLUtils.findChildElementMatching(defs, EL_STYLE);
+            final Element style = XMLUtils
+                    .findChildElementMatching(defs, EL_STYLE);
             if (style != null) {
                 // check CSS type (must be "text/css")
                 //
-                String type = style.getAttribute(ATT_TYPE).trim();
+                final String type = style.getAttribute(ATT_TYPE).trim();
                 if (!CSS_TYPE_VALUE.equals(type)) {
                     throw new IOException(
                             "Only <style type=\"text/css\"> is accepted. Cannot parse CSS otherwise.");
@@ -217,7 +155,7 @@ public class XMLSymbolParser implements SymbolParser {
                 style.normalize();
 
                 // get style CDATA
-                CDATASection cdsNode = (CDATASection) XMLUtils
+                final CDATASection cdsNode = (CDATASection) XMLUtils
                         .findChildNodeMatching(style, CDATA_NODE_NAME,
                                 Node.CDATA_SECTION_NODE);
 
@@ -230,15 +168,15 @@ public class XMLSymbolParser implements SymbolParser {
         }
 
         // find all IDs
-        HashMap map = elementMapper(svgDoc.getDocumentElement(), ATT_ID);
+        final HashMap map = elementMapper(svgDoc.getDocumentElement(), ATT_ID);
 
         // List of Symbols
-        ArrayList list = new ArrayList(15);
+        final ArrayList list = new ArrayList(15);
 
         // iterate over hashmap finding all symbols with IDs
-        Iterator iter = map.entrySet().iterator();
+        final Iterator iter = map.entrySet().iterator();
         while (iter.hasNext()) {
-            Map.Entry me = (Map.Entry) iter.next();
+            final Map.Entry me = (Map.Entry) iter.next();
             final String name = (String) me.getKey();
             final Float scale = (Float) scaleMap.get(name);
             list.add(new Symbol(name,
@@ -252,30 +190,13 @@ public class XMLSymbolParser implements SymbolParser {
 
 
     /**
-     * Returns a Float, representing the scaling factor; must be non-negative
-     * and non-zero.
-     */
-    private Float parseScaleFactor(Element element,
-                                   String attrName) throws IOException {
-        float f = parseFloat(element, attrName);
-
-        if (f <= 0.0f) {
-            throw new IOException(
-                    element.getTagName() + " attribute " + attrName + " cannot be negative or zero.");
-        }
-
-        return new Float(f);
-    }// parseScaleFactor()
-
-
-    /**
      * Parse a floating point value
      */
-    private float parseFloat(Element element,
-                             String attrName) throws IOException {
+    private float parseFloat(final Element element,
+                             final String attrName) throws IOException {
         try {
             return Float.parseFloat(element.getAttribute(attrName).trim());
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             throw new IOException(
                     element.getTagName() + " attribute " + attrName + " has an invalid " +
                             "floating point value \"" + element
@@ -285,23 +206,14 @@ public class XMLSymbolParser implements SymbolParser {
 
 
     /**
-     * Get an Element by name; only returns a single element.
-     */
-    private Element getSingleElementByName(Element parent, String name) {
-        NodeList nodes = parent.getElementsByTagName(name);
-        return (Element) nodes.item(0);
-    }// getSingleElementByName()
-
-
-    /**
      * Searches an XML document for Elements that have a given non-empty attribute.
      * The Elements are then put into a HashMap, which is indexed by the attribute
      * value. This starts from the given Element and recurses downward. Throws an
      * exception if an element with a duplicate attribute name is found.
      */
-    private HashMap elementMapper(Element start,
-                                  String attrName) throws IOException {
-        HashMap map = new HashMap(31);
+    private HashMap elementMapper(final Element start,
+                                  final String attrName) throws IOException {
+        final HashMap map = new HashMap(31);
         elementMapperWalker(map, start, attrName);
         return map;
     }// elementMapper()
@@ -316,10 +228,10 @@ public class XMLSymbolParser implements SymbolParser {
             // node MUST be one of the following:
             // <g>, <symbol>, or <svg>
             //
-            String name = ((Element) node).getTagName();
+            final String name = ((Element) node).getTagName();
             if (node.hasAttributes() && isValidElement(name)) {
-                NamedNodeMap attributes = node.getAttributes();
-                Node attrNode = attributes.getNamedItem(attrName);
+                final NamedNodeMap attributes = node.getAttributes();
+                final Node attrNode = attributes.getNamedItem(attrName);
                 if (attrNode != null) {
                     final String attrValue = attrNode.getNodeValue();
                     if (!"".equals(attrValue)) {
@@ -337,7 +249,7 @@ public class XMLSymbolParser implements SymbolParser {
 
         // check if current node has any children
         // if so, iterate through & recursively call this method
-        NodeList children = node.getChildNodes();
+        final NodeList children = node.getChildNodes();
         if (children != null) {
             for (int i = 0; i < children.getLength(); i++) {
                 elementMapperWalker(map, children.item(i), attrName);
@@ -349,7 +261,7 @@ public class XMLSymbolParser implements SymbolParser {
     /**
      * See if name is a valid element tag name
      */
-    private boolean isValidElement(String name) {
+    private boolean isValidElement(final String name) {
         for (int i = 0; i < VALID_ELEMENTS.length; i++) {
             if (VALID_ELEMENTS[i].equals(name)) {
                 return true;
@@ -372,11 +284,12 @@ public class XMLSymbolParser implements SymbolParser {
      * 			opacity:some;}						// not handled
      * 	</pre>
      */
-    private SymbolPack.CSSStyle[] parseCSS(String input) throws IOException {
-        List cssStyles = new ArrayList(20);
+    private SymbolPack.CSSStyle[] parseCSS(
+            final String input) throws IOException {
+        final List cssStyles = new ArrayList(20);
 
         // break input into lines
-        BufferedReader br = new BufferedReader(new StringReader(input));
+        final BufferedReader br = new BufferedReader(new StringReader(input));
         String line = br.readLine();
         while (line != null) {
             // first non-whitespace must be a '.'
@@ -386,7 +299,7 @@ public class XMLSymbolParser implements SymbolParser {
                 int idxCBStart = -1;    // position of '{'
                 int idxCBEnd = -1;        // position of '}'
                 for (int i = 0; i < line.length(); i++) {
-                    char c = line.charAt(i);
+                    final char c = line.charAt(i);
                     if (idxEndName < 0 && Character.isWhitespace(c)) {
                         idxEndName = i;
                     }
@@ -416,8 +329,8 @@ public class XMLSymbolParser implements SymbolParser {
                 }
 
                 // parse
-                String name = line.substring(0, idxEndName);
-                String value = line.substring(idxCBStart, idxCBEnd + 1);
+                final String name = line.substring(0, idxEndName);
+                final String value = line.substring(idxCBStart, idxCBEnd + 1);
 
                 // create CSS Style
                 cssStyles.add(new SymbolPack.CSSStyle(name, value));

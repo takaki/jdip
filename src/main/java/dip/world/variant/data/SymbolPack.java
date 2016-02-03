@@ -24,22 +24,66 @@ package dip.world.variant.data;
 
 import javafx.util.Pair;
 
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A SymbolPack
  */
+@XmlRootElement(name = "SYMBOLS")
 public class SymbolPack implements Comparable<SymbolPack> {
-    private String name;
-    private float version;
-    private String description = "";
+    @XmlAttribute(required = true)
+    private String name_;
+    @XmlAttribute(required = true)
+    private float version_;
+    @XmlAttribute(required = true)
     private URI thumbURI;
+    @XmlAttribute(required = true)
     private URI svgURI;
+    @XmlElement(name = "description", required = true)
+    private String description_ = "";
+
+
+    @XmlElementWrapper(name = "SCALING")
+    @XmlElement(name = "SCALE")
+    private List<Scale> scales = Collections.emptyList();
+
+    public static class Scale {
+        @XmlAttribute
+        private String symbolName;
+        @XmlAttribute
+        private float value;
+
+        @SuppressWarnings("unused")
+        public void afterUnmarshal(final Unmarshaller unmarshaller,
+                                   final Object parent) {
+            if (value <= 0.0f) {
+                throw new IllegalArgumentException(
+                        "scale attribute value cannot be negative or zero.");
+            }
+        }
+
+        public String getSymbolName() {
+            return symbolName;
+        }
+
+        public float getValue() {
+            return value;
+        }
+    }
+
+    public Map<String, Float> getScaleMap() {
+        return scales.stream().collect(
+                Collectors.toMap(Scale::getSymbolName, Scale::getValue));
+    }
+
     private List<Symbol> symbols;
     private List<CSSStyle> cssStyles = Collections.emptyList();
 
@@ -47,21 +91,21 @@ public class SymbolPack implements Comparable<SymbolPack> {
      * The name of the SymbolPack.
      */
     public String getName() {
-        return name;
+        return name_;
     }
 
     /**
      * Version of this SymbolPack
      */
     public float getVersion() {
-        return version;
+        return version_;
     }
 
     /**
      * The description of the SymbolPack.
      */
     public String getDescription() {
-        return description;
+        return description_;
     }
 
 
@@ -69,21 +113,21 @@ public class SymbolPack implements Comparable<SymbolPack> {
      * Set the SymbolPack name.
      */
     public void setName(final String value) {
-        name = value;
+        name_ = value;
     }
 
     /**
      * Set the SymbolPack of this variant
      */
     public void setVersion(final float value) {
-        version = value;
+        version_ = value;
     }
 
     /**
      * Set the SymbolPack description
      */
     public void setDescription(final String value) {
-        description = value;
+        description_ = value;
     }
 
 
@@ -175,7 +219,7 @@ public class SymbolPack implements Comparable<SymbolPack> {
      */
     @Override
     public int compareTo(final SymbolPack o) {
-        return name.compareTo(o.name);
+        return name_.compareTo(o.name_);
     }// compareTo()
 
     /**
