@@ -90,12 +90,12 @@ public class VariantManager {
 
     // instance variables
     private final boolean isInWebstart;
-    private HashMap variantMap = null;    // map of lowercased Variant names to MapRec objects (which contain VRecs)
-    private HashMap symbolMap = null;    // lowercase symbol names to MapRec objects (which contain SPRecs)
+    private HashMap<String, MapRec> variantMap = null;    // map of lowercased Variant names to MapRec objects (which contain VRecs)
+    private HashMap<String, MapRec> symbolMap = null;    // lowercase symbol names to MapRec objects (which contain SPRecs)
 
     // cached variables to enhance performance of getResource() methods
-    private transient Variant[] variants = new Variant[0];            // The sorted Variant list
-    private transient SymbolPack[] symbolPacks = new SymbolPack[0];    // The sorted SymbolPack list
+    private transient List<Variant> variants = Collections.emptyList();            // The sorted Variant list
+    private transient List<SymbolPack> symbolPacks = Collections.emptyList();    // The sorted SymbolPack list
     private transient URLClassLoader currentUCL = null;                // The current class loader
     private transient URL currentPackageURL = null;                    // The current class loader URL
 
@@ -121,11 +121,11 @@ public class VariantManager {
         if (vm != null) {
             // perform cleanup
             vm.variantMap.clear();
-            vm.variants = new Variant[0];
+            vm.variants = Collections.emptyList();
             vm.currentUCL = null;
             vm.currentPackageURL = null;
 
-            vm.symbolPacks = new SymbolPack[0];
+            vm.symbolPacks = Collections.emptyList();
             vm.symbolMap.clear();
         }
 
@@ -340,12 +340,12 @@ public class VariantManager {
     public static synchronized Variant[] getVariants() {
         checkVM();
 
-        if (vm.variants.length != vm.variantMap.size()) {
+        if (vm.variants.size() != vm.variantMap.size()) {
             // note that we need to avoid putting duplicates
             // into the array.
             //
-            final ArrayList list = new ArrayList();        // list of variants
-            final Set set = new HashSet();                // a set of MapRecs
+            final List<Variant> list = new ArrayList<>();        // list of variants
+            final Set<MapRec> set = new HashSet<>();                // a set of MapRecs
             set.addAll(vm.variantMap.values());
 
             // fill variant list with variants.
@@ -358,10 +358,10 @@ public class VariantManager {
             }
 
             Collections.sort(list);
-            vm.variants = (Variant[]) list.toArray(new Variant[list.size()]);
+            vm.variants = list;
         }
 
-        return vm.variants;
+        return vm.variants.toArray(new Variant[vm.variants.size()]);
     }// getVariants()
 
     /**
@@ -372,7 +372,7 @@ public class VariantManager {
     public static synchronized SymbolPack[] getSymbolPacks() {
         checkVM();
 
-        if (vm.symbolPacks.length != vm.symbolMap.size()) {
+        if (vm.symbolPacks.size() != vm.symbolMap.size()) {
             // avoid putting duplicates into the array.
             final ArrayList list = new ArrayList();        // list of SymbolPacks
             final Set set = new HashSet();                // a set of MapRecs
@@ -388,11 +388,10 @@ public class VariantManager {
             }
 
             Collections.sort(list);
-            vm.symbolPacks = (SymbolPack[]) list
-                    .toArray(new SymbolPack[list.size()]);
+            vm.symbolPacks = list;
         }
 
-        return vm.symbolPacks;
+        return vm.symbolPacks.toArray(new SymbolPack[vm.symbolPacks.size()]);
     }// getSymbolPacks()
 
 
@@ -405,9 +404,9 @@ public class VariantManager {
      */
     public static synchronized Variant getVariant(final String name, final float version) {
         checkVM();
-        final MapRec mr = (MapRec) vm.variantMap.get(name.toLowerCase());
+        final MapRec mr = vm.variantMap.get(name.toLowerCase());
         if (mr != null) {
-            return (Variant) ((VRec) mr.get(version)).getVariant();
+            return ((VRec) mr.get(version)).getVariant();
         }
 
         return null;
@@ -428,9 +427,9 @@ public class VariantManager {
             return null;
         }
 
-        final MapRec mr = (MapRec) vm.symbolMap.get(name.toLowerCase());
+        final MapRec mr = vm.symbolMap.get(name.toLowerCase());
         if (mr != null) {
-            return (SymbolPack) ((SPRec) mr.get(version)).getSymbolPack();
+            return ((SPRec) mr.get(version)).getSymbolPack();
         }
 
         return null;
@@ -510,7 +509,7 @@ public class VariantManager {
      */
     public synchronized static float[] getVariantVersions(final String name) {
         checkVM();
-        final MapRec mr = (MapRec) vm.variantMap.get(name.toLowerCase());
+        final MapRec mr = vm.variantMap.get(name.toLowerCase());
         if (mr != null) {
             return (mr.getVersions());
         }
@@ -524,7 +523,7 @@ public class VariantManager {
      */
     public synchronized static float[] getSymbolPackVersions(final String name) {
         checkVM();
-        final MapRec mr = (MapRec) vm.symbolMap.get(name.toLowerCase());
+        final MapRec mr = vm.symbolMap.get(name.toLowerCase());
         if (mr != null) {
             return (mr.getVersions());
         }
@@ -924,7 +923,7 @@ public class VariantManager {
 
         // see if we are mapped to a MapRec already.
         //
-        MapRec mapRec = (MapRec) vm.variantMap.get(vName);
+        MapRec mapRec = vm.variantMap.get(vName);
         if (mapRec == null) {
             // not yet mapped! let's map it.
             mapRec = new MapRec(vr);
@@ -962,7 +961,7 @@ public class VariantManager {
             // not if it's "" though...
             if (!"".equals(aliase)) {
                 final String alias = aliase.toLowerCase();
-                final MapRec testMapRec = (MapRec) vm.variantMap.get(alias);
+                final MapRec testMapRec = vm.variantMap.get(alias);
                 if (testMapRec == null) {
                     // add alias
                     vm.variantMap.put(alias, mapRec);
@@ -1009,7 +1008,7 @@ public class VariantManager {
 
         // see if we are mapped to a MapRec already.
         //
-        MapRec mapRec = (MapRec) vm.symbolMap.get(spName);
+        MapRec mapRec = vm.symbolMap.get(spName);
         if (mapRec == null) {
             // not yet mapped! let's map it.
             mapRec = new MapRec(spRec);
@@ -1047,7 +1046,7 @@ public class VariantManager {
      * Gets the VRec associated with a Variant (via name and version)
      */
     private static VRec getVRec(final Variant v) {
-        final MapRec mapRec = (MapRec) vm.variantMap.get(v.getName().toLowerCase());
+        final MapRec mapRec = vm.variantMap.get(v.getName().toLowerCase());
         return (VRec) mapRec.get(v.getVersion());
     }// getVRec()
 
@@ -1056,7 +1055,7 @@ public class VariantManager {
      * Gets the SPRec associated with a SymbolPack (via name and version)
      */
     private static SPRec getSPRec(final SymbolPack sp) {
-        final MapRec mapRec = (MapRec) vm.symbolMap.get(sp.getName().toLowerCase());
+        final MapRec mapRec = vm.symbolMap.get(sp.getName().toLowerCase());
         return (SPRec) mapRec.get(sp.getVersion());
     }// getSPRec()
 
