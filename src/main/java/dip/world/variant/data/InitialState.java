@@ -33,14 +33,14 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "INITIALSTATE")
 public class InitialState {
-    @XmlAttribute(name = "privince", required = true)
+    @XmlAttribute(required = true)
     private String province;
     @XmlAttribute(name = "power", required = true)
     private String power;
     @XmlAttribute(required = true)
     private Type unit;
     @XmlAttribute(name = "unitcoast")
-    private Coast unitcoast;
+    private Coast unitcoast = Coast.UNDEFINED;
 
     /**
      * Name of province to which this InitialState refers.
@@ -104,9 +104,10 @@ public class InitialState {
      */
     @Override
     public String toString() {
-        return String.join("", getClass().getName(), "[", "provinceName=",
-                province, ",power=", power, ",unit=", unit.toString(),
-                ",coast=", unitcoast.toString(), "]");
+        return String
+                .join("", getClass().getName(), "[", "provinceName=", province,
+                        ",power=", power, ",unit=", unit.toString(), ",coast=",
+                        unitcoast.toString(), "]");
     }// toString()
 }// nested class InitialState
 

@@ -24,6 +24,7 @@ package dip.world;
 
 import dip.order.OrderException;
 
+import javax.xml.bind.annotation.XmlEnumValue;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -37,36 +38,42 @@ import java.util.regex.Pattern;
 
 public enum Coast {
     // perhaps make it "?c" ??
-
     UNDEFINED("Undefined", "?", 0),
 
     /**
      * Constant indicating Wing coast (for Wing movement)
      */
+    @XmlEnumValue("wx")
     WING("Wing", "wx", 1),
     /**
      * Constant indicating no coast (Army movement)
      */
+    @XmlEnumValue("mv")
     NONE("None", "mv", 2),
     /**
      * Constant indicating a single Coast (for fleets in coastal land areas, or sea-only provinces)
      */
+    @XmlEnumValue("xc")
     SINGLE("Single", "xc", 3),
     /**
      * Constant indicating North Coast
      */
+    @XmlEnumValue("nc")
     NORTH("North Coast", "nc", 4),
     /**
      * Constant indicating South Coast
      */
+    @XmlEnumValue("sc")
     SOUTH("South Coast", "sc", 5),
     /**
      * Constant indicating West Coast
      */
+    @XmlEnumValue("sc")
     WEST("West Coast", "wc", 6),
     /**
      * Constant indicating East Coast
      */
+    @XmlEnumValue("ec")
     EAST("East Coast", "ec", 7);
 
 

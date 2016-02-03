@@ -24,6 +24,7 @@ package dip.world;
 
 import dip.misc.Utils;
 
+import javax.xml.bind.annotation.XmlEnumValue;
 import java.io.Serializable;
 
 
@@ -155,14 +156,17 @@ public class Unit implements Serializable, Cloneable {
         /**
          * Constant representing an Army
          */
+        @XmlEnumValue("army")
         ARMY("army"),
         /**
          * Constant representing a Fleet
          */
+        @XmlEnumValue("fleet")
         FLEET("fleet"),
         /**
          * Constant representing a Wing
          */
+        @XmlEnumValue("wing")
         WING("wing"),
         /**
          * Constant representing an unknown type
