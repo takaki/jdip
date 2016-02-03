@@ -342,9 +342,9 @@ public class XMLVariantParser implements VariantParser {
     }// procVariants()
 
     private static List<Power> makePowers(final Element elVariant) {
-        final Unmarshaller mapDefUnmarshaller;
+        final Unmarshaller unmarshaller;
         try {
-            mapDefUnmarshaller = JAXBContext.newInstance(Power.class)
+            unmarshaller = JAXBContext.newInstance(Power.class)
                     .createUnmarshaller();
         } catch (final JAXBException e) {
             throw new IllegalArgumentException(e);
@@ -354,7 +354,7 @@ public class XMLVariantParser implements VariantParser {
         return IntStream.range(0, nodes.getLength())
                 .mapToObj(j -> (Element) nodes.item(j)).map(element -> {
                     try {
-                        return (Power) mapDefUnmarshaller.unmarshal(element);
+                        return (Power) unmarshaller.unmarshal(element);
                     } catch (JAXBException e) {
                         throw new IllegalArgumentException(e);
                     }
@@ -363,16 +363,22 @@ public class XMLVariantParser implements VariantParser {
 
     private static List<SupplyCenter> makeSupplyCenters(
             final Element elVariant) {
+        final Unmarshaller unmarshaller;
+        try {
+            unmarshaller = JAXBContext.newInstance(SupplyCenter.class)
+                    .createUnmarshaller();
+        } catch (final JAXBException e) {
+            throw new IllegalArgumentException(e);
+        }
+
         final NodeList nodes = elVariant.getElementsByTagName(EL_SUPPLYCENTER);
         return IntStream.range(0, nodes.getLength())
                 .mapToObj(j -> (Element) nodes.item(j)).map(element -> {
-                    final SupplyCenter supplyCenter = new SupplyCenter();
-                    supplyCenter.setProvinceName(
-                            element.getAttribute(ATT_PROVINCE));
-                    supplyCenter.setHomePowerName(
-                            element.getAttribute(ATT_HOMEPOWER));
-                    supplyCenter.setOwnerName(element.getAttribute(ATT_OWNER));
-                    return supplyCenter;
+                    try {
+                        return (SupplyCenter) unmarshaller.unmarshal(element);
+                    } catch (JAXBException e) {
+                        throw new IllegalArgumentException(e);
+                    }
                 }).collect(Collectors.toList());
     }
 
