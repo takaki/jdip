@@ -23,10 +23,10 @@
 package dip.world;
 
 import dip.order.Order;
+import dip.world.Unit.Type;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.io.Serializable;
+import java.util.*;
 
 
 /**
@@ -66,29 +66,29 @@ import java.util.HashSet;
  * If Supply Centers become more complex in the future, they may
  * be handled as a separate object within the Province.
  */
-public class Province implements java.io.Serializable, Comparable {
+public class Province implements Serializable, Comparable {
 
     // immutable persistent fields
     private final String fullName;                // fullName MUST BE UNIQUE
-    private final String shortNames[];            // always has AT LEAST one, and all are globally unique
+    private final List<String> shortNames;            // always has AT LEAST one, and all are globally unique
     private final int index;                    // contiguous index
     private final boolean isConvoyableCoast;    // 'true' if coast is convoyable
     private final Adjacency adjacency;            // adjacency data
 
     // publicly immutable non-final persistent fields
     // (because of difficulties with creation)
-    private boolean supplyCenter = false;        // true if supply center exists here.
-    private Border[] borders = null;            // non-zero-length if any Borders exist
+    private boolean supplyCenter;        // true if supply center exists here.
+    private List<Border> borders;            // non-zero-length if any Borders exist
 
 
     //  transient fields
-    private transient int hashCode = 0;
+    private transient int hashCode;
 
 
     /**
      * Adjacency maintains the connectivity graph between provinces.
      */
-    protected static class Adjacency implements java.io.Serializable {
+    protected static class Adjacency implements Serializable {
         private final HashMap adjLoc;
 
         /**
@@ -101,7 +101,7 @@ public class Province implements java.io.Serializable, Comparable {
         /**
          * Sets which locations are adjacent to the specified coast.
          */
-        protected void setLocations(Coast coast, Location[] locations) {
+        protected void setLocations(final Coast coast, final Location[] locations) {
             adjLoc.put(coast, locations);
         }// setLocations()
 
@@ -111,7 +111,7 @@ public class Province implements java.io.Serializable, Comparable {
          * <p>
          * If no locations are adjacent, a zero-length array is returned.
          */
-        protected Location[] getLocations(Coast coast) {
+        protected Location[] getLocations(final Coast coast) {
             Location[] locations = (Location[]) adjLoc.get(coast);
 
             if (locations == null) {
@@ -128,12 +128,12 @@ public class Province implements java.io.Serializable, Comparable {
          * to 'touching' adjacency.
          */
         protected void createWingCoasts() {
-            HashSet provSet = new HashSet(11);
-            ArrayList locList = new ArrayList(11);
+            final HashSet provSet = new HashSet(11);
+            final ArrayList locList = new ArrayList(11);
             for (int i = 0; i < Coast.ALL_COASTS.length; i++) {
-                Location[] locs = getLocations(Coast.ALL_COASTS[i]);
-                for (int j = 0; j < locs.length; j++) {
-                    Province prov = locs[j].getProvince();
+                final Location[] locs = getLocations(Coast.ALL_COASTS[i]);
+                for (final Location loc : locs) {
+                    final Province prov = loc.getProvince();
                     if (provSet.add(prov)) {
                         locList.add(new Location(prov, Coast.WING));
                     }
@@ -167,7 +167,7 @@ public class Province implements java.io.Serializable, Comparable {
          * - - - - - - 	INVALID		(d)
          * </code>
          */
-        protected boolean validate(Province p) {
+        protected boolean validate(final Province p) {
             boolean isDirectional = false;
             for (int i = 0; i < Coast.ANY_DIRECTIONAL.length; i++) {
                 if (adjLoc.get(Coast.ANY_DIRECTIONAL[i]) != null) {
@@ -175,8 +175,8 @@ public class Province implements java.io.Serializable, Comparable {
                 }
             }
 
-            final boolean isLand = (adjLoc.get(Coast.LAND) != null);
-            final boolean isSingle = (adjLoc.get(Coast.SINGLE) != null);
+            final boolean isLand = adjLoc.get(Coast.LAND) != null;
+            final boolean isSingle = adjLoc.get(Coast.SINGLE) != null;
 
             // covers cases (b) and (c)
             if (isDirectional && isSingle) {
@@ -194,11 +194,9 @@ public class Province implements java.io.Serializable, Comparable {
             }
 
             // check convoyable coasts
-            if (p.isConvoyableCoast() && (!isLand || (!isSingle && !isDirectional))) {
-                return false;
-            }
+            return !(p
+                    .isConvoyableCoast() && (!isLand || !isSingle && !isDirectional));
 
-            return true;
         }// validate()
     }// inner class Adjacency()
 
@@ -212,8 +210,8 @@ public class Province implements java.io.Serializable, Comparable {
      * These are created by a WorldFactory, or through de-serialization.
      * Null names are not allowed. At least one shortName is required.
      */
-    public Province(String fullName, String[] shortNames, int index,
-                    boolean isConvoyableCoast) {
+    public Province(final String fullName, final String[] shortNames, final int index,
+                    final boolean isConvoyableCoast) {
         if (fullName == null || shortNames == null) {
             throw new IllegalArgumentException("null full or short name(s)");
         }
@@ -228,25 +226,25 @@ public class Province implements java.io.Serializable, Comparable {
         }
 
         this.fullName = fullName;
-        this.shortNames = shortNames;
+        this.shortNames = Arrays.asList(shortNames);
         this.index = index;
         this.isConvoyableCoast = isConvoyableCoast;
-        this.adjacency = new Adjacency();
+        adjacency = new Adjacency();
     }// Province()
 
 
     /**
      * Sets the Border data for this province.
      */
-    protected void setBorders(Border[] value) {
-        borders = value;
+    protected void setBorders(final Border[] value) {
+        borders = Arrays.asList(value);
     }// setBorders()
 
 
     /**
      * Sets if this province has a supply center.
      */
-    protected void setSupplyCenter(boolean value) {
+    protected void setSupplyCenter(final boolean value) {
         supplyCenter = value;
     }// setSupplyCenter()
 
@@ -279,12 +277,11 @@ public class Province implements java.io.Serializable, Comparable {
      * returned.
      */
     public Location[] getAllAdjacent() {
-        HashSet locSet = new HashSet(13);
-        ArrayList locList = new ArrayList(13);
+        final HashSet locSet = new HashSet(13);
+        final ArrayList locList = new ArrayList(13);
         for (int i = 0; i < Coast.ALL_COASTS.length; i++) {
-            Location[] locs = adjacency.getLocations(Coast.ALL_COASTS[i]);
-            for (int j = 0; j < locs.length; j++) {
-                Location aLoc = locs[j];
+            final Location[] locs = adjacency.getLocations(Coast.ALL_COASTS[i]);
+            for (final Location aLoc : locs) {
                 if (locSet.add(aLoc)) {
                     locList.add(aLoc);
                 }
@@ -299,7 +296,7 @@ public class Province implements java.io.Serializable, Comparable {
      * Gets the Locations adjacent to this province, given the
      * specified coast.
      */
-    public Location[] getAdjacentLocations(Coast coast) {
+    public Location[] getAdjacentLocations(final Coast coast) {
         return adjacency.getLocations(coast);
     }// getAdjacency()
 
@@ -316,14 +313,14 @@ public class Province implements java.io.Serializable, Comparable {
      * <p> This returns the first short name if there are more than one.
      */
     public final String getShortName() {
-        return shortNames[0];
+        return shortNames.get(0);
     }
 
     /**
      * Gets all short names of the Province
      */
     public final String[] getShortNames() {
-        return shortNames;
+        return shortNames.toArray(new String[shortNames.size()]);
     }
 
     /**
@@ -345,7 +342,7 @@ public class Province implements java.io.Serializable, Comparable {
      * <p>
      * This now uses the "Wing" ("Touching") Coast which is equivalent.
      */
-    public boolean isTouching(Province province) {
+    public boolean isTouching(final Province province) {
         /* old code: prior to createWingCoasts()
         for(int i=0; i<Coast.ALL_COASTS.length; i++)
 		{
@@ -359,9 +356,9 @@ public class Province implements java.io.Serializable, Comparable {
 			}
 		}
 		*/
-        Location[] locations = adjacency.getLocations(Coast.TOUCHING);
-        for (int locIdx = 0; locIdx < locations.length; locIdx++) {
-            if (locations[locIdx].isProvinceEqual(province)) {
+        final Location[] locations = adjacency.getLocations(Coast.TOUCHING);
+        for (final Location location : locations) {
+            if (location.isProvinceEqual(province)) {
                 return true;
             }
         }
@@ -376,10 +373,10 @@ public class Province implements java.io.Serializable, Comparable {
      * This method only determines if the current Province with the specified
      * coast is connected to the destination Province.
      */
-    public boolean isAdjacent(Coast sourceCoast, Province dest) {
-        Location[] locations = adjacency.getLocations(sourceCoast);
-        for (int locIdx = 0; locIdx < locations.length; locIdx++) {
-            if (locations[locIdx].getProvince().equals(dest)) {
+    public boolean isAdjacent(final Coast sourceCoast, final Province dest) {
+        final Location[] locations = adjacency.getLocations(sourceCoast);
+        for (final Location location : locations) {
+            if (location.getProvince().equals(dest)) {
                 return true;
             }
         }
@@ -396,10 +393,10 @@ public class Province implements java.io.Serializable, Comparable {
      * <p>
      * This is a stricter version of isAdjacent(Coast, Province)
      */
-    public boolean isAdjacent(Coast sourceCoast, Location dest) {
-        Location[] locations = adjacency.getLocations(sourceCoast);
-        for (int locIdx = 0; locIdx < locations.length; locIdx++) {
-            if (locations[locIdx].equals(dest)) {
+    public boolean isAdjacent(final Coast sourceCoast, final Location dest) {
+        final Location[] locations = adjacency.getLocations(sourceCoast);
+        for (final Location location : locations) {
+            if (location.equals(dest)) {
                 return true;
             }
         }
@@ -429,7 +426,7 @@ public class Province implements java.io.Serializable, Comparable {
     public boolean isCoastal() {
         if (adjacency.getLocations(Coast.LAND) != Location.EMPTY) {
             for (int i = 0; i < Coast.ANY_SEA.length; i++) {
-                Location[] locations = adjacency.getLocations(Coast.ANY_SEA[i]);
+                final Location[] locations = adjacency.getLocations(Coast.ANY_SEA[i]);
                 if (locations.length > 0) {
                     return true;
                 }
@@ -444,7 +441,7 @@ public class Province implements java.io.Serializable, Comparable {
      * Determines if this Province is a Land province (landlocked OR coastal)
      */
     public boolean isLand() {
-        return (adjacency.getLocations(Coast.LAND) != Location.EMPTY);
+        return adjacency.getLocations(Coast.LAND) != Location.EMPTY;
     }// isLand()
 
 
@@ -491,7 +488,7 @@ public class Province implements java.io.Serializable, Comparable {
      */
     public Coast[] getValidDirectionalCoasts() {
         if (adjacency.getLocations(Coast.SEA) == Location.EMPTY) {
-            ArrayList dir = new ArrayList(4);
+            final ArrayList dir = new ArrayList(4);
 
             for (int i = 0; i < Coast.ANY_DIRECTIONAL.length; i++) {
                 if (adjacency.getLocations(
@@ -510,11 +507,10 @@ public class Province implements java.io.Serializable, Comparable {
     /**
      * Determines if specified coast is allowed for this Province
      */
-    public boolean isCoastValid(Coast coast) {
+    public boolean isCoastValid(final Coast coast) {
         if (adjacency.getLocations(coast) == Location.EMPTY) {
             return false;
         }
-        ;
 
         return true;
     }// isCoastValid()
@@ -534,15 +530,15 @@ public class Province implements java.io.Serializable, Comparable {
     /**
      * Checks if unit can transit from a Location to this Province.
      */
-    public boolean canTransit(Location fromLoc, Unit.Type unit, Phase phase,
-                              Class orderClass) {
-        return (getTransit(fromLoc, unit, phase, orderClass) == null);
+    public boolean canTransit(final Location fromLoc, final Type unit, final Phase phase,
+                              final Class orderClass) {
+        return getTransit(fromLoc, unit, phase, orderClass) == null;
     }// canTransit()
 
     /**
      * Convenient version of canTransit()
      */
-    public boolean canTransit(Phase phase, Order order) {
+    public boolean canTransit(final Phase phase, final Order order) {
         return canTransit(order.getSource(), order.getSourceUnitType(), phase,
                 order.getClass());
     }// canTransit()
@@ -552,12 +548,12 @@ public class Province implements java.io.Serializable, Comparable {
      * Checks if unit can transit from a Location to this Province. Returns the first
      * failing Border order; returns null if Transit is successfull.
      */
-    public Border getTransit(Location fromLoc, Unit.Type unit, Phase phase,
-                             Class orderClass) {
+    public Border getTransit(final Location fromLoc, final Type unit, final Phase phase,
+                             final Class orderClass) {
         if (borders != null) {
-            for (int i = 0; i < borders.length; i++) {
-                if (!borders[i].canTransit(fromLoc, unit, phase, orderClass)) {
-                    return borders[i];
+            for (final Border border : borders) {
+                if (!border.canTransit(fromLoc, unit, phase, orderClass)) {
+                    return border;
                 }
             }
         }
@@ -567,7 +563,7 @@ public class Province implements java.io.Serializable, Comparable {
     /**
      * Convenient version of getTransit()
      */
-    public Border getTransit(Phase phase, Order order) {
+    public Border getTransit(final Phase phase, final Order order) {
         return getTransit(order.getSource(), order.getSourceUnitType(), phase,
                 order.getClass());
     }// getTransit()
@@ -578,10 +574,10 @@ public class Province implements java.io.Serializable, Comparable {
      * that fits. Note that the first matching non-zero baseMoveModifier is returned
      * if there are more than one, which is not recommended.
      */
-    public int getBaseMoveModifier(Location fromLoc) {
+    public int getBaseMoveModifier(final Location fromLoc) {
         if (borders != null) {
-            for (int i = 0; i < borders.length; i++) {
-                final int baseMoveMod = borders[i].getBaseMoveModifier(fromLoc);
+            for (final Border border : borders) {
+                final int baseMoveMod = border.getBaseMoveModifier(fromLoc);
                 if (baseMoveMod != 0) {
                     return baseMoveMod;
                 }
@@ -607,7 +603,7 @@ public class Province implements java.io.Serializable, Comparable {
      * No transit checking is performed.
      */
     public boolean isConvoyable() {
-        return (isConvoyableCoast() || isSea());
+        return isConvoyableCoast() || isSea();
     }// isConvoyable()
 
 
@@ -616,12 +612,13 @@ public class Province implements java.io.Serializable, Comparable {
      * the Province (full) name and index for equality, since they are assumed
      * be unique. Other fields/adjacency are not compared.
      */
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (obj == this) {
             return true;
-        } else if (obj instanceof Province) {
+        }
+        if (obj instanceof Province) {
             final Province p = (Province) obj;
-            return (this.index == p.index && this.fullName.equals(p.fullName));
+            return index == p.index && fullName.equals(p.fullName);
         }
 
         return false;
@@ -639,7 +636,8 @@ public class Province implements java.io.Serializable, Comparable {
     /**
      * Compares this province to another, by the full name, ignoring case
      */
-    public int compareTo(Object obj) {
+    @Override
+    public int compareTo(final Object obj) {
         return fullName.compareToIgnoreCase(((Province) obj).fullName);
     }// compareTo()
 
