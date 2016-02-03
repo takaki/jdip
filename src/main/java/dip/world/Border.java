@@ -24,6 +24,9 @@ package dip.world;
 
 import dip.misc.Utils;
 import dip.order.Order;
+import dip.world.Phase.PhaseType;
+import dip.world.Phase.SeasonType;
+import dip.world.Unit.Type;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -125,9 +128,9 @@ public class Border implements Serializable {
     // if null, applies to all 'from' locations.
     // may specify coasts; if coast not defined, any coast used
 
-    private final Phase.SeasonType[] seasons;    // if null, applies to all seasons
-    private final Phase.PhaseType[] phases;        // if null, applies to all phases
-    private final Unit.Type[] unitTypes;    // if null, applies to all unit types
+    private final SeasonType[] seasons;    // if null, applies to all seasons
+    private final PhaseType[] phases;        // if null, applies to all phases
+    private final Type[] unitTypes;    // if null, applies to all unit types
     private final String description; // description
     private final Class[] orderClasses;    // if null, applies to all order types
     private int yearMin = 0;
@@ -149,9 +152,11 @@ public class Border implements Serializable {
      * @throws InvalidBorderException   if any arguments are invalid.
      * @throws IllegalArgumentException if id, description, or prohibited is null
      */
-    public Border(String id, String description, String units, Location[] from,
-                  String orders, String baseMoveModifier, String season,
-                  String phase, String year) throws InvalidBorderException {
+    public Border(final String id, final String description, final String units,
+                  final Location[] from, final String orders,
+                  final String baseMoveModifier, final String season,
+                  final String phase,
+                  final String year) throws InvalidBorderException {
         if (id == null || description == null || units == null || orders == null || season == null || phase == null || year == null) {
             throw new IllegalArgumentException();
         }
@@ -196,7 +201,7 @@ public class Border implements Serializable {
 
 
     // TEMP
-    private static String toList(Object[] obj) {
+    private static String toList(final Object[] obj) {
         if (obj != null) {
             return Arrays.asList(obj).toString();
         }
@@ -207,13 +212,13 @@ public class Border implements Serializable {
     /**
      * Parses the prohibited SeasonTypes (uses Phase.SeasonTypes.parse())
      */
-    private Phase.SeasonType[] parseProhibitedSeasons(
-            String in) throws InvalidBorderException {
-        StringTokenizer st = new StringTokenizer(in, ", ");
-        ArrayList list = new ArrayList();
+    private SeasonType[] parseProhibitedSeasons(
+            final String in) throws InvalidBorderException {
+        final StringTokenizer st = new StringTokenizer(in, ", ");
+        final ArrayList<SeasonType> list = new ArrayList<>();
         while (st.hasMoreTokens()) {
-            String tok = st.nextToken().trim();
-            Phase.SeasonType season = Phase.SeasonType.parse(tok);
+            final String tok = st.nextToken().trim();
+            final SeasonType season = SeasonType.parse(tok);
             if (season == null) {
                 throw new InvalidBorderException(
                         "Border " + id + ": season \"" + tok + "\" is not recognized.");
@@ -221,25 +226,21 @@ public class Border implements Serializable {
             list.add(season);
         }
 
-        if (list.isEmpty()) {
-            return null;
-        } else {
-            return (Phase.SeasonType[]) list
-                    .toArray(new Phase.SeasonType[list.size()]);
-        }
+        return list.isEmpty() ? null : list
+                .toArray(new SeasonType[list.size()]);
     }// parseProhibitedSeasons()
 
     /**
      * Parses the prohibited PhaseTypes (uses Phase.PhaseType.parse())
      */
-    private Phase.PhaseType[] parseProhibitedPhases(
-            String in) throws InvalidBorderException {
-        StringTokenizer st = new StringTokenizer(in, ", ");
-        ArrayList list = new ArrayList();
+    private PhaseType[] parseProhibitedPhases(
+            final String in) throws InvalidBorderException {
+        final StringTokenizer st = new StringTokenizer(in, ", ");
+        final ArrayList<PhaseType> list = new ArrayList<>();
         while (st.hasMoreTokens()) {
-            String tok = st.nextToken().trim();
-            Phase.PhaseType phase = Phase.PhaseType.parse(tok);
-            if (phase == null || Phase.PhaseType.ADJUSTMENT.equals(phase)) {
+            final String tok = st.nextToken().trim();
+            final PhaseType phase = PhaseType.parse(tok);
+            if (phase == null || PhaseType.ADJUSTMENT.equals(phase)) {
                 throw new InvalidBorderException(
                         "Border " + id + ": phase \"" + tok + "\" is not allowed or recognized.");
             }
@@ -247,12 +248,8 @@ public class Border implements Serializable {
             list.add(phase);
         }
 
-        if (list.isEmpty()) {
-            return null;
-        } else {
-            return (Phase.PhaseType[]) list
-                    .toArray(new Phase.PhaseType[list.size()]);
-        }
+        return list.isEmpty() ? null : list
+                .toArray(new PhaseType[list.size()]);
     }// parseProhibitedPhases()
 
 
@@ -277,7 +274,7 @@ public class Border implements Serializable {
         if ("".equals(text)) {
             yearModifier = YEAR_NOT_SPECIFIED;
         } else {
-            StringTokenizer st = new StringTokenizer(in, ", \t");
+            final StringTokenizer st = new StringTokenizer(in, ", \t");
             String value1 = null;
             String value2 = null;
 
@@ -317,7 +314,7 @@ public class Border implements Serializable {
                     if (yearMin > yearMax) {
                         throw new NumberFormatException();
                     }
-                } catch (NumberFormatException e) {
+                } catch (final NumberFormatException e) {
                     throw new InvalidBorderException(
                             Utils.getLocalString("Border.error.badyear", id,
                                     "Minimum and Maximum year values not specified or illegal."));
@@ -332,13 +329,13 @@ public class Border implements Serializable {
     /**
      * Parses the unit types
      */
-    private Unit.Type[] parseUnitTypes(
-            String in) throws InvalidBorderException {
-        ArrayList list = new ArrayList(10);
-        StringTokenizer st = new StringTokenizer(in, ", ");
+    private Type[] parseUnitTypes(
+            final String in) throws InvalidBorderException {
+        final ArrayList<Type> list = new ArrayList<>(10);
+        final StringTokenizer st = new StringTokenizer(in, ", ");
         while (st.hasMoreTokens()) {
-            String tok = st.nextToken();
-            final Unit.Type ut = Unit.Type.parse(tok);
+            final String tok = st.nextToken();
+            final Type ut = Type.parse(tok);
             if (ut == null) {
                 throw new InvalidBorderException(
                         Utils.getLocalString("Border.error.badunit", id, tok));
@@ -346,18 +343,15 @@ public class Border implements Serializable {
             list.add(ut);
         }
 
-        if (list.isEmpty()) {
-            return null;
-        } else {
-            return (Unit.Type[]) list.toArray(new Unit.Type[list.size()]);
-        }
+        return list.isEmpty() ? null : list
+                .toArray(new Type[list.size()]);
     }// parseUnitTypes()
 
 
     /**
      * Parses the order types
      */
-    private Class[] parseOrders(String in) throws InvalidBorderException {
+    private Class[] parseOrders(final String in) throws InvalidBorderException {
         final Class[] classes = parseClasses2Objs(in, "dip.order.Order");
 
         if (classes.length == 0) {
@@ -371,26 +365,26 @@ public class Border implements Serializable {
     /**
      * Internal parser helper method
      */
-    private Class[] parseClasses2Objs(String in,
-                                      String superClassName) throws InvalidBorderException {
+    private Class[] parseClasses2Objs(final String in,
+                                      final String superClassName) throws InvalidBorderException {
         Class superClass = null;
         try {
             superClass = Class.forName(superClassName);
-        } catch (ClassNotFoundException e) {
+        } catch (final ClassNotFoundException e) {
             throw new InvalidBorderException(
                     Utils.getLocalString("Border.error.internal",
                             "parseClasses2Objs()", e.getMessage()));
         }
 
-        ArrayList list = new ArrayList(10);
-        StringTokenizer st = new StringTokenizer(in, ", ");
+        final ArrayList<Class> list = new ArrayList<>(10);
+        final StringTokenizer st = new StringTokenizer(in, ", ");
         while (st.hasMoreTokens()) {
-            String tok = st.nextToken();
+            final String tok = st.nextToken();
             Class cls = null;
 
             try {
                 cls = Class.forName(tok);
-            } catch (ClassNotFoundException cnfe) {
+            } catch (final ClassNotFoundException cnfe) {
                 throw new InvalidBorderException(
                         Utils.getLocalString("Border.error.badclass", id, tok));
             }
@@ -404,7 +398,7 @@ public class Border implements Serializable {
             list.add(cls);
         }
 
-        return (Class[]) list.toArray(new Class[list.size()]);
+        return list.toArray(new Class[list.size()]);
     }// parseClasses2Objs()
 
 
@@ -415,13 +409,13 @@ public class Border implements Serializable {
     private int parseBaseMoveModifier(String in) throws InvalidBorderException {
         in = in.trim();
 
-        if (in.length() == 0) {
+        if (in.isEmpty()) {
             return 0;
         }
 
         try {
             return Integer.parseInt(in);
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             // fall through to exception, below
         }
 
@@ -436,7 +430,7 @@ public class Border implements Serializable {
      * Convenience method for more verbose canTransit() method. No arguments may
      * be null.
      */
-    public boolean canTransit(Phase phase, Order order) {
+    public boolean canTransit(final Phase phase, final Order order) {
         return canTransit(order.getSource(), order.getSourceUnitType(), phase,
                 order.getClass());
     }// canTransit()
@@ -449,9 +443,9 @@ public class Border implements Serializable {
      * <p>
      * Null arguments are not permitted.
      */
-    public boolean canTransit(Location fromLoc, Unit.Type unit, Phase phase,
-                              Class orderClass) {
-		/*
+    public boolean canTransit(final Location fromLoc, final Type unit,
+                              final Phase phase, final Class orderClass) {
+        /*
 		System.out.println("border: "+id);
 		System.out.println("  "+fromLoc.getProvince()+":"+fromLoc.getCoast()+", "+phase);
 		*/
@@ -462,8 +456,8 @@ public class Border implements Serializable {
         boolean fromMatched = false;
 
         if (from != null) {
-            for (int i = 0; i < from.length; i++) {
-                if (from[i].equalsLoosely(fromLoc)) {
+            for (Location aFrom : from) {
+                if (aFrom.equalsLoosely(fromLoc)) {
                     fromMatched = true;
                     break;
                 }
@@ -476,8 +470,8 @@ public class Border implements Serializable {
             // check unit type
             if (unitTypes != null) {
                 nResults++;
-                for (int i = 0; i < unitTypes.length; i++) {
-                    if (unitTypes[i].equals(unit)) {
+                for (Type unitType : unitTypes) {
+                    if (unitType.equals(unit)) {
                         failResults++;
                         break;
                     }
@@ -487,8 +481,8 @@ public class Border implements Serializable {
             // check order
             if (orderClasses != null) {
                 nResults++;
-                for (int i = 0; i < orderClasses.length; i++) {
-                    if (orderClass == orderClasses[i]) {
+                for (Class orderClass1 : orderClasses) {
+                    if (orderClass == orderClass1) {
                         failResults++;
                         break;
                     }
@@ -498,8 +492,8 @@ public class Border implements Serializable {
             // check phase (season, phase, and year)
             if (seasons != null) {
                 nResults++;
-                for (int i = 0; i < seasons.length; i++) {
-                    if (phase.getSeasonType().equals(seasons[i])) {
+                for (SeasonType season : seasons) {
+                    if (phase.getSeasonType().equals(season)) {
                         failResults++;
                         break;
                     }
@@ -508,8 +502,8 @@ public class Border implements Serializable {
 
             if (phases != null) {
                 nResults++;
-                for (int i = 0; i < phases.length; i++) {
-                    if (phase.getPhaseType().equals(phases[i])) {
+                for (PhaseType phase1 : phases) {
+                    if (phase.getPhaseType().equals(phase1)) {
                         failResults++;
                         break;
                     }
@@ -546,15 +540,14 @@ public class Border implements Serializable {
     /**
      * Gets the base move modifier. Requires a non-null from location.
      */
-    public int getBaseMoveModifier(Location moveFrom) {
+    public int getBaseMoveModifier(final Location moveFrom) {
         if (from == null) {
             // if no locations defined, modifier is good for all locations.
             return baseMoveModifier;
-        } else {
-            for (int i = 0; i < from.length; i++) {
-                if (from[i].equalsLoosely(moveFrom)) {
-                    return baseMoveModifier;
-                }
+        }
+        for (Location aFrom : from) {
+            if (aFrom.equalsLoosely(moveFrom)) {
+                return baseMoveModifier;
             }
         }
 
