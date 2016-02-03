@@ -35,8 +35,26 @@ class VariantManagerTest extends Specification {
         when:
         def symbol = VariantManager.getSymbolPack("Simple", 1.0)
         then:
-        VariantManager.getSymbolPacks().size() == 1
         symbol.getName() == "Simple"
+
+        when:
+        def symbolPacks = VariantManager.getSymbolPacks()
+        then:
+        symbolPacks.size() == 1
+        def symbol0 = symbolPacks[0]
+        symbol0.getName() == "Simple"
+        symbol0.getThumbnailURI() == new URI("symbols.gif")
+
+
+        when:
+        def variants = VariantManager.getVariants()
+        then:
+        variants.size() == 9
+        def variant0 = variants[8]
+        variant0.getName() == "TEST_Borders"
+        variant0.getPowers()[0].getName() == "France"
+        variant0.getSupplyCenters()[0].getHomePowerName() == "turkey"
+        variant0.getSupplyCenters()[0].getProvinceName() == "ank"
 
         expect:
         VariantManager.getSymbolPackVersions("Simple") == [1.0] as float[]
@@ -52,5 +70,7 @@ class VariantManagerTest extends Specification {
                 getProperty("user.dir") + "/src/test/resources/variants/simpleSimbols.zip!/")
         VariantManager.getVariantPackageJarURL(variant) == new URL("jar:file:" + System.
                 getProperty("user.dir") + "/src/test/resources/variants/testVariants.zip!/")
+
+
     }
 }
