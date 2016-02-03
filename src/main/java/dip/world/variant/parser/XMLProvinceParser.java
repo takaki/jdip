@@ -35,10 +35,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -191,7 +188,8 @@ public class XMLProvinceParser implements ProvinceParser {
                     // borders data (optional); a list of references, seperated by commas/spaces
                     final String borders = elProvince.getAttribute(ATT_BORDERS)
                             .trim();
-                    provinceData.setBorders(new ArrayList<>(
+                    provinceData.setBorders(borders.isEmpty() ? Collections
+                            .emptyList() : new ArrayList<>(
                             Arrays.asList(borders.split("[, ]+"))));
 
 
