@@ -18,6 +18,8 @@
 
 package dip.world.variant
 
+import dip.world.Coast
+import dip.world.Unit
 import spock.lang.Specification
 
 import java.nio.file.Paths
@@ -50,11 +52,25 @@ class VariantManagerTest extends Specification {
         def variants = VariantManager.getVariants()
         then:
         variants.size() == 9
-        def variant0 = variants[8]
-        variant0.getName() == "TEST_Borders"
+        def variant0 = variants[7]
+        variant0.getName() == "DATC_Standard"
         variant0.getPowers()[0].getName() == "France"
         variant0.getSupplyCenters()[0].getHomePowerName() == "turkey"
         variant0.getSupplyCenters()[0].getProvinceName() == "ank"
+
+        variant0.getInitialStates()[0].getProvinceName() == "ank"
+        variant0.getInitialStates()[0].getCoast() == Coast.UNDEFINED
+        variant0.getInitialStates()[0].getUnitType() == Unit.Type.FLEET
+        variant0.getInitialStates()[17].getProvinceName() == "stp"
+        variant0.getInitialStates()[17].getPowerName() == "russia"
+        variant0.getInitialStates()[17].getCoast() == Coast.SOUTH
+        variant0.getInitialStates()[17].getUnitType() == Unit.Type.FLEET
+
+        variant0.getMapGraphics().size() == 1
+        variant0.getMapGraphics()[0].isDefault()
+        variant0.getMapGraphics()[0].getName() == "Simple"
+        variant0.getMapGraphics()[0].getURI() == new URI("simple_std.svg")
+        variant0.getMapGraphics()[0].getThumbnailURI() == new URI("simple_thumb.png")
 
         expect:
         VariantManager.getSymbolPackVersions("Simple") == [1.0] as float[]

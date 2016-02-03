@@ -43,6 +43,8 @@ class XMLSymbolParserTest extends Specification {
         def symbolpack = instance.getSymbolPack()
         then:
         symbolpack.getName() == "Simple"
+        symbolpack.getSVGURI() == new URI("symbols.svg")
+        symbolpack.getVersion() == 1.0
     }
 
 }
