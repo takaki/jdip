@@ -22,6 +22,7 @@
 //
 package dip.world.variant.data;
 
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -85,6 +86,13 @@ public class SupplyCenter {
         owner = value;
     }// setOwnerName()
 
+    @SuppressWarnings("unused")
+    void afterUnmarshal(final Unmarshaller unmarshaller,
+                        final Object parent) {
+        if ("any".equalsIgnoreCase(owner)) {
+            throw new IllegalArgumentException();
+        }
+    }
     /**
      * For debugging only!
      */

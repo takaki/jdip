@@ -384,9 +384,23 @@ public class XMLVariantParser implements VariantParser {
 
     private static List<InitialState> makeInitialStates(
             final Element elVariant) {
+//        final Unmarshaller unmarshaller;
+//        try {
+//            unmarshaller = JAXBContext.newInstance(InitialState.class)
+//                    .createUnmarshaller();
+//        } catch (final JAXBException e) {
+//            throw new IllegalArgumentException(e);
+//        }
+
         final NodeList nodes = elVariant.getElementsByTagName(EL_INITIALSTATE);
         return IntStream.range(0, nodes.getLength())
                 .mapToObj(j -> (Element) nodes.item(j)).map(element -> {
+//                    try {
+//                        return (InitialState) unmarshaller.unmarshal(element);
+//                    } catch (JAXBException e) {
+//                        return new IllegalArgumentException(e);
+//                    }
+
                     final InitialState initialState = new InitialState();
                     initialState.setProvinceName(
                             element.getAttribute(ATT_PROVINCE));
