@@ -420,7 +420,8 @@ public class Border implements Serializable {
      * Null arguments are not permitted.
      */
     public boolean canTransit(final Location fromLoc, final Type unit,
-                              final Phase phase, final Class orderClass) {
+                              final Phase phase,
+                              final Class orderClass) {
         /*
         System.out.println("border: "+id);
 		System.out.println("  "+fromLoc.getProvince()+":"+fromLoc.getCoast()+", "+phase);
@@ -442,56 +443,45 @@ public class Border implements Serializable {
             // check unit type
             if (unitTypes != null) {
                 nResults++;
-                for (Type unitType : unitTypes) {
-                    if (unitType.equals(unit)) {
-                        failResults++;
-                        break;
-                    }
-                }
+                failResults += unitTypes.stream()
+                        .anyMatch(unitType -> unitType == unit) ? 1 : 0;
             }
 
             // check order
             if (orderClasses != null) {
                 nResults++;
-                for (Class<? extends Order> orderClass1 : orderClasses) {
-                    if (Objects.equals(orderClass, orderClass1)) {
-                        failResults++;
-                        break;
-                    }
-                }
+                failResults += orderClasses.stream().anyMatch(
+                        orderClass1 -> Objects
+                                .equals(orderClass, orderClass1)) ? 1 : 0;
             }
 
             // check phase (season, phase, and year)
             if (seasons != null) {
                 nResults++;
-                for (SeasonType season : seasons) {
-                    if (phase.getSeasonType().equals(season)) {
-                        failResults++;
-                        break;
-                    }
-                }
+                failResults += seasons.stream().anyMatch(
+                        season -> phase.getSeasonType().equals(season)) ? 1 : 0;
             }
 
             if (phases != null) {
                 nResults++;
-                for (PhaseType phase1 : phases) {
-                    if (phase.getPhaseType().equals(phase1)) {
-                        failResults++;
-                        break;
-                    }
-                }
+                failResults += phases.stream().anyMatch(
+                        phase1 -> phase.getPhaseType().equals(phase1)) ? 1 : 0;
             }
 
             // we always check the year
             if (yearModifier != YEAR_NOT_SPECIFIED) {
                 nResults++;
                 final int theYear = phase.getYear();
-                if (yearModifier == YEAR_ODD) {
-                    failResults += (theYear & 1) == 1 ? 1 : 0;
-                } else if (yearModifier == YEAR_EVEN) {
-                    failResults += (theYear & 1) == 1 ? 0 : 1;
-                } else {
-                    failResults += yearMin <= theYear && theYear <= yearMax ? 1 : 0;
+                switch (yearModifier) {
+                    case YEAR_ODD:
+                        failResults += (theYear & 1) == 1 ? 1 : 0;
+                        break;
+                    case YEAR_EVEN:
+                        failResults += (theYear & 1) == 1 ? 0 : 1;
+                        break;
+                    default:
+                        failResults += yearMin <= theYear && theYear <= yearMax ? 1 : 0;
+                        break;
                 }
             }
         }
@@ -513,18 +503,10 @@ public class Border implements Serializable {
      * Gets the base move modifier. Requires a non-null from location.
      */
     public int getBaseMoveModifier(final Location moveFrom) {
-        if (from == null) {
-            // if no locations defined, modifier is good for all locations.
-            return baseMoveModifier;
-        }
-        for (Location aFrom : from) {
-            if (aFrom.equalsLoosely(moveFrom)) {
-                return baseMoveModifier;
-            }
-        }
-
         // if not from the given location, no change in support.
-        return 0;
+        return from == null ? baseMoveModifier : from.stream()
+                .filter(aFrom -> aFrom.equalsLoosely(moveFrom))
+                .map(aFrom -> baseMoveModifier).findFirst().orElse(0);
     }// getBaseMoveModifier()
 
 
