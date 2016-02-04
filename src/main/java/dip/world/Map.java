@@ -96,8 +96,7 @@ public class Map implements Serializable {
         // create powerNameMap
         powerNameMap = new HashMap<>(POWER_SIZE);
         for (final Power power : powers) {
-            final String[] tmp = power.getNames();
-            for (String aTmp : tmp) {
+            for (String aTmp : power.getNames()) {
                 powerNameMap.put(aTmp.toLowerCase(), power);
             }
 
@@ -120,8 +119,7 @@ public class Map implements Serializable {
             namesAL.add(lcName);
 
             // map short names, and add to list
-            final String[] lcShortNames = province.getShortNames();
-            for (String lcShortName : lcShortNames) {
+            for (String lcShortName : province.getShortNames()) {
                 lcName = lcShortName.toLowerCase();
                 nameMap.put(lcName, province);
                 namesAL.add(lcName);
@@ -700,8 +698,7 @@ public class Map implements Serializable {
         final List tmpNames = new ArrayList(powers.size());
 
         for (final Power power : powers) {
-            final String[] tmp = power.getNames();
-            for (String aTmp : tmp) {
+            for (String aTmp : power.getNames()) {
                 tmpNames.add(aTmp.toLowerCase());
             }
 
