@@ -215,25 +215,24 @@ public class Map implements Serializable {
      */
     public Power getPowerMatching(String powerName) {
         // return 'null' if powerName is empty
-        if ("".equals(powerName)) {
+        if (powerName != null && powerName.isEmpty()) {
             return null;
         }
 
         // first, check for exact match.
-        Power bestMatchingPower = null;
-        bestMatchingPower = getPower(powerName);
+        final Power bestMatchingPower = getPower(powerName);
         if (bestMatchingPower != null) {
             return bestMatchingPower;
         }
 
-        powerName = powerName.toLowerCase();
+        final String powerNameLC = powerName.toLowerCase();
 
         // no exact match.
         // otherwise we check for the 'max' matched characters, and go with this
         // if there are multiple equivalent matches (ties), without a clear winner,
         // return null.
-        if (powerName.length() >= 4) {
-            final List<Power> list = findPartialPowerMatch(powerName);
+        if (powerNameLC.length() >= 4) {
+            final List<Power> list = findPartialPowerMatch(powerNameLC);
             if (list.size() == 1) {
                 return list.get(0);
             }
@@ -241,22 +240,17 @@ public class Map implements Serializable {
 
         // 3) perform a levenshtein match against power names.
         //
-        int bestMatch = Integer.MAX_VALUE;
-        String bestMatchPowerName = null;
-        for (final String name : lcPowerNames) {
-            final int distance = Distance.getLD(powerName, name);
-            if (distance < bestMatch) {
-                bestMatchPowerName = name;
-                bestMatch = distance;
-            } else if (distance == bestMatch) {
-                bestMatchPowerName = null;
-            }
-        }
-
-        // if absolute error rate is too high, discard.
+        final int bestMatch = lcPowerNames.stream()
+                .mapToInt(name -> Distance.getLD(powerNameLC, name)).min()
+                .orElse(Integer.MAX_VALUE);
         // we are stricter than in getClosestPower()
-        if (bestMatch <= powerName.length() / 3) {
-            return getPower(bestMatchPowerName);    // should never return null
+        if (bestMatch <= powerNameLC.length() / 3) {
+            final Set<String> collect = lcPowerNames.stream()
+                    .filter(name -> bestMatch == Distance
+                            .getLD(powerNameLC, name))
+                    .collect(Collectors.toSet());
+            return collect.isEmpty() || collect.size() > 1 ? null : getPower(
+                    collect.iterator().next());
         }
 
         // nothing is close
