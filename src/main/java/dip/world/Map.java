@@ -296,9 +296,9 @@ public class Map implements Serializable {
      * This method uses the Levenshtein distance algorithm
      * to determine closeness.
      */
-    public Province getProvinceMatching(String input) {
+    public Province getProvinceMatching(final String input) {
         // return 'null' if input is empty
-        if (input == null || input.length() == 0) {
+        if (input == null || input.isEmpty()) {
             return null;
         }
 
@@ -315,38 +315,28 @@ public class Map implements Serializable {
         }
 
         // input converted to lower case
-        input = input.toLowerCase().trim();
-
+        final String trimmed = input.toLowerCase().trim();
 
         // Do a partial match against the name list.
         // If we tie, return no match. This is a 'partial first match'
         // This is tried BEFORE we try Levenshtein
         //
-        final List<Province> list = findPartialProvinceMatch(input);
+        final List<Province> list = findPartialProvinceMatch(trimmed);
         if (list.size() == 1) {
             return list.get(0);
         }
 
         // tie list. Use a Set so that we get no dupes
-        final Set<Province> ties = new HashSet<>();
 
         // compute Levenshteins on the match
         // if there are ties, keep them.. for now
-        ties.clear();
-        int bestDist = Integer.MAX_VALUE;
-        for (final String name : names) {
-            // check closeness. Smaller is better.
-            final int distance = Distance.getLD(input, name);
-            if (distance < bestDist) {
-                ties.clear();
-                ties.add(getProvince(name));
-                bestDist = distance;
-            } else if (distance == bestDist) {
-                ties.add(getProvince(name));
-            }
-        }
-
-		/*
+        final int bestDist = names.stream()
+                .mapToInt(name -> Distance.getLD(trimmed, name)).min()
+                .orElse(Integer.MAX_VALUE);
+        final Set<Province> ties = names.stream()
+                .filter(name -> Distance.getLD(trimmed, name) == bestDist)
+                .map(this::getProvince).collect(Collectors.toSet());
+        /*
         System.out.println("LD input: "+input);
 		System.out.println("   ties: "+ties);
 		System.out.println("   bestDist: "+bestDist);
@@ -355,7 +345,7 @@ public class Map implements Serializable {
 
         // if absolute error rate is too high, discard.
         // if we have >1 unique ties, (or none at all) no match
-        if (bestDist <= input.length() / 2 && ties.size() == 1) {
+        if (bestDist <= trimmed.length() / 2 && ties.size() == 1) {
             // there is but one
             return ties.iterator().next();
         }
