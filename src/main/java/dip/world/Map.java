@@ -545,38 +545,23 @@ public class Map implements Serializable {
         // if we find a colon, we will ASSUME that the first token
         // is a power, and use getClosestPower(); otherwise, we will
         // just check against the lcPowerNames list.
-        boolean hasColon = false;
+        if (sb.length() == 0) {
+            return null;
+        }
 
         // find first white space (or ':')
-        int wsIdx = -1;
         for (int i = 0; i < sb.length(); i++) {
             final char c = sb.charAt(i);
             if (c == ':') {
-                hasColon = true;
-                wsIdx = i;
-                break;
-            }
-            if (Character.isWhitespace(c)) {
-                wsIdx = i;
-                break;
-            }
-        }
-
-        // return token iff we match a power
-        if (wsIdx >= 0) {
-            final String nameToTest = sb.substring(0, wsIdx).trim();
-
-            if (hasColon) {
                 // looser: assume prior-to-colon is a power name.
                 // no testing.
-                return nameToTest;
-            } else {
+                return sb.substring(0, i).trim();
+            }
+            if (Character.isWhitespace(c)) {
+                final String nameToTest = sb.substring(0, i).trim();
                 // stricter: no ':'; first token may or may not be a power.
-                for (String lcPowerName : lcPowerNames) {
-                    if (nameToTest.startsWith(lcPowerName)) {
-                        return nameToTest;
-                    }
-                }
+                return lcPowerNames.stream().filter(nameToTest::startsWith)
+                        .findFirst().orElse(null);
             }
         }
 
