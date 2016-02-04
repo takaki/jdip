@@ -632,21 +632,17 @@ public class Map implements Serializable {
      * Includes power adjectives.
      */
     private void createLCPowerNameList() {
-        final List tmpNames = new ArrayList(powers.size());
-
-        for (final Power power : powers) {
-            for (String aTmp : power.getNames()) {
-                tmpNames.add(aTmp.toLowerCase());
-            }
-
-            tmpNames.add(power.getAdjective().toLowerCase());
-        }
+        final List<String> tmpNames = new ArrayList<>(powers.stream()
+                .flatMap(power -> Arrays.stream(power.getNames()))
+                .map(String::toLowerCase).collect(Collectors.toList()));
+        tmpNames.addAll(
+                powers.stream().map(power -> power.getAdjective().toLowerCase())
+                        .collect(Collectors.toList()));
 
         // sort collection, in reverse alpha order.
         // Why? because we need to ensure power names (and adjectives) like
         // "Russian" come before "Russia"; otherwise, the replacement will be f'd up.
-        final Comparator reverseComp = Collections.reverseOrder();
-        Collections.sort(tmpNames, reverseComp);
+        Collections.sort(tmpNames, Collections.reverseOrder());
 
         lcPowerNames = tmpNames;
     }// createLCPowerNameList()
