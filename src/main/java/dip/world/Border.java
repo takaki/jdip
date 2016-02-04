@@ -29,7 +29,10 @@ import dip.world.Phase.SeasonType;
 import dip.world.Unit.Type;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * A Border limits movement or support between 2 provinces.
@@ -190,10 +193,10 @@ public class Border implements Serializable {
      */
     private List<SeasonType> parseProhibitedSeasons(
             final String in) throws InvalidBorderException {
-        final StringTokenizer st = new StringTokenizer(in, ", ");
+
         final List<SeasonType> list = new ArrayList<>();
-        while (st.hasMoreTokens()) {
-            final String tok = st.nextToken().trim();
+        for (final String st : in.split("[, ]+")) {
+            final String tok = st.trim();
             final SeasonType season = SeasonType.parse(tok);
             if (season == null) {
                 throw new InvalidBorderException(
@@ -201,7 +204,6 @@ public class Border implements Serializable {
             }
             list.add(season);
         }
-
         return list.isEmpty() ? null : list;
     }// parseProhibitedSeasons()
 
@@ -210,10 +212,9 @@ public class Border implements Serializable {
      */
     private List<PhaseType> parseProhibitedPhases(
             final String in) throws InvalidBorderException {
-        final StringTokenizer st = new StringTokenizer(in, ", ");
         final List<PhaseType> list = new ArrayList<>();
-        while (st.hasMoreTokens()) {
-            final String tok = st.nextToken().trim();
+        for (final String st : in.split("[, ]+")) {
+            final String tok = st.trim();
             final PhaseType phase = PhaseType.parse(tok);
             if (phase == null || PhaseType.ADJUSTMENT.equals(phase)) {
                 throw new InvalidBorderException(
@@ -234,6 +235,7 @@ public class Border implements Serializable {
      * odd
      * even
      */
+
     private void parseYear(final String in) throws InvalidBorderException {
         if (in == null) {
             throw new IllegalArgumentException();
@@ -245,22 +247,22 @@ public class Border implements Serializable {
 
         // empty case
         final String text = in.trim();
-        if ("".equals(text)) {
+        if (text.isEmpty()) {
             yearModifier = YEAR_NOT_SPECIFIED;
         } else {
-            final StringTokenizer st = new StringTokenizer(in, ", \t");
+            final String[] tokens = in.split("[, \t]+");
             String value1 = null;
             String value2 = null;
 
-            if (st.hasMoreTokens()) {
-                value1 = st.nextToken();
+            if (tokens.length > 0) {
+                value1 = tokens[0];
             }
 
-            if (st.hasMoreTokens()) {
-                value2 = st.nextToken();
+            if (tokens.length > 1) {
+                value2 = tokens[1];
             }
 
-            if (st.hasMoreTokens() || value1 == null) {
+            if (tokens.length > 2 || value1 == null) {
                 throw new InvalidBorderException(
                         Utils.getLocalString("Border.error.badyear", id,
                                 "Too few / too many year tokens."));
@@ -295,8 +297,6 @@ public class Border implements Serializable {
                 }
             }
         }
-
-        return;
     }// parseYear()
 
 
@@ -306,14 +306,11 @@ public class Border implements Serializable {
     private List<Type> parseUnitTypes(
             final String in) throws InvalidBorderException {
         final List<Type> list = new ArrayList<>(10);
-
-        final StringTokenizer st = new StringTokenizer(in, ", ");
-        while (st.hasMoreTokens()) {
-            final String tok = st.nextToken();
-            final Type ut = Type.parse(tok);
+        for (final String st : in.split("[, ]+")) {
+            final Type ut = Type.parse(st);
             if (ut == null) {
                 throw new InvalidBorderException(
-                        Utils.getLocalString("Border.error.badunit", id, tok));
+                        Utils.getLocalString("Border.error.badunit", id, st));
             }
             list.add(ut);
         }
@@ -329,12 +326,7 @@ public class Border implements Serializable {
             final String in) throws InvalidBorderException {
         final List<Class<? extends Order>> classes = parseClasses2Objs(in,
                 "dip.order.Order");
-
-        if (classes.isEmpty()) {
-            return null;
-        }
-
-        return classes;
+        return classes.isEmpty() ? null : classes;
     }// parseOrders()
 
 
@@ -353,16 +345,14 @@ public class Border implements Serializable {
         }
 
         final List<Class<? extends Order>> list = new ArrayList<>(10);
-        final StringTokenizer st = new StringTokenizer(in, ", ");
-        while (st.hasMoreTokens()) {
-            final String tok = st.nextToken();
-            Class<? extends Order> cls = null;
+        for (final String st : in.split("[, ]+")) {
+            Class<? extends Order> cls;
 
             try {
-                cls = Class.forName(tok).asSubclass(Order.class);
+                cls = Class.forName(st).asSubclass(Order.class);
             } catch (final ClassNotFoundException ignored) {
                 throw new InvalidBorderException(
-                        Utils.getLocalString("Border.error.badclass", id, tok));
+                        Utils.getLocalString("Border.error.badclass", id, st));
             }
 
             if (!superClass.isAssignableFrom(cls)) {
@@ -382,21 +372,16 @@ public class Border implements Serializable {
      * Parses the base move modifier. If string is empty, defaults to 0.
      * The format is just a positive or negative (or 0) integer.
      */
-    private int parseBaseMoveModifier(String in) throws InvalidBorderException {
-        in = in.trim();
-
-        if (in.isEmpty()) {
-            return 0;
-        }
-
+    private int parseBaseMoveModifier(
+            final String in) throws InvalidBorderException {
+        final String in1 = in.trim();
         try {
-            return Integer.parseInt(in);
+            return in1.isEmpty() ? 0 : Integer.parseInt(in1);
         } catch (final NumberFormatException ignored) {
-            // fall through to exception, below
+            throw new InvalidBorderException(
+                    Utils.getLocalString("Border.error.badmovemod", id, in1));
         }
 
-        throw new InvalidBorderException(
-                Utils.getLocalString("Border.error.badmovemod", id, in));
     }// parseBaseMoveModifier()
 
 
@@ -420,8 +405,7 @@ public class Border implements Serializable {
      * Null arguments are not permitted.
      */
     public boolean canTransit(final Location fromLoc, final Type unit,
-                              final Phase phase,
-                              final Class orderClass) {
+                              final Phase phase, final Class orderClass) {
         /*
         System.out.println("border: "+id);
 		System.out.println("  "+fromLoc.getProvince()+":"+fromLoc.getCoast()+", "+phase);
