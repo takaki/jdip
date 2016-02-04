@@ -376,7 +376,8 @@ public class Map implements Serializable {
      * to determine closeness.
      * <p>
      */
-    public Collection<Province> getProvincesMatchingClosest(String input) {
+    public Collection<Province> getProvincesMatchingClosest(
+            final String input) {
         // return empty list
         if (input == null || input.isEmpty()) {
             return Collections.emptyList();
@@ -390,7 +391,8 @@ public class Map implements Serializable {
         }
 
         // input converted to lower case
-        input = input.toLowerCase().trim();
+        final String trimmed = input.toLowerCase().trim();
+
         // if 2 or less, do no processing
         if (input.length() <= 2) {
             return Collections.emptyList();
@@ -407,25 +409,17 @@ public class Map implements Serializable {
             // which can return some very odd results.
             // for short strings...
             //
-            final String in = input;
-            ties.addAll(names.stream().filter(name -> name.startsWith(in))
+            ties.addAll(names.stream().filter(name -> name.startsWith(trimmed))
                     .map(this::getProvince).collect(Collectors.toSet()));
         } else {
             // compute Levenshteins on the match
             // if there are ties, keep them.. for now
-            int bestDist = Integer.MAX_VALUE;
-            for (final String name : names) {
-                // check closeness. Smaller is better.
-                final int distance = Distance.getLD(input, name);
-
-                if (distance < bestDist) {
-                    ties.clear();
-                    ties.add(getProvince(name));
-                    bestDist = distance;
-                } else if (distance == bestDist) {
-                    ties.add(getProvince(name));
-                }
-            }
+            final int bestDist = names.stream()
+                    .mapToInt(name -> Distance.getLD(trimmed, name)).min()
+                    .orElse(Integer.MAX_VALUE);
+            ties.addAll(names.stream()
+                    .filter(name -> Distance.getLD(trimmed, name) == bestDist)
+                    .map(this::getProvince).collect(Collectors.toSet()));
         }
 
         return ties;
