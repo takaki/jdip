@@ -162,7 +162,7 @@ public class Map implements Serializable {
      * As few as a single character can be matched (if it's unique);
      * e.g., "E" for England.
      */
-    public Power getClosestPower(String powerName) {
+    public Power getClosestPower(final String powerName) {
         // return 'null' if powerName is empty
         if (powerName != null && powerName.isEmpty()) {
             return null;
@@ -170,39 +170,35 @@ public class Map implements Serializable {
 
         // 1) check for an exact match.
         //
-        Power matchPower = null;
-        matchPower = getPower(powerName);
+        final Power matchPower = getPower(powerName);
         if (matchPower != null) {
             return matchPower;
         }
 
         // make lowercase
-        powerName = powerName.toLowerCase();
+        final String powerNameLower = powerName.toLowerCase();
 
         // 2) check for a unique partial match
         //
-        final List<Power> list = findPartialPowerMatch(powerName);
+        final List<Power> list = findPartialPowerMatch(powerNameLower);
         if (list.size() == 1) {
             return list.get(0);
         }
 
         // 3) perform a Levenshtein match against power names.
         //
-        int bestMatch = Integer.MAX_VALUE;
-        matchPower = null;
-        for (final String name : lcPowerNames) {
-            final int distance = Distance.getLD(powerName, name);
-            if (distance < bestMatch) {
-                matchPower = getPower(name);
-                bestMatch = distance;
-            } else if (distance == bestMatch && matchPower != getPower(name)) {
-                matchPower = null;
-            }
-        }
+        final int bestMatch = lcPowerNames.stream()
+                .mapToInt(name -> Distance.getLD(powerNameLower, name)).min()
+                .orElse(Integer.MAX_VALUE);
 
         // if absolute error rate is too high, discard.
-        if (bestMatch <= powerName.length() / 2) {
-            return matchPower;
+        if (bestMatch <= powerNameLower.length() / 2) {
+            final Set<Power> matchPowers = lcPowerNames.stream()
+                    .filter(name -> Distance
+                            .getLD(powerNameLower, name) == bestMatch)
+                    .map(this::getPower).collect(Collectors.toSet());
+            return matchPowers.isEmpty() || matchPowers
+                    .size() > 1 ? null : matchPowers.iterator().next();
         }
 
         // 4) nothing sufficiently close. Return null.
