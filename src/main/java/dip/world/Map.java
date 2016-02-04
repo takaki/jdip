@@ -40,22 +40,22 @@ public class Map implements Serializable {
 
     // internal constant arrays
     // all this data is serialized.
-    private final Power[] powers;
-    private final Province[] provinces;
+    private final List<Power> powers;
+    private final List<Province> provinces;
 
     // None of the data below here is serialized; it can be derived from
     // the above (serialized) data.
     //
     // Province-related
     private transient HashMap nameMap = null;    // map of all (short & full) names to a province; names in lower case
-    private transient String[] names = null;    // list of all province names [short & full]; names in lower case
+    private transient List<String> names = null;    // list of all province names [short & full]; names in lower case
 
     // Power-related
     private transient HashMap powerNameMap = null;        // created by createMappings()
 
     // fields created on first-use (by a method)
-    private transient String[] lcPowerNames = null;        // lower case power names & adjectives
-    private transient String[] wsNames = null;            // list of all province names that contain whitespace, "-", or " "
+    private transient List<String> lcPowerNames = null;        // lower case power names & adjectives
+    private transient List<String> wsNames = null;            // list of all province names that contain whitespace, "-", or " "
 
 
     /**
@@ -63,8 +63,8 @@ public class Map implements Serializable {
      */
     protected Map(final Power[] powerArray, final Province[] provinceArray) {
         // define constant arrays.
-        powers = powerArray;
-        provinces = provinceArray;
+        powers = Arrays.asList(powerArray);
+        provinces = Arrays.asList(provinceArray);
 
         // check provinceArray: index must be >= 0 and < provinceArray.length
         final int len = provinceArray.length;
@@ -129,7 +129,7 @@ public class Map implements Serializable {
         }
 
         // create names array from ArrayList
-        names = (String[]) namesAL.toArray(new String[namesAL.size()]);
+        names = namesAL;
     }// createMappings()
 
 
@@ -137,7 +137,7 @@ public class Map implements Serializable {
      * Returns an Array of all Powers.
      */
     public final Power[] getPowers() {
-        return powers;
+        return powers.toArray(new Power[0]);
     }// getPowers()
 
 
@@ -279,7 +279,7 @@ public class Map implements Serializable {
      * Returns an Array of all Provinces.
      */
     public final Province[] getProvinces() {
-        return provinces;
+        return provinces.toArray(new Province[0]);
     }// getProvinces()
 
 
@@ -484,11 +484,11 @@ public class Map implements Serializable {
                     list.add(name.toLowerCase());
                 }
             }
-            wsNames = (String[]) list.toArray(new String[list.size()]);
+            wsNames = list;
 
             // sort array from longest entries to shortest. This
             // eliminates errors in partial replacements.
-            Arrays.sort(wsNames, new Comparator() {
+            wsNames.sort(new Comparator() {
                 // longer strings are more negative, thus rise to top
                 public int compare(final Object o1, final Object o2) {
                     final String s1 = (String) o1;
@@ -686,7 +686,7 @@ public class Map implements Serializable {
      * Given an index, returns the Province to which that index corresponds.
      */
     public final Province reverseIndex(final int i) {
-        return provinces[i];
+        return provinces.get(i);
     }// reverseIndex()
 
 
@@ -697,7 +697,7 @@ public class Map implements Serializable {
      * Includes power adjectives.
      */
     private void createLCPowerNameList() {
-        final List tmpNames = new ArrayList(powers.length);
+        final List tmpNames = new ArrayList(powers.size());
 
         for (final Power power : powers) {
             final String[] tmp = power.getNames();
@@ -714,14 +714,14 @@ public class Map implements Serializable {
         final Comparator reverseComp = Collections.reverseOrder();
         Collections.sort(tmpNames, reverseComp);
 
-        lcPowerNames = (String[]) tmpNames.toArray(new String[tmpNames.size()]);
+        lcPowerNames = tmpNames;
     }// createLCPowerNameList()
 
 	
 	
 	
 	/*
-		Deprecated
+        Deprecated
 		
 		match string against another.
 		if src > dest, -1
@@ -783,8 +783,8 @@ public class Map implements Serializable {
     private List findPartialProvinceMatch(final String input) {
         final HashSet ties = new HashSet(41);
 
-        for (int i = 0; i < lcPowerNames.length; i++) {
-            final String provName = names[i];
+        for (int i = 0; i < lcPowerNames.size(); i++) {
+            final String provName = names.get(i);
 
             if (provName.startsWith(input)) {
                 ties.add(getProvince(provName));    // should NEVER be null
