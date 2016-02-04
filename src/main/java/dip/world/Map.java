@@ -378,29 +378,26 @@ public class Map implements Serializable {
      */
     public Collection<Province> getProvincesMatchingClosest(String input) {
         // return empty list
-        if (input == null || input.length() == 0) {
-            return new ArrayList<>(1);
+        if (input == null || input.isEmpty()) {
+            return Collections.emptyList();
         }
 
         // first, try exact match.
         // (fastest, if it works)
         final Province province = getProvince(input);
         if (province != null) {
-            final List<Province> matches = new ArrayList<>(1);
-            matches.add(province);
-            return matches;
+            return Collections.singleton(province);
         }
 
         // input converted to lower case
         input = input.toLowerCase().trim();
-
-        // tie list. Use a Set so that we get no dupes
-        final Set<Province> ties = new HashSet<>();
-
         // if 2 or less, do no processing
         if (input.length() <= 2) {
-            return new ArrayList<>(1);
+            return Collections.emptyList();
         }
+
+        // tie list. Use a Set so that we get no dupes
+        final Collection<Province> ties = new HashSet<>();
         if (input.length() == 3) {
             // if we are only 3 chars, do a partial-first match
             // against provinces and return that tie list (or,
@@ -410,11 +407,9 @@ public class Map implements Serializable {
             // which can return some very odd results.
             // for short strings...
             //
-            for (final String name : names) {
-                if (name.startsWith(input)) {
-                    ties.add(getProvince(name));
-                }
-            }
+            final String in = input;
+            ties.addAll(names.stream().filter(name -> name.startsWith(in))
+                    .map(this::getProvince).collect(Collectors.toSet()));
         } else {
             // compute Levenshteins on the match
             // if there are ties, keep them.. for now
