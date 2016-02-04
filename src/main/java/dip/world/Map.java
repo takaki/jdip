@@ -421,22 +421,15 @@ public class Map implements Serializable {
      * information, if present, as per Coast.normalize() followed
      * by Coast.parse().
      */
-    public Location parseLocation(String input) {
-        Coast coast = null;
+    public Location parseLocation(final String input) {
         try {
-            input = Coast.normalize(input);
-            coast = Coast.parse(input);
-        } catch (final OrderException e) {
+            final Coast coast = Coast.parse(Coast.normalize(input));
+            final Province province = getProvinceMatching(
+                    Coast.getProvinceName(input));
+            return province != null ? new Location(province, coast) : null;
+        } catch (final OrderException ignored) {
             return null;
         }
-
-        final Province province = getProvinceMatching(
-                Coast.getProvinceName(input));
-        if (province != null) {
-            return new Location(province, coast);
-        }
-
-        return null;
     }// parseLocation()
 
 
