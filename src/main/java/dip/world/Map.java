@@ -47,11 +47,11 @@ public class Map implements Serializable {
     // the above (serialized) data.
     //
     // Province-related
-    private transient HashMap nameMap = null;    // map of all (short & full) names to a province; names in lower case
+    private transient java.util.Map<String, Province> nameMap = null;    // map of all (short & full) names to a province; names in lower case
     private transient List<String> names = null;    // list of all province names [short & full]; names in lower case
 
     // Power-related
-    private transient HashMap powerNameMap = null;        // created by createMappings()
+    private transient java.util.Map<String, Power> powerNameMap = null;        // created by createMappings()
 
     // fields created on first-use (by a method)
     private transient List<String> lcPowerNames = null;        // lower case power names & adjectives
@@ -94,7 +94,7 @@ public class Map implements Serializable {
      */
     private void createMappings() {
         // create powerNameMap
-        powerNameMap = new HashMap(POWER_SIZE);
+        powerNameMap = new HashMap<>(POWER_SIZE);
         for (final Power power : powers) {
             final String[] tmp = power.getNames();
             for (String aTmp : tmp) {
@@ -110,8 +110,8 @@ public class Map implements Serializable {
 
         // province-related namemap
         //
-        nameMap = new HashMap(MAP_SIZE);
-        final ArrayList namesAL = new ArrayList(MAP_SIZE);
+        nameMap = new HashMap<>(MAP_SIZE);
+        final List<String> namesAL = new ArrayList<>(MAP_SIZE);
         for (final Province province : provinces) {
             String lcName = province.getFullName().toLowerCase();
 
@@ -137,7 +137,7 @@ public class Map implements Serializable {
      * Returns an Array of all Powers.
      */
     public final Power[] getPowers() {
-        return powers.toArray(new Power[0]);
+        return powers.toArray(new Power[powers.size()]);
     }// getPowers()
 
 
@@ -148,7 +148,7 @@ public class Map implements Serializable {
      * The match must be exact, but is case-insensitive.
      */
     public Power getPower(final String name) {
-        return (Power) powerNameMap.get(name.toLowerCase());
+        return powerNameMap.get(name.toLowerCase());
     }// getPower()
 
 
@@ -186,9 +186,9 @@ public class Map implements Serializable {
 
         // 2) check for a unique partial match
         //
-        final List list = findPartialPowerMatch(powerName);
+        final List<Power> list = findPartialPowerMatch(powerName);
         if (list.size() == 1) {
-            return (Power) list.get(0);
+            return list.get(0);
         }
 
         // 3) perform a Levenshtein match against power names.
@@ -244,9 +244,9 @@ public class Map implements Serializable {
         // if there are multiple equivalent matches (ties), without a clear winner,
         // return null.
         if (powerName.length() >= 4) {
-            final List list = findPartialPowerMatch(powerName);
+            final List<Power> list = findPartialPowerMatch(powerName);
             if (list.size() == 1) {
-                return (Power) list.get(0);
+                return list.get(0);
             }
         }
 
@@ -279,7 +279,7 @@ public class Map implements Serializable {
      * Returns an Array of all Provinces.
      */
     public final Province[] getProvinces() {
-        return provinces.toArray(new Province[0]);
+        return provinces.toArray(new Province[provinces.size()]);
     }// getProvinces()
 
 
@@ -290,7 +290,7 @@ public class Map implements Serializable {
      * The match must be exact, but is case-insensitive.
      */
     public Province getProvince(final String name) {
-        return (Province) nameMap.get(name.toLowerCase());
+        return nameMap.get(name.toLowerCase());
     }// getProvince()
 
 
@@ -329,13 +329,13 @@ public class Map implements Serializable {
         // If we tie, return no match. This is a 'partial first match'
         // This is tried BEFORE we try Levenshtein
         //
-        final List list = findPartialProvinceMatch(input);
+        final List<Province> list = findPartialProvinceMatch(input);
         if (list.size() == 1) {
-            return (Province) list.get(0);
+            return list.get(0);
         }
 
         // tie list. Use a Set so that we get no dupes
-        final Set ties = new HashSet();
+        final Set<Province> ties = new HashSet<>();
 
         // compute Levenshteins on the match
         // if there are ties, keep them.. for now
@@ -364,7 +364,7 @@ public class Map implements Serializable {
         // if we have >1 unique ties, (or none at all) no match
         if (bestDist <= ((int) (input.length() / 2)) && ties.size() == 1) {
             // there is but one
-            return (Province) ties.iterator().next();
+            return ties.iterator().next();
         }
 
         return null;
@@ -383,17 +383,17 @@ public class Map implements Serializable {
      * to determine closeness.
      * <p>
      */
-    public Collection getProvincesMatchingClosest(String input) {
+    public Collection<Province> getProvincesMatchingClosest(String input) {
         // return empty list
         if (input == null || input.length() == 0) {
-            return new ArrayList(1);
+            return new ArrayList<>(1);
         }
 
         // first, try exact match.
         // (fastest, if it works)
         final Province province = getProvince(input);
         if (province != null) {
-            final ArrayList matches = new ArrayList(1);
+            final List<Province> matches = new ArrayList<>(1);
             matches.add(province);
             return matches;
         }
@@ -402,11 +402,11 @@ public class Map implements Serializable {
         input = input.toLowerCase().trim();
 
         // tie list. Use a Set so that we get no dupes
-        final Set ties = new HashSet();
+        final Set<Province> ties = new HashSet<>();
 
         // if 2 or less, do no processing
         if (input.length() <= 2) {
-            return new ArrayList(1);
+            return new ArrayList<>(1);
         } else if (input.length() == 3) {
             // if we are only 3 chars, do a partial-first match
             // against provinces and return that tie list (or,
@@ -478,7 +478,7 @@ public class Map implements Serializable {
     public void replaceProvinceNames(final StringBuffer sb) {
         // create the whitespace list, if it doesn't exist.
         if (wsNames == null) {
-            final List list = new ArrayList(50);
+            final List<String> list = new ArrayList<>(50);
             for (final String name : names) {
                 if (name.indexOf(' ') != -1 || name.indexOf('-') != -1) {
                     list.add(name.toLowerCase());
@@ -780,8 +780,8 @@ public class Map implements Serializable {
      * <p>
      * THIS METHOD REPLACES getCloseness() FOR PROVINCE MATCHING.
      */
-    private List findPartialProvinceMatch(final String input) {
-        final HashSet ties = new HashSet(41);
+    private List<Province> findPartialProvinceMatch(final String input) {
+        final Set<Province> ties = new HashSet<>(41);
 
         for (int i = 0; i < lcPowerNames.size(); i++) {
             final String provName = names.get(i);
@@ -791,7 +791,7 @@ public class Map implements Serializable {
             }
         }
 
-        final ArrayList al = new ArrayList(ties.size());
+        final List<Province> al = new ArrayList<>(ties.size());
         al.addAll(ties);
         return al;
     }// findClosestProvince()
@@ -802,8 +802,8 @@ public class Map implements Serializable {
      * <p>
      * THIS METHOD REPLACES getCloseness() FOR POWER MATCHING.
      */
-    private List findPartialPowerMatch(final String input) {
-        final HashSet ties = new HashSet(41);
+    private List<Power> findPartialPowerMatch(final String input) {
+        final Set<Power> ties = new HashSet<>(41);
 
         for (final String powerName : lcPowerNames) {
             if (powerName.startsWith(input)) {
@@ -811,7 +811,7 @@ public class Map implements Serializable {
             }
         }
 
-        final ArrayList al = new ArrayList(ties.size());
+        final List<Power> al = new ArrayList<>(ties.size());
         al.addAll(ties);
         return al;
     }// findPartialPowerMatch()
