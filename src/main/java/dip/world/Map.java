@@ -164,7 +164,7 @@ public class Map implements Serializable {
      */
     public Power getClosestPower(String powerName) {
         // return 'null' if powerName is empty
-        if ("".equals(powerName)) {
+        if (powerName != null && powerName.isEmpty()) {
             return null;
         }
 
@@ -711,19 +711,11 @@ public class Map implements Serializable {
      * THIS METHOD REPLACES getCloseness() FOR PROVINCE MATCHING.
      */
     private List<Province> findPartialProvinceMatch(final String input) {
-        final Set<Province> ties = new HashSet<>(41);
-
-        for (int i = 0; i < lcPowerNames.size(); i++) {
-            final String provName = names.get(i);
-
-            if (provName.startsWith(input)) {
-                ties.add(getProvince(provName));    // should NEVER be null
-            }
-        }
-
-        final List<Province> al = new ArrayList<>(ties.size());
-        al.addAll(ties);
-        return al;
+        final Set<Province> ties = IntStream.range(0, lcPowerNames.size())
+                .mapToObj(i -> names.get(i))
+                .filter(provName -> provName.startsWith(input))
+                .map(this::getProvince).collect(Collectors.toSet());
+        return new ArrayList<>(ties);
     }// findClosestProvince()
 
 
@@ -733,17 +725,11 @@ public class Map implements Serializable {
      * THIS METHOD REPLACES getCloseness() FOR POWER MATCHING.
      */
     private List<Power> findPartialPowerMatch(final String input) {
-        final Set<Power> ties = new HashSet<>(41);
+        final Set<Power> ties = lcPowerNames.stream()
+                .filter(powerName -> powerName.startsWith(input))
+                .map(this::getPower).collect(Collectors.toSet());
+        return new ArrayList<>(ties);
 
-        for (final String powerName : lcPowerNames) {
-            if (powerName.startsWith(input)) {
-                ties.add(getPower(powerName));    // should NEVER be null
-            }
-        }
-
-        final List<Power> al = new ArrayList<>(ties.size());
-        al.addAll(ties);
-        return al;
     }// findPartialPowerMatch()
 
 
