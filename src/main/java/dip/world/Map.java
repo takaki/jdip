@@ -25,6 +25,7 @@ package dip.world;
 import dip.order.OrderException;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.*;
 
@@ -47,15 +48,15 @@ public class Map implements Serializable {
     // the above (serialized) data.
     //
     // Province-related
-    private transient java.util.Map<String, Province> nameMap = null;    // map of all (short & full) names to a province; names in lower case
-    private transient List<String> names = null;    // list of all province names [short & full]; names in lower case
+    private transient java.util.Map<String, Province> nameMap;    // map of all (short & full) names to a province; names in lower case
+    private transient List<String> names;    // list of all province names [short & full]; names in lower case
 
     // Power-related
-    private transient java.util.Map<String, Power> powerNameMap = null;        // created by createMappings()
+    private transient java.util.Map<String, Power> powerNameMap;        // created by createMappings()
 
     // fields created on first-use (by a method)
-    private transient List<String> lcPowerNames = null;        // lower case power names & adjectives
-    private transient List<String> wsNames = null;            // list of all province names that contain whitespace, "-", or " "
+    private transient List<String> lcPowerNames;        // lower case power names & adjectives
+    private transient List<String> wsNames;            // list of all province names that contain whitespace, "-", or " "
 
 
     /**
@@ -198,15 +199,13 @@ public class Map implements Serializable {
             if (distance < bestMatch) {
                 matchPower = getPower(name);
                 bestMatch = distance;
-            } else if (distance == bestMatch) {
-                if (matchPower != getPower(name)) {
-                    matchPower = null;
-                }
+            } else if (distance == bestMatch && matchPower != getPower(name)) {
+                matchPower = null;
             }
         }
 
         // if absolute error rate is too high, discard.
-        if (bestMatch <= ((int) (powerName.length() / 2))) {
+        if (bestMatch <= powerName.length() / 2) {
             return matchPower;
         }
 
@@ -264,7 +263,7 @@ public class Map implements Serializable {
 
         // if absolute error rate is too high, discard.
         // we are stricter than in getClosestPower()
-        if (bestMatch <= ((int) (powerName.length() / 3))) {
+        if (bestMatch <= powerName.length() / 3) {
             return getPower(bestMatchPowerName);    // should never return null
         }
 
@@ -360,7 +359,7 @@ public class Map implements Serializable {
 
         // if absolute error rate is too high, discard.
         // if we have >1 unique ties, (or none at all) no match
-        if (bestDist <= ((int) (input.length() / 2)) && ties.size() == 1) {
+        if (bestDist <= input.length() / 2 && ties.size() == 1) {
             // there is but one
             return ties.iterator().next();
         }
@@ -405,7 +404,8 @@ public class Map implements Serializable {
         // if 2 or less, do no processing
         if (input.length() <= 2) {
             return new ArrayList<>(1);
-        } else if (input.length() == 3) {
+        }
+        if (input.length() == 3) {
             // if we are only 3 chars, do a partial-first match
             // against provinces and return that tie list (or,
             // if no tie, return the province)
@@ -486,17 +486,14 @@ public class Map implements Serializable {
 
             // sort array from longest entries to shortest. This
             // eliminates errors in partial replacements.
-            wsNames.sort(new Comparator() {
-                // longer strings are more negative, thus rise to top
-                public int compare(final Object o1, final Object o2) {
-                    final String s1 = (String) o1;
-                    final String s2 = (String) o2;
-                    return (s2.length() - s1.length());
-                }// compare()
-
-                public boolean equals(final Object obj) {
-                    return false;
+            wsNames.sort((o1, o2) -> {
+                if (o2.length() > o1.length()) {
+                    return 1;
                 }
+                if (o2.length() < o1.length()) {
+                    return -1;
+                }
+                return 0;
             });
 
         }
@@ -548,7 +545,7 @@ public class Map implements Serializable {
                 if (idx >= 0) {
                     if (idx != 0 && Character
                             .isWhitespace(sb.charAt(idx - 1))) {
-                        sb.delete(idx, (idx + lcPowerName.length()));
+                        sb.delete(idx, idx + lcPowerName.length());
                     }
                 }
             }
@@ -575,7 +572,7 @@ public class Map implements Serializable {
      * </code>
      */
     public String getFirstPowerToken(final StringBuffer sb) {
-        assert (lcPowerNames != null);
+        assert lcPowerNames != null;
 
         // if we find a colon, we will ASSUME that the first token
         // is a power, and use getClosestPower(); otherwise, we will
@@ -638,7 +635,7 @@ public class Map implements Serializable {
      * </code>
      */
     public Power getFirstPower(final String input) {
-        assert (lcPowerNames != null);
+        assert lcPowerNames != null;
 
         // if we find a colon, we will ASSUME that the first token
         // is a power, and use getClosestPower(); otherwise, we will
@@ -882,7 +879,7 @@ public class Map implements Serializable {
                     t_j = t.charAt(j - 1);
 
                     // Step 5
-                    cost = (s_i == t_j) ? 0 : 1;
+                    cost = s_i == t_j ? 0 : 1;
 
                     // Step 6
                     d[i][j] = getMin(d[i - 1][j] + 1, d[i][j - 1] + 1,
@@ -898,7 +895,7 @@ public class Map implements Serializable {
 
     // reserialization: re-create mappings
     private void readObject(
-            final java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+            final ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
 
         // re-create transient data.
