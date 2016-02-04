@@ -28,6 +28,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 
 /**
@@ -69,18 +72,17 @@ public class Map implements Serializable {
 
         // check provinceArray: index must be >= 0 and < provinceArray.length
         final int len = provinceArray.length;
-        for (int i = 0; i < provinceArray.length; i++) {
+        IntStream.range(0, provinceArray.length).forEach(i -> {
             final int idx = provinceArray[i].getIndex();
             if (idx < 0 || idx >= len) {
                 throw new IllegalArgumentException(
                         "Province: " + provinceArray[i] + ": illegal Index: " + idx);
             }
-
             if (idx != i) {
                 throw new IllegalArgumentException(
                         "Province: " + provinceArray[i] + ": out of order (index: " + idx + "; position: " + i + ")");
             }
-        }
+        });
 
         // create mappings
         createMappings();
@@ -95,40 +97,34 @@ public class Map implements Serializable {
      */
     private void createMappings() {
         // create powerNameMap
-        powerNameMap = new HashMap<>(POWER_SIZE);
-        for (final Power power : powers) {
-            for (String aTmp : power.getNames()) {
-                powerNameMap.put(aTmp.toLowerCase(), power);
-            }
-
-            // also map adjectives
-            powerNameMap.put(power.getAdjective().toLowerCase(), power);
-        }
-
+        // also map adjectives
+        powerNameMap = new HashMap<>(powers.stream().collect(Collectors
+                .toMap(power -> power.getAdjective().toLowerCase(),
+                        Function.identity())));
+        powers.stream().forEach(power -> {
+            powerNameMap.putAll(Arrays.stream(power.getNames()).collect(
+                    Collectors.toMap(String::toLowerCase, aTmp -> power)));
+        });
         // create lcPowerNameList
         createLCPowerNameList();
 
         // province-related namemap
         //
-        nameMap = new HashMap<>(MAP_SIZE);
-        final List<String> namesAL = new ArrayList<>(MAP_SIZE);
-        for (final Province province : provinces) {
-            String lcName = province.getFullName().toLowerCase();
+        // map long name
+        nameMap = new HashMap<>(provinces.stream().collect(Collectors
+                .toMap(province -> province.getFullName().toLowerCase(),
+                        Function.identity())));
+        provinces.stream().forEach(province -> nameMap
+                .putAll(Arrays.stream(province.getShortNames()).collect(
+                        Collectors.toMap(String::toLowerCase,
+                                lcShortName -> province))));
+        // add to List
+        names = new ArrayList<>(provinces.stream().map(Province::getFullName)
+                .map(String::toLowerCase).collect(Collectors.toList()));
+        names.addAll(provinces.stream()
+                .flatMap(province -> Arrays.stream(province.getShortNames()))
+                .map(String::toLowerCase).collect(Collectors.toList()));
 
-            // map long name, and add to list
-            nameMap.put(lcName, province);
-            namesAL.add(lcName);
-
-            // map short names, and add to list
-            for (String lcShortName : province.getShortNames()) {
-                lcName = lcShortName.toLowerCase();
-                nameMap.put(lcName, province);
-                namesAL.add(lcName);
-            }
-        }
-
-        // create names array from ArrayList
-        names = namesAL;
     }// createMappings()
 
 
@@ -890,6 +886,7 @@ public class Map implements Serializable {
             // Step 7
             return d[n][m];
         }// getLD()
+
     }// inner class Distance
 
 
