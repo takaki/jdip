@@ -179,7 +179,7 @@ public class Border implements Serializable {
         this.baseMoveModifier = parseBaseMoveModifier(baseMoveModifier);
 
         // fields we don't need to parse
-        this.from = Arrays.asList(from);
+        this.from = from == null ? null : Arrays.asList(from);
         this.description = description;
 
     }// Border()
