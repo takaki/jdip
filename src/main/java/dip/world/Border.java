@@ -29,10 +29,7 @@ import dip.world.Phase.SeasonType;
 import dip.world.Unit.Type;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
 
 /**
  * A Border limits movement or support between 2 provinces.
@@ -134,8 +131,8 @@ public class Border implements Serializable {
     private final List<Type> unitTypes;    // if null, applies to all unit types
     private final String description; // description
     private final List<Class<? extends Order>> orderClasses;    // if null, applies to all order types
-    private int yearMin = 0;
-    private int yearMax = 0;
+    private int yearMin;
+    private int yearMax;
     private int yearModifier = YEAR_NOT_SPECIFIED;    // if not specified, this is the result
 
     // not determinants in canTransit()
@@ -174,8 +171,8 @@ public class Border implements Serializable {
         // e.g.: ARMY; must be a declared unit constant in dip.world.Unit
         unitTypes = parseUnitTypes(units);
 
-        this.seasons = parseProhibitedSeasons(season);
-        this.phases = parseProhibitedPhases(phase);
+        seasons = parseProhibitedSeasons(season);
+        phases = parseProhibitedPhases(phase);
         parseYear(year);
 
 
@@ -194,7 +191,7 @@ public class Border implements Serializable {
     private List<SeasonType> parseProhibitedSeasons(
             final String in) throws InvalidBorderException {
         final StringTokenizer st = new StringTokenizer(in, ", ");
-        final ArrayList<SeasonType> list = new ArrayList<>();
+        final List<SeasonType> list = new ArrayList<>();
         while (st.hasMoreTokens()) {
             final String tok = st.nextToken().trim();
             final SeasonType season = SeasonType.parse(tok);
@@ -214,7 +211,7 @@ public class Border implements Serializable {
     private List<PhaseType> parseProhibitedPhases(
             final String in) throws InvalidBorderException {
         final StringTokenizer st = new StringTokenizer(in, ", ");
-        final ArrayList<PhaseType> list = new ArrayList<>();
+        final List<PhaseType> list = new ArrayList<>();
         while (st.hasMoreTokens()) {
             final String tok = st.nextToken().trim();
             final PhaseType phase = PhaseType.parse(tok);
@@ -308,7 +305,8 @@ public class Border implements Serializable {
      */
     private List<Type> parseUnitTypes(
             final String in) throws InvalidBorderException {
-        final ArrayList<Type> list = new ArrayList<>(10);
+        final List<Type> list = new ArrayList<>(10);
+
         final StringTokenizer st = new StringTokenizer(in, ", ");
         while (st.hasMoreTokens()) {
             final String tok = st.nextToken();
@@ -344,7 +342,7 @@ public class Border implements Serializable {
      * Internal parser helper method
      */
     private List<Class<? extends Order>> parseClasses2Objs(final String in,
-                                                          final String superClassName) throws InvalidBorderException {
+                                                           final String superClassName) throws InvalidBorderException {
         Class<? extends Order> superClass = null;
         try {
             superClass = Class.forName(superClassName).asSubclass(Order.class);
@@ -459,8 +457,8 @@ public class Border implements Serializable {
             // check order
             if (orderClasses != null) {
                 nResults++;
-                for (Class orderClass1 : orderClasses) {
-                    if (orderClass == orderClass1) {
+                for (Class<? extends Order> orderClass1 : orderClasses) {
+                    if (Objects.equals(orderClass, orderClass1)) {
                         failResults++;
                         break;
                     }
@@ -493,11 +491,11 @@ public class Border implements Serializable {
                 nResults++;
                 final int theYear = phase.getYear();
                 if (yearModifier == YEAR_ODD) {
-                    failResults += ((theYear & 1) == 1) ? 1 : 0;
+                    failResults += (theYear & 1) == 1 ? 1 : 0;
                 } else if (yearModifier == YEAR_EVEN) {
-                    failResults += ((theYear & 1) == 1) ? 0 : 1;
+                    failResults += (theYear & 1) == 1 ? 0 : 1;
                 } else {
-                    failResults += ((yearMin <= theYear) && (theYear <= yearMax)) ? 1 : 0;
+                    failResults += yearMin <= theYear && theYear <= yearMax ? 1 : 0;
                 }
             }
         }
@@ -510,8 +508,8 @@ public class Border implements Serializable {
 
         // only return 'false' if EVERYTHING has failed, or,
         // nothing was tested
-        assert (failResults <= nResults);
-        return (failResults < nResults || nResults == 0);
+        assert failResults <= nResults;
+        return failResults < nResults || nResults == 0;
     }// canTransit()
 
 
