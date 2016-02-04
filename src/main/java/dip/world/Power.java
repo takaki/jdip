@@ -52,7 +52,7 @@ public class Power implements Comparable, Serializable {
     @XmlAttribute(required = true)
     private String adjective;
     @XmlAttribute
-    private List<String> altnames;
+    private List<String> altnames = new ArrayList<>();
 
 
     // transient fields
