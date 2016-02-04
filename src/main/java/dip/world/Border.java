@@ -432,12 +432,8 @@ public class Border implements Serializable {
         boolean fromMatched = false;
 
         if (from != null) {
-            for (Location aFrom : from) {
-                if (aFrom.equalsLoosely(fromLoc)) {
-                    fromMatched = true;
-                    break;
-                }
-            }
+            fromMatched = from.stream()
+                    .anyMatch(aFrom -> aFrom.equalsLoosely(fromLoc));
         }
 
         // we only apply criteria if 'from' was not specified, or
