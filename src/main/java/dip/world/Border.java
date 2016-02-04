@@ -31,6 +31,7 @@ import dip.world.Unit.Type;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.StringTokenizer;
 
 /**
@@ -124,15 +125,15 @@ public class Border implements Serializable {
 
 
     // instance fields
-    private final Location[] from;        // location(s) from which this transit limit applies;
+    private final List<Location> from;        // location(s) from which this transit limit applies;
     // if null, applies to all 'from' locations.
     // may specify coasts; if coast not defined, any coast used
 
-    private final SeasonType[] seasons;    // if null, applies to all seasons
-    private final PhaseType[] phases;        // if null, applies to all phases
-    private final Type[] unitTypes;    // if null, applies to all unit types
+    private final List<SeasonType> seasons;    // if null, applies to all seasons
+    private final List<PhaseType> phases;        // if null, applies to all phases
+    private final List<Type> unitTypes;    // if null, applies to all unit types
     private final String description; // description
-    private final Class[] orderClasses;    // if null, applies to all order types
+    private final List<Class<? extends Order>> orderClasses;    // if null, applies to all order types
     private int yearMin = 0;
     private int yearMax = 0;
     private int yearModifier = YEAR_NOT_SPECIFIED;    // if not specified, this is the result
@@ -181,38 +182,16 @@ public class Border implements Serializable {
         this.baseMoveModifier = parseBaseMoveModifier(baseMoveModifier);
 
         // fields we don't need to parse
-        this.from = from;
+        this.from = Arrays.asList(from);
         this.description = description;
 
-		/*
-        System.out.println("BORDER created:");
-		System.out.println("    ID: "+id);
-		System.out.println("    from: "+toList(from));
-		System.out.println("    seasons: "+toList(seasons));
-		System.out.println("    phases:  "+toList(phases));
-		System.out.println("    unitTypes: "+toList(unitTypes));
-		System.out.println("    orderClasses: "+toList(orderClasses));
-		System.out.println("    yearMin: "+yearMin);
-		System.out.println("    yearMax: "+yearMax);
-		System.out.println("    yearModifier: "+yearModifier);
-		System.out.println("    bmm: "+baseMoveModifier);
-		*/
     }// Border()
 
-
-    // TEMP
-    private static String toList(final Object[] obj) {
-        if (obj != null) {
-            return Arrays.asList(obj).toString();
-        }
-
-        return "null";
-    }
 
     /**
      * Parses the prohibited SeasonTypes (uses Phase.SeasonTypes.parse())
      */
-    private SeasonType[] parseProhibitedSeasons(
+    private List<SeasonType> parseProhibitedSeasons(
             final String in) throws InvalidBorderException {
         final StringTokenizer st = new StringTokenizer(in, ", ");
         final ArrayList<SeasonType> list = new ArrayList<>();
@@ -226,14 +205,13 @@ public class Border implements Serializable {
             list.add(season);
         }
 
-        return list.isEmpty() ? null : list
-                .toArray(new SeasonType[list.size()]);
+        return list.isEmpty() ? null : list;
     }// parseProhibitedSeasons()
 
     /**
      * Parses the prohibited PhaseTypes (uses Phase.PhaseType.parse())
      */
-    private PhaseType[] parseProhibitedPhases(
+    private List<PhaseType> parseProhibitedPhases(
             final String in) throws InvalidBorderException {
         final StringTokenizer st = new StringTokenizer(in, ", ");
         final ArrayList<PhaseType> list = new ArrayList<>();
@@ -248,8 +226,7 @@ public class Border implements Serializable {
             list.add(phase);
         }
 
-        return list.isEmpty() ? null : list
-                .toArray(new PhaseType[list.size()]);
+        return list.isEmpty() ? null : list;
     }// parseProhibitedPhases()
 
 
@@ -314,7 +291,7 @@ public class Border implements Serializable {
                     if (yearMin > yearMax) {
                         throw new NumberFormatException();
                     }
-                } catch (final NumberFormatException e) {
+                } catch (final NumberFormatException ignored) {
                     throw new InvalidBorderException(
                             Utils.getLocalString("Border.error.badyear", id,
                                     "Minimum and Maximum year values not specified or illegal."));
@@ -329,7 +306,7 @@ public class Border implements Serializable {
     /**
      * Parses the unit types
      */
-    private Type[] parseUnitTypes(
+    private List<Type> parseUnitTypes(
             final String in) throws InvalidBorderException {
         final ArrayList<Type> list = new ArrayList<>(10);
         final StringTokenizer st = new StringTokenizer(in, ", ");
@@ -343,18 +320,19 @@ public class Border implements Serializable {
             list.add(ut);
         }
 
-        return list.isEmpty() ? null : list
-                .toArray(new Type[list.size()]);
+        return list.isEmpty() ? null : list;
     }// parseUnitTypes()
 
 
     /**
      * Parses the order types
      */
-    private Class[] parseOrders(final String in) throws InvalidBorderException {
-        final Class[] classes = parseClasses2Objs(in, "dip.order.Order");
+    private List<Class<? extends Order>> parseOrders(
+            final String in) throws InvalidBorderException {
+        final List<Class<? extends Order>> classes = parseClasses2Objs(in,
+                "dip.order.Order");
 
-        if (classes.length == 0) {
+        if (classes.isEmpty()) {
             return null;
         }
 
@@ -365,26 +343,26 @@ public class Border implements Serializable {
     /**
      * Internal parser helper method
      */
-    private Class[] parseClasses2Objs(final String in,
-                                      final String superClassName) throws InvalidBorderException {
-        Class superClass = null;
+    private List<Class<? extends Order>> parseClasses2Objs(final String in,
+                                                          final String superClassName) throws InvalidBorderException {
+        Class<? extends Order> superClass = null;
         try {
-            superClass = Class.forName(superClassName);
+            superClass = Class.forName(superClassName).asSubclass(Order.class);
         } catch (final ClassNotFoundException e) {
             throw new InvalidBorderException(
                     Utils.getLocalString("Border.error.internal",
                             "parseClasses2Objs()", e.getMessage()));
         }
 
-        final ArrayList<Class> list = new ArrayList<>(10);
+        final List<Class<? extends Order>> list = new ArrayList<>(10);
         final StringTokenizer st = new StringTokenizer(in, ", ");
         while (st.hasMoreTokens()) {
             final String tok = st.nextToken();
-            Class cls = null;
+            Class<? extends Order> cls = null;
 
             try {
-                cls = Class.forName(tok);
-            } catch (final ClassNotFoundException cnfe) {
+                cls = Class.forName(tok).asSubclass(Order.class);
+            } catch (final ClassNotFoundException ignored) {
                 throw new InvalidBorderException(
                         Utils.getLocalString("Border.error.badclass", id, tok));
             }
@@ -398,7 +376,7 @@ public class Border implements Serializable {
             list.add(cls);
         }
 
-        return list.toArray(new Class[list.size()]);
+        return list;
     }// parseClasses2Objs()
 
 
@@ -415,7 +393,7 @@ public class Border implements Serializable {
 
         try {
             return Integer.parseInt(in);
-        } catch (final NumberFormatException e) {
+        } catch (final NumberFormatException ignored) {
             // fall through to exception, below
         }
 
@@ -446,7 +424,7 @@ public class Border implements Serializable {
     public boolean canTransit(final Location fromLoc, final Type unit,
                               final Phase phase, final Class orderClass) {
         /*
-		System.out.println("border: "+id);
+        System.out.println("border: "+id);
 		System.out.println("  "+fromLoc.getProvince()+":"+fromLoc.getCoast()+", "+phase);
 		*/
 
@@ -523,9 +501,9 @@ public class Border implements Serializable {
                 }
             }
         }
-		
+
 		/*
-		System.out.println("  fromMatched: "+fromMatched);
+        System.out.println("  fromMatched: "+fromMatched);
 		System.out.println("  nResults: "+nResults);
 		System.out.println("  failResults: "+failResults);
 		*/
