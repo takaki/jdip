@@ -432,26 +432,20 @@ public class Map implements Serializable {
         // create the whitespace list, if it doesn't exist.
         // TODO: delayed initialize
         if (wsNames == null) {
-            final List<String> list = new ArrayList<>(50);
-            for (final String name : names) {
-                if (name.indexOf(' ') != -1 || name.indexOf('-') != -1) {
-                    list.add(name.toLowerCase());
-                }
-            }
-            wsNames = list;
-
             // sort array from longest entries to shortest. This
             // eliminates errors in partial replacements.
-            wsNames.sort((o1, o2) -> {
-                if (o2.length() > o1.length()) {
-                    return 1;
-                }
-                if (o2.length() < o1.length()) {
-                    return -1;
-                }
-                return 0;
-            });
-
+            wsNames = names.stream()
+                    .filter(name -> name.indexOf(' ') != -1 || name
+                            .indexOf('-') != -1).map(String::toLowerCase)
+                    .sorted((o1, o2) -> {
+                        if (o2.length() > o1.length()) {
+                            return 1;
+                        }
+                        if (o2.length() < o1.length()) {
+                            return -1;
+                        }
+                        return 0;
+                    }).collect(Collectors.toList());
         }
 
         // search & replace.
@@ -544,8 +538,9 @@ public class Map implements Serializable {
         }
         final String[] spaceTokens = sb.toString().split("\\s", -1);
         if (spaceTokens.length >= 2) {
-            return lcPowerNames.stream().filter(spaceTokens[0].trim()::startsWith)
-                    .findFirst().orElse(null);
+            return lcPowerNames.stream()
+                    .filter(spaceTokens[0].trim()::startsWith).findFirst()
+                    .orElse(null);
         }
         return null;
     }// getFirstPowerToken()
