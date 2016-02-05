@@ -38,9 +38,6 @@ import java.util.stream.IntStream;
  * these Provinces and Powers.
  */
 public class Map implements Serializable {
-    // constants
-    private static final int MAP_SIZE = 211;    // should be prime
-    private static final int POWER_SIZE = 17;    // should be prime
 
     // internal constant arrays
     // all this data is serialized.
@@ -106,7 +103,7 @@ public class Map implements Serializable {
                     Collectors.toMap(String::toLowerCase, aTmp -> power)));
         });
         // create lcPowerNameList
-        createLCPowerNameList();
+        lcPowerNames = createLCPowerNameList();
 
         // province-related namemap
         //
@@ -587,22 +584,16 @@ public class Map implements Serializable {
             return null;
         }
 
-        // find first white space (or ':')
-        for (int i = 0; i < input.length(); i++) {
-            final char c = input.charAt(i);
-            if (c == ':') {
-                // looser: assume prior-to-colon is a power name.
-                // no testing.
-                return getClosestPower(input.substring(0, i).trim());
-            }
-            if (Character.isWhitespace(c)) {
-                final String nameToTest = input.substring(0, i).trim();
-                // stricter: no ':'; first token may or may not be a power.
-                return lcPowerNames.stream().filter(nameToTest::startsWith)
-                        .findFirst().map(this::getClosestPower).orElse(null);
-            }
+        final String[] colonTokens = input.split(":", -1);
+        if (colonTokens.length >= 2) {
+            return getClosestPower(colonTokens[0].trim());
         }
-
+        final String[] spaceTokens = input.split("\\s", -1);
+        if (spaceTokens.length >= 2) {
+            return lcPowerNames.stream()
+                    .filter(spaceTokens[0].trim()::startsWith).findFirst()
+                    .map(this::getClosestPower).orElse(null);
+        }
         return null;
     }// getFirstPower()
 
@@ -621,7 +612,7 @@ public class Map implements Serializable {
      * <p>
      * Includes power adjectives.
      */
-    private void createLCPowerNameList() {
+    private List<String> createLCPowerNameList() {
         final List<String> tmpNames = new ArrayList<>(powers.stream()
                 .flatMap(power -> Arrays.stream(power.getNames()))
                 .map(String::toLowerCase).collect(Collectors.toList()));
@@ -633,8 +624,7 @@ public class Map implements Serializable {
         // Why? because we need to ensure power names (and adjectives) like
         // "Russian" come before "Russia"; otherwise, the replacement will be f'd up.
         Collections.sort(tmpNames, Collections.reverseOrder());
-
-        lcPowerNames = tmpNames;
+        return tmpNames;
     }// createLCPowerNameList()
 
 	
