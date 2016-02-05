@@ -392,7 +392,7 @@ public class Phase implements Serializable, Comparable {
         private static final String IL8N_FALL = "SEASONTYPE_FALL";
 
 
-        private transient String displayName;
+        private final transient String displayName;
 
 
         /**
@@ -535,7 +535,7 @@ public class Phase implements Serializable, Comparable {
 
 
         // instance variables
-        private transient String displayName;
+        private final String displayName;
         private final String constName;
 
         /**
@@ -549,6 +549,7 @@ public class Phase implements Serializable, Comparable {
         /**
          * Get the name of a phase
          */
+        @Override
         public String toString() {
             return displayName;
         }// toString()
@@ -651,27 +652,6 @@ public class Phase implements Serializable, Comparable {
             return null;
         }// parse()
 
-
-        /**
-         * Resolves a serialized Phase object into a constant reference
-         */
-        private Object readResolve() throws ObjectStreamException {
-            PhaseType pt = null;
-
-            if (constName.equalsIgnoreCase(CONST_ADJUSTMENT)) {
-                pt = ADJUSTMENT;
-                pt.displayName = Utils.getLocalString(IL8N_ADJUSTMENT);
-            } else if (constName.equalsIgnoreCase(CONST_MOVEMENT)) {
-                pt = MOVEMENT;
-                pt.displayName = Utils.getLocalString(IL8N_MOVEMENT);
-            } else if (constName.equalsIgnoreCase(CONST_RETREAT)) {
-                pt = RETREAT;
-                pt.displayName = Utils.getLocalString(IL8N_RETREAT);
-            }
-
-            return pt;
-        }// readResolve()
-
     }// nested class PhaseType
 
 
@@ -683,7 +663,7 @@ public class Phase implements Serializable, Comparable {
      * <p>
      * A YearType is an immutable object.
      */
-    public static class YearType implements Serializable, Comparable {
+    public static class YearType implements Serializable, Comparable<YearType> {
         // instance fields
         protected final int year;
 
@@ -703,20 +683,15 @@ public class Phase implements Serializable, Comparable {
         /**
          * Get the name of a year.
          */
+        @Override
         public String toString() {
             if (year >= 1000) {
-                return String.valueOf(year);
+                return Integer.toString(year);
             } else if (year > 0) {
                 // explicitly add "AD"
-                final StringBuffer sb = new StringBuffer(8);
-                sb.append(year);
-                sb.append(" AD");
-                return sb.toString();
+                return String.join("", String.valueOf(year), " AD");
             } else {
-                final StringBuffer sb = new StringBuffer(8);
-                sb.append(-year);
-                sb.append(" BC");
-                return sb.toString();
+                return String.join("", Integer.toString(-year), " BC");
             }
         }// toString()
 
@@ -731,6 +706,7 @@ public class Phase implements Serializable, Comparable {
         /**
          * Returns the hashcode
          */
+        @Override
         public int hashCode() {
             return year;
         }// hashCode()
@@ -738,10 +714,12 @@ public class Phase implements Serializable, Comparable {
         /**
          * Returns <code>true</code> if YearTYpe objects are equivalent
          */
+        @Override
         public boolean equals(final Object obj) {
             if (obj == this) {
                 return true;
-            } else if (obj instanceof YearType) {
+            }
+            if (obj instanceof YearType) {
                 return year == ((YearType) obj).year;
             }
 
@@ -752,8 +730,14 @@ public class Phase implements Serializable, Comparable {
          * Temporally compares YearType objects
          */
         @Override
-        public int compareTo(final Object obj) {
-            return year - ((YearType) obj).year;
+        public int compareTo(final YearType obj) {
+            if (year > obj.year) {
+                return 1;
+            }
+            if (year < obj.year) {
+                return -1;
+            }
+            return 0;
         }// compareTo()
 
 
@@ -804,7 +788,8 @@ public class Phase implements Serializable, Comparable {
 
             if (y == 0) {
                 return null;
-            } else if (y > 0 && isBC) {
+            }
+            if (y > 0 && isBC) {
                 y = -y;
             }
 
