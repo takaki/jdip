@@ -34,7 +34,7 @@ import java.util.List;
  * A Power represents player in the game.
  */
 @XmlRootElement(name = "POWER")
-public class Power implements Comparable, Serializable {
+public class Power implements Comparable<Power>, Serializable {
     /**
      * An empty array of Power objects.
      */
@@ -48,15 +48,11 @@ public class Power implements Comparable, Serializable {
     @XmlAttribute(required = true)
     private String name;
     @XmlAttribute(name = "default", required = true)
-    private boolean isActive;
+    private boolean active;
     @XmlAttribute(required = true)
     private String adjective;
     @XmlAttribute
     private List<String> altnames = new ArrayList<>();
-
-
-    // transient fields
-    private transient int hashCode;
 
     public Power() {
     }
@@ -76,7 +72,8 @@ public class Power implements Comparable, Serializable {
      * Power uses instance equality, so two Power() objects created with the same arguments
      * will NOT be the same.
      */
-    public Power(String[] names, String adjective, boolean isActive) {
+    public Power(final String[] names, final String adjective,
+                 final boolean active) {
         if (names == null || adjective == null) {
             throw new IllegalArgumentException("null argument(s)");
         }
@@ -85,14 +82,14 @@ public class Power implements Comparable, Serializable {
             throw new IllegalArgumentException("no names");
         }
 
-        if (adjective.length() == 0) {
+        if (adjective.isEmpty()) {
             throw new IllegalArgumentException("empty adjective");
         }
 
         name = names[0];
         altnames = Arrays.asList(Arrays.copyOfRange(names, 1, names.length));
         this.adjective = adjective;
-        this.isActive = isActive;
+        this.active = active;
     }// Power()
 
 
@@ -114,7 +111,7 @@ public class Power implements Comparable, Serializable {
      * Get all names. There is always at least one. Does not include adjectives.
      */
     public String[] getNames() {
-        List<String> names = new ArrayList<>();
+        final List<String> names = new ArrayList<>();
         names.add(name);
         names.addAll(altnames);
         return names.toArray(new String[names.size()]);
@@ -125,19 +122,16 @@ public class Power implements Comparable, Serializable {
      * Determines if this power is active. Only active powers can order units.
      */
     public boolean isActive() {
-        return isActive;
+        return active;
     }
 
 
     /**
      * Implementation of Object.hashCode()
      */
+    @Override
     public int hashCode() {
-        if (hashCode == 0) {
-            hashCode = getName().hashCode();
-        }
-
-        return hashCode;
+        return name.hashCode();
     }// hashCode()
 
 	
@@ -149,6 +143,7 @@ public class Power implements Comparable, Serializable {
     /**
      * Implementation of Object.toString()
      */
+    @Override
     public String toString() {
         return getName();
     }// toString()
@@ -158,9 +153,8 @@ public class Power implements Comparable, Serializable {
      * Implementation of Comparable interface
      */
     @Override
-    public int compareTo(Object obj) {
-        Power power = (Power) obj;
-        return getName().compareTo(power.getName());
+    public int compareTo(final Power obj) {
+        return name.compareTo(obj.name);
     }// compareTo()
 
 
