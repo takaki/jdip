@@ -191,8 +191,7 @@ public class Phase implements Serializable, Comparable<Phase> {
     public Phase getNext() {
         // advance the phase index by one, UNLESS we are over; then
         // advance the year and reset.
-        int idx = orderIdx + 1;
-        idx = idx > ORDER_SEASON.length - 1 ? 0 : idx;
+        final int idx = (orderIdx + 1) % ORDER_SEASON.length;
         final YearType yt = idx == 0 ? yearType.getNext() : yearType;
 
         return new Phase(yt, idx);
@@ -205,7 +204,7 @@ public class Phase implements Serializable, Comparable<Phase> {
     public Phase getPrevious() {
         final int idx = orderIdx - 1;
         return new Phase(idx < 0 ? yearType.getPrevious() : yearType,
-                idx < 0 ? ORDER_SEASON.length - 1 : idx);
+                Math.floorMod(idx, ORDER_SEASON.length));
     }// getPrevious()
 
 
@@ -310,16 +309,9 @@ public class Phase implements Serializable, Comparable<Phase> {
      * E.g.: Spring Move, or Spring Adjustment, etc.
      */
     public static String[] getAllSeasonPhaseCombos() {
-        final String[] spCombos = new String[ORDER_SEASON.length];
-        for (int i = 0; i < ORDER_SEASON.length; i++) {
-            final StringBuffer sb = new StringBuffer(64);
-            sb.append(ORDER_SEASON[i]);
-            sb.append(' ');
-            sb.append(ORDER_PHASE[i]);
-            spCombos[i] = sb.toString();
-        }
-
-        return spCombos;
+        return IntStream.range(0, ORDER_SEASON.length).mapToObj(i -> String
+                .join(" ", ORDER_SEASON[i].toString(),
+                        ORDER_PHASE[i].toString())).toArray(String[]::new);
     }// getAllSeasonPhaseCombos()
 
 
@@ -377,6 +369,7 @@ public class Phase implements Serializable, Comparable<Phase> {
         /**
          * Return the name of this season
          */
+        @Override
         public String toString() {
             return displayName;
         }// toString()
@@ -436,33 +429,36 @@ public class Phase implements Serializable, Comparable<Phase> {
         public static SeasonType parse(final String in) {
             // short cases (1 letter); not i18n'd
             if (in.length() == 1) {
-                final String lcIn = in.toLowerCase();
-                switch (lcIn) {
+                switch (in.toLowerCase()) {
                     case "s":
                         return SPRING;
                     case "f":
                     case "w":
                         return FALL;
+                    default:
+                        return null;
                 }
-
-                return null;
             }
 
             // typical cases
-            if (in.equalsIgnoreCase(CONST_SPRING)) {
-                return SPRING;
-            } else if (in.equalsIgnoreCase(CONST_FALL)) {
-                return FALL;
-            } else if (in.equalsIgnoreCase(CONST_SUMMER)) {
-                return SPRING;
-            } else if (in.equalsIgnoreCase(CONST_WINTER)) {
-                return FALL;
+            switch (in.toUpperCase()) {
+                case CONST_SPRING:
+                    return SPRING;
+                case CONST_FALL:
+                    return FALL;
+                case CONST_SUMMER:
+                    return SPRING;
+                case CONST_WINTER:
+                    return FALL;
+                default:
+                    break;
             }
 
             // il8n cases
             if (in.equalsIgnoreCase(Utils.getLocalString(IL8N_SPRING))) {
                 return SPRING;
-            } else if (in.equalsIgnoreCase(Utils.getLocalString(IL8N_FALL))) {
+            }
+            if (in.equalsIgnoreCase(Utils.getLocalString(IL8N_FALL))) {
                 return FALL;
             }
 
@@ -586,8 +582,7 @@ public class Phase implements Serializable, Comparable<Phase> {
         public static PhaseType parse(final String in) {
             // short cases (1 letter); not i18n'd
             if (in.length() == 1) {
-                final String lcIn = in.toLowerCase();
-                switch (lcIn) {
+                switch (in.toLowerCase()) {
                     case "m":
                         return MOVEMENT;
                     case "a":
@@ -603,20 +598,22 @@ public class Phase implements Serializable, Comparable<Phase> {
             // typical cases; use 'startsWith'
             if (in.startsWith(CONST_ADJUSTMENT)) {
                 return ADJUSTMENT;
-            } else if (in.startsWith(CONST_MOVEMENT)) {
+            }
+            if (in.startsWith(CONST_MOVEMENT)) {
                 return MOVEMENT;
-            } else if (in.startsWith(CONST_RETREAT)) {
+            }
+            if (in.startsWith(CONST_RETREAT)) {
                 return RETREAT;
             }
 
             // il8n cases
             if (in.equalsIgnoreCase(Utils.getLocalString(IL8N_ADJUSTMENT))) {
                 return ADJUSTMENT;
-            } else if (in
-                    .equalsIgnoreCase(Utils.getLocalString(IL8N_MOVEMENT))) {
+            }
+            if (in.equalsIgnoreCase(Utils.getLocalString(IL8N_MOVEMENT))) {
                 return MOVEMENT;
-            } else if (in
-                    .equalsIgnoreCase(Utils.getLocalString(IL8N_RETREAT))) {
+            }
+            if (in.equalsIgnoreCase(Utils.getLocalString(IL8N_RETREAT))) {
                 return RETREAT;
             }
 
@@ -687,14 +684,8 @@ public class Phase implements Serializable, Comparable<Phase> {
          */
         @Override
         public boolean equals(final Object obj) {
-            if (obj == this) {
-                return true;
-            }
-            if (obj instanceof YearType) {
-                return year == ((YearType) obj).year;
-            }
+            return obj == this || obj instanceof YearType && year == ((YearType) obj).year;
 
-            return false;
         }// equals()
 
         /**
@@ -750,7 +741,7 @@ public class Phase implements Serializable, Comparable<Phase> {
                 in = in.substring(0, idx);
             }
 
-            int y = 0;
+            int y;
             try {
                 y = Integer.parseInt(in.trim());
             } catch (final NumberFormatException e) {
