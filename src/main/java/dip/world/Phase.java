@@ -27,9 +27,9 @@ import dip.misc.Utils;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.StringTokenizer;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.stream.IntStream;
 
 /**
  * A Phase object represents when a turn takes place, and contains the
@@ -40,7 +40,7 @@ import java.util.StringTokenizer;
  * PhaseType and SeasonType objects may be compared with referential equality.
  * (For example, "Phase.getSeasonType() == SeasonType.SPRING")
  */
-public class Phase implements Serializable, Comparable {
+public class Phase implements Serializable, Comparable<Phase> {
     // internal constants: describes ordering of phases
     // Setup is independent of this ordering.
     // ordering: (for a given year)
@@ -133,30 +133,25 @@ public class Phase implements Serializable, Comparable {
      * Displays as a short String (e.g., F1902R)
      */
     public String getBriefName() {
-        final StringBuffer sb = new StringBuffer(6);
-        sb.append(seasonType.getBriefName());
-        sb.append(YEAR_FORMAT.format(yearType.getYear()));
-        sb.append(phaseType.getBriefName());
-        return sb.toString();
+        return String.join("", seasonType.getBriefName(),
+                YEAR_FORMAT.format(yearType.getYear()),
+                phaseType.getBriefName());
     }// getBriefName()
 
     /**
      * Displays the phase as a String
      */
+    @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer(64);
-        sb.append(seasonType);
-        sb.append(", ");
-        sb.append(yearType);
-        sb.append(" (");
-        sb.append(phaseType);
-        sb.append(')');
-        return sb.toString();
+        return String
+                .join("", String.valueOf(seasonType), ", ", yearType.toString(),
+                        " (", phaseType.toString(), ")");
     }// toString()
 
     /**
      * Returns true if the two phases are equivalent.
      */
+    @Override
     public boolean equals(final Object obj) {
         final Phase phase = (Phase) obj;
         return yearType.equals(phase.yearType) && seasonType
@@ -169,8 +164,8 @@ public class Phase implements Serializable, Comparable {
      * greater than (temporally) to this Phase.
      */
     @Override
-    public int compareTo(final Object obj) {
-        final Phase phase = (Phase) obj;
+    public int compareTo(final Phase obj) {
+        final Phase phase = obj;
         int result = 0;
 
         // year is dominant
@@ -208,11 +203,9 @@ public class Phase implements Serializable, Comparable {
      * Get the phase that would come before the current phase
      */
     public Phase getPrevious() {
-        int idx = orderIdx - 1;
-        final YearType yt = idx < 0 ? yearType.getPrevious() : yearType;
-        idx = idx < 0 ? ORDER_SEASON.length - 1 : idx;
-
-        return new Phase(yt, idx);
+        final int idx = orderIdx - 1;
+        return new Phase(idx < 0 ? yearType.getPrevious() : yearType,
+                idx < 0 ? ORDER_SEASON.length - 1 : idx);
     }// getPrevious()
 
 
@@ -220,13 +213,10 @@ public class Phase implements Serializable, Comparable {
      * given season/phase, derive the order index. If we cannot, our index is -1.
      */
     private int deriveOrderIdx(final SeasonType st, final PhaseType pt) {
-        for (int i = 0; i < ORDER_SEASON.length; i++) {
-            if (ORDER_SEASON[i] == st && ORDER_PHASE[i] == pt) {
-                return i;
-            }
-        }
+        return IntStream.range(0, ORDER_SEASON.length)
+                .filter(i -> ORDER_SEASON[i] == st && ORDER_PHASE[i] == pt)
+                .findFirst().orElse(-1);
 
-        return -1;
     }// deriveOrderIdx()
 
 
@@ -235,13 +225,8 @@ public class Phase implements Serializable, Comparable {
      * SeasonType combinations are valid.
      */
     public static boolean isValid(final SeasonType st, final PhaseType pt) {
-        for (int i = 0; i < ORDER_SEASON.length; i++) {
-            if (ORDER_SEASON[i] == st && ORDER_PHASE[i] == pt) {
-                return true;
-            }
-        }
-
-        return false;
+        return IntStream.range(0, ORDER_SEASON.length)
+                .anyMatch(i -> ORDER_SEASON[i] == st && ORDER_PHASE[i] == pt);
     }// isValid()
 
 
@@ -261,34 +246,27 @@ public class Phase implements Serializable, Comparable {
      * forgiving, but it does not allow any non-word tokens between what we look for.
      */
     public static Phase parse(final String in) {
-        SeasonType seasonType = null;
-        YearType yearType = null;
-        PhaseType phaseType = null;
-
         // special case: 6 char token (commonly seen in Judge input)
         // 'bc' years aren't allowed in 6 char tokens.
         if (in.length() == 6) {
             // parse season & phase
-            seasonType = SeasonType.parse(in.substring(0, 1));
-            yearType = YearType.parse(in.substring(1, 5));
-            phaseType = PhaseType.parse(in.substring(5, 6));
+            final SeasonType seasonType = SeasonType.parse(in.substring(0, 1));
+            final YearType yearType = YearType.parse(in.substring(1, 5));
+            final PhaseType phaseType = PhaseType.parse(in.substring(5, 6));
 
             if (seasonType == null || yearType == null || phaseType == null) {
                 return null;
             }
+            return new Phase(seasonType, yearType, phaseType);
         } else {
             // case conversion
             final String lcIn = in.toLowerCase();
 
             // our token list (should be 3 or 4; whitespace/punctuation is ignored)
-            final ArrayList tokList = new ArrayList(10);
 
             // get all tokens, ignoring ANY whitespace or punctuation; StringTokenizer is ideal for this
-            final StringTokenizer st = new StringTokenizer(lcIn,
-                    " ,:;[](){}-_|/\\\"\'\t\n\r", false);
-            while (st.hasMoreTokens()) {
-                tokList.add(st.nextToken());
-            }
+            final Collection<String> tokList = Arrays
+                    .asList(lcIn.split("[ ,:;\\[\\](){}\\-_|/\\\"\'\t\n\r]+"));
 
             // not enough tokens (we need at least 3)
             if (tokList.size() < 3) {
@@ -296,10 +274,10 @@ public class Phase implements Serializable, Comparable {
             }
 
             // parse until we run out of things to parse
-            final Iterator iter = tokList.iterator();
-            while (iter.hasNext()) {
-                final String tok = (String) iter.next();
-
+            SeasonType seasonType = null;
+            YearType yearType = null;
+            PhaseType phaseType = null;
+            for (final String tok : tokList) {
                 final SeasonType tmpSeason = SeasonType.parse(tok);
                 seasonType = tmpSeason == null ? seasonType : tmpSeason;
 
@@ -317,19 +295,18 @@ public class Phase implements Serializable, Comparable {
             // 'bc' token may be 'loose'. If so, we need to find it, as the
             // YearType parser was fed only a single token (no whitespace)
             // e.g., "1083 BC" won't be parsed right, but "1083bc" will be.
-            if (lcIn.indexOf("bc") >= 0 || lcIn.indexOf("b.c.") >= 0) {
-                if (yearType.getYear() > 0) {
-                    yearType = new YearType(-yearType.getYear());
-                }
+            if ((lcIn.contains("bc") || lcIn.contains("b.c.")) && yearType
+                    .getYear() > 0) {
+                yearType = new YearType(-yearType.getYear());
             }
 
             // check season-phase validity
             if (!isValid(seasonType, phaseType)) {
                 return null;
             }
+            return new Phase(seasonType, yearType, phaseType);
         }
 
-        return new Phase(seasonType, yearType, phaseType);
     }// parse()
 
 
