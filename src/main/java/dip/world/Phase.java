@@ -274,37 +274,31 @@ public class Phase implements Serializable, Comparable<Phase> {
             }
 
             // parse until we run out of things to parse
-            SeasonType seasonType = null;
-            YearType yearType = null;
-            PhaseType phaseType = null;
-            for (final String tok : tokList) {
-                final SeasonType tmpSeason = SeasonType.parse(tok);
-                seasonType = tmpSeason == null ? seasonType : tmpSeason;
-
-                final PhaseType tmpPhase = PhaseType.parse(tok);
-                phaseType = tmpPhase == null ? phaseType : tmpPhase;
-
-                final YearType tmpYear = YearType.parse(tok);
-                yearType = tmpYear == null ? yearType : tmpYear;
-            }
+            final SeasonType seasonType = tokList.stream()
+                    .map(SeasonType::parse).filter(tmp -> tmp != null)
+                    .findFirst().orElse(null);
+            final YearType yearType = tokList.stream().map(YearType::parse)
+                    .filter(tmp -> tmp != null).findFirst().orElse(null);
+            final PhaseType phaseType = tokList.stream().map(PhaseType::parse)
+                    .filter(tmp -> tmp != null).findFirst().orElse(null);
 
             if (yearType == null || seasonType == null || phaseType == null) {
                 return null;
-            }
-
-            // 'bc' token may be 'loose'. If so, we need to find it, as the
-            // YearType parser was fed only a single token (no whitespace)
-            // e.g., "1083 BC" won't be parsed right, but "1083bc" will be.
-            if ((lcIn.contains("bc") || lcIn.contains("b.c.")) && yearType
-                    .getYear() > 0) {
-                yearType = new YearType(-yearType.getYear());
             }
 
             // check season-phase validity
             if (!isValid(seasonType, phaseType)) {
                 return null;
             }
-            return new Phase(seasonType, yearType, phaseType);
+
+            // 'bc' token may be 'loose'. If so, we need to find it, as the
+            // YearType parser was fed only a single token (no whitespace)
+            // e.g., "1083 BC" won't be parsed right, but "1083bc" will be.
+            final YearType yt = (lcIn.contains("bc") || lcIn
+                    .contains("b.c.")) && yearType.getYear() > 0 ? new YearType(
+                    -yearType.getYear()) : yearType;
+
+            return new Phase(seasonType, yt, phaseType);
         }
 
     }// parse()
