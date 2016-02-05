@@ -47,9 +47,67 @@ class WorldFactoryTest extends Specification {
         def variant = VariantManager.getVariants()[7]
         def world = WorldFactory.getInstance().createWorld(variant)
         world.getPhaseSet()
-        def mos = world.getMap().getProvince("mos")
-        def stp = world.getMap().getProvince("stp")
-        def ank = world.getMap().getProvince("ank")
+
+        def map = world.getMap()
+        then:
+        map.getProvinces().size() == 75
+
+        map.getClosestPower("England").toString() == "England"
+        map.getClosestPower("Engband").toString() == "England"
+        map.getPowerMatching("Englang").getName() == "England"
+        map.getPowerMatching("Engbang").getName() == "England"
+
+        map.getProvinceMatching("Mosccc").getFullName() == "Moscow"
+        map.getProvinceMatching("Moscaw").getFullName() == "Moscow"
+        map.getProvinceMatching("Xyz") == null
+        map.getProvinceMatching("Xyzabc") == null
+
+        map.getFirstPower("France: xxx-yyy").getName() == "France"
+        map.getFirstPower("Fra: xxx-yyy").getName() == "France"
+        map.getFirstPower("Fra xxx-yyy") == null
+        map.getFirstPower("xxx-yyy") == null
+
+        map.getFirstPowerToken(new StringBuffer("France: xxx-yyy")) == "France"
+        map.getFirstPowerToken(new StringBuffer("Fra: xxx-yyy")) == "Fra"
+        map.getFirstPowerToken(new StringBuffer("Fra xxx-yyy")) == null
+        map.getFirstPowerToken(new StringBuffer("xxx-yyy")) == null
+
+
+        map.getProvincesMatchingClosest("Moscow").size() == 1
+        map.getProvincesMatchingClosest("Moscaw").size() == 1
+        map.getProvincesMatchingClosest("Xyz").size() == 0
+        map.getProvincesMatchingClosest("abc").size() == 0
+        map.getProvincesMatchingClosest("def").size() == 0
+        map.getProvincesMatchingClosest("Xyzabc").size() == 32
+        map.getProvincesMatchingClosest("abcdef").size() == 9
+        map.getProvincesMatchingClosest("defghi").size() == 4
+
+        map.parseLocation("stp/nc").getCoast() == Coast.NORTH
+
+        def mossb = new StringBuffer("moscow")
+        map.replaceProvinceNames(mossb)
+        mossb.toString() == "moscow"
+        def bla0sb = new StringBuffer("black sea")
+        map.replaceProvinceNames(bla0sb)
+        bla0sb.toString() == "bla"
+        def blasb = new StringBuffer("Black Sea")
+        map.replaceProvinceNames(blasb)
+        blasb.toString() == "Black Sea"
+
+        def frasb = new StringBuffer("france france england italy")
+        map.filterPowerNames(frasb)
+        frasb.toString() == "france   "
+        def fra2sb = new StringBuffer("france: france england italy")
+        map.filterPowerNames(fra2sb)
+        fra2sb.toString() == "france:   "
+        def fra3sb = new StringBuffer("france:france england italy")
+        map.filterPowerNames(fra3sb)
+        fra3sb.toString() == "france:france  "
+
+        when:
+        def mos = map.getProvince("mos")
+        def stp = map.getProvince("stp")
+        def ank = map.getProvince("ank")
         then:
         mos.getFullName() == "Moscow"
         mos.isAdjacent(Coast.NONE, stp)
