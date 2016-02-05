@@ -26,6 +26,7 @@ import dip.misc.Utils;
 
 import javax.xml.bind.annotation.XmlEnumValue;
 import java.io.Serializable;
+import java.util.Objects;
 
 
 /**
@@ -108,10 +109,12 @@ public class Unit implements Serializable, Cloneable {
     /**
      * Returns if two Units are equivalent.
      */
+    @Override
     public boolean equals(final Object obj) {
         if (obj == this) {
             return true;
-        } else if (obj instanceof Unit) {
+        }
+        if (obj instanceof Unit) {
             final Unit unit = (Unit) obj;
             return unit.type == type && unit.owner == owner && unit.coast == coast;
         }
@@ -125,7 +128,7 @@ public class Unit implements Serializable, Cloneable {
      * invoked for performance reasons.
      */
     @Override
-    public Object clone() {
+    public Unit clone() {
         return new Unit(owner, type, coast);
     }// clone()
 
@@ -133,16 +136,15 @@ public class Unit implements Serializable, Cloneable {
     /**
      * Displays internal object values. For debugging use only!
      */
+    @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer(64);
-        sb.append("Unit:[type=");
-        sb.append(type);
-        sb.append(",power=");
-        sb.append(owner);
-        sb.append(",coast=");
-        sb.append(coast);
-        sb.append(']');
-        return sb.toString();
+        return String.join("", "Unit:[type=" +
+                type +
+                ",power=" +
+                owner +
+                ",coast=" +
+                coast +
+                "]");
     }// toString()
 
 
@@ -214,6 +216,7 @@ public class Unit implements Serializable, Cloneable {
         /**
          * Get the short name
          */
+        @Override
         public String toString() {
             return shortName;
         }// toString()
@@ -253,16 +256,16 @@ public class Unit implements Serializable, Cloneable {
             }
 
             final String input = text.toLowerCase().trim();
-            if (ARMY.getShortName().equals(input) || ARMY
-                    .getFullName().equals(input)) {
+            if (Objects.equals(input, ARMY.shortName) || Objects
+                    .equals(input, ARMY.name)) {
                 return ARMY;
-            } else if (FLEET.getShortName()
-                    .equals(input) || ARMY.getFullName()
-                    .equals(input)) {
+            }
+            if (Objects.equals(input, FLEET.shortName) || Objects
+                    .equals(input, ARMY.name)) {
                 return FLEET;
-            } else if (WING.getShortName()
-                    .equals(input) || ARMY.getFullName()
-                    .equals(input)) {
+            }
+            if (Objects.equals(input, WING.shortName) || Objects
+                    .equals(input, ARMY.name)) {
                 return WING;
             }
 
@@ -279,6 +282,8 @@ public class Unit implements Serializable, Cloneable {
                 case "w":
                 case "wing":
                     return WING;
+                default:
+                    break;
             }
 
             return null;
