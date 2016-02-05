@@ -63,7 +63,8 @@ public class Phase implements java.io.Serializable, Comparable {
     /**
      * Create a new Phase.
      */
-    public Phase(SeasonType seasonType, int year, PhaseType phaseType) {
+    public Phase(final SeasonType seasonType, final int year,
+                 final PhaseType phaseType) {
         this(seasonType, new YearType(year), phaseType);
     }// Phase()
 
@@ -71,8 +72,8 @@ public class Phase implements java.io.Serializable, Comparable {
     /**
      * Create a new Phase.
      */
-    public Phase(SeasonType seasonType, YearType yearType,
-                 PhaseType phaseType) {
+    public Phase(final SeasonType seasonType, final YearType yearType,
+                 final PhaseType phaseType) {
         if (seasonType == null || yearType == null || phaseType == null) {
             throw new IllegalArgumentException("invalid args");
         }
@@ -91,7 +92,7 @@ public class Phase implements java.io.Serializable, Comparable {
     /**
      * Create a new Phase, given a known index
      */
-    protected Phase(YearType yt, int idx) {
+    protected Phase(final YearType yt, final int idx) {
         this.orderIdx = idx;
         this.yearType = yt;
         this.phaseType = ORDER_PHASE[idx];
@@ -131,7 +132,7 @@ public class Phase implements java.io.Serializable, Comparable {
      * Displays as a short String (e.g., F1902R)
      */
     public String getBriefName() {
-        StringBuffer sb = new StringBuffer(6);
+        final StringBuffer sb = new StringBuffer(6);
         sb.append(seasonType.getBriefName());
         sb.append(YEAR_FORMAT.format(yearType.getYear()));
         sb.append(phaseType.getBriefName());
@@ -142,7 +143,7 @@ public class Phase implements java.io.Serializable, Comparable {
      * Displays the phase as a String
      */
     public String toString() {
-        StringBuffer sb = new StringBuffer(64);
+        final StringBuffer sb = new StringBuffer(64);
         sb.append(seasonType);
         sb.append(", ");
         sb.append(yearType);
@@ -155,8 +156,8 @@ public class Phase implements java.io.Serializable, Comparable {
     /**
      * Returns true if the two phases are equivalent.
      */
-    public boolean equals(Object obj) {
-        Phase phase = (Phase) obj;
+    public boolean equals(final Object obj) {
+        final Phase phase = (Phase) obj;
         if (yearType.equals(phase.yearType) && seasonType
                 .equals(phase.seasonType) && phaseType
                 .equals(phase.phaseType)) {
@@ -170,8 +171,8 @@ public class Phase implements java.io.Serializable, Comparable {
      * positive integer depending if the given Phase is less than, equal, or
      * greater than (temporally) to this Phase.
      */
-    public int compareTo(Object obj) {
-        Phase phase = (Phase) obj;
+    public int compareTo(final Object obj) {
+        final Phase phase = (Phase) obj;
         int result = 0;
 
         // year is dominant
@@ -199,7 +200,7 @@ public class Phase implements java.io.Serializable, Comparable {
         // advance the year and reset.
         int idx = orderIdx + 1;
         idx = (idx > ORDER_SEASON.length - 1) ? 0 : idx;
-        YearType yt = (idx == 0) ? yearType.getNext() : yearType;
+        final YearType yt = (idx == 0) ? yearType.getNext() : yearType;
 
         return new Phase(yt, idx);
     }// getNext()
@@ -210,7 +211,7 @@ public class Phase implements java.io.Serializable, Comparable {
      */
     public Phase getPrevious() {
         int idx = orderIdx - 1;
-        YearType yt = (idx < 0) ? yearType.getPrevious() : yearType;
+        final YearType yt = (idx < 0) ? yearType.getPrevious() : yearType;
         idx = (idx < 0) ? (ORDER_SEASON.length - 1) : idx;
 
         return new Phase(yt, idx);
@@ -220,7 +221,7 @@ public class Phase implements java.io.Serializable, Comparable {
     /**
      * given season/phase, derive the order index. If we cannot, our index is -1.
      */
-    private int deriveOrderIdx(SeasonType st, PhaseType pt) {
+    private int deriveOrderIdx(final SeasonType st, final PhaseType pt) {
         for (int i = 0; i < ORDER_SEASON.length; i++) {
             if (ORDER_SEASON[i] == st && ORDER_PHASE[i] == pt) {
                 return i;
@@ -235,7 +236,7 @@ public class Phase implements java.io.Serializable, Comparable {
      * Determines if this phase is valid. Not all PhaseType and
      * SeasonType combinations are valid.
      */
-    public static boolean isValid(SeasonType st, PhaseType pt) {
+    public static boolean isValid(final SeasonType st, final PhaseType pt) {
         for (int i = 0; i < ORDER_SEASON.length; i++) {
             if (ORDER_SEASON[i] == st && ORDER_PHASE[i] == pt) {
                 return true;
@@ -279,13 +280,13 @@ public class Phase implements java.io.Serializable, Comparable {
             }
         } else {
             // case conversion
-            String lcIn = in.toLowerCase();
+            final String lcIn = in.toLowerCase();
 
             // our token list (should be 3 or 4; whitespace/punctuation is ignored)
-            ArrayList tokList = new ArrayList(10);
+            final ArrayList tokList = new ArrayList(10);
 
             // get all tokens, ignoring ANY whitespace or punctuation; StringTokenizer is ideal for this
-            StringTokenizer st = new StringTokenizer(lcIn,
+            final StringTokenizer st = new StringTokenizer(lcIn,
                     " ,:;[](){}-_|/\\\"\'\t\n\r", false);
             while (st.hasMoreTokens()) {
                 tokList.add(st.nextToken());
@@ -297,17 +298,17 @@ public class Phase implements java.io.Serializable, Comparable {
             }
 
             // parse until we run out of things to parse
-            Iterator iter = tokList.iterator();
+            final Iterator iter = tokList.iterator();
             while (iter.hasNext()) {
-                String tok = (String) iter.next();
+                final String tok = (String) iter.next();
 
-                SeasonType tmpSeason = SeasonType.parse(tok);
+                final SeasonType tmpSeason = SeasonType.parse(tok);
                 seasonType = (tmpSeason == null) ? seasonType : tmpSeason;
 
-                PhaseType tmpPhase = PhaseType.parse(tok);
+                final PhaseType tmpPhase = PhaseType.parse(tok);
                 phaseType = (tmpPhase == null) ? phaseType : tmpPhase;
 
-                YearType tmpYear = YearType.parse(tok);
+                final YearType tmpYear = YearType.parse(tok);
                 yearType = (tmpYear == null) ? yearType : tmpYear;
             }
 
@@ -340,9 +341,9 @@ public class Phase implements java.io.Serializable, Comparable {
      * E.g.: Spring Move, or Spring Adjustment, etc.
      */
     public static String[] getAllSeasonPhaseCombos() {
-        String[] spCombos = new String[ORDER_SEASON.length];
+        final String[] spCombos = new String[ORDER_SEASON.length];
         for (int i = 0; i < ORDER_SEASON.length; i++) {
-            StringBuffer sb = new StringBuffer(64);
+            final StringBuffer sb = new StringBuffer(64);
             sb.append(ORDER_SEASON[i].toString());
             sb.append(' ');
             sb.append(ORDER_PHASE[i].toString());
@@ -407,7 +408,7 @@ public class Phase implements java.io.Serializable, Comparable {
         /**
          * Creates a new SeasonType
          */
-        protected SeasonType(String il8nKey, int pos) {
+        protected SeasonType(final String il8nKey, final int pos) {
             this.position = pos;
             setDisplayName(il8nKey);
         }// SeasonType()
@@ -444,7 +445,7 @@ public class Phase implements java.io.Serializable, Comparable {
         /**
          * Returns <code>true</code> if SeasonType objects are equivalent
          */
-        public boolean equals(Object obj) {
+        public boolean equals(final Object obj) {
             if (obj == this) {
                 return true;
             }
@@ -461,8 +462,8 @@ public class Phase implements java.io.Serializable, Comparable {
          * <p>
          * Fall always follows Spring.
          */
-        public int compareTo(Object obj) {
-            SeasonType st = (SeasonType) obj;
+        public int compareTo(final Object obj) {
+            final SeasonType st = (SeasonType) obj;
             return (position - st.position);
         }// compareTo()
 
@@ -504,7 +505,7 @@ public class Phase implements java.io.Serializable, Comparable {
         public static SeasonType parse(final String in) {
             // short cases (1 letter); not i18n'd
             if (in.length() == 1) {
-                String lcIn = in.toLowerCase();
+                final String lcIn = in.toLowerCase();
                 if ("s".equals(lcIn)) {
                     return SPRING;
                 } else if ("f".equals(lcIn) || ("w".equals(lcIn))) {
@@ -556,7 +557,7 @@ public class Phase implements java.io.Serializable, Comparable {
         /**
          * Sets the internationalized name
          */
-        private void setDisplayName(String key) {
+        private void setDisplayName(final String key) {
             this.displayName = Utils.getLocalString(key);
         }// resetDisplayName()
 
@@ -568,40 +569,33 @@ public class Phase implements java.io.Serializable, Comparable {
      * <p>
      * PhaseType constants should be used instead of creating new PhaseType objects.
      */
-    public static class PhaseType implements Serializable, Comparable {
-        // always-accepted english constants for phase types
-        // these MUST be in lower case
-        protected static final String CONST_ADJUSTMENT = "adjustment";
-        protected static final String CONST_MOVEMENT = "movement";
-        protected static final String CONST_RETREAT = "retreat";
-
-        // internal constants
-        protected static final String IL8N_ADJUSTMENT = "PHASETYPE_ADJUSTMENT";
-        protected static final String IL8N_MOVEMENT = "PHASETYPE_MOVEMENT";
-        protected static final String IL8N_RETREAT = "PHASETYPE_RETREAT";
-
-        // position constants
-        protected static final int POS_MOVEMENT = 100;
-        protected static final int POS_RETREAT = 200;
-        protected static final int POS_ADJUSTMENT = 300;
-
-
+    public enum PhaseType {
         // PhaseType Constants
         /**
          * Adjustment PhaseType
          */
-        public static final PhaseType ADJUSTMENT = new PhaseType(
-                CONST_ADJUSTMENT, POS_ADJUSTMENT, IL8N_ADJUSTMENT);
+        ADJUSTMENT("adjustment", "PHASETYPE_ADJUSTMENT"),
         /**
          * Movement PhaseType
          */
-        public static final PhaseType MOVEMENT = new PhaseType(CONST_MOVEMENT,
-                POS_MOVEMENT, IL8N_MOVEMENT);
+        MOVEMENT("movement", "PHASETYPE_MOVEMENT"),
         /**
          * Retreat PhaseType
          */
-        public static final PhaseType RETREAT = new PhaseType(CONST_RETREAT,
-                POS_RETREAT, IL8N_RETREAT);
+        RETREAT("retreat", "PHASETYPE_RETREAT");
+
+        // always-accepted english constants for phase types
+        // these MUST be in lower case
+        private static final String CONST_ADJUSTMENT = "adjustment";
+        private static final String CONST_MOVEMENT = "movement";
+        private static final String CONST_RETREAT = "retreat";
+
+        // internal constants
+        private static final String IL8N_ADJUSTMENT = "PHASETYPE_ADJUSTMENT";
+        private static final String IL8N_MOVEMENT = "PHASETYPE_MOVEMENT";
+        private static final String IL8N_RETREAT = "PHASETYPE_RETREAT";
+
+
         /**
          * PhaseType array
          * <b>Warning: this should not be mutated.</b>
@@ -609,16 +603,14 @@ public class Phase implements java.io.Serializable, Comparable {
         public static final PhaseType[] ALL = {MOVEMENT, RETREAT, ADJUSTMENT};
 
         // instance variables
-        protected transient String displayName = null;
-        protected final String constName;
-        protected final int position;
+        private transient String displayName = null;
+        private final String constName;
 
         /**
          * Create a new PhaseType
          */
-        protected PhaseType(String cName, int pos, String il8nKey) {
+        PhaseType(final String cName, final String il8nKey) {
             this.constName = cName;
-            this.position = pos;
             this.displayName = Utils.getLocalString(il8nKey);
         }// PhaseType()
 
@@ -633,12 +625,13 @@ public class Phase implements java.io.Serializable, Comparable {
          * Brief name of a Phase (e.g., [B]uild, [R]etreat [M]ove
          */
         public String getBriefName() {
-            if (this == ADJUSTMENT) {
-                return "B";
-            } else if (this == RETREAT) {
-                return "R";
-            } else if (this == MOVEMENT) {
-                return "M";
+            switch (this) {
+                case ADJUSTMENT:
+                    return "B";
+                case RETREAT:
+                    return "R";
+                case MOVEMENT:
+                    return "M";
             }
 
             // unknown!
@@ -647,44 +640,16 @@ public class Phase implements java.io.Serializable, Comparable {
 
 
         /**
-         * Returns the hashCode
-         */
-        public int hashCode() {
-            return constName.hashCode();
-        }// hashCode()
-
-        /**
-         * Returns <code>true</code> if PhaseType objects are equivalent
-         */
-        public boolean equals(Object obj) {
-            if (obj == this) {
-                return true;
-            } else if (obj instanceof PhaseType) {
-                return (this.position == ((PhaseType) obj).position);
-            }
-            return false;
-        }// equals()
-
-
-        /**
-         * Temporally compares PhaseType objects
-         */
-        public int compareTo(Object obj) {
-            PhaseType pt = (PhaseType) obj;
-            return (position - pt.position);
-        }// compareTo()
-
-
-        /**
          * Get the next PhaseType, in sequence.
          */
         public PhaseType getNext() {
-            if (this == ADJUSTMENT) {
-                return MOVEMENT;
-            } else if (this == RETREAT) {
-                return ADJUSTMENT;
-            } else if (this == MOVEMENT) {
-                return RETREAT;
+            switch (this) {
+                case ADJUSTMENT:
+                    return MOVEMENT;
+                case RETREAT:
+                    return ADJUSTMENT;
+                case MOVEMENT:
+                    return RETREAT;
             }
 
             return null;
@@ -695,12 +660,13 @@ public class Phase implements java.io.Serializable, Comparable {
          * Get the previous PhaseType, in sequence.
          */
         public PhaseType getPrevious() {
-            if (this == ADJUSTMENT) {
-                return RETREAT;
-            } else if (this == RETREAT) {
-                return MOVEMENT;
-            } else if (this == MOVEMENT) {
-                return ADJUSTMENT;
+            switch (this) {
+                case ADJUSTMENT:
+                    return RETREAT;
+                case RETREAT:
+                    return MOVEMENT;
+                case MOVEMENT:
+                    return ADJUSTMENT;
             }
 
             return null;
@@ -716,16 +682,18 @@ public class Phase implements java.io.Serializable, Comparable {
         public static PhaseType parse(final String in) {
             // short cases (1 letter); not i18n'd
             if (in.length() == 1) {
-                String lcIn = in.toLowerCase();
-                if ("m".equals(lcIn)) {
-                    return MOVEMENT;
-                } else if ("a".equals(lcIn) || "b".equals(lcIn)) {
-                    return ADJUSTMENT;
-                } else if ("r".equals(lcIn)) {
-                    return RETREAT;
+                final String lcIn = in.toLowerCase();
+                switch (lcIn) {
+                    case "m":
+                        return MOVEMENT;
+                    case "a":
+                    case "b":
+                        return ADJUSTMENT;
+                    case "r":
+                        return RETREAT;
+                    default:
+                        return null;
                 }
-
-                return null;
             }
 
             // typical cases; use 'startsWith'
@@ -755,7 +723,7 @@ public class Phase implements java.io.Serializable, Comparable {
         /**
          * Resolves a serialized Phase object into a constant reference
          */
-        protected Object readResolve() throws java.io.ObjectStreamException {
+        private Object readResolve() throws java.io.ObjectStreamException {
             PhaseType pt = null;
 
             if (constName.equalsIgnoreCase(CONST_ADJUSTMENT)) {
@@ -791,7 +759,7 @@ public class Phase implements java.io.Serializable, Comparable {
         /**
          * Create a new YearType
          */
-        public YearType(int value) {
+        public YearType(final int value) {
             if (value == 0) {
                 throw new IllegalArgumentException("Year 0 not valid");
             }
@@ -808,12 +776,12 @@ public class Phase implements java.io.Serializable, Comparable {
                 return String.valueOf(year);
             } else if (year > 0) {
                 // explicitly add "AD"
-                StringBuffer sb = new StringBuffer(8);
+                final StringBuffer sb = new StringBuffer(8);
                 sb.append(year);
                 sb.append(" AD");
                 return sb.toString();
             } else {
-                StringBuffer sb = new StringBuffer(8);
+                final StringBuffer sb = new StringBuffer(8);
                 sb.append(-year);
                 sb.append(" BC");
                 return sb.toString();
@@ -838,7 +806,7 @@ public class Phase implements java.io.Serializable, Comparable {
         /**
          * Returns <code>true</code> if YearTYpe objects are equivalent
          */
-        public boolean equals(Object obj) {
+        public boolean equals(final Object obj) {
             if (obj == this) {
                 return true;
             } else if (obj instanceof YearType) {
@@ -851,7 +819,7 @@ public class Phase implements java.io.Serializable, Comparable {
         /**
          * Temporally compares YearType objects
          */
-        public int compareTo(Object obj) {
+        public int compareTo(final Object obj) {
             return (year - ((YearType) obj).year);
         }// compareTo()
 
@@ -897,7 +865,7 @@ public class Phase implements java.io.Serializable, Comparable {
             int y = 0;
             try {
                 y = Integer.parseInt(in.trim());
-            } catch (NumberFormatException e) {
+            } catch (final NumberFormatException e) {
                 return null;
             }
 
