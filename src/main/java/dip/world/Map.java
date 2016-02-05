@@ -430,6 +430,7 @@ public class Map implements Serializable {
      */
     public void replaceProvinceNames(final StringBuffer sb) {
         // create the whitespace list, if it doesn't exist.
+        // TODO: delayed initialize
         if (wsNames == null) {
             final List<String> list = new ArrayList<>(50);
             for (final String name : names) {
@@ -537,21 +538,15 @@ public class Map implements Serializable {
         }
 
         // find first white space (or ':')
-        for (int i = 0; i < sb.length(); i++) {
-            final char c = sb.charAt(i);
-            if (c == ':') {
-                // looser: assume prior-to-colon is a power name.
-                // no testing.
-                return sb.substring(0, i).trim();
-            }
-            if (Character.isWhitespace(c)) {
-                final String nameToTest = sb.substring(0, i).trim();
-                // stricter: no ':'; first token may or may not be a power.
-                return lcPowerNames.stream().filter(nameToTest::startsWith)
-                        .findFirst().orElse(null);
-            }
+        final String[] colonTokens = sb.toString().split(":", -1);
+        if (colonTokens.length >= 2) {
+            return colonTokens[0].trim();
         }
-
+        final String[] spaceTokens = sb.toString().split("\\s", -1);
+        if (spaceTokens.length >= 2) {
+            return lcPowerNames.stream().filter(spaceTokens[0].trim()::startsWith)
+                    .findFirst().orElse(null);
+        }
         return null;
     }// getFirstPowerToken()
 
