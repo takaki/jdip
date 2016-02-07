@@ -27,6 +27,7 @@ import dip.misc.XMLUtils;
 import dip.world.variant.VariantManager;
 import dip.world.variant.data.Symbol;
 import dip.world.variant.data.SymbolPack;
+import dip.world.variant.data.SymbolPack.CSSStyle;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
@@ -36,7 +37,11 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 /**
@@ -60,9 +65,9 @@ public class XMLSymbolParser implements SymbolParser {
     private static final String CDATA_NODE_NAME = "#cdata-section";
 
 
-    private DocumentBuilder docBuilder = null;
-    private SymbolPack symbolPack = null;
-    private URL symbolPackURL = null;
+    private final DocumentBuilder docBuilder;
+    private SymbolPack symbolPack;
+    private URL symbolPackURL;
 
 
     /**
@@ -109,6 +114,7 @@ public class XMLSymbolParser implements SymbolParser {
      * Returns the SymbolPack, or null, if parse()
      * has not yet been called.
      */
+    @Override
     public SymbolPack getSymbolPack() {
         return symbolPack;
     }// getSymbolPacks()
@@ -119,90 +125,69 @@ public class XMLSymbolParser implements SymbolParser {
      */
     private void procAndAddSymbolSVG(final SymbolPack symbolPack,
                                      final Map<String, Float> scaleMap) throws IOException, SAXException {
-        Document svgDoc = null;
 
         // resolve SVG URI
         final URL url = VariantManager
                 .getResource(symbolPackURL, symbolPack.getSVGURI());
         if (url == null) {
-            throw new IOException("Could not convert URI: " +
-                    symbolPack
-                            .getSVGURI() + " from SymbolPack: " + symbolPackURL);
+            throw new IOException(String.format(
+                    "Could not convert URI: %s from SymbolPack: %s",
+                    symbolPack.getSVGURI(), symbolPackURL));
         }
 
         // parse resolved URI into a Document
 
         try (InputStream is = new BufferedInputStream(url.openStream())) {
-            svgDoc = docBuilder.parse(is);
-        }
+            final Document svgDoc = docBuilder.parse(is);
 
-        // find defs section, if any, and style attribute
-        //
-        final Element defs = XMLUtils
-                .findChildElementMatching(svgDoc.getDocumentElement(), EL_DEFS);
-        if (defs != null) {
-            final Element style = XMLUtils
-                    .findChildElementMatching(defs, EL_STYLE);
-            if (style != null) {
-                // check CSS type (must be "text/css")
-                //
-                final String type = style.getAttribute(ATT_TYPE).trim();
-                if (!CSS_TYPE_VALUE.equals(type)) {
-                    throw new IOException(
-                            "Only <style type=\"text/css\"> is accepted. Cannot parse CSS otherwise.");
+            // find defs section, if any, and style attribute
+            //
+            final Element defs = XMLUtils
+                    .findChildElementMatching(svgDoc.getDocumentElement(),
+                            EL_DEFS);
+            if (defs != null) {
+                final Element style = XMLUtils
+                        .findChildElementMatching(defs, EL_STYLE);
+                if (style != null) {
+                    // check CSS type (must be "text/css")
+                    //
+                    final String type = style.getAttribute(ATT_TYPE).trim();
+                    if (!CSS_TYPE_VALUE.equals(type)) {
+                        throw new IOException(
+                                "Only <style type=\"text/css\"> is accepted. Cannot parse CSS otherwise.");
+                    }
+
+                    style.normalize();
+
+                    // get style CDATA
+                    final CDATASection cdsNode = (CDATASection) XMLUtils
+                            .findChildNodeMatching(style, CDATA_NODE_NAME,
+                                    Node.CDATA_SECTION_NODE);
+
+                    if (cdsNode == null) {
+                        throw new IOException("CDATA in <style> node is null.");
+                    }
+
+                    symbolPack.setCSSStyles(parseCSS(cdsNode.getData()));
                 }
-
-                style.normalize();
-
-                // get style CDATA
-                final CDATASection cdsNode = (CDATASection) XMLUtils
-                        .findChildNodeMatching(style, CDATA_NODE_NAME,
-                                Node.CDATA_SECTION_NODE);
-
-                if (cdsNode == null) {
-                    throw new IOException("CDATA in <style> node is null.");
-                }
-
-                symbolPack.setCSSStyles(parseCSS(cdsNode.getData()));
             }
+
+            // find all IDs
+            // List of Symbols
+            // iterate over hashmap finding all symbols with IDs
+            final List<Symbol> list = elementMapper(svgDoc.getDocumentElement(),
+                    ATT_ID).entrySet().stream().map(me -> {
+                final String name = me.getKey();
+                final Float scale = scaleMap.get(name);
+                return new Symbol(name,
+                        scale == null ? Symbol.IDENTITY_SCALE : scale,
+                        (Element) me.getValue());
+            }).collect(Collectors.toList());
+
+            // add symbols to symbolpack
+            symbolPack.setSymbols(list);
         }
-
-        // find all IDs
-        final HashMap map = elementMapper(svgDoc.getDocumentElement(), ATT_ID);
-
-        // List of Symbols
-        final ArrayList list = new ArrayList(15);
-
-        // iterate over hashmap finding all symbols with IDs
-        final Iterator iter = map.entrySet().iterator();
-        while (iter.hasNext()) {
-            final Map.Entry me = (Map.Entry) iter.next();
-            final String name = (String) me.getKey();
-            final Float scale = (Float) scaleMap.get(name);
-            list.add(new Symbol(name,
-                    (scale == null) ? Symbol.IDENTITY_SCALE : scale
-                            .floatValue(), (Element) me.getValue()));
-        }
-
-        // add symbols to symbolpack
-        symbolPack.setSymbols(list);
     }// procAndAddSymbolSVG()
-
-
-    /**
-     * Parse a floating point value
-     */
-    private float parseFloat(final Element element,
-                             final String attrName) throws IOException {
-        try {
-            return Float.parseFloat(element.getAttribute(attrName).trim());
-        } catch (final NumberFormatException e) {
-            throw new IOException(
-                    element.getTagName() + " attribute " + attrName + " has an invalid " +
-                            "floating point value \"" + element
-                            .getAttribute(attrName) + "\"");
-        }
-    }// parseScaleFactor()
 
 
     /**
@@ -211,9 +196,9 @@ public class XMLSymbolParser implements SymbolParser {
      * value. This starts from the given Element and recurses downward. Throws an
      * exception if an element with a duplicate attribute name is found.
      */
-    private HashMap elementMapper(final Element start,
-                                  final String attrName) throws IOException {
-        final HashMap map = new HashMap(31);
+    private Map<String, Node> elementMapper(final Element start,
+                                            final String attrName) throws IOException {
+        final Map<String, Node> map = new HashMap<>(31);
         elementMapperWalker(map, start, attrName);
         return map;
     }// elementMapper()
@@ -222,7 +207,8 @@ public class XMLSymbolParser implements SymbolParser {
     /**
      * Recursive portion of elementMapper
      */
-    private void elementMapperWalker(final HashMap map, final Node node,
+    private void elementMapperWalker(final Map<String, Node> map,
+                                     final Node node,
                                      final String attrName) throws IOException {
         if (node.getNodeType() == Node.ELEMENT_NODE) {
             // node MUST be one of the following:
@@ -241,7 +227,7 @@ public class XMLSymbolParser implements SymbolParser {
                                             "values: " + attrValue);
                         }
 
-                        map.put(attrValue, (Element) node);
+                        map.put(attrValue, node);
                     }
                 }
             }
@@ -262,8 +248,8 @@ public class XMLSymbolParser implements SymbolParser {
      * See if name is a valid element tag name
      */
     private boolean isValidElement(final String name) {
-        for (int i = 0; i < VALID_ELEMENTS.length; i++) {
-            if (VALID_ELEMENTS[i].equals(name)) {
+        for (String VALID_ELEMENT : VALID_ELEMENTS) {
+            if (VALID_ELEMENT.equals(name)) {
                 return true;
             }
         }
@@ -284,9 +270,8 @@ public class XMLSymbolParser implements SymbolParser {
      * 			opacity:some;}						// not handled
      * 	</pre>
      */
-    private SymbolPack.CSSStyle[] parseCSS(
-            final String input) throws IOException {
-        final List cssStyles = new ArrayList(20);
+    private CSSStyle[] parseCSS(final String input) throws IOException {
+        final List<CSSStyle> cssStyles = new ArrayList<CSSStyle>(20);
 
         // break input into lines
         final BufferedReader br = new BufferedReader(new StringReader(input));
@@ -333,14 +318,13 @@ public class XMLSymbolParser implements SymbolParser {
                 final String value = line.substring(idxCBStart, idxCBEnd + 1);
 
                 // create CSS Style
-                cssStyles.add(new SymbolPack.CSSStyle(name, value));
+                cssStyles.add(new CSSStyle(name, value));
             }
 
             line = br.readLine();
         }
 
-        return (SymbolPack.CSSStyle[]) cssStyles
-                .toArray(new SymbolPack.CSSStyle[cssStyles.size()]);
+        return cssStyles.toArray(new CSSStyle[cssStyles.size()]);
     }// parseCSS()
 
 
