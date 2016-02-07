@@ -23,52 +23,40 @@
 package dip.world.variant.parser;
 
 import dip.misc.Log;
-import dip.misc.XMLUtils;
 import dip.world.variant.VariantManager;
 import dip.world.variant.data.Symbol;
 import dip.world.variant.data.SymbolPack;
 import dip.world.variant.data.SymbolPack.CSSStyle;
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXB;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import java.io.*;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 
 /**
  * Parses a SymbolPack description.
  */
 public class XMLSymbolParser implements SymbolParser {
-    // Element constants
-    private static final String EL_DEFS = "defs";
-    private static final String EL_STYLE = "style";
-
-
-    // Attribute constants
-    private static final String ATT_ID = "id";
-    private static final String ATT_TYPE = "type";
-
-    // valid element tag names; case sensitive
-    private static final String[] VALID_ELEMENTS = {"g", "symbol", "svg"};
-
-    // misc
-    private static final String CSS_TYPE_VALUE = "text/css";
-    private static final String CDATA_NODE_NAME = "#cdata-section";
 
 
     private final DocumentBuilder docBuilder;
     private SymbolPack symbolPack;
     private URL symbolPackURL;
-
 
     /**
      * Create an XMLSymbolParser
@@ -91,7 +79,7 @@ public class XMLSymbolParser implements SymbolParser {
      * Parse the given input stream
      */
     public synchronized void parse(final InputStream is,
-                                   final URL symbolPackURL) throws IOException, SAXException {
+                                   final URL symbolPackURL) throws IOException, SAXException, XPathExpressionException {
         Log.println("XMLSymbolParser: Parsing: ", symbolPackURL);
         final long time = System.currentTimeMillis();
         this.symbolPackURL = symbolPackURL;
@@ -124,7 +112,7 @@ public class XMLSymbolParser implements SymbolParser {
      * Parse the symbol data into Symbols and SymbolPacks
      */
     private void procAndAddSymbolSVG(final SymbolPack symbolPack,
-                                     final Map<String, Float> scaleMap) throws IOException, SAXException {
+                                     final Map<String, Float> scaleMap) throws IOException, SAXException, XPathExpressionException {
 
         // resolve SVG URI
         final URL url = VariantManager
@@ -139,123 +127,39 @@ public class XMLSymbolParser implements SymbolParser {
 
         try (InputStream is = new BufferedInputStream(url.openStream())) {
             final Document svgDoc = docBuilder.parse(is);
+            final XPath xPath = XPathFactory.newInstance().newXPath();
+            final String style = (String) xPath.evaluate(
+                    "//*[local-name()='defs']/*[local-name()='style'][@type='text/css']/text()",
+                    svgDoc, XPathConstants.STRING);
 
-            // find defs section, if any, and style attribute
-            //
-            final Element defs = XMLUtils
-                    .findChildElementMatching(svgDoc.getDocumentElement(),
-                            EL_DEFS);
-            if (defs != null) {
-                final Element style = XMLUtils
-                        .findChildElementMatching(defs, EL_STYLE);
-                if (style != null) {
-                    // check CSS type (must be "text/css")
-                    //
-                    final String type = style.getAttribute(ATT_TYPE).trim();
-                    if (!CSS_TYPE_VALUE.equals(type)) {
-                        throw new IOException(
-                                "Only <style type=\"text/css\"> is accepted. Cannot parse CSS otherwise.");
-                    }
-
-                    style.normalize();
-
-                    // get style CDATA
-                    final CDATASection cdsNode = (CDATASection) XMLUtils
-                            .findChildNodeMatching(style, CDATA_NODE_NAME,
-                                    Node.CDATA_SECTION_NODE);
-
-                    if (cdsNode == null) {
-                        throw new IOException("CDATA in <style> node is null.");
-                    }
-
-                    symbolPack.setCSSStyles(parseCSS(cdsNode.getData()));
-                }
+            // get style CDATA
+            if (style != null && style.isEmpty()) {
+                throw new IOException("CDATA in <style> node is null.");
             }
+
+            symbolPack.setCSSStyles(parseCSS(style));
 
             // find all IDs
             // List of Symbols
-            // iterate over hashmap finding all symbols with IDs
-            final List<Symbol> list = elementMapper(svgDoc.getDocumentElement(),
-                    ATT_ID).entrySet().stream().map(me -> {
-                final String name = me.getKey();
-                final Float scale = scaleMap.get(name);
-                return new Symbol(name,
-                        scale == null ? Symbol.IDENTITY_SCALE : scale,
-                        (Element) me.getValue());
-            }).collect(Collectors.toList());
 
-            // add symbols to symbolpack
+            final NodeList evaluate = (NodeList) xPath.evaluate(
+                    "(//*[local-name()='g' or local-name()='symbol' or local-name()='svg'])[@id]",
+                    svgDoc, XPathConstants.NODESET);
+            final List<Symbol> list = IntStream.range(0, evaluate.getLength())
+                    .mapToObj(i -> {
+                        Element me = (Element) evaluate.item(i);
+                        String name = me.getAttribute("id");
+                        final Float scale = scaleMap
+                                .getOrDefault(name, Symbol.IDENTITY_SCALE);
+                        return new Symbol(name, scale, me);
+                    }).collect(Collectors.toList());
+            if (list.stream().map(Symbol::getName).distinct().count() != list
+                    .size()) {
+                throw new IOException("ID is duplicated.");
+            }
             symbolPack.setSymbols(list);
         }
     }// procAndAddSymbolSVG()
-
-
-    /**
-     * Searches an XML document for Elements that have a given non-empty attribute.
-     * The Elements are then put into a HashMap, which is indexed by the attribute
-     * value. This starts from the given Element and recurses downward. Throws an
-     * exception if an element with a duplicate attribute name is found.
-     */
-    private Map<String, Node> elementMapper(final Element start,
-                                            final String attrName) throws IOException {
-        final Map<String, Node> map = new HashMap<>(31);
-        elementMapperWalker(map, start, attrName);
-        return map;
-    }// elementMapper()
-
-
-    /**
-     * Recursive portion of elementMapper
-     */
-    private void elementMapperWalker(final Map<String, Node> map,
-                                     final Node node,
-                                     final String attrName) throws IOException {
-        if (node.getNodeType() == Node.ELEMENT_NODE) {
-            // node MUST be one of the following:
-            // <g>, <symbol>, or <svg>
-            //
-            final String name = ((Element) node).getTagName();
-            if (node.hasAttributes() && isValidElement(name)) {
-                final NamedNodeMap attributes = node.getAttributes();
-                final Node attrNode = attributes.getNamedItem(attrName);
-                if (attrNode != null) {
-                    final String attrValue = attrNode.getNodeValue();
-                    if (!"".equals(attrValue)) {
-                        if (map.containsKey(attrValue)) {
-                            throw new IOException(
-                                    "The " + attrName + " attribute has duplicate " +
-                                            "values: " + attrValue);
-                        }
-
-                        map.put(attrValue, node);
-                    }
-                }
-            }
-        }
-
-        // check if current node has any children
-        // if so, iterate through & recursively call this method
-        final NodeList children = node.getChildNodes();
-        if (children != null) {
-            for (int i = 0; i < children.getLength(); i++) {
-                elementMapperWalker(map, children.item(i), attrName);
-            }
-        }
-    }// elementMapperWalker()
-
-
-    /**
-     * See if name is a valid element tag name
-     */
-    private boolean isValidElement(final String name) {
-        for (String VALID_ELEMENT : VALID_ELEMENTS) {
-            if (VALID_ELEMENT.equals(name)) {
-                return true;
-            }
-        }
-
-        return false;
-    }// isValidElement()
 
 
     /**
@@ -270,61 +174,32 @@ public class XMLSymbolParser implements SymbolParser {
      * 			opacity:some;}						// not handled
      * 	</pre>
      */
-    private CSSStyle[] parseCSS(final String input) throws IOException {
-        final List<CSSStyle> cssStyles = new ArrayList<CSSStyle>(20);
-
+    private static CSSStyle[] parseCSS(final String input) throws IOException {
         // break input into lines
-        final BufferedReader br = new BufferedReader(new StringReader(input));
-        String line = br.readLine();
-        while (line != null) {
-            // first non-whitespace must be a '.'
-            line = line.trim();
-            if (line.startsWith(".")) {
-                int idxEndName = -1;    // end of the style name
-                int idxCBStart = -1;    // position of '{'
-                int idxCBEnd = -1;        // position of '}'
-                for (int i = 0; i < line.length(); i++) {
-                    final char c = line.charAt(i);
-                    if (idxEndName < 0 && Character.isWhitespace(c)) {
-                        idxEndName = i;
-                    }
-
-                    if (idxEndName > 0 && c == '{') {
-                        if (idxCBStart < 0) {
-                            idxCBStart = i;
-                        } else {
-                            // error!
-                            idxCBStart = -1;
-                            break;
+        try (final BufferedReader br = new BufferedReader(
+                new StringReader(input))) {
+            final List<CSSStyle> cssStyles = br.lines().map(String::trim)
+                    .filter(line -> line.startsWith(".")).map(line -> {
+                        final String[] tokens = line.split("\\s+", 2);
+                        if (tokens.length < 2) {
+                            throw new IllegalArgumentException(String.format(
+                                    "Could not parse SymbolPack CSS. " +
+                                            "Note that comments are not supported, " +
+                                            "and that there may be only one CSS style per line.Error line text: \"%s\"",
+                                    line));
                         }
-                    }
-
-                    if (idxCBStart > 0 && c == '}') {
-                        idxCBEnd = i;
-                        break;
-                    }
-                }
-
-                // validate
-                if (idxEndName < 0 || idxCBStart < 0 || idxCBEnd < 0) {
-                    throw new IOException(
-                            "Could not parse SymbolPack CSS. Note that comments are not " +
-                                    "supported, and that there may be only one CSS style per line." +
-                                    "Error line text: \"" + line + "\"");
-                }
-
-                // parse
-                final String name = line.substring(0, idxEndName);
-                final String value = line.substring(idxCBStart, idxCBEnd + 1);
-
-                // create CSS Style
-                cssStyles.add(new CSSStyle(name, value));
-            }
-
-            line = br.readLine();
+                        if (!tokens[1].matches("\\{[^{}]+\\}$")) {
+                            throw new IllegalArgumentException(String.format(
+                                    "Could not parse SymbolPack CSS. " +
+                                            "Note that comments are not supported, " +
+                                            "and that there may be only one CSS style per line.Error line text: \"%s\"",
+                                    line));
+                        }
+                        // create CSS Style
+                        return new CSSStyle(tokens[0], tokens[1]);
+                    }).collect(Collectors.toList());
+            return cssStyles.toArray(new CSSStyle[cssStyles.size()]);
         }
-
-        return cssStyles.toArray(new CSSStyle[cssStyles.size()]);
     }// parseCSS()
 
 
