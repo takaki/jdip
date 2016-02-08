@@ -36,9 +36,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,7 +52,7 @@ import java.util.List;
  */
 public class XMLVariantParser implements VariantParser {
 
-    private final List<Variant> variantList;
+    private final List<Variant> variantList = new LinkedList<>();
 
     @XmlRootElement(name = "VARIANTS")
     public static class RootVariants {
@@ -69,14 +67,13 @@ public class XMLVariantParser implements VariantParser {
     /**
      * Create an XMLVariantParser
      */
-    public XMLVariantParser(
-            final DocumentBuilderFactory dbf) throws ParserConfigurationException {
-        final DocumentBuilder docBuilder = dbf.newDocumentBuilder();
-        docBuilder.setErrorHandler(new XMLErrorHandler());
-        FastEntityResolver.attach(docBuilder);
-        final XMLProvinceParser provinceParser = new XMLProvinceParser(dbf);
-        variantList = new LinkedList<>();
-        AdjCache.init(provinceParser);
+    @Deprecated
+    public XMLVariantParser(final DocumentBuilderFactory dbf) {
+        this();
+    }// XMLVariantParser()
+
+    public XMLVariantParser() {
+        AdjCache.init(new XMLProvinceParser());
     }// XMLVariantParser()
 
     /**

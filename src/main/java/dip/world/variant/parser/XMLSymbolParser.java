@@ -43,7 +43,6 @@ import javax.xml.xpath.XPathFactory;
 import java.io.*;
 import java.net.URL;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -52,7 +51,6 @@ import java.util.stream.IntStream;
  * Parses a SymbolPack description.
  */
 public class XMLSymbolParser implements SymbolParser {
-
 
     private final DocumentBuilder docBuilder;
     private SymbolPack symbolPack;
@@ -86,7 +84,68 @@ public class XMLSymbolParser implements SymbolParser {
         symbolPack = JAXB.unmarshal(is, SymbolPack.class);
         // extract symbol SVG into symbols
         // add symbols to SymbolPack
-        procAndAddSymbolSVG(symbolPack, symbolPack.getScaleMap());
+
+        // resolve SVG URI
+        final URL url = VariantManager
+                .getResource(this.symbolPackURL, symbolPack.getSVGURI());
+        if (url == null) {
+            throw new IOException(String.format(
+                    "Could not convert URI: %s from SymbolPack: %s",
+                    symbolPack.getSVGURI(), this.symbolPackURL));
+        }
+
+        // parse resolved URI into a Document
+
+        try (InputStream is1 = new BufferedInputStream(url.openStream())) {
+            final Document svgDoc = docBuilder.parse(is1);
+            final XPath xPath = XPathFactory.newInstance().newXPath();
+            final String style = (String) xPath.evaluate(
+                    "//*[local-name()='defs']/*[local-name()='style'][@type='text/css']/text()",
+                    svgDoc, XPathConstants.STRING);
+
+            // get style CDATA
+            if (style != null && style.isEmpty()) {
+                throw new IOException("CDATA in <style> node is null.");
+            }
+            // break input into lines
+            try (final BufferedReader br = new BufferedReader(
+                    new StringReader(style))) {
+                symbolPack.setCSSStyles(br.lines().map(String::trim)
+                        .filter(line -> line.startsWith(".")).map(line -> {
+                            final String[] tokens = line.split("\\s+", 2);
+                            if (tokens.length < 2 || !tokens[1]
+                                    .matches("\\{[^{}]+\\}$")) {
+                                throw new IllegalArgumentException(
+                                        String.format(
+                                                "Could not parse SymbolPack CSS. " +
+                                                        "Note that comments are not supported, " +
+                                                        "and that there may be only one CSS style per line.Error line text: \"%s\"",
+                                                line));
+                            }
+                            // create CSS Style
+                            return new CSSStyle(tokens[0], tokens[1]);
+                        }).toArray(CSSStyle[]::new));
+            }
+
+
+            // find all IDs
+            // List of Symbols
+            final NodeList evaluate = (NodeList) xPath.evaluate(
+                    "(//*[local-name()='g' or local-name()='symbol' or local-name()='svg'])[@id]",
+                    svgDoc, XPathConstants.NODESET);
+            final List<Symbol> list = IntStream.range(0, evaluate.getLength())
+                    .mapToObj(i -> (Element) evaluate.item(i)).map(me -> {
+                        String name = me.getAttribute("id");
+                        final Float scale = symbolPack.getScaleMap()
+                                .getOrDefault(name, Symbol.IDENTITY_SCALE);
+                        return new Symbol(name, scale, me);
+                    }).collect(Collectors.toList());
+            if (list.stream().map(Symbol::getName).distinct().count() != list
+                    .size()) {
+                throw new IOException("ID is duplicated.");
+            }
+            symbolPack.setSymbols(list);
+        }
         Log.printTimed(time, "    time: ");
     }// parse()
 
@@ -106,101 +165,6 @@ public class XMLSymbolParser implements SymbolParser {
     public SymbolPack getSymbolPack() {
         return symbolPack;
     }// getSymbolPacks()
-
-
-    /**
-     * Parse the symbol data into Symbols and SymbolPacks
-     */
-    private void procAndAddSymbolSVG(final SymbolPack symbolPack,
-                                     final Map<String, Float> scaleMap) throws IOException, SAXException, XPathExpressionException {
-
-        // resolve SVG URI
-        final URL url = VariantManager
-                .getResource(symbolPackURL, symbolPack.getSVGURI());
-        if (url == null) {
-            throw new IOException(String.format(
-                    "Could not convert URI: %s from SymbolPack: %s",
-                    symbolPack.getSVGURI(), symbolPackURL));
-        }
-
-        // parse resolved URI into a Document
-
-        try (InputStream is = new BufferedInputStream(url.openStream())) {
-            final Document svgDoc = docBuilder.parse(is);
-            final XPath xPath = XPathFactory.newInstance().newXPath();
-            final String style = (String) xPath.evaluate(
-                    "//*[local-name()='defs']/*[local-name()='style'][@type='text/css']/text()",
-                    svgDoc, XPathConstants.STRING);
-
-            // get style CDATA
-            if (style != null && style.isEmpty()) {
-                throw new IOException("CDATA in <style> node is null.");
-            }
-
-            symbolPack.setCSSStyles(parseCSS(style));
-
-            // find all IDs
-            // List of Symbols
-
-            final NodeList evaluate = (NodeList) xPath.evaluate(
-                    "(//*[local-name()='g' or local-name()='symbol' or local-name()='svg'])[@id]",
-                    svgDoc, XPathConstants.NODESET);
-            final List<Symbol> list = IntStream.range(0, evaluate.getLength())
-                    .mapToObj(i -> {
-                        Element me = (Element) evaluate.item(i);
-                        String name = me.getAttribute("id");
-                        final Float scale = scaleMap
-                                .getOrDefault(name, Symbol.IDENTITY_SCALE);
-                        return new Symbol(name, scale, me);
-                    }).collect(Collectors.toList());
-            if (list.stream().map(Symbol::getName).distinct().count() != list
-                    .size()) {
-                throw new IOException("ID is duplicated.");
-            }
-            symbolPack.setSymbols(list);
-        }
-    }// procAndAddSymbolSVG()
-
-
-    /**
-     * Very Simple CSS parser. Does not handle comments.
-     * Assumes that the beginning of a line has a CSS property,
-     * and is followed by a braced CSS style information.
-     * <p>
-     * <pre>
-     * 		.hello 		{style:lala;this:that}		// handled OK
-     * 		    .goodbye {fill:red;}				// handled OK
-     * 	.multiline {fill:red;
-     * 			opacity:some;}						// not handled
-     * 	</pre>
-     */
-    private static CSSStyle[] parseCSS(final String input) throws IOException {
-        // break input into lines
-        try (final BufferedReader br = new BufferedReader(
-                new StringReader(input))) {
-            final List<CSSStyle> cssStyles = br.lines().map(String::trim)
-                    .filter(line -> line.startsWith(".")).map(line -> {
-                        final String[] tokens = line.split("\\s+", 2);
-                        if (tokens.length < 2) {
-                            throw new IllegalArgumentException(String.format(
-                                    "Could not parse SymbolPack CSS. " +
-                                            "Note that comments are not supported, " +
-                                            "and that there may be only one CSS style per line.Error line text: \"%s\"",
-                                    line));
-                        }
-                        if (!tokens[1].matches("\\{[^{}]+\\}$")) {
-                            throw new IllegalArgumentException(String.format(
-                                    "Could not parse SymbolPack CSS. " +
-                                            "Note that comments are not supported, " +
-                                            "and that there may be only one CSS style per line.Error line text: \"%s\"",
-                                    line));
-                        }
-                        // create CSS Style
-                        return new CSSStyle(tokens[0], tokens[1]);
-                    }).collect(Collectors.toList());
-            return cssStyles.toArray(new CSSStyle[cssStyles.size()]);
-        }
-    }// parseCSS()
 
 
 }// class XMLSymbolParser

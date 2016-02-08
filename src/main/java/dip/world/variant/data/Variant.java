@@ -65,19 +65,8 @@ public class Variant implements Cloneable, Comparable<Variant> {
     @XmlElement(name = "INITIALSTATE")
     private List<InitialState> istate;
 
-    private List<ProvinceData> provinceData;
-    private List<BorderData> borderData;
-
     @XmlElement(name = "MAP")
     private Map map = new Map();
-
-
-    public static class Map {
-        @XmlAttribute(name = "adjacencyURI")
-        private URI adjacencyURI;
-        @XmlElement(name = "MAP_GRAPHIC")
-        private List<MapGraphic> mapGraphics;
-    }
 
     @XmlElementWrapper(name = "RULEOPTIONS")
     @XmlElement(name = "RULEOPTION")
@@ -85,6 +74,16 @@ public class Variant implements Cloneable, Comparable<Variant> {
 
     @XmlElement(name = "STARTINGTIME", required = true)
     private StartingTime startingTime = new StartingTime();
+
+    private List<ProvinceData> provinceData;
+    private List<BorderData> borderData;
+
+    public static class Map {
+        @XmlAttribute(name = "adjacencyURI")
+        private URI adjacencyURI;
+        @XmlElement(name = "MAP_GRAPHIC")
+        private List<MapGraphic> mapGraphics;
+    }
 
     @XmlRootElement
     public static class StartingTime {
@@ -138,9 +137,7 @@ public class Variant implements Cloneable, Comparable<Variant> {
         @XmlAttribute
         private String name;
         @XmlAttribute
-        private String vallue;
         private String value;
-
 
         public String getName() {
             return name;
@@ -457,14 +454,10 @@ public class Variant implements Cloneable, Comparable<Variant> {
      * Gets the default MapGraphic; if there is no default, returns the first one.
      */
     public MapGraphic getDefaultMapGraphic() {
-        MapGraphic mg = null;
+        return map.mapGraphics != null ? map.mapGraphics.stream()
+                .filter(MapGraphic::isDefault).findFirst()
+                .orElse(map.mapGraphics.get(0)) : null;
 
-        if (map.mapGraphics != null && map.mapGraphics.size() > 0) {
-            mg = map.mapGraphics.stream().filter(MapGraphic::isDefault)
-                    .findFirst().orElse(map.mapGraphics.get(0));
-        }
-
-        return mg;
     }// getDefaultMapGraphic()
 
 
@@ -515,7 +508,7 @@ public class Variant implements Cloneable, Comparable<Variant> {
      * Creates a deep clone of all data EXCEPT InitialState / SupplyCenter data / Name / Description
      */
     @Override
-    public Object clone() throws CloneNotSupportedException {
+    public Variant clone() throws CloneNotSupportedException {
         // shallow clone
         final Variant variant = (Variant) super.clone();
 

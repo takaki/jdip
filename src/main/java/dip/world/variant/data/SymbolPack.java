@@ -55,10 +55,14 @@ public class SymbolPack implements Comparable<SymbolPack> {
     @XmlElement(name = "SCALE")
     private List<Scale> scales = Collections.emptyList();
 
+    private List<Symbol> symbols;
+    private List<CSSStyle> cssStyles = Collections.emptyList();
+
+    @XmlRootElement(name = "SCALE")
     public static class Scale {
-        @XmlAttribute
+        @XmlAttribute(required = true)
         private String symbolName;
-        @XmlAttribute
+        @XmlAttribute(required = true)
         private float value;
 
         @SuppressWarnings("unused")
@@ -84,8 +88,6 @@ public class SymbolPack implements Comparable<SymbolPack> {
                 Collectors.toMap(Scale::getSymbolName, Scale::getValue));
     }
 
-    private List<Symbol> symbols;
-    private List<CSSStyle> cssStyles = Collections.emptyList();
 
     /**
      * The name of the SymbolPack.

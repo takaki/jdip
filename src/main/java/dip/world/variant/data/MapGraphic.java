@@ -36,9 +36,6 @@ import java.util.function.Function;
 
 @XmlRootElement
 public class MapGraphic {
-    // <MAP_GRAPHIC ref="standard" default="true"/>
-
-
     @XmlAttribute(name = "default")
     private boolean isDefault;
     @XmlAttribute(name = "preferredUnitStyle")
@@ -65,13 +62,12 @@ public class MapGraphic {
 
     void afterUnmarshal(final Unmarshaller unmarshaller,
                         final Object parent) throws IOException, SAXException {
-        final MapDef md = mapDef;
         // create the MapGraphic object
         try {
-            name = md.getTitle();
-            uri = new URI(md.getMapURI());
-            desc = md.getDescription();
-            thumbURI = new URI(md.getThumbURI());
+            name = mapDef.getTitle();
+            uri = new URI(mapDef.getMapURI());
+            desc = mapDef.getDescription();
+            thumbURI = new URI(mapDef.getThumbURI());
         } catch (final URISyntaxException e) {
             throw new IllegalArgumentException(e);
         }

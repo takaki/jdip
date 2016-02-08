@@ -160,7 +160,7 @@ public class VariantManager {
         dbf.setIgnoringComments(true);
 
         // setup variant parser
-        final XMLVariantParser variantParser = new XMLVariantParser(dbf);
+        final XMLVariantParser variantParser = new XMLVariantParser();
 
         // for each plugin, attempt to find the "variants.xml" file inside.
         // if it does not exist, we will not load the file. If it does, we will parse it,

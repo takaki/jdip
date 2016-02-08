@@ -45,10 +45,24 @@ public class XMLProvinceParser implements ProvinceParser {
     private final List<ProvinceData> provinceList = new ArrayList<>(100);
     private final List<BorderData> borderList = new ArrayList<>(10);
 
+    @XmlRootElement(name = "PROVINCES")
+    public static class RootProvinces {
+        @XmlElementWrapper(name = "BORDER_DEFINITIONS")
+        @XmlElement(name = "BORDER")
+        private final List<BorderData> borderDatas = new ArrayList<>();
+        @XmlElement(name = "PROVINCE")
+        private final List<ProvinceData> provinces = new ArrayList<>();
+    }
+
     /**
      * Create an XMLProvinceParser
      */
+    @Deprecated
     public XMLProvinceParser(final DocumentBuilderFactory dbf) {
+        this();
+    }// XMLProvinceParser()
+
+    public XMLProvinceParser() {
     }// XMLProvinceParser()
 
 
@@ -96,14 +110,6 @@ public class XMLProvinceParser implements ProvinceParser {
         return borderList.toArray(new BorderData[borderList.size()]);
     }// getBorderData()
 
-    @XmlRootElement(name = "PROVINCES")
-    public static class RootProvinces {
-        @XmlElementWrapper(name = "BORDER_DEFINITIONS")
-        @XmlElement(name = "BORDER")
-        private final List<BorderData> borderDatas = new ArrayList<>();
-        @XmlElement(name = "PROVINCE")
-        private final List<ProvinceData> provinces = new ArrayList<>();
-    }
 
 }// class XMLProvinceParser
 
