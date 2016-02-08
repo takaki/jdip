@@ -27,7 +27,6 @@ import dip.world.variant.data.BorderData;
 import dip.world.variant.data.ProvinceData;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBContext;
@@ -43,8 +42,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Parses an XML ProvinceData description.
@@ -140,10 +137,9 @@ public class XMLProvinceParser implements ProvinceParser {
     public static class RootProvinces {
         @XmlElementWrapper(name = "BORDER_DEFINITIONS")
         @XmlElement(name = "BORDER")
-        private List<BorderData> borderDatas;
-
+        private List<BorderData> borderDatas = new ArrayList<>();
         @XmlElement(name = "PROVINCE")
-        private List<ProvinceData> provinces;
+        private List<ProvinceData> provinces = new ArrayList<>();
     }
 
     /**
@@ -152,38 +148,45 @@ public class XMLProvinceParser implements ProvinceParser {
     private void procProvinceData() {
         // find root element
         final Element root = doc.getDocumentElement();
-//        final Unmarshaller unmarshaller = JAXBContext
-//                .newInstance(RootProvinces.class).createUnmarshaller();
-//        RootProvinces rootProvinces = (RootProvinces) unmarshaller
-//                .unmarshal(root);
-//
-        final NodeList borderNodes = root.getElementsByTagName(EL_BORDER);
-        borderList.addAll(IntStream.range(0, borderNodes.getLength())
-                .mapToObj(i -> {
-                    try {
-                        final Unmarshaller function = JAXBContext
-                                .newInstance(BorderData.class)
-                                .createUnmarshaller();
-                        return (BorderData) function
-                                .unmarshal(borderNodes.item(i));
-                    } catch (JAXBException e) {
-                        throw new IllegalArgumentException(e);
-                    }
-                }).collect(Collectors.toList()));
-        // find all PROVINCE elements
-        final NodeList provinceNodes = root.getElementsByTagName("PROVINCE");
-        provinceList.addAll(IntStream.range(0, provinceNodes.getLength())
-                .mapToObj(i -> (Element) provinceNodes.item(i))
-                .map(elProvince -> {
-                    try {
-                        final Unmarshaller function = JAXBContext
-                                .newInstance(ProvinceData.class)
-                                .createUnmarshaller();
-                        return (ProvinceData) function.unmarshal(elProvince);
-                    } catch (JAXBException e) {
-                        throw new IllegalArgumentException(e);
-                    }
-                }).collect(Collectors.toList()));
+        try {
+            final Unmarshaller unmarshaller = JAXBContext
+                    .newInstance(RootProvinces.class).createUnmarshaller();
+            RootProvinces rootProvinces = (RootProvinces) unmarshaller
+                    .unmarshal(root);
+            borderList.addAll(rootProvinces.borderDatas);
+            provinceList.addAll(rootProvinces.provinces);
+
+        } catch (JAXBException e) {
+            throw new IllegalArgumentException(e);
+        }
+
+//        final NodeList borderNodes = root.getElementsByTagName(EL_BORDER);
+//        borderList.addAll(IntStream.range(0, borderNodes.getLength())
+//                .mapToObj(i -> {
+//                    try {
+//                        final Unmarshaller function = JAXBContext
+//                                .newInstance(BorderData.class)
+//                                .createUnmarshaller();
+//                        return (BorderData) function
+//                                .unmarshal(borderNodes.item(i));
+//                    } catch (JAXBException e) {
+//                        throw new IllegalArgumentException(e);
+//                    }
+//                }).collect(Collectors.toList()));
+//        // find all PROVINCE elements
+//        final NodeList provinceNodes = root.getElementsByTagName("PROVINCE");
+//        provinceList.addAll(IntStream.range(0, provinceNodes.getLength())
+//                .mapToObj(i -> (Element) provinceNodes.item(i))
+//                .map(elProvince -> {
+//                    try {
+//                        final Unmarshaller function = JAXBContext
+//                                .newInstance(ProvinceData.class)
+//                                .createUnmarshaller();
+//                        return (ProvinceData) function.unmarshal(elProvince);
+//                    } catch (JAXBException e) {
+//                        throw new IllegalArgumentException(e);
+//                    }
+//                }).collect(Collectors.toList()));
     }// procProvinceData()
 
 }// class XMLProvinceParser
