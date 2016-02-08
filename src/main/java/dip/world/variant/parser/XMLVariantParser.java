@@ -24,14 +24,12 @@ package dip.world.variant.parser;
 
 import dip.misc.LRUCache;
 import dip.misc.Log;
-import dip.misc.Utils;
 import dip.world.variant.VariantManager;
 import dip.world.variant.data.BorderData;
 import dip.world.variant.data.ProvinceData;
 import dip.world.variant.data.Variant;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBContext;
@@ -39,14 +37,11 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -55,22 +50,12 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 
 /**
  * Parses an XML Variant description.
  */
 public class XMLVariantParser implements VariantParser {
-    // XML Element constants
-    public static final String EL_VARIANT = "VARIANT";
-    public static final String EL_MAP_DEFINITION = "MAP_DEFINITION";
-
-    // il8n error message constants
-    private static final String ERR_NO_ELEMENT = "XMLVariantParser.noelement";
 
     // instance variables
     private Document doc;
@@ -135,8 +120,14 @@ public class XMLVariantParser implements VariantParser {
         AdjCache.setVariantPackageURL(variantPackageURL);
         doc = docBuilder.parse(is);
         try {
-            procVariants();
-        } catch (final XPathExpressionException | JAXBException e) {
+            // find the root element (VARIANTS), and all VARIANT elements underneath.
+            final Element root = doc.getDocumentElement();
+            final Unmarshaller rootUnmarshaller = JAXBContext
+                    .newInstance(RootVariants.class).createUnmarshaller();
+            final RootVariants rootVariants = (RootVariants) rootUnmarshaller
+                    .unmarshal(root);
+            variantList.addAll(rootVariants.variants);
+        } catch (final JAXBException e) {
             throw new IllegalArgumentException(e);
         }
         Log.printTimed(time, "   time: ");
@@ -173,103 +164,6 @@ public class XMLVariantParser implements VariantParser {
         @XmlElement(name = "VARIANT")
         private List<Variant> variants;
     }
-
-    /**
-     * Process the Variant list description file
-     */
-    private void procVariants() throws XPathExpressionException, JAXBException {
-        final XPath xpath = XPathFactory.newInstance().newXPath();
-
-        // find the root element (VARIANTS), and all VARIANT elements underneath.
-        final Element root = doc.getDocumentElement();
-        final Unmarshaller rootUnmarshaller = JAXBContext
-                .newInstance(RootVariants.class).createUnmarshaller();
-        final RootVariants rootVariants = (RootVariants) rootUnmarshaller
-                .unmarshal(root);
-
-
-        // get map definitions (at least one, under VARIANT)
-        final NodeList mapDefEls = (NodeList) xpath
-                .evaluate(EL_MAP_DEFINITION, root, XPathConstants.NODESET);
-
-        // setup map definition ID hashmap
-        final Unmarshaller mapDefUnmarshaller = JAXBContext
-                .newInstance(MapDef.class).createUnmarshaller();
-        final Map<String, MapDef> mapDefTable = rootVariants.mapDefinitions
-                .stream()
-                .collect(Collectors.toMap(MapDef::getID, Function.identity()));
-
-
-        // search for variant data
-        final Unmarshaller variantUnmarshaller = JAXBContext
-                .newInstance(Variant.class).createUnmarshaller();
-        final NodeList variantElements = (NodeList) xpath
-                .evaluate(EL_VARIANT, root, XPathConstants.NODESET);
-        variantList.addAll(IntStream.range(0, variantElements.getLength())
-                .mapToObj(i -> (Element) variantElements.item(i))
-                .map(elVariant -> {
-                    try {
-                        final Variant variant = (Variant) variantUnmarshaller
-                                .unmarshal(elVariant);
-                        variant.updateMapGraphics(mapDefTable);
-                        return variant;
-                    } catch (JAXBException e) {
-                        throw new IllegalArgumentException(e);
-                    }
-                }).collect(Collectors.toList()));
-    }// procVariants()
-
-
-    /**
-     * Checks that an element is present
-     */
-    private void checkElement(final Element element, final String name) {
-        if (element == null) {
-            throw new IllegalArgumentException(
-                    Utils.getLocalString(ERR_NO_ELEMENT, name));
-        }
-    }// checkElement()
-
-    /**
-     * Get an Element by name; only returns a single element.
-     */
-    private Element getSingleElementByName(final Element parent,
-                                           final String name) {
-        final NodeList nodes = parent.getElementsByTagName(name);
-        return (Element) nodes.item(0);
-    }// getSingleElementByName()
-
-
-    /**
-     * Integer parser; throws an exception if number cannot be parsed.
-     */
-    private static int parseInt(final String value) {
-        try {
-            return Integer.parseInt(value);
-        } catch (final NumberFormatException e) {
-            throw new IllegalArgumentException(e);
-        }
-
-
-    }// parseInt()
-
-
-    /**
-     * Float parser; throws an exception if number cannot be parsed. Value must be >= 0.0
-     */
-    private static float parseFloat(final String value) {
-        try {
-            final float floatValue = Float.parseFloat(value);
-            if (floatValue < 0.0f) {
-                throw new NumberFormatException("Value must be >= 0");
-            }
-
-            return floatValue;
-        } catch (final NumberFormatException e) {
-            throw new IllegalArgumentException(e);
-        }
-
-    }// parseInt()
 
 
     /**
@@ -381,6 +275,7 @@ public class XMLVariantParser implements VariantParser {
      */
     @XmlRootElement(name = "MAP_DEFINITION")
     public static class MapDef {
+        @XmlID
         @XmlAttribute(required = true)
         private String id;
         @XmlAttribute(required = true)

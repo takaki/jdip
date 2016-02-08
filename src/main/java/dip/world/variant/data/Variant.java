@@ -26,7 +26,6 @@ import dip.misc.Utils;
 import dip.world.Phase;
 import dip.world.Power;
 import dip.world.variant.parser.XMLVariantParser.AdjCache;
-import dip.world.variant.parser.XMLVariantParser.MapDef;
 import org.xml.sax.SAXException;
 
 import javax.xml.bind.Unmarshaller;
@@ -53,7 +52,7 @@ public class Variant implements Cloneable, Comparable<Variant> {
     private boolean isDefault;
     @XmlAttribute(name = "version", required = true)
     private float version;
-    // @XmlAttribute(name="aliases")
+
     private List<String> aliases = Collections.emptyList();
 
     @XmlElement(name = "DESCRIPTION")
@@ -75,12 +74,6 @@ public class Variant implements Cloneable, Comparable<Variant> {
     @XmlElement(name = "MAP")
     private Map map = new Map();
 
-    public void updateMapGraphics(java.util.Map<String, MapDef> mapDefTable) {
-        // TODO: remove this
-        map.mapGraphics.stream().forEach(mg -> {
-            mg.update(mapDefTable);
-        });
-    }
 
     public static class Map {
         @XmlAttribute(name = "adjacencyURI")
@@ -129,11 +122,11 @@ public class Variant implements Cloneable, Comparable<Variant> {
             @XmlAttribute(name = "value", required = true)
             private int value;
         }
-
     }
 
     void afterUnmarshal(final Unmarshaller unmarshaller,
                         final Object parent) throws IOException, SAXException {
+        // TODO: Remove this
         final URI uri = map.adjacencyURI;
         setBorderData(AdjCache.getBorderData(uri));
         setProvinceData(AdjCache.getProvinceData(uri));
@@ -327,22 +320,11 @@ public class Variant implements Cloneable, Comparable<Variant> {
      */
 //    public void setDescription(final String value) {
 //        description = value;
-//    }
+///    }
 
     /**
      * Set the starting phase for this variant.
      */
-//    @XmlElement(name = "STARTINGTIME")
-//    @XmlAttribute(name = "turn", required = true)
-    @XmlAttribute(name = "turn", required = true)
-    public void setStartingPhase(final String value) {
-        throw new IllegalArgumentException("setstartingPhase: " + value);
-//        phase = Phase.parse(value);
-//        if (phase == null) {
-//            throw new IllegalArgumentException("setstartingPhase");
-//        }
-    }
-
     public void setStartingPhase(final Phase value) {
         startingTime.phase = value;
     }

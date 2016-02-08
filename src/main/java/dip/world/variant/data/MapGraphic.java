@@ -23,12 +23,15 @@
 package dip.world.variant.data;
 
 import dip.world.variant.parser.XMLVariantParser.MapDef;
+import org.xml.sax.SAXException;
 
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Map;
 import java.util.function.Function;
 
 @XmlRootElement
@@ -38,11 +41,12 @@ public class MapGraphic {
 
     @XmlAttribute(name = "default")
     private boolean isDefault;
-    @XmlAttribute(name = "ref")
-    private String ref;
     @XmlAttribute(name = "preferredUnitStyle")
     private String prefSPName;
 
+    @XmlIDREF
+    @XmlAttribute(name = "ref")
+    private MapDef mapDef;
 
     private String name;
     private URI uri;
@@ -59,13 +63,9 @@ public class MapGraphic {
     public MapGraphic() {
     }
 
-    public void update(Map<String, MapDef> mapDefTable) {
-        // TODO: remove this
-        final MapDef md = mapDefTable.get(ref);
-        if (md == null) {
-            throw new IllegalArgumentException(
-                    "MAP_GRAPHIC refers to unknown ID: \"" + ref + "\"");
-        }
+    void afterUnmarshal(final Unmarshaller unmarshaller,
+                        final Object parent) throws IOException, SAXException {
+        final MapDef md = mapDef;
         // create the MapGraphic object
         try {
             name = md.getTitle();
@@ -76,6 +76,7 @@ public class MapGraphic {
             throw new IllegalArgumentException(e);
         }
     }
+
 
     public MapGraphic(final String uri, final boolean isDefault,
                       final String name, final String description,
