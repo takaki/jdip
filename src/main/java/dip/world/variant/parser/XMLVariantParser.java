@@ -179,11 +179,10 @@ public class XMLVariantParser implements VariantParser {
 
                 try (InputStream is = new BufferedInputStream(
                         url.openStream())) {
-                    final XMLProvinceParser pp = new XMLProvinceParser();
-                    pp.parse(is);
+                    final XMLProvinceParser pp = new XMLProvinceParser(is);
                     return new AdjCache(Arrays.asList(pp.getProvinceData()),
                             Arrays.asList(pp.getBorderData()));
-                } catch (IOException | SAXException e) {
+                } catch (IOException e) {
                     throw new IllegalArgumentException(e);
                 }
             });

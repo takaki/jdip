@@ -20,10 +20,7 @@ package dip.world.variant.parser
 
 import spock.lang.Specification
 
-import javax.xml.parsers.DocumentBuilderFactory
-
 class XMLProvinceParserTest extends Specification {
-    def instance = new XMLProvinceParser(DocumentBuilderFactory.newInstance())
 
     def "parse stringstream"() {
         def input = '<PROVINCES>' +
@@ -37,7 +34,7 @@ class XMLProvinceParserTest extends Specification {
                 '<ADJACENCY type="mv" refs="swi" />' +
                 '</PROVINCE></PROVINCES>'
         when:
-        instance.parse(new ByteArrayInputStream(input.getBytes()))
+        def instance = new XMLProvinceParser(new ByteArrayInputStream(input.getBytes()))
         def provinceData = instance.getProvinceData()
         def borderData = instance.getBorderData()
         then:
@@ -51,7 +48,7 @@ class XMLProvinceParserTest extends Specification {
     def "parse test/std_adjacency"() {
         def stream = XMLProvinceParser.class.getResourceAsStream("/variants/test/std_adjacency.xml")
         when:
-        instance.parse(stream)
+        def instance = new XMLProvinceParser(stream)
         then:
         instance.getProvinceData().size() == 75
         instance.getBorderData().size() == 0
@@ -70,7 +67,7 @@ class XMLProvinceParserTest extends Specification {
     def "parse test/std_border"() {
         def stream = XMLProvinceParser.class.getResourceAsStream("/variants/test/std_borders.xml")
         when:
-        instance.parse(stream)
+        def instance = new XMLProvinceParser(stream)
         then:
         instance.getProvinceData().size() == 75
         instance.getBorderData().size() == 12

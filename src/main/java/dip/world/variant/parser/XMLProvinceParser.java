@@ -25,14 +25,11 @@ package dip.world.variant.parser;
 import dip.misc.Log;
 import dip.world.variant.data.BorderData;
 import dip.world.variant.data.ProvinceData;
-import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXB;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,8 +39,8 @@ import java.util.List;
  */
 public class XMLProvinceParser implements ProvinceParser {
 
-    private final List<ProvinceData> provinceList = new ArrayList<>(100);
-    private final List<BorderData> borderList = new ArrayList<>(10);
+    private final List<ProvinceData> provinceList;
+    private final List<BorderData> borderList ;
 
     @XmlRootElement(name = "PROVINCES")
     public static class RootProvinces {
@@ -57,32 +54,15 @@ public class XMLProvinceParser implements ProvinceParser {
     /**
      * Create an XMLProvinceParser
      */
-    @Deprecated
-    public XMLProvinceParser(final DocumentBuilderFactory dbf) {
-        this();
-    }// XMLProvinceParser()
-
-    public XMLProvinceParser() {
-    }// XMLProvinceParser()
-
-
-    /**
-     * Parse the given input stream; parsed data available via <code>getProvinceData()</code>
-     */
-    // TODO:remove
-    public void parse(final InputStream is) throws IOException, SAXException {
+    public XMLProvinceParser(final InputStream is) {
         final long time = System.currentTimeMillis();
-        provinceList.clear();
-        borderList.clear();
 
         final RootProvinces rootProvinces = JAXB
                 .unmarshal(is, RootProvinces.class);
-        borderList.addAll(rootProvinces.borderDatas);
-        provinceList.addAll(rootProvinces.provinces);
-
+        borderList = rootProvinces.borderDatas;
+        provinceList = rootProvinces.provinces;
         Log.printTimed(time, "   province parse time: ");
-    }// parse()
-
+    }// XMLProvinceParser()
 
     /**
      * Returns the ProvinceData objects, or an empty list.

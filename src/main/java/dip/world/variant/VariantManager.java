@@ -155,8 +155,6 @@ public class VariantManager {
         dbf.setCoalescing(false);
         dbf.setIgnoringComments(true);
 
-        // setup variant parser
-        final XMLVariantParser variantParser = new XMLVariantParser();
 
         // for each plugin, attempt to find the "variants.xml" file inside.
         // if it does not exist, we will not load the file. If it does, we will parse it,
@@ -172,6 +170,7 @@ public class VariantManager {
                 // parse variant description file, and create hash entry of variant object -> URL
                 try (InputStream is = new BufferedInputStream(
                         variantXMLURL.openStream())) {
+                    final XMLVariantParser variantParser = new XMLVariantParser();
                     variantParser.parse(is, pluginURL1);
                     final List<Variant> variants = Arrays
                             .asList(variantParser.getVariants());
@@ -204,6 +203,8 @@ public class VariantManager {
                                     variantURL.openStream())) {
                                 final String pluginName = getWSPluginName(
                                         variantURL);
+                                // setup variant parser
+                                final XMLVariantParser variantParser = new XMLVariantParser();
                                 variantParser.parse(is, variantURL);
                                 final Variant[] variants = variantParser
                                         .getVariants();
