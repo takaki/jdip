@@ -24,7 +24,6 @@ import spock.lang.Specification
 import java.nio.file.Paths
 
 class XMLVariantParserTest extends Specification {
-    def instance = new XMLVariantParser()
 
     def "parse"() {
         setup:
@@ -34,11 +33,9 @@ class XMLVariantParserTest extends Specification {
         URLClassLoader urlCL = new URLClassLoader(pluginUrl);
         URL variantXMLURL = urlCL.findResource("variants.xml")
         InputStream is = new BufferedInputStream(variantXMLURL.openStream());
-        expect:
-        instance != null
 
         when:
-        instance.parse(is, pluginUrl)
+        def instance = new XMLVariantParser(is, pluginUrl)
         def variants = instance.getVariants()
         def std = variants[0]
         then:

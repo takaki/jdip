@@ -28,6 +28,7 @@ import dip.misc.Utils;
 import dip.world.variant.data.MapGraphic;
 import dip.world.variant.data.SymbolPack;
 import dip.world.variant.data.Variant;
+import dip.world.variant.parser.VariantParser;
 import dip.world.variant.parser.XMLSymbolParser;
 import dip.world.variant.parser.XMLVariantParser;
 import org.xml.sax.SAXException;
@@ -170,8 +171,8 @@ public class VariantManager {
                 // parse variant description file, and create hash entry of variant object -> URL
                 try (InputStream is = new BufferedInputStream(
                         variantXMLURL.openStream())) {
-                    final XMLVariantParser variantParser = new XMLVariantParser();
-                    variantParser.parse(is, pluginURL1);
+                    final XMLVariantParser variantParser = new XMLVariantParser(
+                            is, pluginURL1);
                     final List<Variant> variants = Arrays
                             .asList(variantParser.getVariants());
 
@@ -183,9 +184,6 @@ public class VariantManager {
                 } catch (final IOException e) {
                     // display error dialog
                     ErrorDialog.displayFileIO(null, e, pluginURL1.toString());
-                } catch (final SAXException e) {
-                    // display error dialog
-                    ErrorDialog.displayGeneral(null, e);
                 }
             }
         }
@@ -204,8 +202,8 @@ public class VariantManager {
                                 final String pluginName = getWSPluginName(
                                         variantURL);
                                 // setup variant parser
-                                final XMLVariantParser variantParser = new XMLVariantParser();
-                                variantParser.parse(is, variantURL);
+                                final VariantParser variantParser = new XMLVariantParser(
+                                        is, variantURL);
                                 final Variant[] variants = variantParser
                                         .getVariants();
                                 // add variants; variants with same name (but older versions) are
@@ -217,9 +215,6 @@ public class VariantManager {
                                 // display error dialog
                                 ErrorDialog.displayFileIO(null, e,
                                         variantURL.toString());
-                            } catch (final org.xml.sax.SAXException e) {
-                                // display error dialog
-                                ErrorDialog.displayGeneral(null, e);
                             }
                         });
             } catch (final IOException ignored) {

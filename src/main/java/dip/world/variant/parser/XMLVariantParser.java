@@ -28,7 +28,6 @@ import dip.world.variant.VariantManager;
 import dip.world.variant.data.BorderData;
 import dip.world.variant.data.ProvinceData;
 import dip.world.variant.data.Variant;
-import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXB;
 import javax.xml.bind.Unmarshaller;
@@ -43,7 +42,6 @@ import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 
@@ -52,7 +50,7 @@ import java.util.List;
  */
 public class XMLVariantParser implements VariantParser {
 
-    private final List<Variant> variantList = new LinkedList<>();
+    private final List<Variant> variantList;
 
     @XmlRootElement(name = "VARIANTS")
     public static class RootVariants {
@@ -70,8 +68,7 @@ public class XMLVariantParser implements VariantParser {
      * Note that when this method is called, any previous Variants (if any exist) are
      * cleared.
      */
-    public void parse(final InputStream is,
-                      final URL variantPackageURL) throws IOException, SAXException {
+    public XMLVariantParser(final InputStream is, final URL variantPackageURL) {
         if (variantPackageURL == null) {
             throw new IllegalArgumentException();
         }
@@ -85,8 +82,7 @@ public class XMLVariantParser implements VariantParser {
 
         final RootVariants rootVariants = JAXB
                 .unmarshal(is, RootVariants.class);
-        variantList.clear();
-        variantList.addAll(rootVariants.variants);
+        variantList = rootVariants.variants;
         Log.printTimed(time, "   time: ");
     }// parse()
 
