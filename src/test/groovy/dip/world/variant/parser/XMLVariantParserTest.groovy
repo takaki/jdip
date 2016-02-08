@@ -21,11 +21,10 @@ package dip.world.variant.parser
 import dip.world.variant.VariantManager
 import spock.lang.Specification
 
-import javax.xml.parsers.DocumentBuilderFactory
 import java.nio.file.Paths
 
 class XMLVariantParserTest extends Specification {
-    def instance = new XMLVariantParser(DocumentBuilderFactory.newInstance())
+    def instance = new XMLVariantParser()
 
     def "parse"() {
         setup:

@@ -36,12 +36,12 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -63,18 +63,6 @@ public class XMLVariantParser implements VariantParser {
         @XmlElement(name = "VARIANT")
         private List<Variant> variants;
     }
-
-    /**
-     * Create an XMLVariantParser
-     */
-    @Deprecated
-    public XMLVariantParser(final DocumentBuilderFactory dbf) {
-        this();
-    }// XMLVariantParser()
-
-    public XMLVariantParser() {
-        AdjCache.init();
-    }// XMLVariantParser()
 
     /**
      * Parse the given input stream; parsed data available via <code>getVariants()</code>
@@ -104,13 +92,6 @@ public class XMLVariantParser implements VariantParser {
 
 
     /**
-     * Cleanup, clearing any references/resources
-     */
-    public void close() {
-    }// close()
-
-
-    /**
      * Returns an array of Variant objects.
      * <p>
      * Will never return null. Note that parse() must be called before
@@ -137,14 +118,14 @@ public class XMLVariantParser implements VariantParser {
                 6); // URI -> AdjCache objects
 
         // instance variables
-        private List<ProvinceData> provinceData;
-        private List<BorderData> borderData;
+        private final List<ProvinceData> provinceData;
+        private final List<BorderData> borderData;
 
-        /**
-         * initialization
-         */
-        public static void init() {
-        }// AdjCache()
+        public AdjCache(final List<ProvinceData> provinceData,
+                        final List<BorderData> borderData) {
+            this.provinceData = new ArrayList<>(provinceData);
+            this.borderData = new ArrayList<>(borderData);
+        }
 
         /**
          * Sets the variant package URL
@@ -200,11 +181,8 @@ public class XMLVariantParser implements VariantParser {
                         url.openStream())) {
                     final XMLProvinceParser pp = new XMLProvinceParser();
                     pp.parse(is);
-                    // cache and return parsed data.
-                    final AdjCache ac = new AdjCache();
-                    ac.provinceData = Arrays.asList(pp.getProvinceData());
-                    ac.borderData = Arrays.asList(pp.getBorderData());
-                    return ac;
+                    return new AdjCache(Arrays.asList(pp.getProvinceData()),
+                            Arrays.asList(pp.getBorderData()));
                 } catch (IOException | SAXException e) {
                     throw new IllegalArgumentException(e);
                 }
