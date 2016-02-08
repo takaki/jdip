@@ -27,7 +27,6 @@ import dip.misc.Log;
 import dip.misc.Utils;
 import dip.world.variant.VariantManager;
 import dip.world.variant.data.BorderData;
-import dip.world.variant.data.MapGraphic;
 import dip.world.variant.data.ProvinceData;
 import dip.world.variant.data.Variant;
 import org.w3c.dom.Document;
@@ -52,7 +51,6 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -68,50 +66,8 @@ import java.util.stream.IntStream;
  */
 public class XMLVariantParser implements VariantParser {
     // XML Element constants
-    public static final String EL_VARIANTS = "VARIANTS";
     public static final String EL_VARIANT = "VARIANT";
-    public static final String EL_DESCRIPTION = "DESCRIPTION";
-    public static final String EL_MAP = "MAP";
-    public static final String EL_STARTINGTIME = "STARTINGTIME";
-    public static final String EL_INITIALSTATE = "INITIALSTATE";
-    public static final String EL_SUPPLYCENTER = "SUPPLYCENTER";
-    public static final String EL_POWER = "POWER";
     public static final String EL_MAP_DEFINITION = "MAP_DEFINITION";
-    public static final String EL_MAP_GRAPHIC = "MAP_GRAPHIC";
-    public static final String EL_VICTORYCONDITIONS = "VICTORYCONDITIONS";
-    public static final String EL_GAME_LENGTH = "GAME_LENGTH";
-    public static final String EL_YEARS_WITHOUT_SC_CAPTURE = "YEARS_WITHOUT_SC_CAPTURE";
-    public static final String EL_WINNING_SUPPLY_CENTERS = "WINNING_SUPPLY_CENTERS";
-    public static final String EL_RULEOPTIONS = "RULEOPTIONS";
-    public static final String EL_RULEOPTION = "RULEOPTION";
-
-
-    // XML Attribute constants
-    public static final String ATT_ALIASES = "aliases";
-    public static final String ATT_VERSION = "version";
-    public static final String ATT_URI = "URI";
-    public static final String ATT_DEFAULT = "default";
-    public static final String ATT_TITLE = "title";
-    public static final String ATT_DESCRIPTION = "description";
-    public static final String ATT_THUMBURI = "thumbURI";
-    public static final String ATT_ADJACENCYURI = "adjacencyURI";
-    public static final String ATT_NAME = "name";
-    public static final String ATT_ACTIVE = "active";
-    public static final String ATT_ADJECTIVE = "adjective";
-    public static final String ATT_ALTNAMES = "altnames";
-    public static final String ATT_TURN = "turn";
-    public static final String ATT_VALUE = "value";
-    public static final String ATT_PROVINCE = "province";
-    public static final String ATT_HOMEPOWER = "homepower";
-    public static final String ATT_OWNER = "owner";
-    public static final String ATT_POWER = "power";
-    public static final String ATT_UNIT = "unit";
-    public static final String ATT_UNITCOAST = "unitcoast";
-    public static final String ATT_ALLOW_BC_YEARS = "allowBCYears";
-    public static final String ATT_PREFERRED_UNIT_STYLE = "preferredUnitStyle";
-    public static final String ATT_ID = "id";
-    public static final String ATT_REF = "ref";
-
 
     // il8n error message constants
     private static final String ERR_NO_ELEMENT = "XMLVariantParser.noelement";
@@ -214,7 +170,6 @@ public class XMLVariantParser implements VariantParser {
     private void procVariants() throws XPathExpressionException, JAXBException {
         final XPath xpath = XPathFactory.newInstance().newXPath();
 
-
         // find the root element (VARIANTS), and all VARIANT elements underneath.
         final Element root = doc.getDocumentElement();
 
@@ -242,73 +197,18 @@ public class XMLVariantParser implements VariantParser {
                 .newInstance(Variant.class).createUnmarshaller();
         final NodeList variantElements = (NodeList) xpath
                 .evaluate(EL_VARIANT, root, XPathConstants.NODESET);
-        IntStream.range(0, variantElements.getLength())
+        variantList.addAll(IntStream.range(0, variantElements.getLength())
                 .mapToObj(i -> (Element) variantElements.item(i))
-                .forEach(elVariant -> {
+                .map(elVariant -> {
                     try {
                         final Variant variant = (Variant) variantUnmarshaller
                                 .unmarshal(elVariant);
-
-                        // MAP element and children
-                        final Element elMap = getSingleElementByName(elVariant,
-                                "MAP");
-                        // MAP adjacency URI; process it using ProvinceData parser
-                        try {
-                            final URI adjacencyURI = new URI(
-                                    elMap.getAttribute("adjacencyURI"));
-                            variant.setProvinceData(
-                                    AdjCache.getProvinceData(adjacencyURI));
-                            variant.setBorderData(
-                                    AdjCache.getBorderData(adjacencyURI));
-                        } catch (final URISyntaxException | SAXException | IOException e) {
-                            throw new IllegalArgumentException(e);
-                        }
-
-                        // MAP_GRAPHIC element (multiple)
-                        final NodeList nodes = elMap
-                                .getElementsByTagName("MAP_GRAPHIC");
-                        variant.setMapGraphics(
-                                IntStream.range(0, nodes.getLength())
-                                        .mapToObj(j -> (Element) nodes.item(j))
-                                        .map(mgElement -> {
-                                            final String refID = mgElement
-                                                    .getAttribute("ref");
-                                            final boolean isDefault = Boolean
-                                                    .valueOf(mgElement
-                                                            .getAttribute(
-                                                                    "default"));
-                                            final String preferredUnitStyle = mgElement
-                                                    .getAttribute(
-                                                            "preferredUnitStyle");
-
-                                            // lookup; if we didn't find it, throw an exception
-                                            final MapDef md = mapDefTable
-                                                    .get(refID);
-                                            if (md == null) {
-                                                throw new IllegalArgumentException(
-                                                        "MAP_GRAPHIC refers to unknown ID: \"" + refID + "\"");
-                                            }
-
-                                            // create the MapGraphic object
-                                            return new MapGraphic(
-                                                    md.getMapURI(), isDefault,
-                                                    md.getTitle(),
-                                                    md.getDescription(),
-                                                    md.getThumbURI(),
-                                                    preferredUnitStyle != null && preferredUnitStyle
-                                                            .isEmpty() ? md
-                                                            .getPrefUnitStyle() : preferredUnitStyle);
-                                        }).collect(Collectors.toList()));
-
-                        // rule options (if any have been set)
-                        // this element is optional.
-
-                        // add variant to list of variants
-                        variantList.add(variant);
+                        variant.updateMapGraphics(mapDefTable);
+                        return variant;
                     } catch (JAXBException e) {
                         throw new IllegalArgumentException(e);
                     }
-                });// for(i)
+                }).collect(Collectors.toList()));
     }// procVariants()
 
 
@@ -373,7 +273,7 @@ public class XMLVariantParser implements VariantParser {
      * cannot have statics (unless they inner class is static, which just creates more problems;
      * this is a simpler solution)
      */
-    private static class AdjCache {
+    public static class AdjCache {
         private static URL vpURL;
         private static XMLProvinceParser pp;
         private static LRUCache adjCache;    // URI -> AdjCache objects
@@ -472,7 +372,7 @@ public class XMLVariantParser implements VariantParser {
      * inserted into a hashtable for later recall.
      */
     @XmlRootElement(name = "MAP_DEFINITION")
-    private static class MapDef {
+    public static class MapDef {
         @XmlAttribute(required = true)
         private String id;
         @XmlAttribute(required = true)

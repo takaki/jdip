@@ -22,11 +22,13 @@
 //
 package dip.world.variant.data;
 
-import javax.xml.bind.Unmarshaller;
+import dip.world.variant.parser.XMLVariantParser.MapDef;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Map;
 import java.util.function.Function;
 
 @XmlRootElement
@@ -57,32 +59,23 @@ public class MapGraphic {
     public MapGraphic() {
     }
 
-    void afterUnmarshal(final Unmarshaller unmarshaller, final Object parent) {
-
-        final String refID = ref;
-
-//                            // lookup; if we didn't find it, throw an exception
-//                            final MapDef md = mapDefTable
-//                                    .get(refID);
-//                            if (md == null) {
-//                                throw new IllegalArgumentException(
-//                                        "MAP_GRAPHIC refers to unknown ID: \"" + refID + "\"");
-//                            }
-//
-//                            // create the MapGraphic object
-//                            return new MapGraphic(
-//                                    md.getMapURI(), isDefault,
-//                                    md.getTitle(),
-//                                    md.getDescription(),
-//                                    md.getThumbURI(),
-//                                    preferredUnitStyle != null && preferredUnitStyle
-//                                            .isEmpty() ? md
-//                                            .getPrefUnitStyle() : preferredUnitStyle);
-//                        }).collect(Collectors.toList());
-
-
+    public void update(Map<String, MapDef> mapDefTable) {
+        // TODO: remove this
+        final MapDef md = mapDefTable.get(ref);
+        if (md == null) {
+            throw new IllegalArgumentException(
+                    "MAP_GRAPHIC refers to unknown ID: \"" + ref + "\"");
+        }
+        // create the MapGraphic object
+        try {
+            name = md.getTitle();
+            uri = new URI(md.getMapURI());
+            desc = md.getDescription();
+            thumbURI = new URI(md.getThumbURI());
+        } catch (final URISyntaxException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
-
 
     public MapGraphic(final String uri, final boolean isDefault,
                       final String name, final String description,
@@ -163,6 +156,7 @@ public class MapGraphic {
                         name, ",desc=", desc, ",thumbURI=", thumbURI.toString(),
                         "]");
     }// toString()
+
 }// nested class MapGraphic
 
 

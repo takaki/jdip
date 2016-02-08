@@ -25,12 +25,16 @@ package dip.world.variant.data;
 import dip.misc.Utils;
 import dip.world.Phase;
 import dip.world.Power;
+import dip.world.variant.parser.XMLVariantParser.AdjCache;
+import dip.world.variant.parser.XMLVariantParser.MapDef;
+import org.xml.sax.SAXException;
 
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.IOException;
 import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -71,23 +75,24 @@ public class Variant implements Cloneable, Comparable<Variant> {
     @XmlElement(name = "MAP")
     private Map map = new Map();
 
+    public void updateMapGraphics(java.util.Map<String, MapDef> mapDefTable) {
+        // TODO: remove this
+        map.mapGraphics.stream().forEach(mg -> {
+            mg.update(mapDefTable);
+        });
+    }
+
     public static class Map {
-        // <MAP adjacencyURI="std_adjacency.xml">
-        // <MAP_GRAPHIC ref="standard" default="true"/>
         @XmlAttribute(name = "adjacencyURI")
         private URI adjacencyURI;
         @XmlElement(name = "MAP_GRAPHIC")
         private List<MapGraphic> mapGraphics;
-
     }
 
     @XmlElementWrapper(name = "RULEOPTIONS")
     @XmlElement(name = "RULEOPTION")
     private List<NameValuePair> roNVPs;
 
-    // @XmlAttribute(name = "turn")
-    // @XmlAttribute(name = "turn", required = true)
-    //     <STARTINGTIME turn="Spring, 1914, Movement" allowBCYears="true"/>
     @XmlElement(name = "STARTINGTIME", required = true)
     private StartingTime startingTime = new StartingTime();
 
@@ -127,13 +132,13 @@ public class Variant implements Cloneable, Comparable<Variant> {
 
     }
 
-    void afterUnmarshal(final Unmarshaller unmarshaller, final Object parent) {
-//        System.out.println(victoryConditions);
-//        System.out.println(victoryConditions.vcMaxGameTimeYears);
-//        if (phase.getYear() < 0) {
-//            allowBCYears = true;
-//        }
+    void afterUnmarshal(final Unmarshaller unmarshaller,
+                        final Object parent) throws IOException, SAXException {
+        final URI uri = map.adjacencyURI;
+        setBorderData(AdjCache.getBorderData(uri));
+        setProvinceData(AdjCache.getProvinceData(uri));
     }
+
 
     /**
      * Class of Rule Option name/value pairs
@@ -154,6 +159,7 @@ public class Variant implements Cloneable, Comparable<Variant> {
         public String getValue() {
             return value;
         }
+
     }// nested class NameValuePair
 
 
