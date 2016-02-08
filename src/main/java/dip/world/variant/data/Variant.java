@@ -50,26 +50,51 @@ public class Variant implements Cloneable, Comparable<Variant> {
     private float version;
     // @XmlAttribute(name="aliases")
     private List<String> aliases = Collections.emptyList();
+
     @XmlElement(name = "DESCRIPTION")
     private String description;
-    // @XmlAttribute(name = "turn")
-    // @XmlAttribute(name = "turn", required = true)
-    private Phase phase;
-    @XmlAttribute(name = "allowBCYears")
-    private boolean allowBCYears;
+    @XmlElement(name = "VICTORYCONDITIONS", required = true)
+    public VictoryConditions victoryConditions = new VictoryConditions();
 
+    @XmlElement(name = "POWER")
     private List<Power> powers;
-    private List<InitialState> istate;
+
+    @XmlElement(name = "SUPPLYCENTER")
     private List<SupplyCenter> supplyCenters;
+    @XmlElement(name = "INITIALSTATE")
+    private List<InitialState> istate;
+
     private List<ProvinceData> provinceData;
-    private int vcNumSCForVictory;
-    private int vcMaxYearsNoSCChange;
-    private int vcMaxGameTimeYears;
     private List<MapGraphic> mapGraphics;
     private List<NameValuePair> roNVPs;
     private List<BorderData> borderData;
 
+    // @XmlAttribute(name = "turn")
+    // @XmlAttribute(name = "turn", required = true)
+    private Phase phase;
+    //        @XmlAttribute(name = "allowBCYears")
+    private boolean allowBCYears;
+
+    @XmlRootElement
+    public static class VictoryConditions {
+        @XmlElement(name = "WINNING_SUPPLY_CENTERS")
+        private IntWrapper vcNumSCForVictory = new IntWrapper();
+        @XmlElement(name = "YEARS_WITHOUT_SC_CAPTURE")
+        private IntWrapper vcMaxYearsNoSCChange = new IntWrapper();
+        @XmlElement(name = "GAME_LENGTH")
+        private IntWrapper vcMaxGameTimeYears = new IntWrapper();
+
+        @XmlRootElement
+        public static class IntWrapper {
+            @XmlAttribute(name = "value", required = true)
+            private int value;
+        }
+
+    }
+
     void afterUnmarshal(final Unmarshaller unmarshaller, final Object parent) {
+//        System.out.println(victoryConditions);
+//        System.out.println(victoryConditions.vcMaxGameTimeYears);
 //        if (phase.getYear() < 0) {
 //            allowBCYears = true;
 //        }
@@ -181,21 +206,21 @@ public class Variant implements Cloneable, Comparable<Variant> {
      * Victory Conditions: Number of Supply Centers required for victory.
      */
     public int getNumSCForVictory() {
-        return vcNumSCForVictory;
+        return victoryConditions.vcNumSCForVictory.value;
     }
 
     /**
      * Victory Conditions: Maximum years without a supply-center ownership change before game ends.
      */
     public int getMaxYearsNoSCChange() {
-        return vcMaxYearsNoSCChange;
+        return victoryConditions.vcMaxYearsNoSCChange.value;
     }
 
     /**
      * Victory Conditions: Maximum game duration, in years.
      */
     public int getMaxGameTimeYears() {
-        return vcMaxGameTimeYears;
+        return victoryConditions.vcMaxGameTimeYears.value;
     }
 
     /**
@@ -296,21 +321,21 @@ public class Variant implements Cloneable, Comparable<Variant> {
      * Victory Conditions: Number of Supply Centers required for victory.
      */
     public void setNumSCForVictory(final int value) {
-        vcNumSCForVictory = value;
+        victoryConditions.vcNumSCForVictory.value = value;
     }
 
     /**
      * Victory Conditions: Maximum years without a supply-center ownership change before game ends.
      */
     public void setMaxYearsNoSCChange(final int value) {
-        vcMaxYearsNoSCChange = value;
+        victoryConditions.vcMaxYearsNoSCChange.value = value;
     }
 
     /**
      * Victory Conditions: Maximum game duration, in years.
      */
     public void setMaxGameTimeYears(final int value) {
-        vcMaxGameTimeYears = value;
+        victoryConditions.vcMaxGameTimeYears.value = value;
     }
 
     /**
@@ -449,7 +474,7 @@ public class Variant implements Cloneable, Comparable<Variant> {
         final Collection<Object> args = new ArrayList<>(8);
         args.add(name);
         args.add(description);
-        args.add(String.valueOf(vcNumSCForVictory));
+        args.add(String.valueOf(victoryConditions.vcNumSCForVictory.value));
         if (phase == null) {
             args.add("{bad phase}");
             args.add("{bad phase}");
@@ -513,12 +538,13 @@ public class Variant implements Cloneable, Comparable<Variant> {
                                 .collect(Collectors.joining(",")), ",phase=",
                         phase.toString(), ",istate=", ",supplyCenters=",
                         ",provinceData=", "mapGraphics=", ",vcNumSCForVictory=",
-                        Integer.toString(vcNumSCForVictory),
-                        ",vcMaxGameTimeYears=",
-                        Integer.toString(vcMaxGameTimeYears),
-                        ",vcMaxYearsNoSCChange=",
-                        Integer.toString(vcMaxYearsNoSCChange), ",version=",
-                        Float.toString(version), "]");
+                        Integer.toString(
+                                victoryConditions.vcNumSCForVictory.value),
+                        ",vcMaxGameTimeYears=", Integer.toString(
+                                victoryConditions.vcMaxGameTimeYears.value),
+                        ",vcMaxYearsNoSCChange=", Integer.toString(
+                                victoryConditions.vcMaxYearsNoSCChange.value),
+                        ",version=", Float.toString(version), "]");
     }// toString()
 }// class Variant
 

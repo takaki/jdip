@@ -26,7 +26,6 @@ import dip.misc.LRUCache;
 import dip.misc.Log;
 import dip.misc.Utils;
 import dip.world.Phase;
-import dip.world.Power;
 import dip.world.variant.VariantManager;
 import dip.world.variant.data.*;
 import dip.world.variant.data.Variant.NameValuePair;
@@ -246,72 +245,73 @@ public class XMLVariantParser implements VariantParser {
                         final Variant variant = (Variant) variantUnmarshaller
                                 .unmarshal(elVariant);
 
-                        // VARIANT attributes
-//                        variant.setName(elVariant.getAttribute("name"));
-//                        variant.setDefault(Boolean.valueOf(
-//                                elVariant.getAttribute("default")));
-//                        variant.setVersion(parseFloat(
-//                                elVariant.getAttribute("version")));
-//                        variant.setAliases(Utils.parseCSV(
-//                                elVariant.getAttribute("aliases")));
-
-                        // description
-//                        final Element elDescription = getSingleElementByName(
-//                                elVariant, "DESCRIPTION");
-//                        checkElement(elDescription, "DESCRIPTION");
-//                        final Node text = elDescription.getFirstChild();
-//                        variant.setDescription(text.getNodeValue());
-
                         // starting time
                         final Element elStartingtime = getSingleElementByName(
                                 elVariant, "STARTINGTIME");
                         checkElement(elStartingtime, "STARTINGTIME");
                         variant.setStartingPhase(Phase.parse(
                                 elStartingtime.getAttribute("turn")));
-//                        variant.setBCYearsAllowed(Boolean.valueOf(elStartingtime
-//                                .getAttribute("allowBCYears")));
+                        variant.setBCYearsAllowed(Boolean.valueOf(
+                                elStartingtime.getAttribute("allowBCYears")));
 
                         // if start is BC, and BC years are not allowed, then BC years ARE allowed.
-//                        if (variant.getStartingPhase().getYear() < 0) {
-//                            variant.setBCYearsAllowed(true);
+                        if (variant.getStartingPhase().getYear() < 0) {
+                            variant.setBCYearsAllowed(true);
+                        }
+
+
+                        // =====================================
+
+
+//                        // supply centers (multiple)
+//                        final Unmarshaller unmarshaller1;
+//                        try {
+//                            unmarshaller1 = JAXBContext
+//                                    .newInstance(SupplyCenter.class)
+//                                    .createUnmarshaller();
+//                        } catch (final JAXBException e1) {
+//                            throw new IllegalArgumentException(e1);
 //                        }
-
-                        // victory conditions (single, with single subitems)
-                        final Element elVictoryconditions = getSingleElementByName(
-                                elVariant, EL_VICTORYCONDITIONS);
-                        checkElement(elVictoryconditions, EL_VICTORYCONDITIONS);
-                        Optional.ofNullable(
-                                getSingleElementByName(elVictoryconditions,
-                                        EL_WINNING_SUPPLY_CENTERS))
-                                .ifPresent(el -> {
-                                    variant.setNumSCForVictory(parseInt(
-                                            el.getAttribute(ATT_VALUE)));
-                                });
-
-                        Optional.ofNullable(
-                                getSingleElementByName(elVictoryconditions,
-                                        EL_YEARS_WITHOUT_SC_CAPTURE))
-                                .ifPresent(el -> {
-                                    variant.setMaxYearsNoSCChange(parseInt(
-                                            el.getAttribute(ATT_VALUE)));
-                                });
-
-                        Optional.ofNullable(
-                                getSingleElementByName(elVictoryconditions,
-                                        EL_GAME_LENGTH)).ifPresent(el -> {
-                            variant.setMaxGameTimeYears(
-                                    parseInt(el.getAttribute(ATT_VALUE)));
-                        });
-
-
-                        // powers (multiple)
-                        variant.setPowers(makePowers(elVariant));
-
-                        // supply centers (multiple)
-                        variant.setSupplyCenters(makeSupplyCenters(elVariant));
-
-                        // initial state (multiple)
-                        variant.setInitialStates(makeInitialStates(elVariant));
+//
+//                        final NodeList nodes2 = elVariant
+//                                .getElementsByTagName(EL_SUPPLYCENTER);
+//                        variant.setSupplyCenters(
+//                                IntStream.range(0, nodes2.getLength())
+//                                        .mapToObj(j -> (Element) nodes2.item(j))
+//                                        .map(element -> {
+//                                            try {
+//                                                return (SupplyCenter) unmarshaller1
+//                                                        .unmarshal(element);
+//                                            } catch (JAXBException e1) {
+//                                                throw new IllegalArgumentException(
+//                                                        e1);
+//                                            }
+//                                        }).collect(Collectors.toList()));
+//
+//                        // initial state (multiple)
+//                        final Unmarshaller unmarshaller2;
+//                        try {
+//                            unmarshaller2 = JAXBContext
+//                                    .newInstance(InitialState.class)
+//                                    .createUnmarshaller();
+//                        } catch (final JAXBException e1) {
+//                            throw new IllegalArgumentException(e1);
+//                        }
+//
+//                        final NodeList nodes3 = elVariant
+//                                .getElementsByTagName(EL_INITIALSTATE);
+//                        variant.setInitialStates(
+//                                IntStream.range(0, nodes3.getLength())
+//                                        .mapToObj(j -> (Element) nodes3.item(j))
+//                                        .map(element -> {
+//                                            try {
+//                                                return (InitialState) unmarshaller2
+//                                                        .unmarshal(element);
+//                                            } catch (JAXBException e1) {
+//                                                throw new IllegalArgumentException(
+//                                                        e1);
+//                                            }
+//                                        }).collect(Collectors.toList()));
 
                         // MAP element and children
                         final Element elMap = getSingleElementByName(elVariant,
@@ -346,68 +346,6 @@ public class XMLVariantParser implements VariantParser {
                     }
                 });// for(i)
     }// procVariants()
-
-    private static List<Power> makePowers(final Element elVariant) {
-        final Unmarshaller unmarshaller;
-        try {
-            unmarshaller = JAXBContext.newInstance(Power.class)
-                    .createUnmarshaller();
-        } catch (final JAXBException e) {
-            throw new IllegalArgumentException(e);
-        }
-
-        final NodeList nodes = elVariant.getElementsByTagName(EL_POWER);
-        return IntStream.range(0, nodes.getLength())
-                .mapToObj(j -> (Element) nodes.item(j)).map(element -> {
-                    try {
-                        return (Power) unmarshaller.unmarshal(element);
-                    } catch (JAXBException e) {
-                        throw new IllegalArgumentException(e);
-                    }
-                }).collect(Collectors.toList());
-    }
-
-    private static List<SupplyCenter> makeSupplyCenters(
-            final Element elVariant) {
-        final Unmarshaller unmarshaller;
-        try {
-            unmarshaller = JAXBContext.newInstance(SupplyCenter.class)
-                    .createUnmarshaller();
-        } catch (final JAXBException e) {
-            throw new IllegalArgumentException(e);
-        }
-
-        final NodeList nodes = elVariant.getElementsByTagName(EL_SUPPLYCENTER);
-        return IntStream.range(0, nodes.getLength())
-                .mapToObj(j -> (Element) nodes.item(j)).map(element -> {
-                    try {
-                        return (SupplyCenter) unmarshaller.unmarshal(element);
-                    } catch (JAXBException e) {
-                        throw new IllegalArgumentException(e);
-                    }
-                }).collect(Collectors.toList());
-    }
-
-    private static List<InitialState> makeInitialStates(
-            final Element elVariant) {
-        final Unmarshaller unmarshaller;
-        try {
-            unmarshaller = JAXBContext.newInstance(InitialState.class)
-                    .createUnmarshaller();
-        } catch (final JAXBException e) {
-            throw new IllegalArgumentException(e);
-        }
-
-        final NodeList nodes = elVariant.getElementsByTagName(EL_INITIALSTATE);
-        return IntStream.range(0, nodes.getLength())
-                .mapToObj(j -> (Element) nodes.item(j)).map(element -> {
-                    try {
-                        return (InitialState) unmarshaller.unmarshal(element);
-                    } catch (JAXBException e) {
-                        throw new IllegalArgumentException(e);
-                    }
-                }).collect(Collectors.toList());
-    }
 
     private List<MapGraphic> makeMapGraphic(
             final Map<String, MapDef> mapDefTable, final NodeList nodes) {
