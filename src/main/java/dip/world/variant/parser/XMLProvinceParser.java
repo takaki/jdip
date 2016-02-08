@@ -219,30 +219,30 @@ public class XMLProvinceParser implements ProvinceParser {
 //                                elProvince.getAttribute("isConvoyableCoast")));
 
                         // borders data (optional); a list of references, seperated by commas/spaces
-                        final String borders = elProvince
-                                .getAttribute("borders").trim();
-                        provinceData.setBorders(borders.isEmpty() ? Collections
-                                .emptyList() : new ArrayList<>(
-                                Arrays.asList(borders.split("[, ]+"))));
+//                        final String borders = elProvince
+//                                .getAttribute("borders").trim();
+//                        provinceData.setBorders(borders.isEmpty() ? Collections
+//                                .emptyList() : new ArrayList<>(
+//                                Arrays.asList(borders.split("[, ]+"))));
 
 
                         // adjacency data
-                        final NodeList adjNodes = elProvince
-                                .getElementsByTagName("ADJACENCY");
-                        final List<String> adjTypeNames = IntStream
-                                .range(0, adjNodes.getLength())
-                                .mapToObj(j -> (Element) adjNodes.item(j))
-                                .map(element -> element.getAttribute("type"))
-                                .collect(Collectors.toList());
-                        final List<String> adjProvinceNames = IntStream
-                                .range(0, adjNodes.getLength())
-                                .mapToObj(j -> (Element) adjNodes.item(j))
-                                .map(element -> element.getAttribute("refs"))
-                                .collect(Collectors.toList());
-                        provinceData.setAdjacentProvinceTypes(adjTypeNames
-                                .toArray(new String[adjTypeNames.size()]));
-                        provinceData.setAdjacentProvinceNames(adjProvinceNames
-                                .toArray(new String[adjProvinceNames.size()]));
+//                        final NodeList adjNodes = elProvince
+//                                .getElementsByTagName("ADJACENCY");
+//                        final List<String> adjTypeNames = IntStream
+//                                .range(0, adjNodes.getLength())
+//                                .mapToObj(j -> (Element) adjNodes.item(j))
+//                                .map(element -> element.getAttribute("type"))
+//                                .collect(Collectors.toList());
+//                        final List<String> adjProvinceNames = IntStream
+//                                .range(0, adjNodes.getLength())
+//                                .mapToObj(j -> (Element) adjNodes.item(j))
+//                                .map(element -> element.getAttribute("refs"))
+//                                .collect(Collectors.toList());
+//                        provinceData.setAdjacentProvinceTypes(adjTypeNames
+//                                .toArray(new String[adjTypeNames.size()]));
+//                        provinceData.setAdjacentProvinceNames(adjProvinceNames
+//                                .toArray(new String[adjProvinceNames.size()]));
 
                         return provinceData;
                     } catch (JAXBException e) {

@@ -53,7 +53,7 @@ public class ProvinceData {
     private boolean isConvoyableCoast;
     //    borders IDREFS #IMPLIED
 
-    private List<String> borders;
+    private List<String> borders = Collections.emptyList();
 
     @XmlElement(name = "UNIQUENAME")
     private List<UniqueName> uniqueNames = new ArrayList<>();
