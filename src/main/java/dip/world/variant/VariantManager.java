@@ -33,6 +33,7 @@ import dip.world.variant.parser.XMLVariantParser;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -88,7 +89,7 @@ public class VariantManager {
     private static final String SYMBOL_FILE_NAME = "symbols.xml";
 
     // class variables
-    private static VariantManager vm = null;
+    private static VariantManager vm = new VariantManager();
 
     // instance variables
     private final boolean isInWebstart;
@@ -113,7 +114,7 @@ public class VariantManager {
      * Loaded XML may be validated if the isValidating flag is set to true.
      */
     public static synchronized void init(final File[] searchPaths,
-                                         final boolean isValidating) throws javax.xml.parsers.ParserConfigurationException, NoVariantsException {
+                                         final boolean isValidating) throws ParserConfigurationException, NoVariantsException {
         final long ttime = System.currentTimeMillis();
         final long vptime = ttime;
         Log.println("VariantManager.init()");
@@ -122,18 +123,14 @@ public class VariantManager {
             throw new IllegalArgumentException();
         }
 
-        if (vm != null) {
-            // perform cleanup
-            vm.variantMap.clear();
-            vm.variants = Collections.emptyList();
-            vm.currentUCL = null;
-            vm.currentPackageURL = null;
+        // perform cleanup
+        vm.variantMap.clear();
+        vm.variants = Collections.emptyList();
+        vm.currentUCL = null;
+        vm.currentPackageURL = null;
+        vm.symbolPacks = Collections.emptyList();
+        vm.symbolMap.clear();
 
-            vm.symbolPacks = Collections.emptyList();
-            vm.symbolMap.clear();
-        }
-
-        vm = new VariantManager();
 
         // find plugins, create plugin loader
 
@@ -146,8 +143,7 @@ public class VariantManager {
                     "http://apache.org/xml/features/dom/defer-node-expansion",
                     Boolean.FALSE);
             dbf.setAttribute(
-                    "http://apache.org/xml/properties/input-buffer-size",
-                    new Integer(4096));
+                    "http://apache.org/xml/properties/input-buffer-size", 4096);
             dbf.setAttribute(
                     "http://apache.org/xml/features/nonvalidating/load-external-dtd",
                     Boolean.FALSE);
@@ -321,7 +317,6 @@ public class VariantManager {
      * sorted in alphabetic order.
      */
     public static synchronized Variant[] getVariants() {
-        checkVM();
 
         if (vm.variants.size() != vm.variantMap.size()) {
             // note that we need to avoid putting duplicates
@@ -348,7 +343,6 @@ public class VariantManager {
      * sorted in alphabetic order.
      */
     public static synchronized SymbolPack[] getSymbolPacks() {
-        checkVM();
 
         if (vm.symbolPacks.size() != vm.symbolMap.size()) {
             // avoid putting duplicates into the array.
@@ -377,7 +371,6 @@ public class VariantManager {
      */
     public static synchronized Variant getVariant(final String name,
                                                   final float version) {
-        checkVM();
         final MapRec mr = vm.variantMap.get(name.toLowerCase());
         if (mr != null) {
             return ((VRec) mr.get(version)).getVariant();
@@ -396,7 +389,6 @@ public class VariantManager {
      */
     public static synchronized SymbolPack getSymbolPack(final String name,
                                                         final float version) {
-        checkVM();
         if (name == null) {
             return null;
         }
@@ -482,7 +474,6 @@ public class VariantManager {
      * If the variant is not found, a zero-length array is returned.
      */
     public synchronized static float[] getVariantVersions(final String name) {
-        checkVM();
         final MapRec mr = vm.variantMap.get(name.toLowerCase());
         if (mr != null) {
             return (mr.getVersions());
@@ -497,7 +488,6 @@ public class VariantManager {
      */
     public synchronized static float[] getSymbolPackVersions(
             final String name) {
-        checkVM();
         final MapRec mr = vm.symbolMap.get(name.toLowerCase());
         if (mr != null) {
             return (mr.getVersions());
@@ -527,7 +517,6 @@ public class VariantManager {
     public static synchronized URL getResource(final URL packURL,
                                                final URI uri) {
         // ensure we have been initialized...
-        checkVM();
 
         // if we are in webstart, assume that this is a webstart jar.
         if (vm.isInWebstart) {
@@ -627,7 +616,6 @@ public class VariantManager {
     private static synchronized URL getResource(final MapRecObj mro,
                                                 final URI uri) {
         // ensure we have been initialized...
-        checkVM();
         assert (mro != null);
 
         if (uri == null) {
@@ -661,16 +649,6 @@ public class VariantManager {
 
         return null;
     }// getResource()
-
-
-    /**
-     * Ensures that we have initialized the VariantManager
-     */
-    private static void checkVM() {
-        if (vm == null) {
-            throw new IllegalArgumentException("not initialized");
-        }
-    }// checkVM()
 
 
     /**
