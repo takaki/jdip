@@ -28,12 +28,9 @@ import dip.world.variant.VariantManager;
 import dip.world.variant.data.BorderData;
 import dip.world.variant.data.ProvinceData;
 import dip.world.variant.data.Variant;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
+import javax.xml.bind.JAXB;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -57,46 +54,30 @@ import java.util.List;
  */
 public class XMLVariantParser implements VariantParser {
 
-    // instance variables
-    private Document doc;
-    private final DocumentBuilder docBuilder;
     private final List<Variant> variantList;
 
-
-    /** Create an XMLVariantParser */
-    /*
-    public XMLVariantParser(boolean isValidating)
-	throws ParserConfigurationException
-	{
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		dbf.setValidating(isValidating);
-		dbf.setCoalescing(false);
-		dbf.setIgnoringComments(true);
-
-		docBuilder = dbf.newDocumentBuilder();
-		docBuilder.setErrorHandler(new XMLErrorHandler());
-
-		provinceParser = new XMLProvinceParser(dbf);
-
-		variantList = new LinkedList();
-		AdjCache.init(provinceParser);
-	}// XMLVariantParser()
-	*/
+    @XmlRootElement(name = "VARIANTS")
+    public static class RootVariants {
+        @XmlElement(name = "DESCRIPTION")
+        private String description;
+        @XmlElement(name = "MAP_DEFINITION")
+        private List<MapDef> mapDefinitions;
+        @XmlElement(name = "VARIANT")
+        private List<Variant> variants;
+    }
 
     /**
      * Create an XMLVariantParser
      */
     public XMLVariantParser(
             final DocumentBuilderFactory dbf) throws ParserConfigurationException {
-        docBuilder = dbf.newDocumentBuilder();
+        final DocumentBuilder docBuilder = dbf.newDocumentBuilder();
         docBuilder.setErrorHandler(new XMLErrorHandler());
         FastEntityResolver.attach(docBuilder);
         final XMLProvinceParser provinceParser = new XMLProvinceParser(dbf);
-
         variantList = new LinkedList<>();
         AdjCache.init(provinceParser);
     }// XMLVariantParser()
-
 
     /**
      * Parse the given input stream; parsed data available via <code>getVariants()</code>
@@ -106,30 +87,21 @@ public class XMLVariantParser implements VariantParser {
      */
     public void parse(final InputStream is,
                       final URL variantPackageURL) throws IOException, SAXException {
+        if (variantPackageURL == null) {
+            throw new IllegalArgumentException();
+        }
+
         Log.println("XMLVariantParser: Parsing: ", variantPackageURL);
         final long time = System.currentTimeMillis();
 
         // cleanup cache (very important to remove references!)
         AdjCache.clear();
         variantList.clear();
-
-        if (variantPackageURL == null) {
-            throw new IllegalArgumentException();
-        }
-
         AdjCache.setVariantPackageURL(variantPackageURL);
-        doc = docBuilder.parse(is);
-        try {
-            // find the root element (VARIANTS), and all VARIANT elements underneath.
-            final Element root = doc.getDocumentElement();
-            final Unmarshaller rootUnmarshaller = JAXBContext
-                    .newInstance(RootVariants.class).createUnmarshaller();
-            final RootVariants rootVariants = (RootVariants) rootUnmarshaller
-                    .unmarshal(root);
-            variantList.addAll(rootVariants.variants);
-        } catch (final JAXBException e) {
-            throw new IllegalArgumentException(e);
-        }
+
+        final RootVariants rootVariants = JAXB
+                .unmarshal(is, RootVariants.class);
+        variantList.addAll(rootVariants.variants);
         Log.printTimed(time, "   time: ");
     }// parse()
 
@@ -153,17 +125,6 @@ public class XMLVariantParser implements VariantParser {
     public Variant[] getVariants() {
         return variantList.toArray(new Variant[variantList.size()]);
     }// getVariants()
-
-
-    @XmlRootElement(name = "VARIANTS")
-    public static class RootVariants {
-        @XmlElement(name = "DESCRIPTION")
-        private String description;
-        @XmlElement(name = "MAP_DEFINITION")
-        private List<MapDef> mapDefinitions;
-        @XmlElement(name = "VARIANT")
-        private List<Variant> variants;
-    }
 
 
     /**
