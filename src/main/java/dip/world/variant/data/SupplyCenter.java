@@ -22,16 +22,19 @@
 //
 package dip.world.variant.data;
 
-/**
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 
-
-
-
- */
+@XmlRootElement(name="SUPPLYCENTER")
 public class SupplyCenter {
-    private String provinceName;
+
+    @XmlAttribute(name = "province")
+    private String province;
+    @XmlAttribute(name = "homepower")
     private String powerName;
-    private String ownerName;
+    @XmlAttribute(name = "owner")
+    private String owner;
 
     /**
      * Get name of the home supply center; if "none" if none, "any" if any.
@@ -52,14 +55,14 @@ public class SupplyCenter {
      * Get the province name of this supply center.
      */
     public String getProvinceName() {
-        return provinceName;
+        return province;
     }
 
     /**
      * Set the province name of this supply center.
      */
     public void setProvinceName(final String value) {
-        provinceName = value;
+        province = value;
     }
 
 
@@ -67,7 +70,7 @@ public class SupplyCenter {
      * Get the name of the Power that owns this supply center.
      */
     public String getOwnerName() {
-        return ownerName;
+        return owner;
     }
 
     /**
@@ -80,17 +83,24 @@ public class SupplyCenter {
             throw new IllegalArgumentException();
         }
 
-        ownerName = value;
+        owner = value;
     }// setOwnerName()
 
+    @SuppressWarnings("unused")
+    void afterUnmarshal(final Unmarshaller unmarshaller,
+                        final Object parent) {
+        if ("any".equalsIgnoreCase(owner)) {
+            throw new IllegalArgumentException();
+        }
+    }
     /**
      * For debugging only!
      */
     @Override
     public String toString() {
         return String.join("", getClass().getName(), "[", "provinceName=",
-                provinceName, ",powerName=", powerName, ",ownerName=",
-                ownerName, "]");
+                province, ",powerName=", powerName, ",ownerName=",
+                owner, "]");
     }// toString()
 }// nested class SupplyCenter
 

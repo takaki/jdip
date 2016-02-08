@@ -24,6 +24,11 @@ package dip.world;
 
 import dip.misc.Utils;
 import dip.order.OrderException;
+import dip.world.Unit.Type;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -58,7 +63,7 @@ public class Location implements Cloneable {
     /**
      * Create a Location object
      */
-    public Location(Province province, Coast coast) {
+    public Location(final Province province, final Coast coast) {
         if (province == null || coast == null) {
             throw new IllegalArgumentException("null parameter(s)");
         }
@@ -66,6 +71,10 @@ public class Location implements Cloneable {
         this.province = province;
         this.coast = coast;
     }// getLocation()
+
+    public Location(final Location location) {
+        this(location.province, location.coast);
+    }
 
 
     /**
@@ -96,7 +105,7 @@ public class Location implements Cloneable {
      * the given province. Note that "Touching" does not
      * nescessarily imply connectedness (adjacency).
      */
-    public boolean isTouching(Province destProvince) {
+    public boolean isTouching(final Province destProvince) {
         return province.isTouching(destProvince);
     }// isTouching()
 
@@ -108,8 +117,8 @@ public class Location implements Cloneable {
      * only uses the Province information supplied; thus it does not
      * check the 'destination' coast.
      */
-    public boolean isAdjacent(Province destProvince) {
-        return province.isAdjacent(this.coast, destProvince);
+    public boolean isAdjacent(final Province destProvince) {
+        return province.isAdjacent(coast, destProvince);
     }// isAdjacent()
 
 
@@ -117,8 +126,8 @@ public class Location implements Cloneable {
      * Determines if the two locations are adjacent (connected),
      * taking coasts into account as well.
      */
-    public boolean isAdjacent(Location location) {
-        return province.isAdjacent(this.coast, location);
+    public boolean isAdjacent(final Location location) {
+        return province.isAdjacent(coast, location);
     }// isAdjacent()
 
 
@@ -126,16 +135,16 @@ public class Location implements Cloneable {
      * Returns <code>true</code> if the Province in both locations
      * is equal, ignoring the coasts.
      */
-    public boolean isProvinceEqual(Location location) {
-        return (this.province == location.province);
+    public boolean isProvinceEqual(final Location location) {
+        return Objects.equals(province, location.province);
     }// isProvinceEqual()
 
     /**
      * Returns <code>true</code> if the Province in this location
      * is equal to the province argument; coasts are ignored.
      */
-    public boolean isProvinceEqual(Province province) {
-        return (this.province == province);
+    public boolean isProvinceEqual(final Province province) {
+        return Objects.equals(this.province, province);
     }// isProvinceEqual()
 
 
@@ -144,19 +153,22 @@ public class Location implements Cloneable {
      * implementation, in that a constructor is invoked
      * for performance reasons, rather than using super.clone().
      */
-    public Object clone() {
-        return new Location(province, coast);
+    @Override
+    public Location clone() {
+        return new Location(this);
     }// clone()
 
     /**
      * Determines if two Locations are equal.
      */
+    @Override
     public boolean equals(final Object obj) {
         if (obj == this) {
             return true;
-        } else if (obj instanceof Location) {
-            Location loc = (Location) obj;
-            return (province.equals(loc.province) && coast.equals(loc.coast));
+        }
+        if (obj instanceof Location) {
+            final Location loc = (Location) obj;
+            return province.equals(loc.province) && coast == loc.coast;
         }
 
         return false;
@@ -166,8 +178,9 @@ public class Location implements Cloneable {
     /**
      * Hashcode for Location.
      */
+    @Override
     public int hashCode() {
-        return (37 * province.hashCode() + coast.hashCode());
+        return Objects.hash(province, coast);
     }// hashCode()
 
 
@@ -177,16 +190,18 @@ public class Location implements Cloneable {
      * any coast (including another undefined coast). If coasts are defined,
      * they must match to return true.
      */
-    public boolean equalsLoosely(Location loc) {
-        return ((province == loc.province) && (coast == loc.coast || coast == Coast.UNDEFINED || loc.coast == Coast.UNDEFINED));
+    public boolean equalsLoosely(final Location loc) {
+        return Objects.equals(province,
+                loc.province) && (coast == loc.coast || coast == Coast.UNDEFINED || loc.coast == Coast.UNDEFINED);
     }// equalsLoosely()
 
 
     /**
      * Returns the short Location name (as per appendBrief()) as a String
      */
+    @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer(8);
+        final StringBuffer sb = new StringBuffer(8);
         appendBrief(sb);
         return sb.toString();
     }// toString()
@@ -195,7 +210,7 @@ public class Location implements Cloneable {
      * Returns the full (long) Locatin name (as per appendFull()) as a String
      */
     public String toLongString() {
-        StringBuffer sb = new StringBuffer(64);
+        final StringBuffer sb = new StringBuffer(64);
         appendFull(sb);
         return sb.toString();
     }// toString()
@@ -204,7 +219,7 @@ public class Location implements Cloneable {
     /**
      * Append the brief Location name to the StringBuffer (e.g., spa/sc)
      */
-    public void appendBrief(StringBuffer sb) {
+    public void appendBrief(final StringBuffer sb) {
         sb.append(province.getShortName());
         if (coast.isDirectional()) {
             sb.append('/');
@@ -216,7 +231,7 @@ public class Location implements Cloneable {
     /**
      * Append the full Location name to the StringBuffer. (e.g., Spain/South Coast)
      */
-    public void appendFull(StringBuffer sb) {
+    public void appendFull(final StringBuffer sb) {
         sb.append(province);
         if (coast.isDirectional()) {
             sb.append('(');
@@ -269,17 +284,17 @@ public class Location implements Cloneable {
      * or the same Location object, if no changes were made.
      * </pre>
      */
-    public Location getValidatedWithMove(Unit.Type unitType,
-                                         Location from) throws OrderException {
+    public Location getValidatedWithMove(final Type unitType,
+                                         final Location from) throws OrderException {
         // simple validate
-        Location newLoc = getValidated(unitType);
-        Coast newCoast = newLoc.getCoast();
+        final Location newLoc = getValidated(unitType);
+        Coast newCoast = newLoc.coast;
 
         // DO NOT use internal 'coast' and 'province' variables past here
         //
         // extended validation, if coast is undefined.
-        if (unitType == Unit.Type.FLEET && newCoast == Coast.UNDEFINED && newLoc
-                .getProvince().isMultiCoastal()) {
+        if (unitType == Type.FLEET && newCoast == Coast.UNDEFINED && newLoc.province
+                .isMultiCoastal()) {
             int adjCoasts = 0;
             Coast toCoast = null;
 
@@ -288,12 +303,12 @@ public class Location implements Cloneable {
             // then we should throw an exception
             // (this prevents iterating completely thru all coasts each time)
             //
-            Location[] locs = from.getProvince()
-                    .getAdjacentLocations(from.getCoast());
-            for (int i = 0; i < locs.length; i++) {
-                if (locs[i].getProvince() == newLoc.getProvince()) {
+            final List<Location> locs = Arrays
+                    .asList(from.province.getAdjacentLocations(from.coast));
+            for (Location loc : locs) {
+                if (Objects.equals(loc.province, newLoc.province)) {
                     adjCoasts++;
-                    toCoast = locs[i].getCoast();
+                    toCoast = loc.coast;
                 }
             }
 
@@ -304,12 +319,12 @@ public class Location implements Cloneable {
             } else {
                 throw new OrderException(
                         Utils.getLocalString(LOC_VWM_MULTICOAST,
-                                newLoc.getProvince().getFullName()));
+                                newLoc.province.getFullName()));
             }
         }
 
-        return ((newCoast == newLoc.getCoast()) ? newLoc : new Location(
-                newLoc.getProvince(), newCoast));
+        return newCoast == newLoc.coast ? newLoc : new Location(newLoc.province,
+                newCoast);
     }// getValidatedWithMove()
 
 
@@ -359,18 +374,17 @@ public class Location implements Cloneable {
      * or the same Location object, if no changes were made.
      * </pre>
      */
-    public Location getValidatedAndDerived(Unit.Type unitType,
-                                           Unit existingUnit) throws OrderException {
+    public Location getValidatedAndDerived(final Type unitType,
+                                           final Unit existingUnit) throws OrderException {
         // simple validate
-        Location newLoc = getValidated(unitType);
-        Coast newCoast = newLoc.getCoast();
+        final Location newLoc = getValidated(unitType);
+        Coast newCoast = newLoc.coast;
 
         // DO NOT use internal 'coast' and 'province' variables past here
         //
         // extended validation; only for Fleets
-        if (unitType.equals(Unit.Type.FLEET) && newLoc.getProvince()
-                .isMultiCoastal()) {
-            String provinceName = newLoc.getProvince().getFullName();
+        if (unitType == Type.FLEET && newLoc.province.isMultiCoastal()) {
+            final String provinceName = newLoc.province.getFullName();
 
             if (existingUnit == null) {
                 throw new OrderException(
@@ -399,9 +413,9 @@ public class Location implements Cloneable {
         }
 
         // Postcondition: Coast should NOT be undefined at this point.
-        assert (newCoast != Coast.UNDEFINED);
-        return ((newCoast == newLoc.getCoast()) ? newLoc : new Location(
-                newLoc.getProvince(), newCoast));
+        assert newCoast != Coast.UNDEFINED;
+        return newCoast == newLoc.coast ? newLoc : new Location(newLoc.province,
+                newCoast);
     }// getValidAndDerived()
 
 
@@ -413,13 +427,13 @@ public class Location implements Cloneable {
      * F spain/sc.
      */
     public Location getValidatedSetup(
-            Unit.Type unitType) throws OrderException {
-        Location newLoc = getValidated(unitType);
+            final Type unitType) throws OrderException {
+        final Location newLoc = getValidated(unitType);
 
         // DO NOT use internal 'coast' and 'province' variables past here
         //
-        if (newLoc.getCoast() == Coast.UNDEFINED) {
-            String provinceName = newLoc.getProvince().getFullName();
+        if (newLoc.coast == Coast.UNDEFINED) {
+            final String provinceName = newLoc.province.getFullName();
             throw new OrderException(
                     Utils.getLocalString(LOC_VS_UNDEFCOAST, provinceName));
         }
@@ -472,38 +486,37 @@ public class Location implements Cloneable {
      *
      * </pre>
      */
-    public Location getValidated(Unit.Type unitType) throws OrderException {
+    public Location getValidated(final Type unitType) throws OrderException {
         // pre-conditions
-        if (unitType == Unit.Type.UNDEFINED) {
+        if (unitType == Type.UNDEFINED) {
             throw new IllegalArgumentException(
                     "Cannot validate location with an undefined unit type.");
         }
 
-        String provinceName = province.getFullName();
-        Coast newCoast = getCoast();
+        final String provinceName = province.getFullName();
+        Coast newCoast = coast;
 
-        if (unitType == Unit.Type.ARMY) {
+        if (unitType == Type.ARMY) {
             if (province.isSea()) {
                 throw new OrderException(
                         Utils.getLocalString(LOC_V_ARMY_IN_SEA, provinceName));
             }
-			
+
 			/* FORCE coast to be Coast.LAND; do not perform this check; too strict
-			if(coast.isDirectional())
+            if(coast.isDirectional())
 			{
 				throw new OrderException("An Army cannot be located in a specific coast.");
 			}
 			*/
 
             newCoast = Coast.LAND;
-        } else if (unitType == Unit.Type.FLEET) {
+        } else if (unitType == Type.FLEET) {
             if (province.isLandLocked()) {
                 throw new OrderException(
                         Utils.getLocalString(LOC_V_FLEET_LANDLOCKED,
                                 provinceName));
             } else if (province.isMultiCoastal()) {
-                if (!province
-                        .isCoastValid(coast) && !(coast == Coast.UNDEFINED)) {
+                if (!province.isCoastValid(coast) && coast != Coast.UNDEFINED) {
                     throw new OrderException(
                             Utils.getLocalString(LOC_V_COAST_BAD, provinceName,
                                     coast));
@@ -517,16 +530,13 @@ public class Location implements Cloneable {
 
                 newCoast = Coast.SINGLE;
             }
-        } else if (unitType == Unit.Type.WING) {
+        } else if (unitType == Type.WING) {
             newCoast = Coast.WING;
         }
 
         // return *this if no change
-        return ((newCoast == getCoast()) ? this : new Location(getProvince(),
-                newCoast));
+        return newCoast == coast ? this : new Location(province, newCoast);
     }// getValidated()
 
 
 }// class Location
-
-

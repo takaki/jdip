@@ -33,6 +33,7 @@ import dip.world.variant.parser.XMLVariantParser;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPathExpressionException;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -159,7 +160,7 @@ public class VariantManager {
         dbf.setIgnoringComments(true);
 
         // setup variant parser
-        final XMLVariantParser variantParser = new XMLVariantParser(dbf);
+        final XMLVariantParser variantParser = new XMLVariantParser();
 
         // for each plugin, attempt to find the "variants.xml" file inside.
         // if it does not exist, we will not load the file. If it does, we will parse it,
@@ -267,7 +268,7 @@ public class VariantManager {
                 } catch (final IOException e) {
                     // display error dialog
                     ErrorDialog.displayFileIO(null, e, pluginURL.toString());
-                } catch (final SAXException e) {
+                } catch (final SAXException | XPathExpressionException e) {
                     // display error dialog
                     ErrorDialog.displayGeneral(null, e);
                 }
@@ -292,7 +293,7 @@ public class VariantManager {
                                 // display error dialog
                                 ErrorDialog.displayFileIO(null, e,
                                         symbolURL.toString());
-                            } catch (final org.xml.sax.SAXException e) {
+                            } catch (final SAXException | XPathExpressionException e) {
                                 // display error dialog
                                 ErrorDialog.displayGeneral(null, e);
                             }

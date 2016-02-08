@@ -25,20 +25,28 @@ package dip.world.variant.data;
 import dip.world.Coast;
 import dip.world.Unit.Type;
 
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * Sets the Initial State (position) for a province.
  */
+@XmlRootElement(name = "INITIALSTATE")
 public class InitialState {
-    private String provinceName;
+    @XmlAttribute(required = true)
+    private String province;
+    @XmlAttribute(name = "power", required = true)
     private String power;
+    @XmlAttribute(required = true)
     private Type unit;
-    private Coast coast;
+    @XmlAttribute(name = "unitcoast")
+    private Coast unitcoast = Coast.UNDEFINED;
 
     /**
      * Name of province to which this InitialState refers.
      */
     public String getProvinceName() {
-        return provinceName;
+        return province;
     }
 
     /**
@@ -59,14 +67,14 @@ public class InitialState {
      * Coast of unit
      */
     public Coast getCoast() {
-        return coast;
+        return unitcoast;
     }
 
     /**
      * Set the Province name
      */
     public void setProvinceName(String value) {
-        provinceName = value;
+        province = value;
     }
 
     /**
@@ -87,7 +95,7 @@ public class InitialState {
      * Sets the coast for the unit.
      */
     public void setCoast(Coast value) {
-        coast = value;
+        unitcoast = value;
     }
 
 
@@ -96,9 +104,10 @@ public class InitialState {
      */
     @Override
     public String toString() {
-        return String.join("", getClass().getName(), "[", "provinceName=",
-                provinceName, ",power=", power, ",unit=", unit.toString(),
-                ",coast=", coast.toString(), "]");
+        return String
+                .join("", getClass().getName(), "[", "provinceName=", province,
+                        ",power=", power, ",unit=", unit.toString(), ",coast=",
+                        unitcoast.toString(), "]");
     }// toString()
 }// nested class InitialState
 

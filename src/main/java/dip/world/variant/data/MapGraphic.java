@@ -22,21 +22,33 @@
 //
 package dip.world.variant.data;
 
+import dip.world.variant.parser.XMLVariantParser.MapDef;
+import org.xml.sax.SAXException;
+
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.function.Function;
 
-/**
-
-
- */
+@XmlRootElement
 public class MapGraphic {
-    private final String name;
-    private final URI uri;
-    private final boolean isDefault;
-    private final String desc;
-    private final URI thumbURI;
-    private final String prefSPName;
+    @XmlAttribute(name = "default")
+    private boolean isDefault;
+    @XmlAttribute(name = "preferredUnitStyle")
+    private String prefSPName;
+
+    @XmlIDREF
+    @XmlAttribute(name = "ref")
+    private MapDef mapDef;
+
+    private String name;
+    private URI uri;
+    private String desc;
+    private URI thumbURI;
 
 
     /**
@@ -45,6 +57,23 @@ public class MapGraphic {
      * If the preferred Symbol Pack Name (prefSPName) is an empty string, it will
      * be converted to a null String.
      */
+    public MapGraphic() {
+    }
+
+    void afterUnmarshal(final Unmarshaller unmarshaller,
+                        final Object parent) throws IOException, SAXException {
+        // create the MapGraphic object
+        try {
+            name = mapDef.getTitle();
+            uri = new URI(mapDef.getMapURI());
+            desc = mapDef.getDescription();
+            thumbURI = new URI(mapDef.getThumbURI());
+        } catch (final URISyntaxException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+
     public MapGraphic(final String uri, final boolean isDefault,
                       final String name, final String description,
                       final String thumbURI, final String prefSPName) {
@@ -124,6 +153,7 @@ public class MapGraphic {
                         name, ",desc=", desc, ",thumbURI=", thumbURI.toString(),
                         "]");
     }// toString()
+
 }// nested class MapGraphic
 
 

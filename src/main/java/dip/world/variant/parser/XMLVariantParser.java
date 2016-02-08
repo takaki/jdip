@@ -24,138 +24,57 @@ package dip.world.variant.parser;
 
 import dip.misc.LRUCache;
 import dip.misc.Log;
-import dip.misc.Utils;
-import dip.world.Coast;
-import dip.world.Phase;
-import dip.world.Power;
-import dip.world.Unit.Type;
 import dip.world.variant.VariantManager;
-import dip.world.variant.data.*;
-import dip.world.variant.data.Variant.NameValuePair;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import dip.world.variant.data.BorderData;
+import dip.world.variant.data.ProvinceData;
+import dip.world.variant.data.Variant;
 import org.xml.sax.SAXException;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
+import javax.xml.bind.JAXB;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 
 /**
  * Parses an XML Variant description.
  */
 public class XMLVariantParser implements VariantParser {
-    // XML Element constants
-    public static final String EL_VARIANTS = "VARIANTS";
-    public static final String EL_VARIANT = "VARIANT";
-    public static final String EL_DESCRIPTION = "DESCRIPTION";
-    public static final String EL_MAP = "MAP";
-    public static final String EL_STARTINGTIME = "STARTINGTIME";
-    public static final String EL_INITIALSTATE = "INITIALSTATE";
-    public static final String EL_SUPPLYCENTER = "SUPPLYCENTER";
-    public static final String EL_POWER = "POWER";
-    public static final String EL_MAP_DEFINITION = "MAP_DEFINITION";
-    public static final String EL_MAP_GRAPHIC = "MAP_GRAPHIC";
-    public static final String EL_VICTORYCONDITIONS = "VICTORYCONDITIONS";
-    public static final String EL_GAME_LENGTH = "GAME_LENGTH";
-    public static final String EL_YEARS_WITHOUT_SC_CAPTURE = "YEARS_WITHOUT_SC_CAPTURE";
-    public static final String EL_WINNING_SUPPLY_CENTERS = "WINNING_SUPPLY_CENTERS";
-    public static final String EL_RULEOPTIONS = "RULEOPTIONS";
-    public static final String EL_RULEOPTION = "RULEOPTION";
 
+    private final List<Variant> variantList = new LinkedList<>();
 
-    // XML Attribute constants
-    public static final String ATT_ALIASES = "aliases";
-    public static final String ATT_VERSION = "version";
-    public static final String ATT_URI = "URI";
-    public static final String ATT_DEFAULT = "default";
-    public static final String ATT_TITLE = "title";
-    public static final String ATT_DESCRIPTION = "description";
-    public static final String ATT_THUMBURI = "thumbURI";
-    public static final String ATT_ADJACENCYURI = "adjacencyURI";
-    public static final String ATT_NAME = "name";
-    public static final String ATT_ACTIVE = "active";
-    public static final String ATT_ADJECTIVE = "adjective";
-    public static final String ATT_ALTNAMES = "altnames";
-    public static final String ATT_TURN = "turn";
-    public static final String ATT_VALUE = "value";
-    public static final String ATT_PROVINCE = "province";
-    public static final String ATT_HOMEPOWER = "homepower";
-    public static final String ATT_OWNER = "owner";
-    public static final String ATT_POWER = "power";
-    public static final String ATT_UNIT = "unit";
-    public static final String ATT_UNITCOAST = "unitcoast";
-    public static final String ATT_ALLOW_BC_YEARS = "allowBCYears";
-    public static final String ATT_PREFERRED_UNIT_STYLE = "preferredUnitStyle";
-    public static final String ATT_ID = "id";
-    public static final String ATT_REF = "ref";
-
-
-    // il8n error message constants
-    private static final String ERR_NO_ELEMENT = "XMLVariantParser.noelement";
-
-    // instance variables
-    private Document doc;
-    private final DocumentBuilder docBuilder;
-    private final List<Variant> variantList;
-
-
-    /** Create an XMLVariantParser */
-    /*
-    public XMLVariantParser(boolean isValidating)
-	throws ParserConfigurationException
-	{
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-		dbf.setValidating(isValidating);
-		dbf.setCoalescing(false);
-		dbf.setIgnoringComments(true);
-		
-		docBuilder = dbf.newDocumentBuilder();
-		docBuilder.setErrorHandler(new XMLErrorHandler());
-		
-		provinceParser = new XMLProvinceParser(dbf);
-		
-		variantList = new LinkedList();
-		AdjCache.init(provinceParser);
-	}// XMLVariantParser()
-	*/
+    @XmlRootElement(name = "VARIANTS")
+    public static class RootVariants {
+        @XmlElement(name = "DESCRIPTION")
+        private String description;
+        @XmlElement(name = "MAP_DEFINITION")
+        private List<MapDef> mapDefinitions;
+        @XmlElement(name = "VARIANT")
+        private List<Variant> variants;
+    }
 
     /**
      * Create an XMLVariantParser
      */
-    public XMLVariantParser(
-            final DocumentBuilderFactory dbf) throws ParserConfigurationException {
-        docBuilder = dbf.newDocumentBuilder();
-        docBuilder.setErrorHandler(new XMLErrorHandler());
-        FastEntityResolver.attach(docBuilder);
-        final XMLProvinceParser provinceParser = new XMLProvinceParser(dbf);
-
-        variantList = new LinkedList<>();
-        AdjCache.init(provinceParser);
+    @Deprecated
+    public XMLVariantParser(final DocumentBuilderFactory dbf) {
+        this();
     }// XMLVariantParser()
 
+    public XMLVariantParser() {
+        AdjCache.init(new XMLProvinceParser());
+    }// XMLVariantParser()
 
     /**
      * Parse the given input stream; parsed data available via <code>getVariants()</code>
@@ -165,24 +84,21 @@ public class XMLVariantParser implements VariantParser {
      */
     public void parse(final InputStream is,
                       final URL variantPackageURL) throws IOException, SAXException {
+        if (variantPackageURL == null) {
+            throw new IllegalArgumentException();
+        }
+
         Log.println("XMLVariantParser: Parsing: ", variantPackageURL);
         final long time = System.currentTimeMillis();
 
         // cleanup cache (very important to remove references!)
         AdjCache.clear();
         variantList.clear();
-
-        if (variantPackageURL == null) {
-            throw new IllegalArgumentException();
-        }
-
         AdjCache.setVariantPackageURL(variantPackageURL);
-        doc = docBuilder.parse(is);
-        try {
-            procVariants();
-        } catch (final XPathExpressionException | JAXBException e) {
-            throw new IllegalArgumentException(e);
-        }
+
+        final RootVariants rootVariants = JAXB
+                .unmarshal(is, RootVariants.class);
+        variantList.addAll(rootVariants.variants);
         Log.printTimed(time, "   time: ");
     }// parse()
 
@@ -209,288 +125,6 @@ public class XMLVariantParser implements VariantParser {
 
 
     /**
-     * Process the Variant list description file
-     */
-    private void procVariants() throws XPathExpressionException, JAXBException {
-        final XPath xpath = XPathFactory.newInstance().newXPath();
-
-
-        // find the root element (VARIANTS), and all VARIANT elements underneath.
-        final Element root = doc.getDocumentElement();
-
-        // get map definitions (at least one, under VARIANT)
-        final NodeList mapDefEls = (NodeList) xpath
-                .evaluate(EL_MAP_DEFINITION, root, XPathConstants.NODESET);
-
-        // setup map definition ID hashmap
-        final Unmarshaller mapDefUnmarshaller = JAXBContext
-                .newInstance(MapDef.class).createUnmarshaller();
-        final Map<String, MapDef> mapDefTable = IntStream
-                .range(0, mapDefEls.getLength())
-                .mapToObj(i -> (Element) mapDefEls.item(i)).map(elMapDef -> {
-                    try {
-                        return (MapDef) mapDefUnmarshaller.unmarshal(elMapDef);
-                    } catch (JAXBException e) {
-                        throw new IllegalArgumentException(e);
-                    }
-
-                })
-                .collect(Collectors.toMap(MapDef::getID, Function.identity()));
-
-        // search for variant data
-        final NodeList variantElements = (NodeList) xpath
-                .evaluate(EL_VARIANT, root, XPathConstants.NODESET);
-        IntStream.range(0, variantElements.getLength())
-                .mapToObj(i -> (Element) variantElements.item(i))
-                .forEach(elVariant -> {
-                    final Variant variant = new Variant();
-
-                    // VARIANT attributes
-                    variant.setName(elVariant.getAttribute(ATT_NAME));
-                    variant.setDefault(Boolean.valueOf(
-                            elVariant.getAttribute(ATT_DEFAULT)));
-                    variant.setVersion(
-                            parseFloat(elVariant.getAttribute(ATT_VERSION)));
-                    variant.setAliases(Utils.parseCSV(
-                            elVariant.getAttribute(ATT_ALIASES)));
-
-                    // description
-                    final Element elDescription = getSingleElementByName(
-                            elVariant, EL_DESCRIPTION);
-                    checkElement(elDescription, EL_DESCRIPTION);
-                    final Node text = elDescription.getFirstChild();
-                    variant.setDescription(text.getNodeValue());
-
-                    // starting time
-                    final Element elStartingtime = getSingleElementByName(
-                            elVariant, EL_STARTINGTIME);
-                    checkElement(elStartingtime, EL_STARTINGTIME);
-                    variant.setStartingPhase(
-                            Phase.parse(elStartingtime.getAttribute(ATT_TURN)));
-                    variant.setBCYearsAllowed(Boolean.valueOf(
-                            elStartingtime.getAttribute(ATT_ALLOW_BC_YEARS)));
-
-                    // if start is BC, and BC years are not allowed, then BC years ARE allowed.
-                    if (variant.getStartingPhase().getYear() < 0) {
-                        variant.setBCYearsAllowed(true);
-                    }
-
-                    // victory conditions (single, with single subitems)
-                    final Element elVictoryconditions = getSingleElementByName(
-                            elVariant, EL_VICTORYCONDITIONS);
-                    checkElement(elVictoryconditions, EL_VICTORYCONDITIONS);
-                    Optional.ofNullable(
-                            getSingleElementByName(elVictoryconditions,
-                                    EL_WINNING_SUPPLY_CENTERS))
-                            .ifPresent(el -> {
-                                variant.setNumSCForVictory(
-                                        parseInt(el.getAttribute(ATT_VALUE)));
-                            });
-
-                    Optional.ofNullable(
-                            getSingleElementByName(elVictoryconditions,
-                                    EL_YEARS_WITHOUT_SC_CAPTURE))
-                            .ifPresent(el -> {
-                                variant.setMaxYearsNoSCChange(
-                                        parseInt(el.getAttribute(ATT_VALUE)));
-                            });
-
-                    Optional.ofNullable(
-                            getSingleElementByName(elVictoryconditions,
-                                    EL_GAME_LENGTH)).ifPresent(el -> {
-                        variant.setMaxGameTimeYears(
-                                parseInt(el.getAttribute(ATT_VALUE)));
-                    });
-
-
-                    // powers (multiple)
-                    variant.setPowers(makePowers(elVariant));
-
-                    // supply centers (multiple)
-                    variant.setSupplyCenters(makeSupplyCenters(elVariant));
-
-                    // initial state (multiple)
-                    variant.setInitialStates(makeInitialStates(elVariant));
-
-                    // MAP element and children
-                    final Element elMap = getSingleElementByName(elVariant,
-                            EL_MAP);
-                    // MAP adjacency URI; process it using ProvinceData parser
-                    try {
-                        final URI adjacencyURI = new URI(
-                                elMap.getAttribute(ATT_ADJACENCYURI));
-                        variant.setProvinceData(
-                                AdjCache.getProvinceData(adjacencyURI));
-                        variant.setBorderData(
-                                AdjCache.getBorderData(adjacencyURI));
-                    } catch (final URISyntaxException | SAXException | IOException e) {
-                        throw new IllegalArgumentException(e);
-                    }
-
-                    // MAP_GRAPHIC element (multiple)
-                    final NodeList nodes = elMap
-                            .getElementsByTagName(EL_MAP_GRAPHIC);
-                    variant.setMapGraphics(makeMapGraphic(mapDefTable, nodes));
-
-                    // rule options (if any have been set)
-                    // this element is optional.
-                    variant.setRuleOptionNVPs(makeRuleOptionNVPs(elVariant));
-
-                    // add variant to list of variants
-                    variantList.add(variant);
-                });// for(i)
-    }// procVariants()
-
-    private static List<Power> makePowers(final Element elVariant) {
-        final NodeList nodes = elVariant.getElementsByTagName(EL_POWER);
-        return IntStream.range(0, nodes.getLength())
-                .mapToObj(j -> (Element) nodes.item(j)).map(element -> {
-                    final String name = element.getAttribute(ATT_NAME);
-                    final boolean isActive = Boolean
-                            .valueOf(element.getAttribute(ATT_ACTIVE));
-                    final String adjective = element
-                            .getAttribute(ATT_ADJECTIVE);
-                    final List<String> altNames = Arrays.asList(Utils
-                            .parseCSVXE(element.getAttribute(ATT_ALTNAMES)));
-
-                    final List<String> names = new ArrayList<>();
-                    names.add(name);
-                    names.addAll(altNames);
-
-                    return new Power(names.toArray(new String[names.size()]),
-                            adjective, isActive);
-                }).collect(Collectors.toList());
-    }
-
-    private static List<SupplyCenter> makeSupplyCenters(
-            final Element elVariant) {
-        final NodeList nodes = elVariant.getElementsByTagName(EL_SUPPLYCENTER);
-        return IntStream.range(0, nodes.getLength())
-                .mapToObj(j -> (Element) nodes.item(j)).map(element -> {
-                    final SupplyCenter supplyCenter = new SupplyCenter();
-                    supplyCenter.setProvinceName(
-                            element.getAttribute(ATT_PROVINCE));
-                    supplyCenter.setHomePowerName(
-                            element.getAttribute(ATT_HOMEPOWER));
-                    supplyCenter.setOwnerName(element.getAttribute(ATT_OWNER));
-                    return supplyCenter;
-                }).collect(Collectors.toList());
-    }
-
-    private static List<InitialState> makeInitialStates(
-            final Element elVariant) {
-        final NodeList nodes = elVariant.getElementsByTagName(EL_INITIALSTATE);
-        return IntStream.range(0, nodes.getLength())
-                .mapToObj(j -> (Element) nodes.item(j)).map(element -> {
-                    final InitialState initialState = new InitialState();
-                    initialState.setProvinceName(
-                            element.getAttribute(ATT_PROVINCE));
-                    initialState.setPowerName(element.getAttribute(ATT_POWER));
-                    initialState.setUnitType(
-                            Type.parse(element.getAttribute(ATT_UNIT)));
-                    initialState.setCoast(
-                            Coast.parse(element.getAttribute(ATT_UNITCOAST)));
-                    return initialState;
-                }).collect(Collectors.toList());
-    }
-
-    private List<MapGraphic> makeMapGraphic(
-            final Map<String, MapDef> mapDefTable, final NodeList nodes) {
-        return IntStream.range(0, nodes.getLength())
-                .mapToObj(j -> (Element) nodes.item(j)).map(mgElement -> {
-                    final String refID = mgElement.getAttribute(ATT_REF);
-                    final boolean isDefault = Boolean
-                            .valueOf(mgElement.getAttribute(ATT_DEFAULT));
-                    final String preferredUnitStyle = mgElement
-                            .getAttribute(ATT_PREFERRED_UNIT_STYLE);
-
-                    // lookup; if we didn't find it, throw an exception
-                    final MapDef md = mapDefTable.get(refID);
-                    if (md == null) {
-                        throw new IllegalArgumentException(
-                                "MAP_GRAPHIC refers to unknown ID: \"" + refID + "\"");
-                    }
-
-                    // create the MapGraphic object
-                    return new MapGraphic(md.getMapURI(), isDefault,
-                            md.getTitle(), md.getDescription(),
-                            md.getThumbURI(),
-                            preferredUnitStyle != null && preferredUnitStyle
-                                    .isEmpty() ? md
-                                    .getPrefUnitStyle() : preferredUnitStyle);
-                }).collect(Collectors.toList());
-    }
-
-    private List<NameValuePair> makeRuleOptionNVPs(final Element elVariant) {
-        final Element element = getSingleElementByName(elVariant,
-                EL_RULEOPTIONS);
-        if (element == null) {
-            return Collections.emptyList();
-        } else {
-            final NodeList nodes = element.getElementsByTagName(EL_RULEOPTION);
-            return IntStream.range(0, nodes.getLength())
-                    .mapToObj(j -> (Element) nodes.item(j)).map(rElement -> {
-                        return new NameValuePair(
-                                rElement.getAttribute(ATT_NAME),
-                                rElement.getAttribute(ATT_VALUE));
-                    }).collect(Collectors.toList());
-        }
-    }
-
-
-    /**
-     * Checks that an element is present
-     */
-    private void checkElement(final Element element, final String name) {
-        if (element == null) {
-            throw new IllegalArgumentException(
-                    Utils.getLocalString(ERR_NO_ELEMENT, name));
-        }
-    }// checkElement()
-
-    /**
-     * Get an Element by name; only returns a single element.
-     */
-    private Element getSingleElementByName(final Element parent,
-                                           final String name) {
-        final NodeList nodes = parent.getElementsByTagName(name);
-        return (Element) nodes.item(0);
-    }// getSingleElementByName()
-
-
-    /**
-     * Integer parser; throws an exception if number cannot be parsed.
-     */
-    private static int parseInt(final String value) {
-        try {
-            return Integer.parseInt(value);
-        } catch (final NumberFormatException e) {
-            throw new IllegalArgumentException(e);
-        }
-
-
-    }// parseInt()
-
-
-    /**
-     * Float parser; throws an exception if number cannot be parsed. Value must be >= 0.0
-     */
-    private static float parseFloat(final String value) {
-        try {
-            final float floatValue = Float.parseFloat(value);
-            if (floatValue < 0.0f) {
-                throw new NumberFormatException("Value must be >= 0");
-            }
-
-            return floatValue;
-        } catch (final NumberFormatException e) {
-            throw new IllegalArgumentException(e);
-        }
-
-    }// parseInt()
-
-
-    /**
      * Inner class which caches XML adjacency data (ProvinceData and BorderData),
      * which may be shared between different variants (if the variants use the
      * same adjacency data).
@@ -499,7 +133,7 @@ public class XMLVariantParser implements VariantParser {
      * cannot have statics (unless they inner class is static, which just creates more problems;
      * this is a simpler solution)
      */
-    private static class AdjCache {
+    public static class AdjCache {
         private static URL vpURL;
         private static XMLProvinceParser pp;
         private static LRUCache adjCache;    // URI -> AdjCache objects
@@ -598,7 +232,8 @@ public class XMLVariantParser implements VariantParser {
      * inserted into a hashtable for later recall.
      */
     @XmlRootElement(name = "MAP_DEFINITION")
-    private static class MapDef {
+    public static class MapDef {
+        @XmlID
         @XmlAttribute(required = true)
         private String id;
         @XmlAttribute(required = true)

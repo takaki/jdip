@@ -22,67 +22,131 @@
 //
 package dip.world.variant.data;
 
+import dip.misc.Utils;
 import dip.world.Phase;
 import dip.world.Power;
-import javafx.util.Pair;
+import dip.world.variant.parser.XMLVariantParser.AdjCache;
+import org.xml.sax.SAXException;
 
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.io.IOException;
+import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * A Variant.
  */
+@XmlRootElement(name = "VARIANT")
 public class Variant implements Cloneable, Comparable<Variant> {
     // the arrays in general should not be null. They are defined as null initially
     // to make it more apparent should a field not be initialized properly.
     //
-    private String name;
+    private String name = "";
+    @XmlAttribute(name = "default", required = true)
     private boolean isDefault;
-    private String description;
-    private List<Power> powers;
-    private Phase phase;
-    private List<InitialState> istate;
-    private List<SupplyCenter> supplyCenters;
-    private List<ProvinceData> provinceData;
-    private int vcNumSCForVictory;
-    private int vcMaxYearsNoSCChange;
-    private int vcMaxGameTimeYears;
-    private List<MapGraphic> mapGraphics;
     private float version;
-    private List<NameValuePair> roNVPs;
-    private List<BorderData> borderData;
-    private boolean allowBCYears;
+
     private List<String> aliases = Collections.emptyList();
+
+    private String description;
+    @XmlElement(name = "VICTORYCONDITIONS", required = true)
+    public VictoryConditions victoryConditions = new VictoryConditions();
+
+    @XmlElement(name = "POWER")
+    private List<Power> powers;
+
+    @XmlElement(name = "SUPPLYCENTER")
+    private List<SupplyCenter> supplyCenters;
+    @XmlElement(name = "INITIALSTATE")
+    private List<InitialState> istate;
+
+    @XmlElement(name = "MAP")
+    private Map map = new Map();
+
+    @XmlElementWrapper(name = "RULEOPTIONS")
+    @XmlElement(name = "RULEOPTION")
+    private List<NameValuePair> roNVPs;
+
+    @XmlElement(name = "STARTINGTIME", required = true)
+    private StartingTime startingTime = new StartingTime();
+
+    private List<ProvinceData> provinceData;
+    private List<BorderData> borderData;
+
+    public static class Map {
+        @XmlAttribute(name = "adjacencyURI")
+        private URI adjacencyURI;
+        @XmlElement(name = "MAP_GRAPHIC")
+        private List<MapGraphic> mapGraphics;
+    }
+
+    @XmlRootElement
+    public static class StartingTime {
+        private Phase phase;
+        @XmlAttribute(name = "allowBCYears")
+        private boolean allowBCYears;
+
+        @XmlAttribute(name = "turn")
+        public void setPhase(String val) {
+            phase = Phase.parse(val);
+        }
+
+        void afterUnmarshal(final Unmarshaller unmarshaller,
+                            final Object parent) {
+            if (phase.getYear() < 0) {
+                allowBCYears = true;
+            }
+        }
+    }
+
+    @XmlRootElement
+    public static class VictoryConditions {
+        @XmlElement(name = "WINNING_SUPPLY_CENTERS")
+        private IntWrapper vcNumSCForVictory = new IntWrapper();
+        @XmlElement(name = "YEARS_WITHOUT_SC_CAPTURE")
+        private IntWrapper vcMaxYearsNoSCChange = new IntWrapper();
+        @XmlElement(name = "GAME_LENGTH")
+        private IntWrapper vcMaxGameTimeYears = new IntWrapper();
+
+        @XmlRootElement
+        public static class IntWrapper {
+            @XmlAttribute(name = "value", required = true)
+            private int value;
+        }
+    }
+
+    void afterUnmarshal(final Unmarshaller unmarshaller,
+                        final Object parent) throws IOException, SAXException {
+        // TODO: Remove this
+        final URI uri = map.adjacencyURI;
+        setBorderData(AdjCache.getBorderData(uri));
+        setProvinceData(AdjCache.getProvinceData(uri));
+    }
+
 
     /**
      * Class of Rule Option name/value pairs
      */
+    @XmlRootElement
     public static class NameValuePair {
-        private final Pair<String, String> pair;
+        @XmlAttribute
+        private String name;
+        @XmlAttribute
+        private String value;
 
-        /**
-         * Create a NameValuePair. Neither name or value may be null.
-         */
-        public NameValuePair(final String name, final String value) {
-            if (name == null || value == null) {
-                throw new IllegalArgumentException();
-            }
-            pair = new Pair<>(name, value);
-        }// NameValuePair()
-
-        /**
-         * Return the Name
-         */
         public String getName() {
-            return pair.getKey();
+            return name;
         }
 
-        /**
-         * Return the Value
-         */
         public String getValue() {
-            return pair.getValue();
+            return value;
         }
+
     }// nested class NameValuePair
 
 
@@ -131,7 +195,7 @@ public class Variant implements Cloneable, Comparable<Variant> {
      * The starting time.
      */
     public Phase getStartingPhase() {
-        return phase;
+        return startingTime.phase;
     }
 
     /**
@@ -159,28 +223,28 @@ public class Variant implements Cloneable, Comparable<Variant> {
      * Victory Conditions: Number of Supply Centers required for victory.
      */
     public int getNumSCForVictory() {
-        return vcNumSCForVictory;
+        return victoryConditions.vcNumSCForVictory.value;
     }
 
     /**
      * Victory Conditions: Maximum years without a supply-center ownership change before game ends.
      */
     public int getMaxYearsNoSCChange() {
-        return vcMaxYearsNoSCChange;
+        return victoryConditions.vcMaxYearsNoSCChange.value;
     }
 
     /**
      * Victory Conditions: Maximum game duration, in years.
      */
     public int getMaxGameTimeYears() {
-        return vcMaxGameTimeYears;
+        return victoryConditions.vcMaxGameTimeYears.value;
     }
 
     /**
      * The mapGraphics associated with this Variant.
      */
     public MapGraphic[] getMapGraphics() {
-        return mapGraphics.toArray(new MapGraphic[mapGraphics.size()]);
+        return map.mapGraphics.toArray(new MapGraphic[map.mapGraphics.size()]);
     }
 
     /**
@@ -208,13 +272,14 @@ public class Variant implements Cloneable, Comparable<Variant> {
      * Gets if BC Years are allowed with this Variant
      */
     public boolean getBCYearsAllowed() {
-        return allowBCYears;
+        return startingTime.allowBCYears;
     }
 
 
     /**
      * Set the variant name.
      */
+    @XmlAttribute(name = "name", required = true)
     public void setName(final String value) {
         name = value;
     }
@@ -229,9 +294,16 @@ public class Variant implements Cloneable, Comparable<Variant> {
         this.aliases = Arrays.asList(aliases);
     }
 
+    @XmlAttribute(name = "aliases", required = true)
+    public void setAliases(final String csv) {
+        final String[] aliases = Utils.parseCSV(csv);
+        setAliases(aliases);
+    }
+
     /**
      * Set the version of this variant
      */
+    @XmlAttribute(name = "version", required = true)
     public void setVersion(final float value) {
         version = value;
     }
@@ -246,6 +318,7 @@ public class Variant implements Cloneable, Comparable<Variant> {
     /**
      * Set the description for this variant.
      */
+    @XmlElement(name = "DESCRIPTION")
     public void setDescription(final String value) {
         description = value;
     }
@@ -254,28 +327,28 @@ public class Variant implements Cloneable, Comparable<Variant> {
      * Set the starting phase for this variant.
      */
     public void setStartingPhase(final Phase value) {
-        phase = value;
+        startingTime.phase = value;
     }
 
     /**
      * Victory Conditions: Number of Supply Centers required for victory.
      */
     public void setNumSCForVictory(final int value) {
-        vcNumSCForVictory = value;
+        victoryConditions.vcNumSCForVictory.value = value;
     }
 
     /**
      * Victory Conditions: Maximum years without a supply-center ownership change before game ends.
      */
     public void setMaxYearsNoSCChange(final int value) {
-        vcMaxYearsNoSCChange = value;
+        victoryConditions.vcMaxYearsNoSCChange.value = value;
     }
 
     /**
      * Victory Conditions: Maximum game duration, in years.
      */
     public void setMaxGameTimeYears(final int value) {
-        vcMaxGameTimeYears = value;
+        victoryConditions.vcMaxGameTimeYears.value = value;
     }
 
     /**
@@ -296,7 +369,7 @@ public class Variant implements Cloneable, Comparable<Variant> {
      * Sets whether BC years (negative years) are allowed
      */
     public void setBCYearsAllowed(final boolean value) {
-        allowBCYears = value;
+        startingTime.allowBCYears = value;
     }
 
 
@@ -304,7 +377,7 @@ public class Variant implements Cloneable, Comparable<Variant> {
      * Sets the MapGraphics, from a List
      */
     public void setMapGraphics(final List mgList) {
-        mapGraphics = new ArrayList<>(mgList);
+        map.mapGraphics = new ArrayList<>(mgList);
     }// setPowers()
 
     /**
@@ -368,8 +441,8 @@ public class Variant implements Cloneable, Comparable<Variant> {
      * Finds the MapGraphic by name; case insensitive.
      */
     public MapGraphic getMapGrapic(final String mgName) {
-        if (mapGraphics != null) {
-            return mapGraphics.stream()
+        if (map.mapGraphics != null) {
+            return map.mapGraphics.stream()
                     .filter(mapGraphic -> mapGraphic.getName()
                             .equalsIgnoreCase(mgName)).findFirst().orElse(null);
         }
@@ -381,14 +454,10 @@ public class Variant implements Cloneable, Comparable<Variant> {
      * Gets the default MapGraphic; if there is no default, returns the first one.
      */
     public MapGraphic getDefaultMapGraphic() {
-        MapGraphic mg = null;
+        return map.mapGraphics != null ? map.mapGraphics.stream()
+                .filter(MapGraphic::isDefault).findFirst()
+                .orElse(map.mapGraphics.get(0)) : null;
 
-        if (mapGraphics != null && mapGraphics.size() > 0) {
-            mg = mapGraphics.stream().filter(MapGraphic::isDefault).findFirst()
-                    .orElse(mapGraphics.get(0));
-        }
-
-        return mg;
     }// getDefaultMapGraphic()
 
 
@@ -414,15 +483,15 @@ public class Variant implements Cloneable, Comparable<Variant> {
         final Collection<Object> args = new ArrayList<>(8);
         args.add(name);
         args.add(description);
-        args.add(String.valueOf(vcNumSCForVictory));
-        if (phase == null) {
+        args.add(String.valueOf(victoryConditions.vcNumSCForVictory.value));
+        if (startingTime.phase == null) {
             args.add("{bad phase}");
             args.add("{bad phase}");
             args.add("{bad phase}");
         } else {
-            args.add(phase.getSeasonType());
-            args.add(phase.getYearType());
-            args.add(phase.getPhaseType());
+            args.add(startingTime.phase.getSeasonType());
+            args.add(startingTime.phase.getYearType());
+            args.add(startingTime.phase.getPhaseType());
         }
         // create list of powers
         args.add(powers.stream()
@@ -439,16 +508,17 @@ public class Variant implements Cloneable, Comparable<Variant> {
      * Creates a deep clone of all data EXCEPT InitialState / SupplyCenter data / Name / Description
      */
     @Override
-    public Object clone() throws CloneNotSupportedException {
+    public Variant clone() throws CloneNotSupportedException {
         // shallow clone
         final Variant variant = (Variant) super.clone();
 
         // deep clone
         //
         // phase
-        if (phase != null) {
+        if (startingTime.phase != null) {
             // cheap...
-            variant.phase = Phase.parse(phase.toString());
+            variant.startingTime.phase = Phase
+                    .parse(startingTime.phase.toString());
         }
 
         // powers
@@ -470,20 +540,21 @@ public class Variant implements Cloneable, Comparable<Variant> {
         istate.stream().forEach(System.out::println);
         supplyCenters.stream().forEach(System.out::println);
         provinceData.stream().forEach(System.out::println);
-        mapGraphics.stream().forEach(System.out::println);
+        map.mapGraphics.stream().forEach(System.out::println);
         return String
                 .join("", getClass().getName(), "[", "name=", name.toString(),
                         ",isDefault=", Boolean.toString(isDefault), "powers=",
-                        powers.stream().map(power -> power.toString())
-                                .collect(Collectors.joining(",")), ",phase=",
-                        phase.toString(), ",istate=", ",supplyCenters=",
-                        ",provinceData=", "mapGraphics=", ",vcNumSCForVictory=",
-                        Integer.toString(vcNumSCForVictory),
-                        ",vcMaxGameTimeYears=",
-                        Integer.toString(vcMaxGameTimeYears),
-                        ",vcMaxYearsNoSCChange=",
-                        Integer.toString(vcMaxYearsNoSCChange), ",version=",
-                        Float.toString(version), "]");
+                        powers.stream().map(Power::toString)
+                                .collect(Collectors.joining(",")), ",,phase=",
+                        startingTime.phase.toString(), ",istate=",
+                        ",supplyCenters=", ",provinceData=", "mapGraphics=",
+                        ",vcNumSCForVictory=", Integer.toString(
+                                victoryConditions.vcNumSCForVictory.value),
+                        ",vcMaxGameTimeYears=", Integer.toString(
+                                victoryConditions.vcMaxGameTimeYears.value),
+                        ",vcMaxYearsNoSCChange=", Integer.toString(
+                                victoryConditions.vcMaxYearsNoSCChange.value),
+                        ",version=", Float.toString(version), "]");
     }// toString()
 }// class Variant
 

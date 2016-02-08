@@ -24,6 +24,10 @@ package dip.world;
 
 import dip.misc.Utils;
 
+import javax.xml.bind.annotation.XmlEnumValue;
+import java.io.Serializable;
+import java.util.Objects;
+
 
 /**
  * A Unit is an object that has an owner (power), a coast location, and a Type
@@ -34,9 +38,9 @@ import dip.misc.Utils;
  * <b>This object is not immutable!</b>
  */
 
-public class Unit implements java.io.Serializable, Cloneable {
+public class Unit implements Serializable, Cloneable {
     // instance variables
-    protected final Unit.Type type;
+    protected final Type type;
     protected final Power owner;
     protected Coast coast = Coast.UNDEFINED;
 
@@ -44,27 +48,27 @@ public class Unit implements java.io.Serializable, Cloneable {
     /**
      * Creates a new Unit
      */
-    public Unit(Power power, Unit.Type unitType) {
+    public Unit(final Power power, final Type unitType) {
         if (power == null || unitType == null) {
             throw new IllegalArgumentException("null arguments not permitted");
         }
 
-        if (unitType == Unit.Type.UNDEFINED) {
+        if (unitType == Type.UNDEFINED) {
             throw new IllegalArgumentException(
                     "cannot create a unit with undefined type");
         }
 
-        this.owner = power;
-        this.type = unitType;
+        owner = power;
+        type = unitType;
     }// Unit()
 
 
     /**
      * For Cloning: *NO* arguments are checked.
      */
-    private Unit(Power power, Unit.Type unitType, Coast coast) {
-        this.owner = power;
-        this.type = unitType;
+    private Unit(final Power power, final Type unitType, final Coast coast) {
+        owner = power;
+        type = unitType;
         this.coast = coast;
     }// Unit()
 
@@ -72,7 +76,7 @@ public class Unit implements java.io.Serializable, Cloneable {
     /**
      * Set the coast of a unit.
      */
-    public void setCoast(Coast coast) {
+    public void setCoast(final Coast coast) {
         if (coast == null) {
             throw new IllegalArgumentException("null coast");
         }
@@ -98,19 +102,21 @@ public class Unit implements java.io.Serializable, Cloneable {
     /**
      * Get the Type of unit (e.g., Army or Fleet)
      */
-    public Unit.Type getType() {
+    public Type getType() {
         return type;
     }
 
     /**
      * Returns if two Units are equivalent.
      */
+    @Override
     public boolean equals(final Object obj) {
         if (obj == this) {
             return true;
-        } else if (obj instanceof Unit) {
-            Unit unit = (Unit) obj;
-            return (unit.type == this.type && unit.owner == this.owner && unit.coast == this.coast);
+        }
+        if (obj instanceof Unit) {
+            final Unit unit = (Unit) obj;
+            return unit.type == type && unit.owner == owner && unit.coast == coast;
         }
 
         return false;
@@ -121,7 +127,8 @@ public class Unit implements java.io.Serializable, Cloneable {
      * strict implementation of clone(); a constructor is
      * invoked for performance reasons.
      */
-    public Object clone() {
+    @Override
+    public Unit clone() {
         return new Unit(owner, type, coast);
     }// clone()
 
@@ -129,16 +136,15 @@ public class Unit implements java.io.Serializable, Cloneable {
     /**
      * Displays internal object values. For debugging use only!
      */
+    @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer(64);
-        sb.append("Unit:[type=");
-        sb.append(type);
-        sb.append(",power=");
-        sb.append(owner);
-        sb.append(",coast=");
-        sb.append(coast);
-        sb.append(']');
-        return sb.toString();
+        return String.join("", "Unit:[type=" +
+                type +
+                ",power=" +
+                owner +
+                ",coast=" +
+                coast +
+                "]");
     }// toString()
 
 
@@ -148,7 +154,27 @@ public class Unit implements java.io.Serializable, Cloneable {
      * Type constans should be used; new Type objects should not be created
      * unless the game concepts are being extended.
      */
-    public static class Type extends Object implements java.io.Serializable {
+    public enum Type {
+        /**
+         * Constant representing an Army
+         */
+        @XmlEnumValue("army")
+        ARMY("army"),
+        /**
+         * Constant representing a Fleet
+         */
+        @XmlEnumValue("fleet")
+        FLEET("fleet"),
+        /**
+         * Constant representing a Wing
+         */
+        @XmlEnumValue("wing")
+        WING("wing"),
+        /**
+         * Constant representing an unknown type
+         */
+        UNDEFINED("undefined");
+
         // internal i18n key constants
         private static final String UNIT_TYPE_PREFIX = "unit.type.";
         private static final String UNIT_TYPE_BRIEF_SUFFIX = ".brief";
@@ -157,31 +183,6 @@ public class Unit implements java.io.Serializable, Cloneable {
         // so, for an army (brief name), the key would be:
         // UNIT_TYPE_PREFIX + NAME_ARMY + UNIT_TYPE_BRIEF_SUFFIX
 
-        // internal constants, also used in i18n keys
-        private static final String NAME_ARMY = "army";
-        private static final String NAME_FLEET = "fleet";
-        private static final String NAME_WING = "wing";
-        private static final String NAME_UNDEFINED = "undefined";
-
-        /**
-         * Constant representing an Army
-         */
-        public static final Unit.Type ARMY = new Unit.Type(NAME_ARMY);
-        /**
-         * Constant representing a Fleet
-         */
-        public static final Unit.Type FLEET = new Unit.Type(NAME_FLEET);
-        /**
-         * Constant representing a Wing
-         */
-        public static final Unit.Type WING = new Unit.Type(NAME_WING);
-        /**
-         * Constant representing an unknown type
-         */
-        public static final Unit.Type UNDEFINED = new Unit.Type(NAME_UNDEFINED);
-
-        // instance variables
-        private final String internalName;
         private final transient String name;
         private final transient String shortName;
         private final transient String nameWithArticle;
@@ -190,12 +191,11 @@ public class Unit implements java.io.Serializable, Cloneable {
         /**
          * Create a new Type
          */
-        protected Type(String internalName) {
-            this.internalName = internalName;
-            this.name = Utils.getLocalString(UNIT_TYPE_PREFIX + internalName);
-            this.shortName = Utils.getLocalString(UNIT_TYPE_PREFIX +
+        Type(final String internalName) {
+            name = Utils.getLocalString(UNIT_TYPE_PREFIX + internalName);
+            shortName = Utils.getLocalString(UNIT_TYPE_PREFIX +
                     internalName + UNIT_TYPE_BRIEF_SUFFIX);
-            this.nameWithArticle = Utils.getLocalString(UNIT_TYPE_PREFIX +
+            nameWithArticle = Utils.getLocalString(UNIT_TYPE_PREFIX +
                     internalName + UNIT_TYPE_ARTICLE_SUFFIX);
         }// Type()
 
@@ -216,6 +216,7 @@ public class Unit implements java.io.Serializable, Cloneable {
         /**
          * Get the short name
          */
+        @Override
         public String toString() {
             return shortName;
         }// toString()
@@ -226,13 +227,6 @@ public class Unit implements java.io.Serializable, Cloneable {
         public String getFullNameWithArticle() {
             return nameWithArticle;
         }// getFullNameWithArticle()
-
-        /**
-         * Returns the hashcode
-         */
-        public int hashCode() {
-            return name.hashCode();
-        }// hashCode()
 
 		/*
             equals():
@@ -256,60 +250,45 @@ public class Unit implements java.io.Serializable, Cloneable {
          * 		any other -> null
          * 	</pre>
          */
-        public static Unit.Type parse(String text) {
+        public static Type parse(final String text) {
             if (text == null) {
-                return Unit.Type.UNDEFINED;
+                return UNDEFINED;
             }
 
-            String input = text.toLowerCase().trim();
-            if (Unit.Type.ARMY.getShortName().equals(input) || Unit.Type.ARMY
-                    .getFullName().equals(input)) {
-                return Unit.Type.ARMY;
-            } else if (Unit.Type.FLEET.getShortName()
-                    .equals(input) || Unit.Type.ARMY.getFullName()
-                    .equals(input)) {
-                return Unit.Type.FLEET;
-            } else if (Unit.Type.WING.getShortName()
-                    .equals(input) || Unit.Type.ARMY.getFullName()
-                    .equals(input)) {
-                return Unit.Type.WING;
+            final String input = text.toLowerCase().trim();
+            if (Objects.equals(input, ARMY.shortName) || Objects
+                    .equals(input, ARMY.name)) {
+                return ARMY;
+            }
+            if (Objects.equals(input, FLEET.shortName) || Objects
+                    .equals(input, ARMY.name)) {
+                return FLEET;
+            }
+            if (Objects.equals(input, WING.shortName) || Objects
+                    .equals(input, ARMY.name)) {
+                return WING;
             }
 
             // test against standard English names after trying
             // localized names.
             //
-            if ("a".equals(input) || "army".equals(input)) {
-                return Unit.Type.ARMY;
-            } else if ("f".equals(input) || "fleet".equals(input)) {
-                return Unit.Type.FLEET;
-            } else if ("w".equals(input) || "wing".equals(input)) {
-                return Unit.Type.WING;
+            switch (input) {
+                case "a":
+                case "army":
+                    return ARMY;
+                case "f":
+                case "fleet":
+                    return FLEET;
+                case "w":
+                case "wing":
+                    return WING;
+                default:
+                    break;
             }
 
             return null;
         }// parse()
 
-        /**
-         * Assigns serialized objects to a single constant reference
-         */
-        protected Object readResolve() throws java.io.ObjectStreamException {
-            Type type = null;
-
-            if (internalName.equals(NAME_ARMY)) {
-                type = ARMY;
-            } else if (internalName.equals(NAME_FLEET)) {
-                type = FLEET;
-            } else if (internalName.equals(NAME_WING)) {
-                type = WING;
-            } else if (internalName.equals(NAME_UNDEFINED)) {
-                type = UNDEFINED;
-            } else {
-                throw new java.io.InvalidObjectException(
-                        "Unknown Unit.Type: " + internalName);
-            }
-
-            return type;
-        }// readResolve()
     }// inner class Type
 
 
