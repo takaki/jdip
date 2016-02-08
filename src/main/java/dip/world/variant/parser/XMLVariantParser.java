@@ -87,12 +87,12 @@ public class XMLVariantParser implements VariantParser {
 		dbf.setValidating(isValidating);
 		dbf.setCoalescing(false);
 		dbf.setIgnoringComments(true);
-		
+
 		docBuilder = dbf.newDocumentBuilder();
 		docBuilder.setErrorHandler(new XMLErrorHandler());
-		
+
 		provinceParser = new XMLProvinceParser(dbf);
-		
+
 		variantList = new LinkedList();
 		AdjCache.init(provinceParser);
 	}// XMLVariantParser()
@@ -164,6 +164,16 @@ public class XMLVariantParser implements VariantParser {
     }// getVariants()
 
 
+    @XmlRootElement(name = "VARIANTS")
+    public static class RootVariants {
+        @XmlElement(name = "DESCRIPTION")
+        private String description;
+        @XmlElement(name = "MAP_DEFINITION")
+        private List<MapDef> mapDefinitions;
+        @XmlElement(name = "VARIANT")
+        private List<Variant> variants;
+    }
+
     /**
      * Process the Variant list description file
      */
@@ -172,6 +182,11 @@ public class XMLVariantParser implements VariantParser {
 
         // find the root element (VARIANTS), and all VARIANT elements underneath.
         final Element root = doc.getDocumentElement();
+        final Unmarshaller rootUnmarshaller = JAXBContext
+                .newInstance(RootVariants.class).createUnmarshaller();
+        final RootVariants rootVariants = (RootVariants) rootUnmarshaller
+                .unmarshal(root);
+
 
         // get map definitions (at least one, under VARIANT)
         final NodeList mapDefEls = (NodeList) xpath
@@ -180,17 +195,10 @@ public class XMLVariantParser implements VariantParser {
         // setup map definition ID hashmap
         final Unmarshaller mapDefUnmarshaller = JAXBContext
                 .newInstance(MapDef.class).createUnmarshaller();
-        final Map<String, MapDef> mapDefTable = IntStream
-                .range(0, mapDefEls.getLength())
-                .mapToObj(i -> (Element) mapDefEls.item(i)).map(elMapDef -> {
-                    try {
-                        return (MapDef) mapDefUnmarshaller.unmarshal(elMapDef);
-                    } catch (JAXBException e) {
-                        throw new IllegalArgumentException(e);
-                    }
-
-                })
+        final Map<String, MapDef> mapDefTable = rootVariants.mapDefinitions
+                .stream()
                 .collect(Collectors.toMap(MapDef::getID, Function.identity()));
+
 
         // search for variant data
         final Unmarshaller variantUnmarshaller = JAXBContext
