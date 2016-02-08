@@ -30,6 +30,12 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -129,6 +135,15 @@ public class XMLProvinceParser implements ProvinceParser {
         return borderList.toArray(new BorderData[borderList.size()]);
     }// getBorderData()
 
+    @XmlRootElement(name = "PROVINCES")
+    public static class RootProvinces {
+        @XmlElementWrapper(name = "BORDER_DEFINITIONS")
+        @XmlElement(name = "BORDER")
+        private List<BorderData> borderDatas;
+
+        @XmlElement(name = "PROVINCE")
+        private List<ProvinceData> provinces;
+    }
 
     /**
      * Parse the XML
@@ -136,25 +151,25 @@ public class XMLProvinceParser implements ProvinceParser {
     private void procProvinceData() {
         // find root element
         final Element root = doc.getDocumentElement();
-
-        // find all BORDER elements. We will use these later, via the borderMap
+//        final Unmarshaller unmarshaller = JAXBContext
+//                .newInstance(RootProvinces.class).createUnmarshaller();
+//        RootProvinces rootProvinces = (RootProvinces) unmarshaller
+//                .unmarshal(root);
+//
         final NodeList borderNodes = root.getElementsByTagName(EL_BORDER);
         borderList.addAll(IntStream.range(0, borderNodes.getLength())
-                .mapToObj(i -> (Element) borderNodes.item(i)).map(border -> {
-                    final BorderData bd = new BorderData();
-                    bd.setID(border.getAttribute(ATT_ID));
-                    bd.setDescription(border.getAttribute(ATT_DESCRIPTION));
-                    bd.setUnitTypes(border.getAttribute(ATT_UNIT_TYPES));
-                    bd.setFrom(border.getAttribute(ATT_FROM));
-                    bd.setOrderTypes(border.getAttribute(ATT_ORDER_TYPES));
-                    bd.setBaseMoveModifier(
-                            border.getAttribute(ATT_BASE_MOVE_MODIFIER));
-                    bd.setYear(border.getAttribute(ATT_YEAR));
-                    bd.setSeason(border.getAttribute(ATT_SEASON));
-                    bd.setPhase(border.getAttribute(ATT_PHASE));
-
-                    return bd;
+                .mapToObj(i -> {
+                    try {
+                        final Unmarshaller function = JAXBContext
+                                .newInstance(BorderData.class)
+                                .createUnmarshaller();
+                        return (BorderData) function.unmarshal(
+                                borderNodes.item(i));
+                    } catch (JAXBException e) {
+                        throw new IllegalArgumentException(e);
+                    }
                 }).collect(Collectors.toList()));
+
 
         // find all PROVINCE elements
         final NodeList provinceNodes = root.getElementsByTagName(EL_PROVINCE);

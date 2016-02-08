@@ -23,9 +23,13 @@
 package dip.world.variant.data;
 
 
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * Temporary holder for Border data after XML parsing.
  */
+@XmlRootElement(name = "BORDER")
 public class BorderData {
     private String id;
     private String description;
@@ -40,6 +44,7 @@ public class BorderData {
     /**
      * Sets the Border ID
      */
+    @XmlAttribute(name = "id")
     public void setID(String value) {
         id = value;
     }
@@ -47,6 +52,7 @@ public class BorderData {
     /**
      * Sets the Border description
      */
+    @XmlAttribute(name = "description")
     public void setDescription(String value) {
         description = value;
     }
@@ -54,6 +60,7 @@ public class BorderData {
     /**
      * Sets the Border unit types
      */
+    @XmlAttribute(name = "unitTypes")
     public void setUnitTypes(String value) {
         unitTypes = value;
     }
@@ -61,6 +68,7 @@ public class BorderData {
     /**
      * Sets the Border From locations
      */
+    @XmlAttribute(name = "from")
     public void setFrom(String value) {
         from = value;
     }
@@ -68,6 +76,7 @@ public class BorderData {
     /**
      * Sets the Border Order types
      */
+    @XmlAttribute(name = "orderTypes")
     public void setOrderTypes(String value) {
         orderTypes = value;
     }
@@ -75,6 +84,7 @@ public class BorderData {
     /**
      * Sets the Border  Support modifier
      */
+    @XmlAttribute(name = "baseMoveModifier")
     public void setBaseMoveModifier(String value) {
         baseMoveModifier = value;
     }
@@ -82,6 +92,7 @@ public class BorderData {
     /**
      * Sets the Border Year
      */
+    @XmlAttribute(name = "year")
     public void setYear(String value) {
         year = value;
     }
@@ -89,6 +100,7 @@ public class BorderData {
     /**
      * Sets the Border Phase
      */
+    @XmlAttribute(name = "phase")
     public void setPhase(String value) {
         phase = value;
     }
@@ -96,6 +108,7 @@ public class BorderData {
     /**
      * Sets the Border Season
      */
+    @XmlAttribute(name = "season")
     public void setSeason(String value) {
         season = value;
     }
