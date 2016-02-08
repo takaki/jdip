@@ -196,27 +196,27 @@ public class XMLProvinceParser implements ProvinceParser {
                                 .unmarshal(elProvince);
 
                         // create short/unique name list
-                        final List<String> shortNames = new LinkedList<>();
-                        shortNames.add(elProvince.getAttribute("shortname"));
+//                        final List<String> shortNames = new LinkedList<>();
+//                        shortNames.add(elProvince.getAttribute("shortname"));
                         // unique name(s) (if any)
-                        final NodeList elementsByTagName = elProvince
-                                .getElementsByTagName("UNIQUENAME");
-                        shortNames.addAll(IntStream
-                                .range(0, elementsByTagName.getLength())
-                                .mapToObj(i -> (Element) elementsByTagName
-                                        .item(i))
-                                .map(element -> element.getAttribute("name"))
-                                .collect(Collectors.toList()));
+//                        final NodeList elementsByTagName = elProvince
+//                                .getElementsByTagName("UNIQUENAME");
+//                        shortNames.addAll(IntStream
+//                                .range(0, elementsByTagName.getLength())
+//                                .mapToObj(i -> (Element) elementsByTagName
+//                                        .item(i))
+//                                .map(element -> element.getAttribute("name"))
+//                                .collect(Collectors.toList()));
                         // set all short & unique names
-                        provinceData.setShortNames(shortNames);
+//                        provinceData.setShortNames(shortNames);
 
                         // region attributes
-                        provinceData.setFullName(
-                                elProvince.getAttribute("fullname"));
+//                        provinceData.setFullName(
+//                                elProvince.getAttribute("fullname"));
 
                         // convoyable coast
-                        provinceData.setConvoyableCoast(Boolean.valueOf(
-                                elProvince.getAttribute("isConvoyableCoast")));
+//                        provinceData.setConvoyableCoast(Boolean.valueOf(
+//                                elProvince.getAttribute("isConvoyableCoast")));
 
                         // borders data (optional); a list of references, seperated by commas/spaces
                         final String borders = elProvince
