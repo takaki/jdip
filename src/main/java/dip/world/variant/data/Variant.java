@@ -46,16 +46,13 @@ public class Variant implements Cloneable, Comparable<Variant> {
     // the arrays in general should not be null. They are defined as null initially
     // to make it more apparent should a field not be initialized properly.
     //
-    @XmlAttribute(name = "name", required = true)
     private String name = "";
     @XmlAttribute(name = "default", required = true)
     private boolean isDefault;
-    @XmlAttribute(name = "version", required = true)
     private float version;
 
     private List<String> aliases = Collections.emptyList();
 
-    @XmlElement(name = "DESCRIPTION")
     private String description;
     @XmlElement(name = "VICTORYCONDITIONS", required = true)
     public VictoryConditions victoryConditions = new VictoryConditions();
@@ -285,28 +282,34 @@ public class Variant implements Cloneable, Comparable<Variant> {
     /**
      * Set the variant name.
      */
-//    public void setName(final String value) {
-//        name = value;
-//    }
+    @XmlAttribute(name = "name", required = true)
+    public void setName(final String value) {
+        name = value;
+    }
 
     /**
      * Set the alises. Null is not allowed.
      */
-    @XmlAttribute(name = "aliases", required = true)
-    public void setAliases(final String csv) {
-        final String[] aliases = Utils.parseCSV(csv);
+    public void setAliases(final String[] aliases) {
         if (aliases == null) {
             throw new IllegalArgumentException();
         }
         this.aliases = Arrays.asList(aliases);
     }
 
+    @XmlAttribute(name = "aliases", required = true)
+    public void setAliases(final String csv) {
+        final String[] aliases = Utils.parseCSV(csv);
+        setAliases(aliases);
+    }
+
     /**
      * Set the version of this variant
      */
-//    public void setVersion(final float value) {
-//        version = value;
-//    }
+    @XmlAttribute(name = "version", required = true)
+    public void setVersion(final float value) {
+        version = value;
+    }
 
     /**
      * Set if this variant is the default variant.
@@ -318,9 +321,10 @@ public class Variant implements Cloneable, Comparable<Variant> {
     /**
      * Set the description for this variant.
      */
-//    public void setDescription(final String value) {
-//        description = value;
-///    }
+    @XmlElement(name = "DESCRIPTION")
+    public void setDescription(final String value) {
+        description = value;
+    }
 
     /**
      * Set the starting phase for this variant.
