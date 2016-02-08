@@ -41,7 +41,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -169,22 +170,8 @@ public class XMLProvinceParser implements ProvinceParser {
                         throw new IllegalArgumentException(e);
                     }
                 }).collect(Collectors.toList()));
-
-
         // find all PROVINCE elements
         final NodeList provinceNodes = root.getElementsByTagName("PROVINCE");
-//        provinceList.addAll(IntStream.range(0, provinceNodes.getLength())
-//                .mapToObj(i -> {
-//                    try {
-//                        final Unmarshaller function = JAXBContext
-//                                .newInstance(ProvinceData.class)
-//                                .createUnmarshaller();
-//                        return (ProvinceData) function
-//                                .unmarshal(provinceNodes.item(i));
-//                    } catch (JAXBException e) {
-//                        throw new IllegalArgumentException(e);
-//                    }
-//                }).collect(Collectors.toList()));
         provinceList.addAll(IntStream.range(0, provinceNodes.getLength())
                 .mapToObj(i -> (Element) provinceNodes.item(i))
                 .map(elProvince -> {
@@ -192,59 +179,7 @@ public class XMLProvinceParser implements ProvinceParser {
                         final Unmarshaller function = JAXBContext
                                 .newInstance(ProvinceData.class)
                                 .createUnmarshaller();
-                        final ProvinceData provinceData = (ProvinceData) function
-                                .unmarshal(elProvince);
-
-                        // create short/unique name list
-//                        final List<String> shortNames = new LinkedList<>();
-//                        shortNames.add(elProvince.getAttribute("shortname"));
-                        // unique name(s) (if any)
-//                        final NodeList elementsByTagName = elProvince
-//                                .getElementsByTagName("UNIQUENAME");
-//                        shortNames.addAll(IntStream
-//                                .range(0, elementsByTagName.getLength())
-//                                .mapToObj(i -> (Element) elementsByTagName
-//                                        .item(i))
-//                                .map(element -> element.getAttribute("name"))
-//                                .collect(Collectors.toList()));
-                        // set all short & unique names
-//                        provinceData.setShortNames(shortNames);
-
-                        // region attributes
-//                        provinceData.setFullName(
-//                                elProvince.getAttribute("fullname"));
-
-                        // convoyable coast
-//                        provinceData.setConvoyableCoast(Boolean.valueOf(
-//                                elProvince.getAttribute("isConvoyableCoast")));
-
-                        // borders data (optional); a list of references, seperated by commas/spaces
-//                        final String borders = elProvince
-//                                .getAttribute("borders").trim();
-//                        provinceData.setBorders(borders.isEmpty() ? Collections
-//                                .emptyList() : new ArrayList<>(
-//                                Arrays.asList(borders.split("[, ]+"))));
-
-
-                        // adjacency data
-//                        final NodeList adjNodes = elProvince
-//                                .getElementsByTagName("ADJACENCY");
-//                        final List<String> adjTypeNames = IntStream
-//                                .range(0, adjNodes.getLength())
-//                                .mapToObj(j -> (Element) adjNodes.item(j))
-//                                .map(element -> element.getAttribute("type"))
-//                                .collect(Collectors.toList());
-//                        final List<String> adjProvinceNames = IntStream
-//                                .range(0, adjNodes.getLength())
-//                                .mapToObj(j -> (Element) adjNodes.item(j))
-//                                .map(element -> element.getAttribute("refs"))
-//                                .collect(Collectors.toList());
-//                        provinceData.setAdjacentProvinceTypes(adjTypeNames
-//                                .toArray(new String[adjTypeNames.size()]));
-//                        provinceData.setAdjacentProvinceNames(adjProvinceNames
-//                                .toArray(new String[adjProvinceNames.size()]));
-
-                        return provinceData;
+                        return (ProvinceData) function.unmarshal(elProvince);
                     } catch (JAXBException e) {
                         throw new IllegalArgumentException(e);
                     }
