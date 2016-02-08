@@ -55,6 +55,10 @@ class XMLProvinceParserTest extends Specification {
         then:
         instance.getProvinceData().size() == 75
         instance.getBorderData().size() == 0
+        instance.getProvinceData()[19].getShortNames() == ["eas", "emed", "eastmed", "ems", "eme"] as String[]
+        instance.getProvinceData()[18].
+                getAdjacentProvinceNames() == ["swe kie", "hel nth swe bal kie ska"] as String[]
+        instance.getProvinceData()[18].getAdjacentProvinceTypes() == ["mv", "xc"] as String[]
 
         when:
         instance.close()

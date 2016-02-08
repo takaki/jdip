@@ -45,6 +45,12 @@ class XMLSymbolParserTest extends Specification {
         symbolpack.getName() == "Simple"
         symbolpack.getSVGURI() == new URI("symbols.svg")
         symbolpack.getVersion() == 1.0
+        symbolpack.getCSSStyles()[0].getName() == ".symBuildShadow"
+        symbolpack.getCSSStyles()[0].getStyle() == "{fill:none;stroke:black;opacity:0.5;stroke-width:7;}"
+        symbolpack.getCSSStyles()[7].getName() == ".symThinBorder"
+        symbolpack.getCSSStyles()[7].getStyle() == "{stroke:black;stroke-width:0.2;}"
+        symbolpack.getSymbols()[0].getSVGData().getTagName() == "symbol"
+        symbolpack.getSymbols().size() == 11
     }
 
 }
