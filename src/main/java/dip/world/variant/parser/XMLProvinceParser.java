@@ -85,16 +85,6 @@ public class XMLProvinceParser implements ProvinceParser {
 
 
     /**
-     * Cleanup, clearing any references/resources
-     */
-    // TODO:remove
-    public void close() {
-        provinceList.clear();
-        borderList.clear();
-    }// close()
-
-
-    /**
      * Returns the ProvinceData objects, or an empty list.
      */
     @Override

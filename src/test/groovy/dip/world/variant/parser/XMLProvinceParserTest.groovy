@@ -60,11 +60,11 @@ class XMLProvinceParserTest extends Specification {
                 getAdjacentProvinceNames() == ["swe kie", "hel nth swe bal kie ska"] as String[]
         instance.getProvinceData()[18].getAdjacentProvinceTypes() == ["mv", "xc"] as String[]
 
-        when:
-        instance.close()
-        then:
-        instance.getProvinceData().size() == 0
-        instance.getBorderData().size() == 0
+//        when:
+//        instance.close()
+//        then:
+//        instance.getProvinceData().size() == 0
+//        instance.getBorderData().size() == 0
     }
 
     def "parse test/std_border"() {
@@ -75,10 +75,10 @@ class XMLProvinceParserTest extends Specification {
         instance.getProvinceData().size() == 75
         instance.getBorderData().size() == 12
 
-        when:
-        instance.close()
-        then:
-        instance.getProvinceData().size() == 0
-        instance.getBorderData().size() == 0
+//        when:
+//        instance.close()
+//        then:
+//        instance.getProvinceData().size() == 0
+//        instance.getBorderData().size() == 0
     }
 }

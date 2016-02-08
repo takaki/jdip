@@ -73,7 +73,7 @@ public class XMLVariantParser implements VariantParser {
     }// XMLVariantParser()
 
     public XMLVariantParser() {
-        AdjCache.init(new XMLProvinceParser());
+        AdjCache.init();
     }// XMLVariantParser()
 
     /**
@@ -93,11 +93,11 @@ public class XMLVariantParser implements VariantParser {
 
         // cleanup cache (very important to remove references!)
         AdjCache.clear();
-        variantList.clear();
         AdjCache.setVariantPackageURL(variantPackageURL);
 
         final RootVariants rootVariants = JAXB
                 .unmarshal(is, RootVariants.class);
+        variantList.clear();
         variantList.addAll(rootVariants.variants);
         Log.printTimed(time, "   time: ");
     }// parse()
@@ -107,8 +107,6 @@ public class XMLVariantParser implements VariantParser {
      * Cleanup, clearing any references/resources
      */
     public void close() {
-        AdjCache.clear();
-        variantList.clear();
     }// close()
 
 
@@ -135,23 +133,17 @@ public class XMLVariantParser implements VariantParser {
      */
     public static class AdjCache {
         private static URL vpURL;
-        private static XMLProvinceParser pp;
-        private static LRUCache adjCache;    // URI -> AdjCache objects
+        private static final LRUCache<URI, AdjCache> adjCache = new LRUCache<>(
+                6); // URI -> AdjCache objects
 
         // instance variables
         private List<ProvinceData> provinceData;
         private List<BorderData> borderData;
 
-
-        AdjCache() {
-        }// AdjCache()
-
         /**
          * initialization
          */
-        public static void init(final XMLProvinceParser provinceParser) {
-            pp = provinceParser;
-            adjCache = new LRUCache(6);
+        public static void init() {
         }// AdjCache()
 
         /**
@@ -173,8 +165,7 @@ public class XMLVariantParser implements VariantParser {
         /**
          * Gets the ProvinceData for a given adjacency URI
          */
-        public static ProvinceData[] getProvinceData(
-                final URI adjacencyURI) throws IOException, SAXException {
+        public static ProvinceData[] getProvinceData(final URI adjacencyURI) {
             final AdjCache ac = get(adjacencyURI);
             return ac.provinceData
                     .toArray(new ProvinceData[ac.provinceData.size()]);
@@ -184,8 +175,7 @@ public class XMLVariantParser implements VariantParser {
         /**
          * Gets the BorderData for a given adjacency URI
          */
-        public static BorderData[] getBorderData(
-                final URI adjacencyURI) throws IOException, SAXException {
+        public static BorderData[] getBorderData(final URI adjacencyURI) {
             final AdjCache ac = get(adjacencyURI);
             return ac.borderData.toArray(new BorderData[ac.borderData.size()]);
         }// getBorderData()
@@ -194,34 +184,31 @@ public class XMLVariantParser implements VariantParser {
         /**
          * Gets the AdjCache object from the cache, or parses from the URI, as appropriate
          */
-        private static AdjCache get(
-                final URI adjacencyURI) throws IOException, SAXException {
+        private static AdjCache get(final URI aURI) {
             // see if we already have the URI data cached.
-            if (adjCache.get(adjacencyURI) != null) {
-                //Log.println("  AdjCache: using cached adjacency data: ", adjacencyURI);
-                return (AdjCache) adjCache.get(adjacencyURI);
-            }
+            return adjCache.computeIfAbsent(aURI, adjacencyURI -> {
+                final URL url = VariantManager.getResource(vpURL, adjacencyURI);
+                if (url == null) {
+                    throw new IllegalArgumentException(String.format(
+                            "Could not convert URI: [%s] from variant package: [%s]",
+                            adjacencyURI, vpURL));
+                }
 
-            // it's not cached. resolve URI.
-            final URL url = VariantManager.getResource(vpURL, adjacencyURI);
-            if (url == null) {
-                throw new IOException(
-                        "Could not convert URI: " + adjacencyURI + " from variant package: " + vpURL);
-            }
+                //Log.println("  AdjCache: not in cache: ", adjacencyURI);
 
-            // parse resolved URI
-            //Log.println("  AdjCache: not in cache: ", adjacencyURI);
-
-            try (InputStream is = new BufferedInputStream(url.openStream())) {
-                pp.parse(is);
-            }
-
-            // cache and return parsed data.
-            final AdjCache ac = new AdjCache();
-            ac.provinceData = Arrays.asList(pp.getProvinceData());
-            ac.borderData = Arrays.asList(pp.getBorderData());
-            adjCache.put(adjacencyURI, ac);
-            return ac;
+                try (InputStream is = new BufferedInputStream(
+                        url.openStream())) {
+                    final XMLProvinceParser pp = new XMLProvinceParser();
+                    pp.parse(is);
+                    // cache and return parsed data.
+                    final AdjCache ac = new AdjCache();
+                    ac.provinceData = Arrays.asList(pp.getProvinceData());
+                    ac.borderData = Arrays.asList(pp.getBorderData());
+                    return ac;
+                } catch (IOException | SAXException e) {
+                    throw new IllegalArgumentException(e);
+                }
+            });
         }// get()
 
     }// inner class AdjCache
