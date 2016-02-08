@@ -32,7 +32,6 @@ import dip.world.variant.data.*;
 import dip.world.variant.data.Variant.NameValuePair;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -236,106 +235,115 @@ public class XMLVariantParser implements VariantParser {
                 .collect(Collectors.toMap(MapDef::getID, Function.identity()));
 
         // search for variant data
+        final Unmarshaller variantUnmarshaller = JAXBContext
+                .newInstance(Variant.class).createUnmarshaller();
         final NodeList variantElements = (NodeList) xpath
                 .evaluate(EL_VARIANT, root, XPathConstants.NODESET);
         IntStream.range(0, variantElements.getLength())
                 .mapToObj(i -> (Element) variantElements.item(i))
                 .forEach(elVariant -> {
-                    final Variant variant = new Variant();
-
-                    // VARIANT attributes
-                    variant.setName(elVariant.getAttribute(ATT_NAME));
-                    variant.setDefault(Boolean.valueOf(
-                            elVariant.getAttribute(ATT_DEFAULT)));
-                    variant.setVersion(
-                            parseFloat(elVariant.getAttribute(ATT_VERSION)));
-                    variant.setAliases(Utils.parseCSV(
-                            elVariant.getAttribute(ATT_ALIASES)));
-
-                    // description
-                    final Element elDescription = getSingleElementByName(
-                            elVariant, EL_DESCRIPTION);
-                    checkElement(elDescription, EL_DESCRIPTION);
-                    final Node text = elDescription.getFirstChild();
-                    variant.setDescription(text.getNodeValue());
-
-                    // starting time
-                    final Element elStartingtime = getSingleElementByName(
-                            elVariant, EL_STARTINGTIME);
-                    checkElement(elStartingtime, EL_STARTINGTIME);
-                    variant.setStartingPhase(
-                            Phase.parse(elStartingtime.getAttribute(ATT_TURN)));
-                    variant.setBCYearsAllowed(Boolean.valueOf(
-                            elStartingtime.getAttribute(ATT_ALLOW_BC_YEARS)));
-
-                    // if start is BC, and BC years are not allowed, then BC years ARE allowed.
-                    if (variant.getStartingPhase().getYear() < 0) {
-                        variant.setBCYearsAllowed(true);
-                    }
-
-                    // victory conditions (single, with single subitems)
-                    final Element elVictoryconditions = getSingleElementByName(
-                            elVariant, EL_VICTORYCONDITIONS);
-                    checkElement(elVictoryconditions, EL_VICTORYCONDITIONS);
-                    Optional.ofNullable(
-                            getSingleElementByName(elVictoryconditions,
-                                    EL_WINNING_SUPPLY_CENTERS))
-                            .ifPresent(el -> {
-                                variant.setNumSCForVictory(
-                                        parseInt(el.getAttribute(ATT_VALUE)));
-                            });
-
-                    Optional.ofNullable(
-                            getSingleElementByName(elVictoryconditions,
-                                    EL_YEARS_WITHOUT_SC_CAPTURE))
-                            .ifPresent(el -> {
-                                variant.setMaxYearsNoSCChange(
-                                        parseInt(el.getAttribute(ATT_VALUE)));
-                            });
-
-                    Optional.ofNullable(
-                            getSingleElementByName(elVictoryconditions,
-                                    EL_GAME_LENGTH)).ifPresent(el -> {
-                        variant.setMaxGameTimeYears(
-                                parseInt(el.getAttribute(ATT_VALUE)));
-                    });
-
-
-                    // powers (multiple)
-                    variant.setPowers(makePowers(elVariant));
-
-                    // supply centers (multiple)
-                    variant.setSupplyCenters(makeSupplyCenters(elVariant));
-
-                    // initial state (multiple)
-                    variant.setInitialStates(makeInitialStates(elVariant));
-
-                    // MAP element and children
-                    final Element elMap = getSingleElementByName(elVariant,
-                            EL_MAP);
-                    // MAP adjacency URI; process it using ProvinceData parser
                     try {
-                        final URI adjacencyURI = new URI(
-                                elMap.getAttribute(ATT_ADJACENCYURI));
-                        variant.setProvinceData(
-                                AdjCache.getProvinceData(adjacencyURI));
-                        variant.setBorderData(
-                                AdjCache.getBorderData(adjacencyURI));
-                    } catch (final URISyntaxException | SAXException | IOException e) {
+                        final Variant variant = (Variant) variantUnmarshaller
+                                .unmarshal(elVariant);
+
+                        // VARIANT attributes
+//                        variant.setName(elVariant.getAttribute("name"));
+//                        variant.setDefault(Boolean.valueOf(
+//                                elVariant.getAttribute("default")));
+//                        variant.setVersion(parseFloat(
+//                                elVariant.getAttribute("version")));
+//                        variant.setAliases(Utils.parseCSV(
+//                                elVariant.getAttribute("aliases")));
+
+                        // description
+//                        final Element elDescription = getSingleElementByName(
+//                                elVariant, "DESCRIPTION");
+//                        checkElement(elDescription, "DESCRIPTION");
+//                        final Node text = elDescription.getFirstChild();
+//                        variant.setDescription(text.getNodeValue());
+
+                        // starting time
+                        final Element elStartingtime = getSingleElementByName(
+                                elVariant, "STARTINGTIME");
+                        checkElement(elStartingtime, "STARTINGTIME");
+                        variant.setStartingPhase(Phase.parse(
+                                elStartingtime.getAttribute("turn")));
+//                        variant.setBCYearsAllowed(Boolean.valueOf(elStartingtime
+//                                .getAttribute("allowBCYears")));
+
+                        // if start is BC, and BC years are not allowed, then BC years ARE allowed.
+//                        if (variant.getStartingPhase().getYear() < 0) {
+//                            variant.setBCYearsAllowed(true);
+//                        }
+
+                        // victory conditions (single, with single subitems)
+                        final Element elVictoryconditions = getSingleElementByName(
+                                elVariant, EL_VICTORYCONDITIONS);
+                        checkElement(elVictoryconditions, EL_VICTORYCONDITIONS);
+                        Optional.ofNullable(
+                                getSingleElementByName(elVictoryconditions,
+                                        EL_WINNING_SUPPLY_CENTERS))
+                                .ifPresent(el -> {
+                                    variant.setNumSCForVictory(parseInt(
+                                            el.getAttribute(ATT_VALUE)));
+                                });
+
+                        Optional.ofNullable(
+                                getSingleElementByName(elVictoryconditions,
+                                        EL_YEARS_WITHOUT_SC_CAPTURE))
+                                .ifPresent(el -> {
+                                    variant.setMaxYearsNoSCChange(parseInt(
+                                            el.getAttribute(ATT_VALUE)));
+                                });
+
+                        Optional.ofNullable(
+                                getSingleElementByName(elVictoryconditions,
+                                        EL_GAME_LENGTH)).ifPresent(el -> {
+                            variant.setMaxGameTimeYears(
+                                    parseInt(el.getAttribute(ATT_VALUE)));
+                        });
+
+
+                        // powers (multiple)
+                        variant.setPowers(makePowers(elVariant));
+
+                        // supply centers (multiple)
+                        variant.setSupplyCenters(makeSupplyCenters(elVariant));
+
+                        // initial state (multiple)
+                        variant.setInitialStates(makeInitialStates(elVariant));
+
+                        // MAP element and children
+                        final Element elMap = getSingleElementByName(elVariant,
+                                EL_MAP);
+                        // MAP adjacency URI; process it using ProvinceData parser
+                        try {
+                            final URI adjacencyURI = new URI(
+                                    elMap.getAttribute(ATT_ADJACENCYURI));
+                            variant.setProvinceData(
+                                    AdjCache.getProvinceData(adjacencyURI));
+                            variant.setBorderData(
+                                    AdjCache.getBorderData(adjacencyURI));
+                        } catch (final URISyntaxException | SAXException | IOException e) {
+                            throw new IllegalArgumentException(e);
+                        }
+
+                        // MAP_GRAPHIC element (multiple)
+                        final NodeList nodes = elMap
+                                .getElementsByTagName(EL_MAP_GRAPHIC);
+                        variant.setMapGraphics(
+                                makeMapGraphic(mapDefTable, nodes));
+
+                        // rule options (if any have been set)
+                        // this element is optional.
+                        variant.setRuleOptionNVPs(
+                                makeRuleOptionNVPs(elVariant));
+
+                        // add variant to list of variants
+                        variantList.add(variant);
+                    } catch (JAXBException e) {
                         throw new IllegalArgumentException(e);
                     }
-
-                    // MAP_GRAPHIC element (multiple)
-                    final NodeList nodes = elMap
-                            .getElementsByTagName(EL_MAP_GRAPHIC);
-                    variant.setMapGraphics(makeMapGraphic(mapDefTable, nodes));
-
-                    // rule options (if any have been set)
-                    // this element is optional.
-                    variant.setRuleOptionNVPs(makeRuleOptionNVPs(elVariant));
-
-                    // add variant to list of variants
-                    variantList.add(variant);
                 });// for(i)
     }// procVariants()
 

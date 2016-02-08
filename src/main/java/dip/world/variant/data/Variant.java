@@ -22,25 +22,43 @@
 //
 package dip.world.variant.data;
 
+import dip.misc.Utils;
 import dip.world.Phase;
 import dip.world.Power;
 import javafx.util.Pair;
 
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * A Variant.
  */
+@XmlRootElement(name = "VARIANT")
 public class Variant implements Cloneable, Comparable<Variant> {
     // the arrays in general should not be null. They are defined as null initially
     // to make it more apparent should a field not be initialized properly.
     //
-    private String name;
+    @XmlAttribute(name = "name", required = true)
+    private String name = "";
+    @XmlAttribute(name = "default", required = true)
     private boolean isDefault;
+    @XmlAttribute(name = "version", required = true)
+    private float version;
+    // @XmlAttribute(name="aliases")
+    private List<String> aliases = Collections.emptyList();
+    @XmlElement(name = "DESCRIPTION")
     private String description;
-    private List<Power> powers;
+    // @XmlAttribute(name = "turn")
+    // @XmlAttribute(name = "turn", required = true)
     private Phase phase;
+    @XmlAttribute(name = "allowBCYears")
+    private boolean allowBCYears;
+
+    private List<Power> powers;
     private List<InitialState> istate;
     private List<SupplyCenter> supplyCenters;
     private List<ProvinceData> provinceData;
@@ -48,11 +66,14 @@ public class Variant implements Cloneable, Comparable<Variant> {
     private int vcMaxYearsNoSCChange;
     private int vcMaxGameTimeYears;
     private List<MapGraphic> mapGraphics;
-    private float version;
     private List<NameValuePair> roNVPs;
     private List<BorderData> borderData;
-    private boolean allowBCYears;
-    private List<String> aliases = Collections.emptyList();
+
+    void afterUnmarshal(final Unmarshaller unmarshaller, final Object parent) {
+//        if (phase.getYear() < 0) {
+//            allowBCYears = true;
+//        }
+    }
 
     /**
      * Class of Rule Option name/value pairs
@@ -83,6 +104,7 @@ public class Variant implements Cloneable, Comparable<Variant> {
         public String getValue() {
             return pair.getValue();
         }
+
     }// nested class NameValuePair
 
 
@@ -215,14 +237,16 @@ public class Variant implements Cloneable, Comparable<Variant> {
     /**
      * Set the variant name.
      */
-    public void setName(final String value) {
-        name = value;
-    }
+//    public void setName(final String value) {
+//        name = value;
+//    }
 
     /**
      * Set the alises. Null is not allowed.
      */
-    public void setAliases(final String[] aliases) {
+    @XmlAttribute(name = "aliases", required = true)
+    public void setAliases(final String csv) {
+        final String[] aliases = Utils.parseCSV(csv);
         if (aliases == null) {
             throw new IllegalArgumentException();
         }
@@ -232,9 +256,9 @@ public class Variant implements Cloneable, Comparable<Variant> {
     /**
      * Set the version of this variant
      */
-    public void setVersion(final float value) {
-        version = value;
-    }
+//    public void setVersion(final float value) {
+//        version = value;
+//    }
 
     /**
      * Set if this variant is the default variant.
@@ -246,13 +270,24 @@ public class Variant implements Cloneable, Comparable<Variant> {
     /**
      * Set the description for this variant.
      */
-    public void setDescription(final String value) {
-        description = value;
-    }
+//    public void setDescription(final String value) {
+//        description = value;
+//    }
 
     /**
      * Set the starting phase for this variant.
      */
+//    @XmlElement(name = "STARTINGTIME")
+//    @XmlAttribute(name = "turn", required = true)
+    @XmlAttribute(name = "turn", required = true)
+    public void setStartingPhase(final String value) {
+        throw new IllegalArgumentException("setstartingPhase: " + value);
+//        phase = Phase.parse(value);
+//        if (phase == null) {
+//            throw new IllegalArgumentException("setstartingPhase");
+//        }
+    }
+
     public void setStartingPhase(final Phase value) {
         phase = value;
     }
