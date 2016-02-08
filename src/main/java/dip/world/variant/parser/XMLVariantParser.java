@@ -27,8 +27,10 @@ import dip.misc.Log;
 import dip.misc.Utils;
 import dip.world.Phase;
 import dip.world.variant.VariantManager;
-import dip.world.variant.data.*;
-import dip.world.variant.data.Variant.NameValuePair;
+import dip.world.variant.data.BorderData;
+import dip.world.variant.data.MapGraphic;
+import dip.world.variant.data.ProvinceData;
+import dip.world.variant.data.Variant;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -53,7 +55,10 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -263,63 +268,13 @@ public class XMLVariantParser implements VariantParser {
                         // =====================================
 
 
-//                        // supply centers (multiple)
-//                        final Unmarshaller unmarshaller1;
-//                        try {
-//                            unmarshaller1 = JAXBContext
-//                                    .newInstance(SupplyCenter.class)
-//                                    .createUnmarshaller();
-//                        } catch (final JAXBException e1) {
-//                            throw new IllegalArgumentException(e1);
-//                        }
-//
-//                        final NodeList nodes2 = elVariant
-//                                .getElementsByTagName(EL_SUPPLYCENTER);
-//                        variant.setSupplyCenters(
-//                                IntStream.range(0, nodes2.getLength())
-//                                        .mapToObj(j -> (Element) nodes2.item(j))
-//                                        .map(element -> {
-//                                            try {
-//                                                return (SupplyCenter) unmarshaller1
-//                                                        .unmarshal(element);
-//                                            } catch (JAXBException e1) {
-//                                                throw new IllegalArgumentException(
-//                                                        e1);
-//                                            }
-//                                        }).collect(Collectors.toList()));
-//
-//                        // initial state (multiple)
-//                        final Unmarshaller unmarshaller2;
-//                        try {
-//                            unmarshaller2 = JAXBContext
-//                                    .newInstance(InitialState.class)
-//                                    .createUnmarshaller();
-//                        } catch (final JAXBException e1) {
-//                            throw new IllegalArgumentException(e1);
-//                        }
-//
-//                        final NodeList nodes3 = elVariant
-//                                .getElementsByTagName(EL_INITIALSTATE);
-//                        variant.setInitialStates(
-//                                IntStream.range(0, nodes3.getLength())
-//                                        .mapToObj(j -> (Element) nodes3.item(j))
-//                                        .map(element -> {
-//                                            try {
-//                                                return (InitialState) unmarshaller2
-//                                                        .unmarshal(element);
-//                                            } catch (JAXBException e1) {
-//                                                throw new IllegalArgumentException(
-//                                                        e1);
-//                                            }
-//                                        }).collect(Collectors.toList()));
-
                         // MAP element and children
                         final Element elMap = getSingleElementByName(elVariant,
-                                EL_MAP);
+                                "MAP");
                         // MAP adjacency URI; process it using ProvinceData parser
                         try {
                             final URI adjacencyURI = new URI(
-                                    elMap.getAttribute(ATT_ADJACENCYURI));
+                                    elMap.getAttribute("adjacencyURI"));
                             variant.setProvinceData(
                                     AdjCache.getProvinceData(adjacencyURI));
                             variant.setBorderData(
@@ -330,14 +285,12 @@ public class XMLVariantParser implements VariantParser {
 
                         // MAP_GRAPHIC element (multiple)
                         final NodeList nodes = elMap
-                                .getElementsByTagName(EL_MAP_GRAPHIC);
+                                .getElementsByTagName("MAP_GRAPHIC");
                         variant.setMapGraphics(
                                 makeMapGraphic(mapDefTable, nodes));
 
                         // rule options (if any have been set)
                         // this element is optional.
-                        variant.setRuleOptionNVPs(
-                                makeRuleOptionNVPs(elVariant));
 
                         // add variant to list of variants
                         variantList.add(variant);
@@ -372,22 +325,6 @@ public class XMLVariantParser implements VariantParser {
                                     .isEmpty() ? md
                                     .getPrefUnitStyle() : preferredUnitStyle);
                 }).collect(Collectors.toList());
-    }
-
-    private List<NameValuePair> makeRuleOptionNVPs(final Element elVariant) {
-        final Element element = getSingleElementByName(elVariant,
-                EL_RULEOPTIONS);
-        if (element == null) {
-            return Collections.emptyList();
-        } else {
-            final NodeList nodes = element.getElementsByTagName(EL_RULEOPTION);
-            return IntStream.range(0, nodes.getLength())
-                    .mapToObj(j -> (Element) nodes.item(j)).map(rElement -> {
-                        return new NameValuePair(
-                                rElement.getAttribute(ATT_NAME),
-                                rElement.getAttribute(ATT_VALUE));
-                    }).collect(Collectors.toList());
-        }
     }
 
 

@@ -25,11 +25,11 @@ package dip.world.variant.data;
 import dip.misc.Utils;
 import dip.world.Phase;
 import dip.world.Power;
-import javafx.util.Pair;
 
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -66,8 +66,11 @@ public class Variant implements Cloneable, Comparable<Variant> {
 
     private List<ProvinceData> provinceData;
     private List<MapGraphic> mapGraphics;
-    private List<NameValuePair> roNVPs;
     private List<BorderData> borderData;
+
+    @XmlElementWrapper(name = "RULEOPTIONS")
+    @XmlElement(name = "RULEOPTION")
+    private List<NameValuePair> roNVPs;
 
     // @XmlAttribute(name = "turn")
     // @XmlAttribute(name = "turn", required = true)
@@ -103,33 +106,22 @@ public class Variant implements Cloneable, Comparable<Variant> {
     /**
      * Class of Rule Option name/value pairs
      */
+    @XmlRootElement
     public static class NameValuePair {
-        private final Pair<String, String> pair;
+        @XmlAttribute
+        private String name;
+        @XmlAttribute
+        private String vallue;
+        private String value;
 
-        /**
-         * Create a NameValuePair. Neither name or value may be null.
-         */
-        public NameValuePair(final String name, final String value) {
-            if (name == null || value == null) {
-                throw new IllegalArgumentException();
-            }
-            pair = new Pair<>(name, value);
-        }// NameValuePair()
 
-        /**
-         * Return the Name
-         */
         public String getName() {
-            return pair.getKey();
+            return name;
         }
 
-        /**
-         * Return the Value
-         */
         public String getValue() {
-            return pair.getValue();
+            return value;
         }
-
     }// nested class NameValuePair
 
 
