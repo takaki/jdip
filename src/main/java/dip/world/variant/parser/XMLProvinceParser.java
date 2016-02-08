@@ -163,8 +163,8 @@ public class XMLProvinceParser implements ProvinceParser {
                         final Unmarshaller function = JAXBContext
                                 .newInstance(BorderData.class)
                                 .createUnmarshaller();
-                        return (BorderData) function.unmarshal(
-                                borderNodes.item(i));
+                        return (BorderData) function
+                                .unmarshal(borderNodes.item(i));
                     } catch (JAXBException e) {
                         throw new IllegalArgumentException(e);
                     }
@@ -172,61 +172,82 @@ public class XMLProvinceParser implements ProvinceParser {
 
 
         // find all PROVINCE elements
-        final NodeList provinceNodes = root.getElementsByTagName(EL_PROVINCE);
+        final NodeList provinceNodes = root.getElementsByTagName("PROVINCE");
+//        provinceList.addAll(IntStream.range(0, provinceNodes.getLength())
+//                .mapToObj(i -> {
+//                    try {
+//                        final Unmarshaller function = JAXBContext
+//                                .newInstance(ProvinceData.class)
+//                                .createUnmarshaller();
+//                        return (ProvinceData) function
+//                                .unmarshal(provinceNodes.item(i));
+//                    } catch (JAXBException e) {
+//                        throw new IllegalArgumentException(e);
+//                    }
+//                }).collect(Collectors.toList()));
         provinceList.addAll(IntStream.range(0, provinceNodes.getLength())
                 .mapToObj(i -> (Element) provinceNodes.item(i))
                 .map(elProvince -> {
-                    final ProvinceData provinceData = new ProvinceData();
+                    try {
+                        final Unmarshaller function = JAXBContext
+                                .newInstance(ProvinceData.class)
+                                .createUnmarshaller();
+                        final ProvinceData provinceData = (ProvinceData) function
+                                .unmarshal(elProvince);
 
-                    // create short/unique name list
-                    final List<String> shortNames = new LinkedList<>();
-                    shortNames.add(elProvince.getAttribute(ATT_SHORTNAME));
-                    // unique name(s) (if any)
-                    final NodeList elementsByTagName = elProvince
-                            .getElementsByTagName(EL_UNIQUENAME);
-                    shortNames.addAll(IntStream
-                            .range(0, elementsByTagName.getLength())
-                            .mapToObj(i -> (Element) elementsByTagName.item(i))
-                            .map(element -> element.getAttribute(ATT_NAME))
-                            .collect(Collectors.toList()));
-                    // set all short & unique names
-                    provinceData.setShortNames(shortNames);
+                        // create short/unique name list
+                        final List<String> shortNames = new LinkedList<>();
+                        shortNames.add(elProvince.getAttribute("shortname"));
+                        // unique name(s) (if any)
+                        final NodeList elementsByTagName = elProvince
+                                .getElementsByTagName("UNIQUENAME");
+                        shortNames.addAll(IntStream
+                                .range(0, elementsByTagName.getLength())
+                                .mapToObj(i -> (Element) elementsByTagName
+                                        .item(i))
+                                .map(element -> element.getAttribute("name"))
+                                .collect(Collectors.toList()));
+                        // set all short & unique names
+                        provinceData.setShortNames(shortNames);
 
-                    // region attributes
-                    provinceData
-                            .setFullName(elProvince.getAttribute(ATT_FULLNAME));
+                        // region attributes
+                        provinceData.setFullName(
+                                elProvince.getAttribute("fullname"));
 
-                    // convoyable coast
-                    provinceData.setConvoyableCoast(Boolean.valueOf(
-                            elProvince.getAttribute(ATT_CONVOYABLE_COAST)));
+                        // convoyable coast
+                        provinceData.setConvoyableCoast(Boolean.valueOf(
+                                elProvince.getAttribute("isConvoyableCoast")));
 
-                    // borders data (optional); a list of references, seperated by commas/spaces
-                    final String borders = elProvince.getAttribute(ATT_BORDERS)
-                            .trim();
-                    provinceData.setBorders(borders.isEmpty() ? Collections
-                            .emptyList() : new ArrayList<>(
-                            Arrays.asList(borders.split("[, ]+"))));
+                        // borders data (optional); a list of references, seperated by commas/spaces
+                        final String borders = elProvince
+                                .getAttribute("borders").trim();
+                        provinceData.setBorders(borders.isEmpty() ? Collections
+                                .emptyList() : new ArrayList<>(
+                                Arrays.asList(borders.split("[, ]+"))));
 
 
-                    // adjacency data
-                    final NodeList adjNodes = elProvince
-                            .getElementsByTagName(EL_ADJACENCY);
-                    final List<String> adjTypeNames = IntStream
-                            .range(0, adjNodes.getLength())
-                            .mapToObj(j -> (Element) adjNodes.item(j))
-                            .map(element -> element.getAttribute(ATT_TYPE))
-                            .collect(Collectors.toList());
-                    final List<String> adjProvinceNames = IntStream
-                            .range(0, adjNodes.getLength())
-                            .mapToObj(j -> (Element) adjNodes.item(j))
-                            .map(element -> element.getAttribute(ATT_REFS))
-                            .collect(Collectors.toList());
-                    provinceData.setAdjacentProvinceTypes(adjTypeNames
-                            .toArray(new String[adjTypeNames.size()]));
-                    provinceData.setAdjacentProvinceNames(adjProvinceNames
-                            .toArray(new String[adjProvinceNames.size()]));
+                        // adjacency data
+                        final NodeList adjNodes = elProvince
+                                .getElementsByTagName("ADJACENCY");
+                        final List<String> adjTypeNames = IntStream
+                                .range(0, adjNodes.getLength())
+                                .mapToObj(j -> (Element) adjNodes.item(j))
+                                .map(element -> element.getAttribute("type"))
+                                .collect(Collectors.toList());
+                        final List<String> adjProvinceNames = IntStream
+                                .range(0, adjNodes.getLength())
+                                .mapToObj(j -> (Element) adjNodes.item(j))
+                                .map(element -> element.getAttribute("refs"))
+                                .collect(Collectors.toList());
+                        provinceData.setAdjacentProvinceTypes(adjTypeNames
+                                .toArray(new String[adjTypeNames.size()]));
+                        provinceData.setAdjacentProvinceNames(adjProvinceNames
+                                .toArray(new String[adjProvinceNames.size()]));
 
-                    return provinceData;
+                        return provinceData;
+                    } catch (JAXBException e) {
+                        throw new IllegalArgumentException(e);
+                    }
                 }).collect(Collectors.toList()));
     }// procProvinceData()
 
