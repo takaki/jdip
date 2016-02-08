@@ -25,7 +25,6 @@ package dip.world.variant.parser;
 import dip.misc.LRUCache;
 import dip.misc.Log;
 import dip.misc.Utils;
-import dip.world.Phase;
 import dip.world.variant.VariantManager;
 import dip.world.variant.data.BorderData;
 import dip.world.variant.data.MapGraphic;
@@ -250,24 +249,6 @@ public class XMLVariantParser implements VariantParser {
                         final Variant variant = (Variant) variantUnmarshaller
                                 .unmarshal(elVariant);
 
-                        // starting time
-                        final Element elStartingtime = getSingleElementByName(
-                                elVariant, "STARTINGTIME");
-                        checkElement(elStartingtime, "STARTINGTIME");
-                        variant.setStartingPhase(Phase.parse(
-                                elStartingtime.getAttribute("turn")));
-                        variant.setBCYearsAllowed(Boolean.valueOf(
-                                elStartingtime.getAttribute("allowBCYears")));
-
-                        // if start is BC, and BC years are not allowed, then BC years ARE allowed.
-                        if (variant.getStartingPhase().getYear() < 0) {
-                            variant.setBCYearsAllowed(true);
-                        }
-
-
-                        // =====================================
-
-
                         // MAP element and children
                         final Element elMap = getSingleElementByName(elVariant,
                                 "MAP");
@@ -287,7 +268,37 @@ public class XMLVariantParser implements VariantParser {
                         final NodeList nodes = elMap
                                 .getElementsByTagName("MAP_GRAPHIC");
                         variant.setMapGraphics(
-                                makeMapGraphic(mapDefTable, nodes));
+                                IntStream.range(0, nodes.getLength())
+                                        .mapToObj(j -> (Element) nodes.item(j))
+                                        .map(mgElement -> {
+                                            final String refID = mgElement
+                                                    .getAttribute("ref");
+                                            final boolean isDefault = Boolean
+                                                    .valueOf(mgElement
+                                                            .getAttribute(
+                                                                    "default"));
+                                            final String preferredUnitStyle = mgElement
+                                                    .getAttribute(
+                                                            "preferredUnitStyle");
+
+                                            // lookup; if we didn't find it, throw an exception
+                                            final MapDef md = mapDefTable
+                                                    .get(refID);
+                                            if (md == null) {
+                                                throw new IllegalArgumentException(
+                                                        "MAP_GRAPHIC refers to unknown ID: \"" + refID + "\"");
+                                            }
+
+                                            // create the MapGraphic object
+                                            return new MapGraphic(
+                                                    md.getMapURI(), isDefault,
+                                                    md.getTitle(),
+                                                    md.getDescription(),
+                                                    md.getThumbURI(),
+                                                    preferredUnitStyle != null && preferredUnitStyle
+                                                            .isEmpty() ? md
+                                                            .getPrefUnitStyle() : preferredUnitStyle);
+                                        }).collect(Collectors.toList()));
 
                         // rule options (if any have been set)
                         // this element is optional.
@@ -299,33 +310,6 @@ public class XMLVariantParser implements VariantParser {
                     }
                 });// for(i)
     }// procVariants()
-
-    private List<MapGraphic> makeMapGraphic(
-            final Map<String, MapDef> mapDefTable, final NodeList nodes) {
-        return IntStream.range(0, nodes.getLength())
-                .mapToObj(j -> (Element) nodes.item(j)).map(mgElement -> {
-                    final String refID = mgElement.getAttribute(ATT_REF);
-                    final boolean isDefault = Boolean
-                            .valueOf(mgElement.getAttribute(ATT_DEFAULT));
-                    final String preferredUnitStyle = mgElement
-                            .getAttribute(ATT_PREFERRED_UNIT_STYLE);
-
-                    // lookup; if we didn't find it, throw an exception
-                    final MapDef md = mapDefTable.get(refID);
-                    if (md == null) {
-                        throw new IllegalArgumentException(
-                                "MAP_GRAPHIC refers to unknown ID: \"" + refID + "\"");
-                    }
-
-                    // create the MapGraphic object
-                    return new MapGraphic(md.getMapURI(), isDefault,
-                            md.getTitle(), md.getDescription(),
-                            md.getThumbURI(),
-                            preferredUnitStyle != null && preferredUnitStyle
-                                    .isEmpty() ? md
-                                    .getPrefUnitStyle() : preferredUnitStyle);
-                }).collect(Collectors.toList());
-    }
 
 
     /**

@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -65,8 +66,20 @@ public class Variant implements Cloneable, Comparable<Variant> {
     private List<InitialState> istate;
 
     private List<ProvinceData> provinceData;
-    private List<MapGraphic> mapGraphics;
     private List<BorderData> borderData;
+
+    @XmlElement(name = "MAP")
+    private Map map = new Map();
+
+    public static class Map {
+        // <MAP adjacencyURI="std_adjacency.xml">
+        // <MAP_GRAPHIC ref="standard" default="true"/>
+        @XmlAttribute(name = "adjacencyURI")
+        private URI adjacencyURI;
+        @XmlElement(name = "MAP_GRAPHIC")
+        private List<MapGraphic> mapGraphics;
+
+    }
 
     @XmlElementWrapper(name = "RULEOPTIONS")
     @XmlElement(name = "RULEOPTION")
@@ -74,9 +87,28 @@ public class Variant implements Cloneable, Comparable<Variant> {
 
     // @XmlAttribute(name = "turn")
     // @XmlAttribute(name = "turn", required = true)
-    private Phase phase;
-    //        @XmlAttribute(name = "allowBCYears")
-    private boolean allowBCYears;
+    //     <STARTINGTIME turn="Spring, 1914, Movement" allowBCYears="true"/>
+    @XmlElement(name = "STARTINGTIME", required = true)
+    private StartingTime startingTime = new StartingTime();
+
+    @XmlRootElement
+    public static class StartingTime {
+        private Phase phase;
+        @XmlAttribute(name = "allowBCYears")
+        private boolean allowBCYears;
+
+        @XmlAttribute(name = "turn")
+        public void setPhase(String val) {
+            phase = Phase.parse(val);
+        }
+
+        void afterUnmarshal(final Unmarshaller unmarshaller,
+                            final Object parent) {
+            if (phase.getYear() < 0) {
+                allowBCYears = true;
+            }
+        }
+    }
 
     @XmlRootElement
     public static class VictoryConditions {
@@ -170,7 +202,7 @@ public class Variant implements Cloneable, Comparable<Variant> {
      * The starting time.
      */
     public Phase getStartingPhase() {
-        return phase;
+        return startingTime.phase;
     }
 
     /**
@@ -219,7 +251,7 @@ public class Variant implements Cloneable, Comparable<Variant> {
      * The mapGraphics associated with this Variant.
      */
     public MapGraphic[] getMapGraphics() {
-        return mapGraphics.toArray(new MapGraphic[mapGraphics.size()]);
+        return map.mapGraphics.toArray(new MapGraphic[map.mapGraphics.size()]);
     }
 
     /**
@@ -247,7 +279,7 @@ public class Variant implements Cloneable, Comparable<Variant> {
      * Gets if BC Years are allowed with this Variant
      */
     public boolean getBCYearsAllowed() {
-        return allowBCYears;
+        return startingTime.allowBCYears;
     }
 
 
@@ -306,7 +338,7 @@ public class Variant implements Cloneable, Comparable<Variant> {
     }
 
     public void setStartingPhase(final Phase value) {
-        phase = value;
+        startingTime.phase = value;
     }
 
     /**
@@ -348,7 +380,7 @@ public class Variant implements Cloneable, Comparable<Variant> {
      * Sets whether BC years (negative years) are allowed
      */
     public void setBCYearsAllowed(final boolean value) {
-        allowBCYears = value;
+        startingTime.allowBCYears = value;
     }
 
 
@@ -356,7 +388,7 @@ public class Variant implements Cloneable, Comparable<Variant> {
      * Sets the MapGraphics, from a List
      */
     public void setMapGraphics(final List mgList) {
-        mapGraphics = new ArrayList<>(mgList);
+        map.mapGraphics = new ArrayList<>(mgList);
     }// setPowers()
 
     /**
@@ -420,8 +452,8 @@ public class Variant implements Cloneable, Comparable<Variant> {
      * Finds the MapGraphic by name; case insensitive.
      */
     public MapGraphic getMapGrapic(final String mgName) {
-        if (mapGraphics != null) {
-            return mapGraphics.stream()
+        if (map.mapGraphics != null) {
+            return map.mapGraphics.stream()
                     .filter(mapGraphic -> mapGraphic.getName()
                             .equalsIgnoreCase(mgName)).findFirst().orElse(null);
         }
@@ -435,9 +467,9 @@ public class Variant implements Cloneable, Comparable<Variant> {
     public MapGraphic getDefaultMapGraphic() {
         MapGraphic mg = null;
 
-        if (mapGraphics != null && mapGraphics.size() > 0) {
-            mg = mapGraphics.stream().filter(MapGraphic::isDefault).findFirst()
-                    .orElse(mapGraphics.get(0));
+        if (map.mapGraphics != null && map.mapGraphics.size() > 0) {
+            mg = map.mapGraphics.stream().filter(MapGraphic::isDefault)
+                    .findFirst().orElse(map.mapGraphics.get(0));
         }
 
         return mg;
@@ -467,14 +499,14 @@ public class Variant implements Cloneable, Comparable<Variant> {
         args.add(name);
         args.add(description);
         args.add(String.valueOf(victoryConditions.vcNumSCForVictory.value));
-        if (phase == null) {
+        if (startingTime.phase == null) {
             args.add("{bad phase}");
             args.add("{bad phase}");
             args.add("{bad phase}");
         } else {
-            args.add(phase.getSeasonType());
-            args.add(phase.getYearType());
-            args.add(phase.getPhaseType());
+            args.add(startingTime.phase.getSeasonType());
+            args.add(startingTime.phase.getYearType());
+            args.add(startingTime.phase.getPhaseType());
         }
         // create list of powers
         args.add(powers.stream()
@@ -498,9 +530,10 @@ public class Variant implements Cloneable, Comparable<Variant> {
         // deep clone
         //
         // phase
-        if (phase != null) {
+        if (startingTime.phase != null) {
             // cheap...
-            variant.phase = Phase.parse(phase.toString());
+            variant.startingTime.phase = Phase
+                    .parse(startingTime.phase.toString());
         }
 
         // powers
@@ -522,15 +555,15 @@ public class Variant implements Cloneable, Comparable<Variant> {
         istate.stream().forEach(System.out::println);
         supplyCenters.stream().forEach(System.out::println);
         provinceData.stream().forEach(System.out::println);
-        mapGraphics.stream().forEach(System.out::println);
+        map.mapGraphics.stream().forEach(System.out::println);
         return String
                 .join("", getClass().getName(), "[", "name=", name.toString(),
                         ",isDefault=", Boolean.toString(isDefault), "powers=",
                         powers.stream().map(power -> power.toString())
                                 .collect(Collectors.joining(",")), ",phase=",
-                        phase.toString(), ",istate=", ",supplyCenters=",
-                        ",provinceData=", "mapGraphics=", ",vcNumSCForVictory=",
-                        Integer.toString(
+                        startingTime.phase.toString(), ",istate=",
+                        ",supplyCenters=", ",provinceData=", "mapGraphics=",
+                        ",vcNumSCForVictory=", Integer.toString(
                                 victoryConditions.vcNumSCForVictory.value),
                         ",vcMaxGameTimeYears=", Integer.toString(
                                 victoryConditions.vcMaxGameTimeYears.value),

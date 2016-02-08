@@ -22,21 +22,30 @@
 //
 package dip.world.variant.data;
 
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.function.Function;
 
-/**
-
-
- */
+@XmlRootElement
 public class MapGraphic {
-    private final String name;
-    private final URI uri;
-    private final boolean isDefault;
-    private final String desc;
-    private final URI thumbURI;
-    private final String prefSPName;
+    // <MAP_GRAPHIC ref="standard" default="true"/>
+
+
+    @XmlAttribute(name = "default")
+    private boolean isDefault;
+    @XmlAttribute(name = "ref")
+    private String ref;
+    @XmlAttribute(name = "preferredUnitStyle")
+    private String prefSPName;
+
+
+    private String name;
+    private URI uri;
+    private String desc;
+    private URI thumbURI;
 
 
     /**
@@ -45,6 +54,36 @@ public class MapGraphic {
      * If the preferred Symbol Pack Name (prefSPName) is an empty string, it will
      * be converted to a null String.
      */
+    public MapGraphic() {
+    }
+
+    void afterUnmarshal(final Unmarshaller unmarshaller, final Object parent) {
+
+        final String refID = ref;
+
+//                            // lookup; if we didn't find it, throw an exception
+//                            final MapDef md = mapDefTable
+//                                    .get(refID);
+//                            if (md == null) {
+//                                throw new IllegalArgumentException(
+//                                        "MAP_GRAPHIC refers to unknown ID: \"" + refID + "\"");
+//                            }
+//
+//                            // create the MapGraphic object
+//                            return new MapGraphic(
+//                                    md.getMapURI(), isDefault,
+//                                    md.getTitle(),
+//                                    md.getDescription(),
+//                                    md.getThumbURI(),
+//                                    preferredUnitStyle != null && preferredUnitStyle
+//                                            .isEmpty() ? md
+//                                            .getPrefUnitStyle() : preferredUnitStyle);
+//                        }).collect(Collectors.toList());
+
+
+    }
+
+
     public MapGraphic(final String uri, final boolean isDefault,
                       final String name, final String description,
                       final String thumbURI, final String prefSPName) {
