@@ -551,8 +551,8 @@ public class Variant implements Cloneable, Comparable<Variant> {
         return String
                 .join("", getClass().getName(), "[", "name=", name.toString(),
                         ",isDefault=", Boolean.toString(isDefault), "powers=",
-                        powers.stream().map(power -> power.toString())
-                                .collect(Collectors.joining(",")), ",phase=",
+                        powers.stream().map(Power::toString)
+                                .collect(Collectors.joining(",")), ",,phase=",
                         startingTime.phase.toString(), ",istate=",
                         ",supplyCenters=", ",provinceData=", "mapGraphics=",
                         ",vcNumSCForVictory=", Integer.toString(
