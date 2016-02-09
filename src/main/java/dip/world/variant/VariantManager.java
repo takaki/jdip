@@ -73,11 +73,6 @@ public final class VariantManager {
      */
     public static final VersionNumber VERSION_NEWEST = new VersionNumber(-1000,
             0);
-    /**
-     * Version Constant representing the most oldest version of a Variant or SymbolPack
-     */
-    public static final VersionNumber VERSION_OLDEST = new VersionNumber(-2000,
-            0);
 
 
     // variant constants
@@ -283,7 +278,7 @@ public final class VariantManager {
         // into the array.
         // fill variant list with variants.
         return variantMap.values().stream().distinct().map(mr -> {
-            final VRec mro = mr.get(VERSION_NEWEST);
+            final VRec mro = mr.getNewest();
             assert mro != null;
             return mro.getVariant();
         }).sorted().toArray(Variant[]::new);
@@ -298,7 +293,7 @@ public final class VariantManager {
         // avoid putting duplicates into the array.
         // fill variant list with variants.
         return symbolMap.values().stream().distinct().map(mr1 -> {
-            final SPRec mro1 = mr1.get(VERSION_NEWEST);
+            final SPRec mro1 = mr1.getNewest();
             assert mro1 != null;
             return mro1.getSymbolPack();
         }).sorted().toArray(SymbolPack[]::new);
@@ -433,21 +428,6 @@ public final class VariantManager {
 
     }// getSymbolPackVersions()
 
-
-    /**
-     * Ensures version is positive OR VERSION_NEWEST or VERSION_OLDEST
-     *
-     * @param version
-     */
-    private void checkVersionConstant(final VersionNumber version) {
-        if (version.compareTo(new VersionNumber(0, 0)) <= 0 && !Objects
-                .equals(version, VERSION_NEWEST) && !Objects
-                .equals(version, VERSION_OLDEST)) {
-            throw new IllegalArgumentException(
-                    String.format("invalid version or version constant: %s",
-                            version));
-        }
-    }// checkVersionConstant()
 
     /**
      * Gets a specific resource for a Variant or a SymbolPack, given a URL to
@@ -838,14 +818,6 @@ public final class VariantManager {
     private final class MapRec<T extends MapRecObj> {
         private final List<T> list = new ArrayList<>(2);
 
-        // this constructor prevents us from having an empty list.
-        MapRec(final T obj) {
-            if (obj == null) {
-                throw new IllegalArgumentException();
-            }
-            list.add(obj);
-        }
-
         MapRec() {
 
         }
@@ -860,8 +832,8 @@ public final class VariantManager {
          * the MapRecObj is added and returns true.
          */
         public void add(final T obj) {
-            if (list.stream().noneMatch(
-                    aList -> (aList.getVersion() == obj.getVersion()))) {
+            if (list.stream().noneMatch(aList -> (Objects
+                    .equals(aList.getVersion(), obj.getVersion())))) {
                 list.add(obj);
             } else {
                 throw new IllegalArgumentException(String.format(
@@ -887,34 +859,22 @@ public final class VariantManager {
          * @param version
          */
         public T get(final VersionNumber version) {
-            checkVersionConstant(version);
-
-            final int size = list.size();
-
-            // typical-case
-            if (size == 1 && (Objects.equals(version, VERSION_OLDEST) || Objects
-                    .equals(version, VERSION_NEWEST))) {
-                return list.get(0);
+            if (version.compareTo(new VersionNumber(0, 0)) < 0) {
+                throw new IllegalArgumentException(
+                        String.format("invalid version or version constant: %s",
+                                version));
             }
+            return list.stream()
+                    .filter(list -> list.getVersion().equals(version))
+                    .findFirst().orElse(null);
 
-            T selected = null;
-            for (final T aList : list) {
-                selected = selected == null ? aList : selected;
-
-                if (Objects.equals(version, VERSION_OLDEST) && aList
-                        .getVersion()
-                        .compareTo(selected.getVersion()) < 0 || Objects
-                        .equals(version, VERSION_NEWEST) && aList.getVersion()
-                        .compareTo(selected.getVersion()) > 0) {
-                    selected = aList;
-                } else if (Objects.equals(aList.getVersion(), version)) {
-                    return aList;
-                }
-            }
-
-            return selected;
         }// get()
 
+        public T getNewest() {
+            return list.stream()
+                    .sorted(Comparator.comparing(MapRecObj::getVersion))
+                    .reduce((a, b) -> b).orElse(null);
+        }
     }// inner class VMRec
 
 

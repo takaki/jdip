@@ -28,11 +28,11 @@ class VersionNumberTest extends Specification {
         def v10a = new VersionNumber(1, 0)
         def v11 = new VersionNumber(1, 1)
         expect:
-        v10 == v10a
-        v11 > v10
-        v10 > v09
-        v09 < v10
-        v09 != v10
+        v10.equals(v10a)
+        v11.compareTo(v10) > 0
+        v10.compareTo(v09) > 0
+        v09.compareTo(v10) < 0
+        v10.compareTo(v09) >= 0
     }
 
     def "test toString"() {

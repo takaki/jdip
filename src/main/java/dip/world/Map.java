@@ -437,15 +437,8 @@ public class Map implements Serializable {
             wsNames = names.stream()
                     .filter(name -> name.indexOf(' ') != -1 || name
                             .indexOf('-') != -1).map(String::toLowerCase)
-                    .sorted((o1, o2) -> {
-                        if (o2.length() > o1.length()) {
-                            return 1;
-                        }
-                        if (o2.length() < o1.length()) {
-                            return -1;
-                        }
-                        return 0;
-                    }).collect(Collectors.toList());
+                    .sorted(Comparator.comparing(String::length).reversed())
+                    .collect(Collectors.toList());
         }
 
         // search & replace.
