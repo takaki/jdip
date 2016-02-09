@@ -440,11 +440,8 @@ public class VariantManager {
      */
     public synchronized double[] getVariantVersions(final String name) {
         final MapRec mr = variantMap.get(name.toLowerCase());
-        if (mr != null) {
-            return mr.getVersions();
-        }
+        return mr == null ? new double[0] : mr.getVersions();
 
-        return new double[0];
     }// getVariantVersions()
 
     /**
@@ -453,11 +450,8 @@ public class VariantManager {
      */
     public synchronized double[] getSymbolPackVersions(final String name) {
         final MapRec mr = symbolMap.get(name.toLowerCase());
-        if (mr != null) {
-            return mr.getVersions();
-        }
+        return mr == null ? new double[0] : mr.getVersions();
 
-        return new double[0];
     }// getSymbolPackVersions()
 
 
@@ -469,7 +463,8 @@ public class VariantManager {
     private void checkVersionConstant(final double version) {
         if (version <= 0.0f && version != VERSION_NEWEST && version != VERSION_OLDEST) {
             throw new IllegalArgumentException(
-                    "invalid version or version constant: " + version);
+                    String.format("invalid version or version constant: %s",
+                            version));
         }
     }// checkVersionConstant()
 
@@ -950,13 +945,7 @@ public class VariantManager {
          * Get all available versions
          */
         public double[] getVersions() {
-            final double[] versions = new double[list.size()];
-            for (int i = 0; i < list.size(); i++) {
-                final MapRecObj mro = list.get(i);
-                versions[i] = mro.getVersion();
-            }
-
-            return versions;
+            return list.stream().mapToDouble(MapRecObj::getVersion).toArray();
         }// getVersions()
 
         /**
