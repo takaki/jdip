@@ -20,6 +20,7 @@ package dip.world.variant
 
 import dip.world.Coast
 import dip.world.Unit
+import dip.world.variant.data.VersionNumber
 import spock.lang.Specification
 
 import java.nio.file.Paths
@@ -28,14 +29,14 @@ class VariantManagerTest extends Specification {
     def "initialize"() {
         setup:
         VariantManager.getInstance().init([Paths.get(System.getProperty("user.dir"), "src/test/resources/variants").
-                                     toFile()] as File[])
+                                                   toFile()] as File[])
         when:
-        def variant = VariantManager.getInstance().getVariant("TEST_Borders", 1.0)
+        def variant = VariantManager.getInstance().getVariant("TEST_Borders", VersionNumber.parse('1.0'))
         then:
         variant.getName() == "TEST_Borders"
 
         when:
-        def symbol = VariantManager.getInstance().getSymbolPack("Simple", 1.0)
+        def symbol = VariantManager.getInstance().getSymbolPack("Simple", VersionNumber.parse('1.0'))
         then:
         symbol.getName() == "Simple"
 
@@ -73,10 +74,11 @@ class VariantManagerTest extends Specification {
         variant0.getMapGraphics()[0].getThumbnailURI() == new URI("simple_thumb.png")
 
         expect:
-        VariantManager.getInstance().getSymbolPackVersions("Simple") == [1.0] as double[]
-        VariantManager.getInstance().hasVariantVersion("TEST_Borders", 1.0)
-        VariantManager.getInstance().hasSymbolPackVersion("Simple", 1.0)
-        VariantManager.getInstance().getVariantVersions("TEST_Borders") == [1.0] as double[]
+        VariantManager.getInstance().getSymbolPackVersions("Simple") == [VersionNumber.parse('1.0')] as VersionNumber[]
+        VariantManager.getInstance().hasVariantVersion("TEST_Borders", VersionNumber.parse('1.0'))
+        VariantManager.getInstance().hasSymbolPackVersion("Simple", VersionNumber.parse('1.0'))
+        VariantManager.getInstance().getVariantVersions("TEST_Borders") == [VersionNumber.
+                                                                                    parse('1.0')] as VersionNumber[]
         VariantManager.getInstance().getResource(variant, new URI("a")) == null
         VariantManager.getInstance().getResource(variant, new URI("jar:file:" + System.
                 getProperty("user.dir") + "/src/test/resources/variants/testVariants.zip!/")) == new URL("jar:file:" + System.

@@ -19,6 +19,7 @@
 package dip.world.variant.parser
 
 import dip.world.variant.VariantManager
+import dip.world.variant.data.VersionNumber
 import spock.lang.Specification
 
 import java.nio.file.Paths
@@ -77,7 +78,7 @@ class XMLVariantParserTest extends Specification {
 
 
         std.getBorderData().size() == 0
-        std.getVersion() == 1.0d
+        std.getVersion() == VersionNumber.parse('1.0')
 
         std.toString() == "dip.world.variant.data.Variant[name=DATC_Standard,isDefault=false" +
                 "powers=France,Austria,Turkey,Russia,England,Germany,Italy,," +

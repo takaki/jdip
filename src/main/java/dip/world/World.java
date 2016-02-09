@@ -25,6 +25,7 @@ package dip.world;
 import dip.gui.undo.UndoRedoManager;
 import dip.world.metadata.GameMetadata;
 import dip.world.metadata.PlayerMetadata;
+import dip.world.variant.data.VersionNumber;
 
 import java.io.*;
 import java.util.*;
@@ -469,8 +470,8 @@ public class World implements Serializable {
         private String variantName;
         private String mapName;
         private String symbolsName;
-        private double variantVersion;
-        private double symbolsVersion;
+        private VersionNumber variantVersion;
+        private VersionNumber symbolsVersion;
         private RuleOptions ruleOptions;
 
         /**
@@ -502,18 +503,20 @@ public class World implements Serializable {
 
         /**
          * Set the Variant version.
+         *
          * @param value
          */
-        public void setVariantVersion(double value) {
+        public void setVariantVersion(VersionNumber value) {
             checkVersion(value);
             this.variantVersion = value;
         }
 
         /**
          * Set the Symbol pack version.
+         *
          * @param value
          */
-        public void setSymbolPackVersion(double value) {
+        public void setSymbolPackVersion(VersionNumber value) {
             checkVersion(value);
             this.symbolsVersion = value;
         }
@@ -550,14 +553,14 @@ public class World implements Serializable {
         /**
          * Get the Variant version.
          */
-        public double getVariantVersion() {
+        public VersionNumber getVariantVersion() {
             return this.variantVersion;
         }
 
         /**
          * Get the Symbol pack version.
          */
-        public double getSymbolPackVersion() {
+        public VersionNumber getSymbolPackVersion() {
             return this.symbolsVersion;
         }
 
@@ -575,10 +578,11 @@ public class World implements Serializable {
 
         /**
          * ensures Version is a value &gt;0.0f
+         *
          * @param v
          */
-        private void checkVersion(double v) {
-            if (v <= 0.0f) {
+        private void checkVersion(VersionNumber v) {
+            if (v.compareTo(new VersionNumber(0, 0)) <= 0) {
                 throw new IllegalArgumentException("version: " + v);
             }
         }// checkVersion();
