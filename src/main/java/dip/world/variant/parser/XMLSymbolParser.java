@@ -26,6 +26,7 @@ import dip.misc.Log;
 import dip.world.variant.VariantManager;
 import dip.world.variant.data.Symbol;
 import dip.world.variant.data.SymbolPack;
+import dip.world.variant.data.SymbolPack.CSSStyle;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -78,20 +79,14 @@ public class XMLSymbolParser implements SymbolParser {
         dbf.setValidating(false);
         dbf.setCoalescing(false);
         dbf.setIgnoringComments(true);
-
-
-        final boolean oldNSvalue = dbf.isNamespaceAware();
-
         dbf.setNamespaceAware(true);    // essential!
-        DocumentBuilder docBuilder = dbf.newDocumentBuilder();
+
+        final DocumentBuilder docBuilder = dbf.newDocumentBuilder();
         docBuilder.setErrorHandler(new XMLErrorHandler());
         FastEntityResolver.attach(docBuilder);
 
-        // cleanup
-        dbf.setNamespaceAware(oldNSvalue);
         Log.println("XMLSymbolParser: Parsing: ", symbolPackURL);
         final long time = System.currentTimeMillis();
-        URL symbolPackURL1 = symbolPackURL;
 
         symbolPack = JAXB.unmarshal(is, SymbolPack.class);
         // extract symbol SVG into symbols
@@ -99,11 +94,11 @@ public class XMLSymbolParser implements SymbolParser {
 
         // resolve SVG URI
         final URL url = VariantManager
-                .getResource(symbolPackURL1, symbolPack.getSVGURI());
+                .getResource(symbolPackURL, symbolPack.getSVGURI());
         if (url == null) {
             throw new IOException(String.format(
                     "Could not convert URI: %s from SymbolPack: %s",
-                    symbolPack.getSVGURI(), symbolPackURL1));
+                    symbolPack.getSVGURI(), symbolPackURL));
         }
 
         // parse resolved URI into a Document
@@ -135,9 +130,8 @@ public class XMLSymbolParser implements SymbolParser {
                                                 line));
                             }
                             // create CSS Style
-                            return new SymbolPack.CSSStyle(tokens[0],
-                                    tokens[1]);
-                        }).toArray(SymbolPack.CSSStyle[]::new));
+                            return new CSSStyle(tokens[0], tokens[1]);
+                        }).toArray(CSSStyle[]::new));
             }
 
 
