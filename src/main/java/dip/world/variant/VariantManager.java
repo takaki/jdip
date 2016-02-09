@@ -27,6 +27,7 @@ import dip.misc.Utils;
 import dip.world.variant.data.MapGraphic;
 import dip.world.variant.data.SymbolPack;
 import dip.world.variant.data.Variant;
+import dip.world.variant.parser.SymbolParser;
 import dip.world.variant.parser.VariantParser;
 import dip.world.variant.parser.XMLSymbolParser;
 import dip.world.variant.parser.XMLVariantParser;
@@ -77,11 +78,14 @@ public class VariantManager {
 
 
     // variant constants
-    private static final String[] VARIANT_EXTENSIONS = {"Variant.zip", "Variants.zip", "Variant.jar", "Variants.jar"};
+    private static final List<String> VARIANT_EXTENSIONS = Arrays
+            .asList("Variant.zip", "Variants.zip", "Variant.jar",
+                    "Variants.jar");
     private static final String VARIANT_FILE_NAME = "variants.xml";
 
     // symbol constants
-    private static final String[] SYMBOL_EXTENSIONS = {"Symbols.zip", "Symbols.jar"};
+    private static final List<String> SYMBOL_EXTENSIONS = Arrays
+            .asList("Symbols.zip", "Symbols.jar");
     private static final String SYMBOL_FILE_NAME = "symbols.xml";
 
     // class variables
@@ -94,9 +98,9 @@ public class VariantManager {
 
     // cached variables to enhance performance of getResource() methods
     private List<Variant> variants = Collections
-            .emptyList();            // The sorted Variant list
+            .emptyList();// The sorted Variant list
     private List<SymbolPack> symbolPacks = Collections
-            .emptyList();    // The sorted SymbolPack list
+            .emptyList();// The sorted SymbolPack list
 
     public static VariantManager getInstance() {
         return vm;
@@ -133,7 +137,7 @@ public class VariantManager {
         // for each plugin, attempt to find the "variants.xml" file inside.
         // if it does not exist, we will not load the file. If it does, we will parse it,
         // and associate the variant with the URL in a hashtable.
-        for (final URL pluginURL1 : searchForFiles(searchPaths,
+        for (final URL pluginURL1 : searchForFiles(Arrays.asList(searchPaths),
                 VARIANT_EXTENSIONS)) {
             try (final URLClassLoader urlCL = new URLClassLoader(
                     new URL[]{pluginURL1})) {
@@ -144,7 +148,7 @@ public class VariantManager {
                     // parse variant description file, and create hash entry of variant object -> URL
                     try (InputStream is = new BufferedInputStream(
                             variantXMLURL.openStream())) {
-                        final XMLVariantParser variantParser = new XMLVariantParser(
+                        final VariantParser variantParser = new XMLVariantParser(
                                 is, pluginURL1);
                         // add variants; variants with same name (but older versions) are
                         // replaced with same-name newer versioned variants
@@ -211,7 +215,7 @@ public class VariantManager {
         // for each plugin, attempt to find the "variants.xml" file inside.
         // if it does not exist, we will not load the file. If it does, we will parse it,
         // and associate the variant with the URL in a hashtable.
-        for (final URL pluginURL : searchForFiles(searchPaths,
+        for (final URL pluginURL : searchForFiles(Arrays.asList(searchPaths),
                 SYMBOL_EXTENSIONS)) {
             final URLClassLoader urlCL = new URLClassLoader(
                     new URL[]{pluginURL});
@@ -222,7 +226,7 @@ public class VariantManager {
                 // parse variant description file, and create hash entry of variant object -> URL
                 try (InputStream is = new BufferedInputStream(
                         symbolXMLURL.openStream())) {
-                    final XMLSymbolParser symbolParser = new XMLSymbolParser(is,
+                    final SymbolParser symbolParser = new XMLSymbolParser(is,
                             pluginURL);
                     addSymbolPack(symbolParser.getSymbolPack(), pluginName,
                             pluginURL);
@@ -245,7 +249,7 @@ public class VariantManager {
                             // parse variant description file, and create hash entry of variant object -> URL
                             try (InputStream is = new BufferedInputStream(
                                     symbolURL.openStream())) {
-                                final XMLSymbolParser symbolParser = new XMLSymbolParser(
+                                final SymbolParser symbolParser = new XMLSymbolParser(
                                         is, symbolURL);
                                 addSymbolPack(symbolParser.getSymbolPack(),
                                         getWSPluginName(symbolURL), symbolURL);
@@ -613,8 +617,8 @@ public class VariantManager {
      * Singleton
      */
     private VariantManager() {
-        variantMap = new HashMap(53);
-        symbolMap = new HashMap(17);
+        variantMap = new HashMap<>(53);
+        symbolMap = new HashMap<>(17);
         inWebstart = Utils.isInWebstart();
     }// VariantManager()
 
@@ -623,33 +627,30 @@ public class VariantManager {
      * Searches the given paths for files ending with the given extension(s).
      * Returns URLs.
      */
-    private URL[] searchForFiles(final File[] searchPaths,
-                                 final String[] extensions) {
-        final List<URL> urlList = new LinkedList<>();
-        Arrays.stream(searchPaths).forEach(searchPath -> {
-            final File[] list = searchPath.listFiles();
-            // internal error if list == null; means that
-            // searchPaths[] is not a directory!
-            if (list != null) {
-                Arrays.stream(list)
-                        .filter(aList -> (aList.isFile() && checkFileName(
-                                aList.getPath(), extensions)))
-                        .forEach(aList -> {
-                            try {
-                                urlList.add(aList.toURL());
-                            } catch (final MalformedURLException e) {
-                                // do nothing; we just won't add it
-                            }
-                        });
-            }
-        });
-        return urlList.toArray(new URL[urlList.size()]);
+    private static List<URL> searchForFiles(final Collection<File> searchPaths,
+                                            final Collection<String> extensions) {
+
+        // internal error if list == null; means that
+        // searchPaths[] is not a directory!
+        return searchPaths.stream().map(File::listFiles)
+                .filter(list -> list != null).flatMap(Arrays::stream)
+                .filter(File::isFile)
+                .filter(aList -> checkFileName(aList.getPath(), extensions))
+                .map(aList -> {
+                    try {
+                        return aList.toURI().toURL();
+                    } catch (final MalformedURLException e) {
+                        throw new IllegalArgumentException(e);
+                        // do nothing; we just won't add it
+                    }
+                }).collect(Collectors.toList());
     }// searchForFiles()
 
 
     /**
      * Returns the URLClassLoader for a given URL, or creates a new one....
      */
+
     private URLClassLoader getClassLoader(final URL packageURL) {
         // WARNING: this method is not (itself) threadsafe
         if (packageURL == null) {
@@ -662,7 +663,7 @@ public class VariantManager {
     /**
      * Returns the "file" part of the URL; e.g.: x/y/z.jar, returns z.jar
      */
-    private String getFile(final URL url) {
+    private static String getFile(final URL url) {
         final String s = url.toString();
         return s.substring(s.lastIndexOf("/") + 1, s.length());
     }// getFile()
@@ -670,7 +671,7 @@ public class VariantManager {
     /**
      * Get the webstart plugin name
      */
-    private String getWSPluginName(final URL url) {
+    private static String getWSPluginName(final URL url) {
         final String s = url.toString();
         final int idxExclam = s.indexOf('!');
         if (idxExclam >= 0) {
@@ -683,9 +684,9 @@ public class VariantManager {
     /**
      * Checks if the fileName ends with an allowed extension; if so, returns true.
      */
-    private boolean checkFileName(final String fileName,
-                                  final String[] extensions) {
-        return Arrays.stream(extensions).anyMatch(fileName::endsWith);
+    private static boolean checkFileName(final String fileName,
+                                         final Collection<String> extensions) {
+        return extensions.stream().anyMatch(fileName::endsWith);
     }// checkFileName()
 
 
@@ -705,19 +706,18 @@ public class VariantManager {
         }
 
         try {
+// deconflict. Note that this is not, and cannot be, foolproof;
+// due to name-mangling by webstart. For example, if two plugins
+// called "test" and "Supertest" exist, test may find the data
+// file within Supertest because indexOf(test, SuperTest) >= 0
+//
+// however, if we can get the mangled name and set it as the
+// 'pluginName', we can be foolproof.
+//
             return Collections.list(getClass().getClassLoader()
                     .getResources(uri.toString())).stream().filter(url -> {
-                // deconflict. Note that this is not, and cannot be, foolproof;
-                // due to name-mangling by webstart. For example, if two plugins
-                // called "test" and "Supertest" exist, test may find the data
-                // file within Supertest because indexOf(test, SuperTest) >= 0
-                //
-                // however, if we can get the mangled name and set it as the
-                // 'pluginName', we can be foolproof.
-                //
                 final String lcPath = url.getPath();
                 final String search = mro.getPluginName() + "!";
-
                 return lcPath.contains(search);
             }).findFirst().orElse(null);
         } catch (final IOException ignored) {
@@ -744,18 +744,16 @@ public class VariantManager {
 		*/
         assert inWebstart;
 
+// deconflict. Note that this is not, and cannot be, foolproof;
+// due to name-mangling by webstart. For example, if two plugins
+// called "test" and "Supertest" exist, test may find the data
+// file within Supertest because indexOf(test, SuperTest) >= 0
+//
+// however, if we can get the mangled name and set it as the
+// 'pluginName', we can be foolproof.
         try {
             return Collections.list(getClass().getClassLoader()
                     .getResources(uri.toString())).stream().filter(url -> {
-
-                // deconflict. Note that this is not, and cannot be, foolproof;
-                // due to name-mangling by webstart. For example, if two plugins
-                // called "test" and "Supertest" exist, test may find the data
-                // file within Supertest because indexOf(test, SuperTest) >= 0
-                //
-                // however, if we can get the mangled name and set it as the
-                // 'pluginName', we can be foolproof.
-                //
                 final String lcPath = url.getPath();
                 return lcPath.contains(getWSPluginName(packURL));
             }).findAny().orElse(null);
@@ -781,7 +779,7 @@ public class VariantManager {
     private void addVariant(final Variant v, final String pluginName,
                             final URL pluginURL) {
         if (v == null || pluginName == null || pluginURL == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("null argument(s).");
         }
 
         final VRec vr = new VRec(pluginURL, pluginName, v);
@@ -827,8 +825,8 @@ public class VariantManager {
                 if (testMapRec == null) {
                     // add alias
                     variantMap.put(alias, mapRec);
-                } else if (testMapRec != mapRec) {
-                    // ERROR! incorrect alias map
+                } else if (!Objects.equals(testMapRec, mapRec)) {
+// ERROR! incorrect alias map
                     final Variant v2 = ((VRec) testMapRec.get(VERSION_OLDEST))
                             .getVariant();
                     throw new IllegalArgumentException(String.format(
