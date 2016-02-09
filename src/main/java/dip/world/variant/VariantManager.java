@@ -66,7 +66,7 @@ import java.util.stream.Collectors;
  * the .jar name.<br>
  * <br>
  */
-public class VariantManager {
+public final class VariantManager {
     /**
      * Version Constant representing the most recent version of a Variant or SymbolPack
      */
@@ -96,10 +96,6 @@ public class VariantManager {
     private final Map<String, MapRec<VRec>> variantMap;    // map of lowercased Variant names to MapRec objects (which contain VRecs)
     private final Map<String, MapRec<SPRec>> symbolMap;    // lowercase symbol names to MapRec objects (which contain SPRecs)
 
-    // cached variables to enhance performance of getResource() methods
-    private List<SymbolPack> symbolPacks = Collections
-            .emptyList();// The sorted SymbolPack list
-
     public static VariantManager getInstance() {
         return vm;
     }
@@ -124,7 +120,6 @@ public class VariantManager {
 
         // perform cleanup
         variantMap.clear();
-        symbolPacks = Collections.emptyList();
         symbolMap.clear();
 
 
@@ -280,20 +275,15 @@ public class VariantManager {
      * sorted in alphabetic order.
      */
     public synchronized Variant[] getVariants() {
-
         // The sorted Variant list
-
         // note that we need to avoid putting duplicates
         // into the array.
-
         // fill variant list with variants.
-
-        return variantMap.values().stream().distinct()
-                .map(mr -> {
-                    final VRec mro = mr.get(VERSION_NEWEST);
-                    assert mro != null;
-                    return mro.getVariant();
-                }).sorted().toArray(Variant[]::new);
+        return variantMap.values().stream().distinct().map(mr -> {
+            final VRec mro = mr.get(VERSION_NEWEST);
+            assert mro != null;
+            return mro.getVariant();
+        }).sorted().toArray(Variant[]::new);
     }// getVariants()
 
     /**
@@ -302,19 +292,13 @@ public class VariantManager {
      * sorted in alphabetic order.
      */
     public synchronized SymbolPack[] getSymbolPacks() {
-
-        if (symbolPacks.size() != symbolMap.size()) {
-            // avoid putting duplicates into the array.
-
-            // fill variant list with variants.
-            symbolPacks = symbolMap.values().stream().distinct().map(mr -> {
-                final SPRec mro = mr.get(VERSION_NEWEST);
-                assert mro != null;
-                return mro.getSymbolPack();
-            }).sorted().collect(Collectors.toList());
-        }
-
-        return symbolPacks.toArray(new SymbolPack[symbolPacks.size()]);
+        // avoid putting duplicates into the array.
+        // fill variant list with variants.
+        return symbolMap.values().stream().distinct().map(mr1 -> {
+            final SPRec mro1 = mr1.get(VERSION_NEWEST);
+            assert mro1 != null;
+            return mro1.getSymbolPack();
+        }).sorted().toArray(SymbolPack[]::new);
     }// getSymbolPacks()
 
 
@@ -692,7 +676,6 @@ public class VariantManager {
             return null;
         }
 
-        try {
 // deconflict. Note that this is not, and cannot be, foolproof;
 // due to name-mangling by webstart. For example, if two plugins
 // called "test" and "Supertest" exist, test may find the data
@@ -701,12 +684,12 @@ public class VariantManager {
 // however, if we can get the mangled name and set it as the
 // 'pluginName', we can be foolproof.
 //
+        try {
             return Collections.list(getClass().getClassLoader()
-                    .getResources(uri.toString())).stream().filter(url -> {
-                final String lcPath = url.getPath();
-                final String search = mro.getPluginName() + "!";
-                return lcPath.contains(search);
-            }).findFirst().orElse(null);
+                    .getResources(uri.toString())).stream()
+                    .filter(url -> url.getPath()
+                            .contains(mro.getPluginName() + "!")).findFirst()
+                    .orElse(null);
         } catch (final IOException ignored) {
             return null;
         }
