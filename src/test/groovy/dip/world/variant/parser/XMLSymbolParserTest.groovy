@@ -19,6 +19,7 @@
 package dip.world.variant.parser
 
 import dip.world.variant.VariantManager
+import dip.world.variant.data.VersionNumber
 import spock.lang.Specification
 
 import java.nio.file.Paths
@@ -40,7 +41,7 @@ class XMLSymbolParserTest extends Specification {
         then:
         symbolpack.getName() == "Simple"
         symbolpack.getSVGURI() == new URI("symbols.svg")
-        symbolpack.getVersion() == 1.0
+        symbolpack.getVersion() == new VersionNumber(1,0)
         symbolpack.getCSSStyles()[0].getName() == ".symBuildShadow"
         symbolpack.getCSSStyles()[0].getStyle() == "{fill:none;stroke:black;opacity:0.5;stroke-width:7;}"
         symbolpack.getCSSStyles()[7].getName() == ".symThinBorder"

@@ -39,16 +39,16 @@ import java.util.stream.Collectors;
  */
 @XmlRootElement(name = "SYMBOLS")
 public final class SymbolPack implements Comparable<SymbolPack> {
-    @XmlAttribute(required = true)
-    private String name_;
-    @XmlAttribute(required = true)
-    private double version_;
+    @XmlAttribute(name = "name", required = true)
+    private String name;
+    @XmlAttribute(name = "version", required = true)
+    private String version;
     @XmlAttribute(required = true)
     private URI thumbURI;
     @XmlAttribute(required = true)
     private URI svgURI;
     @XmlElement(name = "description", required = true)
-    private String description_ = "";
+    private String description = "";
 
 
     @XmlElementWrapper(name = "SCALING")
@@ -93,21 +93,22 @@ public final class SymbolPack implements Comparable<SymbolPack> {
      * The name of the SymbolPack.
      */
     public String getName() {
-        return name_;
+        return name;
     }
+
 
     /**
      * Version of this SymbolPack
      */
-    public double getVersion() {
-        return version_;
+    public VersionNumber getVersion() {
+        return VersionNumber.parse(version);
     }
 
     /**
      * The description of the SymbolPack.
      */
     public String getDescription() {
-        return description_;
+        return description;
     }
 
 
@@ -184,7 +185,7 @@ public final class SymbolPack implements Comparable<SymbolPack> {
      */
     @Override
     public int compareTo(final SymbolPack o) {
-        return name_.compareTo(o.name_);
+        return name.compareTo(o.name);
     }// compareTo()
 
     /**

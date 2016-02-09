@@ -40,9 +40,8 @@ class VersionNumberTest extends Specification {
         v10.toString() == "1.0"
     }
 
-    def "test parse" () {
+    def "test parse"() {
         expect:
-        v10.set("2.0")
-        v10 == new VersionNumber(2,0)
+        VersionNumber.parse("2.0") == new VersionNumber(2, 0)
     }
 }

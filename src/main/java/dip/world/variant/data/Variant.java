@@ -29,10 +29,7 @@ import dip.world.variant.parser.XMLVariantParser.AdjCache;
 import org.xml.sax.SAXException;
 
 import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.*;
 import java.io.IOException;
 import java.net.URI;
 import java.util.*;
@@ -41,6 +38,7 @@ import java.util.stream.Collectors;
 /**
  * A Variant.
  */
+@XmlAccessorType(XmlAccessType.NONE)
 @XmlRootElement(name = "VARIANT")
 public final class Variant implements Cloneable, Comparable<Variant> {
     // the arrays in general should not be null. They are defined as null initially
@@ -51,7 +49,7 @@ public final class Variant implements Cloneable, Comparable<Variant> {
     private boolean isDefault;
 
     @XmlAttribute(name = "version", required = true)
-    private double version;
+    private String version;
 
     private List<String> aliases = Collections.emptyList();
 
@@ -176,8 +174,8 @@ public final class Variant implements Cloneable, Comparable<Variant> {
     /**
      * Version of this variant
      */
-    public double getVersion() {
-        return version;
+    public VersionNumber getVersion() {
+        return VersionNumber.parse(version);
     }
 
     /**
@@ -517,7 +515,7 @@ public final class Variant implements Cloneable, Comparable<Variant> {
                                 victoryConditions.vcMaxGameTimeYears.value),
                         ",vcMaxYearsNoSCChange=", Integer.toString(
                                 victoryConditions.vcMaxYearsNoSCChange.value),
-                        ",version=", Double.toString(version), "]");
+                        ",version=", version, "]");
     }// toString()
 }// class Variant
 

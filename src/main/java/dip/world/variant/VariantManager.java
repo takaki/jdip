@@ -27,6 +27,7 @@ import dip.misc.Utils;
 import dip.world.variant.data.MapGraphic;
 import dip.world.variant.data.SymbolPack;
 import dip.world.variant.data.Variant;
+import dip.world.variant.data.VersionNumber;
 import dip.world.variant.parser.SymbolParser;
 import dip.world.variant.parser.VariantParser;
 import dip.world.variant.parser.XMLSymbolParser;
@@ -70,11 +71,13 @@ public final class VariantManager {
     /**
      * Version Constant representing the most recent version of a Variant or SymbolPack
      */
-    public static final double VERSION_NEWEST = -1000.0;
+    public static final VersionNumber VERSION_NEWEST = new VersionNumber(-1000,
+            0);
     /**
      * Version Constant representing the most oldest version of a Variant or SymbolPack
      */
-    public static final double VERSION_OLDEST = -2000.0;
+    public static final VersionNumber VERSION_OLDEST = new VersionNumber(-2000,
+            0);
 
 
     // variant constants
@@ -310,7 +313,7 @@ public final class VariantManager {
      * Note: Name is <b>not</b> case-sensitive.
      */
     public synchronized Variant getVariant(final String name,
-                                           final double version) {
+                                           final VersionNumber version) {
         final MapRec<VRec> mr = variantMap.get(name.toLowerCase());
         if (mr != null) {
             return mr.get(version).getVariant();
@@ -328,7 +331,7 @@ public final class VariantManager {
      * Note: Name is <b>not</b> case-sensitive.
      */
     public synchronized SymbolPack getSymbolPack(final String name,
-                                                 final double version) {
+                                                 final VersionNumber version) {
         if (name == null) {
             return null;
         }
@@ -354,7 +357,7 @@ public final class VariantManager {
      */
     public synchronized SymbolPack getSymbolPack(final MapGraphic mg,
                                                  final String symbolPackName,
-                                                 final double symbolPackVersion) {
+                                                 final VersionNumber symbolPackVersion) {
         if (mg == null) {
             throw new IllegalArgumentException();
         }
@@ -362,8 +365,8 @@ public final class VariantManager {
         // safety:
         // if version is invalid (< 0.0f), convert to VERSION_NEWEST
         // automatically. Log this method, though
-        double spVersion = symbolPackVersion;
-        if (spVersion <= 0.0f) {
+        VersionNumber spVersion = symbolPackVersion;
+        if (spVersion.compareTo(new VersionNumber(0, 0)) <= 0) {
             Log.println(
                     "WARNING: VariantManager.getSymbolPack() called with symbolPackVersion of <= 0.0f. Check parameters.");
             spVersion = VERSION_NEWEST;
@@ -392,7 +395,8 @@ public final class VariantManager {
      * Returns false if the version is not available or the variant
      * is not found.
      */
-    public boolean hasVariantVersion(final String name, final double version) {
+    public boolean hasVariantVersion(final String name,
+                                     final VersionNumber version) {
         return getVariant(name, version) != null;
     }// hasVariantVersion()
 
@@ -403,7 +407,7 @@ public final class VariantManager {
      * is not found.
      */
     public boolean hasSymbolPackVersion(final String name,
-                                        final double version) {
+                                        final VersionNumber version) {
         return getSymbolPack(name, version) != null;
     }// hasVariantVersion()
 
@@ -412,9 +416,9 @@ public final class VariantManager {
      * Returns the versions of a variant that are available.
      * If the variant is not found, a zero-length array is returned.
      */
-    public synchronized double[] getVariantVersions(final String name) {
+    public synchronized VersionNumber[] getVariantVersions(final String name) {
         final MapRec<VRec> mr = variantMap.get(name.toLowerCase());
-        return mr == null ? new double[0] : mr.getVersions();
+        return mr == null ? new VersionNumber[0] : mr.getVersions();
 
     }// getVariantVersions()
 
@@ -422,9 +426,10 @@ public final class VariantManager {
      * Returns the versions of a SymbolPack that are available.
      * If the SymbolPack is not found, a zero-length array is returned.
      */
-    public synchronized double[] getSymbolPackVersions(final String name) {
+    public synchronized VersionNumber[] getSymbolPackVersions(
+            final String name) {
         final MapRec<SPRec> mr = symbolMap.get(name.toLowerCase());
-        return mr == null ? new double[0] : mr.getVersions();
+        return mr == null ? new VersionNumber[0] : mr.getVersions();
 
     }// getSymbolPackVersions()
 
@@ -434,8 +439,10 @@ public final class VariantManager {
      *
      * @param version
      */
-    private void checkVersionConstant(final double version) {
-        if (version <= 0.0f && version != VERSION_NEWEST && version != VERSION_OLDEST) {
+    private void checkVersionConstant(final VersionNumber version) {
+        if (version.compareTo(new VersionNumber(0, 0)) <= 0 && !Objects
+                .equals(version, VERSION_NEWEST) && !Objects
+                .equals(version, VERSION_OLDEST)) {
             throw new IllegalArgumentException(
                     String.format("invalid version or version constant: %s",
                             version));
@@ -867,8 +874,9 @@ public final class VariantManager {
         /**
          * Get all available versions
          */
-        public double[] getVersions() {
-            return list.stream().mapToDouble(T::getVersion).toArray();
+        public VersionNumber[] getVersions() {
+            return list.stream().map(T::getVersion)
+                    .toArray(VersionNumber[]::new);
         }// getVersions()
 
         /**
@@ -878,13 +886,14 @@ public final class VariantManager {
          *
          * @param version
          */
-        public T get(final double version) {
+        public T get(final VersionNumber version) {
             checkVersionConstant(version);
 
             final int size = list.size();
 
             // typical-case
-            if (size == 1 && (version == VERSION_OLDEST || version == VERSION_NEWEST)) {
+            if (size == 1 && (Objects.equals(version, VERSION_OLDEST) || Objects
+                    .equals(version, VERSION_NEWEST))) {
                 return list.get(0);
             }
 
@@ -892,11 +901,13 @@ public final class VariantManager {
             for (final T aList : list) {
                 selected = selected == null ? aList : selected;
 
-                if (version == VERSION_OLDEST && aList.getVersion() < selected
-                        .getVersion() || version == VERSION_NEWEST && aList
-                        .getVersion() > selected.getVersion()) {
+                if (Objects.equals(version, VERSION_OLDEST) && aList
+                        .getVersion()
+                        .compareTo(selected.getVersion()) < 0 || Objects
+                        .equals(version, VERSION_NEWEST) && aList.getVersion()
+                        .compareTo(selected.getVersion()) > 0) {
                     selected = aList;
-                } else if (aList.getVersion() == version) {
+                } else if (Objects.equals(aList.getVersion(), version)) {
                     return aList;
                 }
             }
@@ -927,7 +938,7 @@ public final class VariantManager {
             return fileURL;
         }
 
-        public abstract double getVersion();
+        public abstract VersionNumber getVersion();
 
     }// inner class ObjRec
 
@@ -948,7 +959,7 @@ public final class VariantManager {
         }
 
         @Override
-        public double getVersion() {
+        public VersionNumber getVersion() {
             return variant.getVersion();
         }
 
@@ -978,7 +989,7 @@ public final class VariantManager {
         }
 
         @Override
-        public double getVersion() {
+        public VersionNumber getVersion() {
             return symbolPack.getVersion();
         }
 

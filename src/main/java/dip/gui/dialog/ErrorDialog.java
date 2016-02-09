@@ -26,6 +26,7 @@ import dip.gui.ClientFrame;
 import dip.misc.Log;
 import dip.misc.Utils;
 import dip.world.World;
+import dip.world.variant.data.VersionNumber;
 
 import javax.swing.*;
 import java.awt.*;
@@ -318,12 +319,12 @@ public class ErrorDialog extends TextViewer {
      */
     public static void displayVariantVersionMismatch(JFrame parent,
                                                      World.VariantInfo vi,
-                                                     double availableVersion) {
+                                                     VersionNumber availableVersion) {
         Object[] args = new Object[3];
 
         args[0] = vi.getVariantName();
-        args[1] = new Float(vi.getVariantVersion());
-        args[2] = new Float(availableVersion);
+        args[1] = vi.getVariantVersion();
+        args[2] = availableVersion;
 
         String text = Utils
                 .getText(Utils.getLocalString(VERSION_MISMATCH_TEMPLATE));
@@ -345,7 +346,7 @@ public class ErrorDialog extends TextViewer {
         Object[] args = new Object[3];
 
         args[0] = vi.getVariantName();
-        args[1] = new Float(vi.getVariantVersion());
+        args[1] = vi.getVariantVersion();
         args[2] = vi.getVariantName();
 
         String text = Utils.getText(Utils.getLocalString(NOVARIANT_TEMPLATE));
@@ -618,7 +619,7 @@ public class ErrorDialog extends TextViewer {
      * BugReportInfo is allowed to be null.
      */
     private static boolean sendBugReport(BugReportInfo bri) {
-		/*
+        /*
 			Information about:
 			
 			http://jdip.sourceforge.net/forms/data/detailedBugFormProc.php
