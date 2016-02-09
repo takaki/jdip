@@ -287,17 +287,13 @@ public class VariantManager {
         if (variants.size() != variantMap.size()) {
             // note that we need to avoid putting duplicates
             // into the array.
-            //
-            final Collection<MapRec<VRec>> set = new HashSet<>(
-                    variantMap.values());// a set of MapRecs
 
             // fill variant list with variants.
-            variants = set.stream().map(mr -> {
+            variants = variantMap.values().stream().distinct().map(mr -> {
                 final VRec mro = mr.get(VERSION_NEWEST);
                 assert mro != null;
                 return mro.getVariant();
-            }).collect(Collectors.toList()).stream().sorted()
-                    .collect(Collectors.toList());
+            }).sorted().collect(Collectors.toList());
         }
 
         return variants.toArray(new Variant[variants.size()]);
@@ -312,16 +308,13 @@ public class VariantManager {
 
         if (symbolPacks.size() != symbolMap.size()) {
             // avoid putting duplicates into the array.
-            final Collection<MapRec<SPRec>> set = new HashSet<>(
-                    symbolMap.values()); // a set of MapRecs
 
             // fill variant list with variants.
-            symbolPacks = set.stream().map(mr -> {
+            symbolPacks = symbolMap.values().stream().distinct().map(mr -> {
                 final SPRec mro = mr.get(VERSION_NEWEST);
                 assert mro != null;
                 return mro.getSymbolPack();
-            }).collect(Collectors.toList()).stream().sorted()
-                    .collect(Collectors.toList());
+            }).sorted().collect(Collectors.toList());
         }
 
         return symbolPacks.toArray(new SymbolPack[symbolPacks.size()]);
@@ -773,35 +766,35 @@ public class VariantManager {
      * <p>
      * NOTE: names and aliases are always mapped in all lower case.
      */
-    private void addVariant(final Variant v, final String pluginName,
+    private void addVariant(final Variant variant, final String pluginName,
                             final URL pluginURL) {
-        if (v == null || pluginName == null || pluginURL == null) {
+        if (variant == null || pluginName == null || pluginURL == null) {
             throw new IllegalArgumentException("null argument(s).");
         }
 
-        final VRec vRec = new VRec(pluginURL, pluginName, v);
+        final VRec vRec = new VRec(pluginURL, pluginName, variant);
 
-        final String vName = v.getName().toLowerCase();
+        final String vName = variant.getName().toLowerCase();
 
         // see if we are mapped to a MapRec already.
         //
         MapRec<VRec> mapRec = variantMap.get(vName);
         if (mapRec == null) {
             // not yet mapped! let's map it.
-            mapRec = new MapRec(vRec);
+            mapRec = new MapRec<>(vRec);
             variantMap.put(vName, mapRec);
         } else {
             // we are mapped. See if this version has been added.
             // If not, we'll add it.
             if (!mapRec.add(vRec) && !inWebstart) {
-                final VRec vRec2 = (VRec) mapRec.get(v.getVersion());
+                final VRec vRec2 = mapRec.get(variant.getVersion());
                 // 2 variants with identical versions! we are confused!
                 // try to provide as much helpful info as possible.
                 throw new IllegalArgumentException(String.format(
                         "Two variants with identical version numbers have been found.\n" +
                                 "Conflicting version: \n" +
                                 "Variant 1: %s\n" +
-                                "Variant 2: %s\n", v.toString(),
+                                "Variant 2: %s\n", variant.toString(),
                         vRec2.getVariant().toString()));
             }
         }
@@ -810,7 +803,7 @@ public class VariantManager {
         // same MapRec (this prevents two different Variants with the same
         // alias from causing a subtle error)
         //
-        for (final String aliase : v.getAliases()) {
+        for (final String aliase : variant.getAliases()) {
             // not if it's "" though...
             if (!"".equals(aliase)) {
                 final String alias = aliase.toLowerCase();
@@ -826,7 +819,7 @@ public class VariantManager {
                                     "VRec 1: %s\n" +
                                     "VRec 2: %s\n" +
                                     "(must check all variants with this name)\n",
-                            v.toString(), v2.toString()));
+                            variant.toString(), v2.toString()));
                 }
                 // else {} : we are already mapped correctly. Nothing to change.
             }
@@ -910,7 +903,7 @@ public class VariantManager {
                 throw new IllegalArgumentException();
             }
             list.add(obj);
-        }// MapRec()
+        }
 
         public int size() {
             return list.size();
