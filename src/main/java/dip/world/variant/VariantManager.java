@@ -93,8 +93,8 @@ public class VariantManager {
 
     // instance variables
     private final boolean inWebstart;
-    private final Map<String, MapRec> variantMap;    // map of lowercased Variant names to MapRec objects (which contain VRecs)
-    private final Map<String, MapRec> symbolMap;    // lowercase symbol names to MapRec objects (which contain SPRecs)
+    private final Map<String, MapRec<VRec>> variantMap;    // map of lowercased Variant names to MapRec objects (which contain VRecs)
+    private final Map<String, MapRec<SPRec>> symbolMap;    // lowercase symbol names to MapRec objects (which contain SPRecs)
 
     // cached variables to enhance performance of getResource() methods
     private List<Variant> variants = Collections
@@ -288,14 +288,14 @@ public class VariantManager {
             // note that we need to avoid putting duplicates
             // into the array.
             //
-            final Collection<MapRec> set = new HashSet<>(
+            final Collection<MapRec<VRec>> set = new HashSet<>(
                     variantMap.values());// a set of MapRecs
 
             // fill variant list with variants.
             variants = set.stream().map(mr -> {
-                final MapRecObj mro = mr.get(VERSION_NEWEST);
+                final VRec mro = mr.get(VERSION_NEWEST);
                 assert mro != null;
-                return ((VRec) mro).getVariant();
+                return mro.getVariant();
             }).collect(Collectors.toList()).stream().sorted()
                     .collect(Collectors.toList());
         }
@@ -312,14 +312,14 @@ public class VariantManager {
 
         if (symbolPacks.size() != symbolMap.size()) {
             // avoid putting duplicates into the array.
-            final Collection<MapRec> set = new HashSet<>(
+            final Collection<MapRec<SPRec>> set = new HashSet<>(
                     symbolMap.values()); // a set of MapRecs
 
             // fill variant list with variants.
             symbolPacks = set.stream().map(mr -> {
-                final MapRecObj mro = mr.get(VERSION_NEWEST);
+                final SPRec mro = mr.get(VERSION_NEWEST);
                 assert mro != null;
-                return ((SPRec) mro).getSymbolPack();
+                return mro.getSymbolPack();
             }).collect(Collectors.toList()).stream().sorted()
                     .collect(Collectors.toList());
         }
@@ -337,9 +337,9 @@ public class VariantManager {
      */
     public synchronized Variant getVariant(final String name,
                                            final double version) {
-        final MapRec mr = variantMap.get(name.toLowerCase());
+        final MapRec<VRec> mr = variantMap.get(name.toLowerCase());
         if (mr != null) {
-            return ((VRec) mr.get(version)).getVariant();
+            return mr.get(version).getVariant();
         }
 
         return null;
@@ -359,9 +359,9 @@ public class VariantManager {
             return null;
         }
 
-        final MapRec mr = symbolMap.get(name.toLowerCase());
+        final MapRec<SPRec> mr = symbolMap.get(name.toLowerCase());
         if (mr != null) {
-            return ((SPRec) mr.get(version)).getSymbolPack();
+            return mr.get(version).getSymbolPack();
         }
 
         return null;
@@ -439,7 +439,7 @@ public class VariantManager {
      * If the variant is not found, a zero-length array is returned.
      */
     public synchronized double[] getVariantVersions(final String name) {
-        final MapRec mr = variantMap.get(name.toLowerCase());
+        final MapRec<VRec> mr = variantMap.get(name.toLowerCase());
         return mr == null ? new double[0] : mr.getVersions();
 
     }// getVariantVersions()
@@ -449,7 +449,7 @@ public class VariantManager {
      * If the SymbolPack is not found, a zero-length array is returned.
      */
     public synchronized double[] getSymbolPackVersions(final String name) {
-        final MapRec mr = symbolMap.get(name.toLowerCase());
+        final MapRec<SPRec> mr = symbolMap.get(name.toLowerCase());
         return mr == null ? new double[0] : mr.getVersions();
 
     }// getSymbolPackVersions()
@@ -785,7 +785,7 @@ public class VariantManager {
 
         // see if we are mapped to a MapRec already.
         //
-        MapRec mapRec = variantMap.get(vName);
+        MapRec<VRec> mapRec = variantMap.get(vName);
         if (mapRec == null) {
             // not yet mapped! let's map it.
             mapRec = new MapRec(vRec);
@@ -814,13 +814,13 @@ public class VariantManager {
             // not if it's "" though...
             if (!"".equals(aliase)) {
                 final String alias = aliase.toLowerCase();
-                final MapRec testMapRec = variantMap.get(alias);
+                final MapRec<VRec> testMapRec = variantMap.get(alias);
                 if (testMapRec == null) {
                     // add alias
                     variantMap.put(alias, mapRec);
                 } else if (!Objects.equals(testMapRec, mapRec)) {
 // ERROR! incorrect alias map
-                    final VRec v2 = (VRec) testMapRec.get(VERSION_OLDEST);
+                    final VRec v2 = testMapRec.get(VERSION_OLDEST);
                     throw new IllegalArgumentException(String.format(
                             "Two variants have a conflicting (non-unique) alias.\n" +
                                     "VRec 1: %s\n" +
@@ -854,15 +854,15 @@ public class VariantManager {
 
         // see if we are mapped to a MapRec already.
         //
-        MapRec mapRec = symbolMap.get(spName);
+        MapRec<SPRec> mapRec = symbolMap.get(spName);
         if (mapRec == null) {
             // not yet mapped! let's map it.
-            mapRec = new MapRec(spRec);
+            mapRec = new MapRec<>(spRec);
             symbolMap.put(spName, mapRec);
         } else {
             // we are mapped. See if this version has been added.
             if (!mapRec.add(spRec) && !inWebstart) {
-                final SPRec spRec2 = (SPRec) mapRec.get(sp.getVersion());
+                final SPRec spRec2 = mapRec.get(sp.getVersion());
                 if (spRec2.getVersion() == sp.getVersion()) {
                     // 2 SymbolPacks with identical versions! we are confused!
                     // try to provide as much helpful info as possible.
@@ -885,8 +885,8 @@ public class VariantManager {
      * Gets the VRec associated with a Variant (via name and version)
      */
     private VRec getVRec(final Variant v) {
-        final MapRec mapRec = variantMap.get(v.getName().toLowerCase());
-        return (VRec) mapRec.get(v.getVersion());
+        final MapRec<VRec> mapRec = variantMap.get(v.getName().toLowerCase());
+        return mapRec.get(v.getVersion());
     }// getVRec()
 
 
@@ -894,18 +894,18 @@ public class VariantManager {
      * Gets the SPRec associated with a SymbolPack (via name and version)
      */
     private SPRec getSPRec(final SymbolPack sp) {
-        final MapRec mapRec = symbolMap.get(sp.getName().toLowerCase());
-        return (SPRec) mapRec.get(sp.getVersion());
+        final MapRec<SPRec> mapRec = symbolMap.get(sp.getName().toLowerCase());
+        return mapRec.get(sp.getVersion());
     }// getSPRec()
 
     /**
      * The value which is stored within the name mapping
      */
-    private class MapRec {
-        private final ArrayList<MapRecObj> list = new ArrayList<>(2);
+    private final class MapRec<T extends MapRecObj> {
+        private final List<T> list = new ArrayList<>(2);
 
         // this constructor prevents us from having an empty list.
-        public MapRec(final MapRecObj obj) {
+        MapRec(final T obj) {
             if (obj == null) {
                 throw new IllegalArgumentException();
             }
@@ -921,7 +921,7 @@ public class VariantManager {
          * a unique version. If it is not, returns false. Otherwise,
          * the MapRecObj is added and returns true.
          */
-        public boolean add(final MapRecObj obj) {
+        public boolean add(final T obj) {
             if (list.stream().anyMatch(
                     aList -> (aList.getVersion() == obj.getVersion()))) {
                 list.add(obj);
@@ -936,7 +936,7 @@ public class VariantManager {
          * Get all available versions
          */
         public double[] getVersions() {
-            return list.stream().mapToDouble(MapRecObj::getVersion).toArray();
+            return list.stream().mapToDouble(T::getVersion).toArray();
         }// getVersions()
 
         /**
@@ -946,7 +946,7 @@ public class VariantManager {
          *
          * @param version
          */
-        public MapRecObj get(final double version) {
+        public T get(final double version) {
             checkVersionConstant(version);
 
             final int size = list.size();
@@ -956,8 +956,8 @@ public class VariantManager {
                 return list.get(0);
             }
 
-            MapRecObj selected = null;
-            for (final MapRecObj aList : list) {
+            T selected = null;
+            for (final T aList : list) {
                 selected = selected == null ? aList : selected;
 
                 if (version == VERSION_OLDEST && aList.getVersion() < selected
