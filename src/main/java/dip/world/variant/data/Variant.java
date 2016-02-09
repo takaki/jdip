@@ -510,10 +510,6 @@ public final class Variant implements Cloneable, Comparable<Variant> {
      */
     @Override
     public String toString() {
-        istate.stream().forEach(System.out::println);
-        supplyCenters.stream().forEach(System.out::println);
-        provinceData.stream().forEach(System.out::println);
-        map.mapGraphics.stream().forEach(System.out::println);
         return String
                 .join("", getClass().getName(), "[", "name=", name.toString(),
                         ",isDefault=", Boolean.toString(isDefault), "powers=",

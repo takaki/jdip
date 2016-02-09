@@ -50,6 +50,7 @@ public final class MapGraphic {
     private URI thumbURI;
 
 
+    @SuppressWarnings("unused")
     void afterUnmarshal(final Unmarshaller unmarshaller,
                         final Object parent) throws IOException, SAXException {
         // create the MapGraphic object
