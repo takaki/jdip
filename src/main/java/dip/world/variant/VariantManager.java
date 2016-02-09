@@ -915,7 +915,7 @@ public class VariantManager {
          * the MapRecObj is added and returns true.
          */
         public boolean add(final T obj) {
-            if (list.stream().anyMatch(
+            if (list.stream().noneMatch(
                     aList -> (aList.getVersion() == obj.getVersion()))) {
                 list.add(obj);
                 return true;
