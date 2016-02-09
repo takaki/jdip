@@ -35,14 +35,14 @@ import java.net.URISyntaxException;
 
 @XmlRootElement
 public final class MapGraphic {
+    @XmlIDREF
+    @XmlAttribute(name = "ref", required = true)
+    private MapDef mapDef;
     @XmlAttribute(name = "default")
     private boolean isDefault;
     @XmlAttribute(name = "preferredUnitStyle")
     private String prefSPName;
 
-    @XmlIDREF
-    @XmlAttribute(name = "ref")
-    private MapDef mapDef;
 
     private String name;
     private URI uri;
@@ -50,15 +50,7 @@ public final class MapGraphic {
     private URI thumbURI;
 
 
-    /**
-     * Constructs a MapGraphic object.
-     * <p>
-     * If the preferred Symbol Pack Name (prefSPName) is an empty string, it will
-     * be converted to a null String.
-     */
-    public MapGraphic() {
-    }
-
+    @SuppressWarnings("unused")
     void afterUnmarshal(final Unmarshaller unmarshaller,
                         final Object parent) throws IOException, SAXException {
         // create the MapGraphic object
@@ -71,7 +63,6 @@ public final class MapGraphic {
             throw new IllegalArgumentException(e);
         }
     }
-
 
     /**
      * The URI for a map SVG file.

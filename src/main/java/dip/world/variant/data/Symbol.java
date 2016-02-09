@@ -36,7 +36,7 @@ public final class Symbol {
 
     private final String name;
     private final Element svgData;
-    private final float scale;
+    private final double scale;
 
     /**
      * Create a new Symbol.
@@ -44,7 +44,7 @@ public final class Symbol {
      * Scale value must be a positive non-zero floating-point value.
      * A value of 1.0f (IDENTITY_SCALE) should be the default.
      */
-    public Symbol(final String name, final float scale, final Element svgData) {
+    public Symbol(final String name, final double scale, final Element svgData) {
         if (name == null || scale <= 0.0f) {
             throw new IllegalArgumentException();
         }
@@ -64,7 +64,7 @@ public final class Symbol {
     /**
      * Returns the scaling factor (IDENTITY_SCALE is the default)
      */
-    public float getScale() {
+    public double getScale() {
         return scale;
     }
 

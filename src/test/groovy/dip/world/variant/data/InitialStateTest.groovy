@@ -18,8 +18,6 @@
 
 package dip.world.variant.data
 
-import dip.world.Coast
-import dip.world.Unit
 import spock.lang.Specification
 
 class InitialStateTest extends Specification {
@@ -28,13 +26,13 @@ class InitialStateTest extends Specification {
     def "getter and setter"() {
 //        instance.setProvinceName("1")
 //        instance.setPowerName("2")
-        instance.setUnitType(Unit.Type.ARMY)
-        instance.setCoast(Coast.EAST)
-        expect:
-        instance.getProvinceName() == null
-        instance.getPowerName() == null
-        instance.getUnitType() == Unit.Type.ARMY
-        instance.getCoast() == Coast.EAST
-        instance.toString() == "dip.world.variant.data.InitialState[provinceName=null,power=null,unit=A,coast=East Coast]"
+//        instance.setUnitType(Unit.Type.ARMY)
+//        instance.setCoast(Coast.EAST)
+//        expect:
+//        instance.getProvinceName() == null
+//        instance.getPowerName() == null
+//        instance.getUnitType() == Unit.Type.ARMY
+//        instance.getCoast() == Coast.EAST
+//        instance.toString() == "dip.world.variant.data.InitialState[provinceName=null,power=null,unit=A,coast=East Coast]"
     }
 }

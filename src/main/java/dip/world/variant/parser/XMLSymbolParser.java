@@ -52,46 +52,53 @@ import java.util.stream.IntStream;
  */
 public class XMLSymbolParser implements SymbolParser {
 
-    private final DocumentBuilder docBuilder;
-    private SymbolPack symbolPack;
-    private URL symbolPackURL;
+    private final SymbolPack symbolPack;
 
     /**
      * Create an XMLSymbolParser
      */
-    public XMLSymbolParser(
-            final DocumentBuilderFactory dbf) throws ParserConfigurationException {
-        final boolean oldNSvalue = dbf.isNamespaceAware();
+    public XMLSymbolParser(final InputStream is,
+                           final URL symbolPackURL) throws ParserConfigurationException, IOException, SAXException, XPathExpressionException {
+        // setup document builder
+        final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
+        try {
+            // this may improve performance, and really only apply to Xerces
+            dbf.setAttribute(
+                    "http://apache.org/xml/features/dom/defer-node-expansion",
+                    Boolean.FALSE);
+            dbf.setAttribute(
+                    "http://apache.org/xml/properties/input-buffer-size", 4096);
+            dbf.setAttribute(
+                    "http://apache.org/xml/features/nonvalidating/load-external-dtd",
+                    Boolean.FALSE);
+        } catch (final Exception e) {
+            Log.println("VM: Could not set XML feature.", e);
+        }
+
+        dbf.setValidating(false);
+        dbf.setCoalescing(false);
+        dbf.setIgnoringComments(true);
         dbf.setNamespaceAware(true);    // essential!
-        docBuilder = dbf.newDocumentBuilder();
+
+        final DocumentBuilder docBuilder = dbf.newDocumentBuilder();
         docBuilder.setErrorHandler(new XMLErrorHandler());
         FastEntityResolver.attach(docBuilder);
 
-        // cleanup
-        dbf.setNamespaceAware(oldNSvalue);
-    }// XMLProvinceParser()
-
-
-    /**
-     * Parse the given input stream
-     */
-    public synchronized void parse(final InputStream is,
-                                   final URL symbolPackURL) throws IOException, SAXException, XPathExpressionException {
         Log.println("XMLSymbolParser: Parsing: ", symbolPackURL);
         final long time = System.currentTimeMillis();
-        this.symbolPackURL = symbolPackURL;
+
         symbolPack = JAXB.unmarshal(is, SymbolPack.class);
         // extract symbol SVG into symbols
         // add symbols to SymbolPack
 
         // resolve SVG URI
-        final URL url = VariantManager
-                .getResource(this.symbolPackURL, symbolPack.getSVGURI());
+        final URL url = VariantManager.getInstance()
+                .getResource(symbolPackURL, symbolPack.getSVGURI());
         if (url == null) {
             throw new IOException(String.format(
                     "Could not convert URI: %s from SymbolPack: %s",
-                    symbolPack.getSVGURI(), this.symbolPackURL));
+                    symbolPack.getSVGURI(), symbolPackURL));
         }
 
         // parse resolved URI into a Document
@@ -147,15 +154,9 @@ public class XMLSymbolParser implements SymbolParser {
             symbolPack.setSymbols(list);
         }
         Log.printTimed(time, "    time: ");
-    }// parse()
 
+    }// XMLProvinceParser()
 
-    /**
-     * Cleanup, clearing any references/resources
-     */
-    public void close() {
-        symbolPack = null;
-    }// close()
 
     /**
      * Returns the SymbolPack, or null, if parse()

@@ -21,25 +21,21 @@ package dip.world.variant.parser
 import dip.world.variant.VariantManager
 import spock.lang.Specification
 
-import javax.xml.parsers.DocumentBuilderFactory
 import java.nio.file.Paths
 
 class XMLVariantParserTest extends Specification {
-    def instance = new XMLVariantParser(DocumentBuilderFactory.newInstance())
 
     def "parse"() {
         setup:
-        VariantManager.init([Paths.get(System.getProperty("user.dir"), "src/test/resources/variants").
-                                     toFile()] as File[], false) // TODO: fix
+        VariantManager.getInstance().init([Paths.get(System.getProperty("user.dir"), "src/test/resources/variants").
+                                     toFile()] as File[]) // TODO: fix
         def pluginUrl = getClass().getResource("/variants/testVariants.zip")
         URLClassLoader urlCL = new URLClassLoader(pluginUrl);
         URL variantXMLURL = urlCL.findResource("variants.xml")
         InputStream is = new BufferedInputStream(variantXMLURL.openStream());
-        expect:
-        instance != null
 
         when:
-        instance.parse(is, pluginUrl)
+        def instance = new XMLVariantParser(is, pluginUrl)
         def variants = instance.getVariants()
         def std = variants[0]
         then:
@@ -81,6 +77,7 @@ class XMLVariantParserTest extends Specification {
 
 
         std.getBorderData().size() == 0
+        std.getVersion() == 1.0d
 
         std.toString() == "dip.world.variant.data.Variant[name=DATC_Standard,isDefault=false" +
                 "powers=France,Austria,Turkey,Russia,England,Germany,Italy,," +

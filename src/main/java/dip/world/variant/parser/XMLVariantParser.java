@@ -28,7 +28,6 @@ import dip.world.variant.VariantManager;
 import dip.world.variant.data.BorderData;
 import dip.world.variant.data.ProvinceData;
 import dip.world.variant.data.Variant;
-import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXB;
 import javax.xml.bind.Unmarshaller;
@@ -36,14 +35,13 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 
@@ -52,7 +50,7 @@ import java.util.List;
  */
 public class XMLVariantParser implements VariantParser {
 
-    private final List<Variant> variantList = new LinkedList<>();
+    private final List<Variant> variantList;
 
     @XmlRootElement(name = "VARIANTS")
     public static class RootVariants {
@@ -65,25 +63,12 @@ public class XMLVariantParser implements VariantParser {
     }
 
     /**
-     * Create an XMLVariantParser
-     */
-    @Deprecated
-    public XMLVariantParser(final DocumentBuilderFactory dbf) {
-        this();
-    }// XMLVariantParser()
-
-    public XMLVariantParser() {
-        AdjCache.init(new XMLProvinceParser());
-    }// XMLVariantParser()
-
-    /**
      * Parse the given input stream; parsed data available via <code>getVariants()</code>
      * <p>
      * Note that when this method is called, any previous Variants (if any exist) are
      * cleared.
      */
-    public void parse(final InputStream is,
-                      final URL variantPackageURL) throws IOException, SAXException {
+    public XMLVariantParser(final InputStream is, final URL variantPackageURL) {
         if (variantPackageURL == null) {
             throw new IllegalArgumentException();
         }
@@ -93,23 +78,13 @@ public class XMLVariantParser implements VariantParser {
 
         // cleanup cache (very important to remove references!)
         AdjCache.clear();
-        variantList.clear();
         AdjCache.setVariantPackageURL(variantPackageURL);
 
         final RootVariants rootVariants = JAXB
                 .unmarshal(is, RootVariants.class);
-        variantList.addAll(rootVariants.variants);
+        variantList = rootVariants.variants;
         Log.printTimed(time, "   time: ");
     }// parse()
-
-
-    /**
-     * Cleanup, clearing any references/resources
-     */
-    public void close() {
-        AdjCache.clear();
-        variantList.clear();
-    }// close()
 
 
     /**
@@ -135,24 +110,18 @@ public class XMLVariantParser implements VariantParser {
      */
     public static class AdjCache {
         private static URL vpURL;
-        private static XMLProvinceParser pp;
-        private static LRUCache adjCache;    // URI -> AdjCache objects
+        private static final LRUCache<URI, AdjCache> adjCache = new LRUCache<>(
+                6); // URI -> AdjCache objects
 
         // instance variables
-        private List<ProvinceData> provinceData;
-        private List<BorderData> borderData;
+        private final List<ProvinceData> provinceData;
+        private final List<BorderData> borderData;
 
-
-        AdjCache() {
-        }// AdjCache()
-
-        /**
-         * initialization
-         */
-        public static void init(final XMLProvinceParser provinceParser) {
-            pp = provinceParser;
-            adjCache = new LRUCache(6);
-        }// AdjCache()
+        public AdjCache(final List<ProvinceData> provinceData,
+                        final List<BorderData> borderData) {
+            this.provinceData = new ArrayList<>(provinceData);
+            this.borderData = new ArrayList<>(borderData);
+        }
 
         /**
          * Sets the variant package URL
@@ -173,8 +142,7 @@ public class XMLVariantParser implements VariantParser {
         /**
          * Gets the ProvinceData for a given adjacency URI
          */
-        public static ProvinceData[] getProvinceData(
-                final URI adjacencyURI) throws IOException, SAXException {
+        public static ProvinceData[] getProvinceData(final URI adjacencyURI) {
             final AdjCache ac = get(adjacencyURI);
             return ac.provinceData
                     .toArray(new ProvinceData[ac.provinceData.size()]);
@@ -184,8 +152,7 @@ public class XMLVariantParser implements VariantParser {
         /**
          * Gets the BorderData for a given adjacency URI
          */
-        public static BorderData[] getBorderData(
-                final URI adjacencyURI) throws IOException, SAXException {
+        public static BorderData[] getBorderData(final URI adjacencyURI) {
             final AdjCache ac = get(adjacencyURI);
             return ac.borderData.toArray(new BorderData[ac.borderData.size()]);
         }// getBorderData()
@@ -194,34 +161,27 @@ public class XMLVariantParser implements VariantParser {
         /**
          * Gets the AdjCache object from the cache, or parses from the URI, as appropriate
          */
-        private static AdjCache get(
-                final URI adjacencyURI) throws IOException, SAXException {
+        private static AdjCache get(final URI aURI) {
             // see if we already have the URI data cached.
-            if (adjCache.get(adjacencyURI) != null) {
-                //Log.println("  AdjCache: using cached adjacency data: ", adjacencyURI);
-                return (AdjCache) adjCache.get(adjacencyURI);
-            }
+            return adjCache.computeIfAbsent(aURI, adjacencyURI -> {
+                final URL url = VariantManager.getInstance().getResource(vpURL, adjacencyURI);
+                if (url == null) {
+                    throw new IllegalArgumentException(String.format(
+                            "Could not convert URI: [%s] from variant package: [%s]",
+                            adjacencyURI, vpURL));
+                }
 
-            // it's not cached. resolve URI.
-            final URL url = VariantManager.getResource(vpURL, adjacencyURI);
-            if (url == null) {
-                throw new IOException(
-                        "Could not convert URI: " + adjacencyURI + " from variant package: " + vpURL);
-            }
+                //Log.println("  AdjCache: not in cache: ", adjacencyURI);
 
-            // parse resolved URI
-            //Log.println("  AdjCache: not in cache: ", adjacencyURI);
-
-            try (InputStream is = new BufferedInputStream(url.openStream())) {
-                pp.parse(is);
-            }
-
-            // cache and return parsed data.
-            final AdjCache ac = new AdjCache();
-            ac.provinceData = Arrays.asList(pp.getProvinceData());
-            ac.borderData = Arrays.asList(pp.getBorderData());
-            adjCache.put(adjacencyURI, ac);
-            return ac;
+                try (InputStream is = new BufferedInputStream(
+                        url.openStream())) {
+                    final XMLProvinceParser pp = new XMLProvinceParser(is);
+                    return new AdjCache(Arrays.asList(pp.getProvinceData()),
+                            Arrays.asList(pp.getBorderData()));
+                } catch (IOException e) {
+                    throw new IllegalArgumentException(e);
+                }
+            });
         }// get()
 
     }// inner class AdjCache
@@ -232,7 +192,7 @@ public class XMLVariantParser implements VariantParser {
      * inserted into a hashtable for later recall.
      */
     @XmlRootElement(name = "MAP_DEFINITION")
-    public static class MapDef {
+    public static final class MapDef {
         @XmlID
         @XmlAttribute(required = true)
         private String id;
@@ -252,12 +212,8 @@ public class XMLVariantParser implements VariantParser {
                             final Object parent) {
             if (title != null && title.isEmpty()) {
                 throw new IllegalArgumentException(
-                        "map id=" + id + " missing a title (name)");
+                        String.format("map id=%s missing a title (name)", id));
             }
-        }
-
-        public String getID() {
-            return id;
         }
 
         public String getTitle() {
@@ -270,10 +226,6 @@ public class XMLVariantParser implements VariantParser {
 
         public String getThumbURI() {
             return thumbURI;
-        }
-
-        public String getPrefUnitStyle() {
-            return preferredUnitStyle;
         }
 
         public String getDescription() {

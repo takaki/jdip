@@ -129,10 +129,6 @@ public final class ProvinceData {
     /**
      * Sets the Border ID names for this province (if any)
      */
-    public void setBorders(final List list) {
-        borders = new ArrayList<>(list);
-    }// setBorders()
-
     // TODO: right?
     @XmlAttribute(name = "borders")
     public void setBorders(final String borders) {

@@ -109,13 +109,13 @@ public class AIDemo {
         // an error message. The 'false' sets if we are using XML validation;
         // we generally do not want to.
         //
-        VariantManager.init(new File[]{defaultVariantSearchDir}, false);
+        VariantManager.getInstance().init(new File[]{defaultVariantSearchDir});
         System.out.println("VariantManager initilization complete.");
 
         // Load the variant (VARIANT_NAME) that we want.
         // Throw an error if it isn't found!
         //
-        Variant variant = VariantManager
+        Variant variant = VariantManager.getInstance()
                 .getVariant(VARIANT_NAME, VariantManager.VERSION_NEWEST);
         if (variant == null) {
             throw new IOException("Cannot find variant " + VARIANT_NAME);

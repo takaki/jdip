@@ -590,9 +590,9 @@ public class PersistenceManager {
         // check if variant is available; if not, inform user.
         World.VariantInfo vi = w.getVariantInfo();
 
-        if (VariantManager.getVariant(vi.getVariantName(),
+        if (VariantManager.getInstance().getVariant(vi.getVariantName(),
                 vi.getVariantVersion()) == null) {
-            Variant variant = VariantManager.getVariant(vi.getVariantName(),
+            Variant variant = VariantManager.getInstance().getVariant(vi.getVariantName(),
                     VariantManager.VERSION_NEWEST);
             if (variant == null) {
                 // we don't have the variant AT ALL

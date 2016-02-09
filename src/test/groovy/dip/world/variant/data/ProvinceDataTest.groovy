@@ -30,7 +30,7 @@ class ProvinceDataTest extends Specification {
 //        instance.setAdjacentProvinceTypes("2")
 //        instance.setShortNames(Arrays.asList("3"))
 //        instance.setConvoyableCoast(true)
-        instance.setBorders(Arrays.asList("4"))
+//        instance.setBorders(Arrays.asList("4"))
 
         expect:
         instance.getFullName() == null
@@ -38,7 +38,7 @@ class ProvinceDataTest extends Specification {
 //        instance.getAdjacentProvinceNames() == ["1"] as String[]
 //        instance.getAdjacentProvinceTypes() == ["2"] as String[]
         ! instance.getConvoyableCoast()
-        instance.getBorders() == ["4"] as String[]
+//        instance.getBorders() == ["4"] as String[]
 //        instance.toString() == "dip.world.variant.data.ProvinceData[fullName=0,#shortNames=1,#adj_provinces=1,#adj_types=1,isConvoyableCoast=true,#borders=1]"
     }
 }

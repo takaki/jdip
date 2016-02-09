@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "INITIALSTATE")
 public final class InitialState {
-    @XmlAttribute(required = true)
+    @XmlAttribute(name = "province", required = true)
     private String province;
     @XmlAttribute(name = "power", required = true)
     private String power;
@@ -68,20 +68,6 @@ public final class InitialState {
      */
     public Coast getCoast() {
         return unitcoast;
-    }
-
-    /**
-     * Sets the unit type.
-     */
-    public void setUnitType(final Type value) {
-        unit = value;
-    }
-
-    /**
-     * Sets the coast for the unit.
-     */
-    public void setCoast(final Coast value) {
-        unitcoast = value;
     }
 
 

@@ -1636,7 +1636,7 @@ public class ClientFrame extends JFrame {
      */
     private void initVariantManager() {
         try {
-            VariantManager.init(new File[]{variantDirPath}, isValidating);
+            VariantManager.getInstance().init(new File[]{variantDirPath});
         } catch (javax.xml.parsers.ParserConfigurationException e) {
             ErrorDialog.displayFatal(this, e);
         } catch (dip.world.variant.NoVariantsException e) {
