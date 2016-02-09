@@ -779,7 +779,7 @@ public class VariantManager {
             throw new IllegalArgumentException("null argument(s).");
         }
 
-        final VRec vr = new VRec(pluginURL, pluginName, v);
+        final VRec vRec = new VRec(pluginURL, pluginName, v);
 
         final String vName = v.getName().toLowerCase();
 
@@ -788,25 +788,21 @@ public class VariantManager {
         MapRec mapRec = variantMap.get(vName);
         if (mapRec == null) {
             // not yet mapped! let's map it.
-            mapRec = new MapRec(vr);
+            mapRec = new MapRec(vRec);
             variantMap.put(vName, mapRec);
         } else {
             // we are mapped. See if this version has been added.
             // If not, we'll add it.
-            if (!mapRec.add(vr) && !inWebstart) {
-                final VRec vrec2 = (VRec) mapRec.get(v.getVersion());
-                final Variant v2 = vrec2.getVariant();
-
+            if (!mapRec.add(vRec) && !inWebstart) {
+                final VRec vRec2 = (VRec) mapRec.get(v.getVersion());
                 // 2 variants with identical versions! we are confused!
                 // try to provide as much helpful info as possible.
                 throw new IllegalArgumentException(String.format(
                         "Two variants with identical version numbers have been found.\n" +
-                                "Conflicting version: %s\n" +
-                                "Variant 1: name=%s; pluginName = %s; pluginURL = %s\n" +
-                                "Variant 2: name=%s; pluginName = %s; pluginURL = %s\n",
-                        v.getVersion(), v.getName(), vr.getPluginName(),
-                        vr.getURL(), v2.getName(), vrec2.getPluginName(),
-                        vrec2.getURL()));
+                                "Conflicting version: \n" +
+                                "Variant 1: %s\n" +
+                                "Variant 2: %s\n", v.toString(),
+                        vRec2.getVariant().toString()));
             }
         }
 
@@ -824,14 +820,13 @@ public class VariantManager {
                     variantMap.put(alias, mapRec);
                 } else if (!Objects.equals(testMapRec, mapRec)) {
 // ERROR! incorrect alias map
-                    final Variant v2 = ((VRec) testMapRec.get(VERSION_OLDEST))
-                            .getVariant();
+                    final VRec v2 = (VRec) testMapRec.get(VERSION_OLDEST);
                     throw new IllegalArgumentException(String.format(
                             "Two variants have a conflicting (non-unique) alias.\n" +
-                                    "Variant 1: name=%s; version=%s; pluginName = %s; pluginURL = %s\n" +
-                                    "Variant 2: name=%s; (must check all variants with this name)\n",
-                            v.getName(), v.getVersion(), vr.getPluginName(),
-                            vr.getURL(), v2.getName()));
+                                    "VRec 1: %s\n" +
+                                    "VRec 2: %s\n" +
+                                    "(must check all variants with this name)\n",
+                            v.toString(), v2.toString()));
                 }
                 // else {} : we are already mapped correctly. Nothing to change.
             }
@@ -868,19 +863,15 @@ public class VariantManager {
             // we are mapped. See if this version has been added.
             if (!mapRec.add(spRec) && !inWebstart) {
                 final SPRec spRec2 = (SPRec) mapRec.get(sp.getVersion());
-                final SymbolPack sp2 = spRec2.getSymbolPack();
-                if (sp2.getVersion() == sp.getVersion()) {
+                if (spRec2.getVersion() == sp.getVersion()) {
                     // 2 SymbolPacks with identical versions! we are confused!
                     // try to provide as much helpful info as possible.
                     throw new IllegalArgumentException(String.format(
                             "Two SymbolPcaks with identical version numbers have been found.\n" +
-                                    "Conflicting version: %s\n" +
-                                    "SymbolPack 1: name=%s; pluginName = %s; pluginURL = %s\n" +
-                                    "SymbolPack 2: name=%s; pluginName = %s; pluginURL = %s\n",
-                            sp.getVersion(), sp.getName(),
-                            spRec.getPluginName(), spRec.getURL(),
-                            sp2.getName(), spRec2.getPluginName(),
-                            spRec2.getURL()));
+                                    "Conflicting version: \n" +
+                                    "SymbolPack 1: %s\n" +
+                                    "SymbolPack 2: %s\n", sp.toString(),
+                            spRec2.getSymbolPack().toString()));
                 }
             }
 
@@ -1028,6 +1019,14 @@ public class VariantManager {
         public double getVersion() {
             return variant.getVersion();
         }
+
+        @Override
+        public String toString() {
+            return String
+                    .format("VRec[name=%s; version=%s; pluginName=%s; pluginURL=%s]",
+                            variant.getName(), getVersion(), getPluginName(),
+                            getURL());
+        }
     }// inner class VRec
 
     /**
@@ -1050,6 +1049,16 @@ public class VariantManager {
         public double getVersion() {
             return symbolPack.getVersion();
         }
+
+        @Override
+        public String toString() {
+            return String
+                    .format("SPRec[name=%s; version=%s; pluginName=%s; pluginURL=%s]",
+                            symbolPack.getName(), symbolPack.getVersion(),
+                            getPluginName(), getURL());
+        }
+
+
     }// inner class SPRec
 
 }// class VariantManager
