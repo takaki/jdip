@@ -50,15 +50,6 @@ public final class MapGraphic {
     private URI thumbURI;
 
 
-    /**
-     * Constructs a MapGraphic object.
-     * <p>
-     * If the preferred Symbol Pack Name (prefSPName) is an empty string, it will
-     * be converted to a null String.
-     */
-    public MapGraphic() {
-    }
-
     void afterUnmarshal(final Unmarshaller unmarshaller,
                         final Object parent) throws IOException, SAXException {
         // create the MapGraphic object

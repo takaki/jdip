@@ -112,28 +112,6 @@ public final class SymbolPack implements Comparable<SymbolPack> {
 
 
     /**
-     * Set the SymbolPack name.
-     */
-    public void setName(final String value) {
-        name_ = value;
-    }
-
-    /**
-     * Set the SymbolPack of this variant
-     */
-    public void setVersion(final float value) {
-        version_ = value;
-    }
-
-    /**
-     * Set the SymbolPack description
-     */
-    public void setDescription(final String value) {
-        description_ = value;
-    }
-
-
-    /**
      * Get the URI for the thumbnail image
      */
     public URI getThumbnailURI() {
@@ -146,21 +124,6 @@ public final class SymbolPack implements Comparable<SymbolPack> {
     public URI getSVGURI() {
         return svgURI;
     }
-
-    /**
-     * Set the URI for the thumbnail image
-     */
-    public void setThumbnailURI(final String value) {
-        thumbURI = makeURI(value);
-    }
-
-    /**
-     * Set the URI for the Symbol SVG data
-     */
-    public void setSVGURI(final String value) {
-        svgURI = makeURI(value);
-    }
-
 
     /**
      * Get the Symbols
