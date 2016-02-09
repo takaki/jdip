@@ -23,25 +23,25 @@ import spock.lang.Specification
 class MapGraphicTest extends Specification {
     def instance = new MapGraphic()
     def "setter and getter"() {
-//        expect:
+        expect:
 //        instance.getURI() == new URI("uri")
-//        instance.isDefault()
+        ! instance.isDefault()
 //        instance.getName() == "name"
 //        instance.getDescription() == "description"
 //        instance.getThumbnailURI() == new URI("thumbURI")
 //        instance.getPreferredSymbolPackName() == "prefSPName"
 //        instance.toString() == "dip.world.variant.data.MapGraphic[uri=uri,isDefault=true,name=name,desc=description,thumbURI=thumbURI]"
     }
-    def "check illegal arguments" () {
+//    def "check illegal arguments" () {
 //        when:
-//        new MapGraphic()
+//        new MapGraphic("uri", true, null, "description" , "thumbURI", "prefSPName")
 //        then:
 //        thrown(IllegalArgumentException)
-
+//
 //        expect:
 //        new MapGraphic("%1", true, "name", "description" , "thumbURI", "prefSPName").getURI() == null
 //        new MapGraphic("1", true, "name", "description" , "%1", "prefSPName").getThumbnailURI()== null
-
-    }
+//
+//    }
 
 }

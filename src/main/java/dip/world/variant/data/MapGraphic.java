@@ -35,14 +35,14 @@ import java.net.URISyntaxException;
 
 @XmlRootElement
 public final class MapGraphic {
+    @XmlIDREF
+    @XmlAttribute(name = "ref", required = true)
+    private MapDef mapDef;
     @XmlAttribute(name = "default")
     private boolean isDefault;
     @XmlAttribute(name = "preferredUnitStyle")
     private String prefSPName;
 
-    @XmlIDREF
-    @XmlAttribute(name = "ref")
-    private MapDef mapDef;
 
     private String name;
     private URI uri;
@@ -71,7 +71,6 @@ public final class MapGraphic {
             throw new IllegalArgumentException(e);
         }
     }
-
 
     /**
      * The URI for a map SVG file.

@@ -75,6 +75,7 @@ public final class Variant implements Cloneable, Comparable<Variant> {
     @XmlElement(name = "STARTINGTIME", required = true)
     private StartingTime startingTime = new StartingTime();
 
+    //
     private List<ProvinceData> provinceData;
     private List<BorderData> borderData;
 
@@ -124,8 +125,8 @@ public final class Variant implements Cloneable, Comparable<Variant> {
                         final Object parent) throws IOException, SAXException {
         // TODO: Remove this
         final URI uri = map.adjacencyURI;
-        setBorderData(AdjCache.getBorderData(uri));
-        setProvinceData(AdjCache.getProvinceData(uri));
+        setBorderData(AdjCache.getBorderData(uri)); // TODO: remove AdjCache
+        setProvinceData(AdjCache.getProvinceData(uri)); // TODO: remove AdjCache
     }
 
 
