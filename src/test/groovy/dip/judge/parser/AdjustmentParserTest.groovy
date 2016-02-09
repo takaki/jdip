@@ -29,6 +29,6 @@ class AdjustmentParserTest extends Specification {
 
     def "check arguments"() {
         expect:
-        map == null
+        map !=   null
     }
 }
