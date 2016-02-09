@@ -41,10 +41,10 @@ class WorldFactoryTest extends Specification {
 
     def "check standard map"() {
         setup:
-        VariantManager.init([Paths.get(System.getProperty("user.dir"), "src/test/resources/variants").
+        VariantManager.getInstance().init([Paths.get(System.getProperty("user.dir"), "src/test/resources/variants").
                                      toFile()] as File[])
         when:
-        def variant = VariantManager.getVariants()[7]
+        def variant = VariantManager.getInstance().getVariants()[7]
         def world = WorldFactory.getInstance().createWorld(variant)
         world.getPhaseSet()
 

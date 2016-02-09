@@ -352,7 +352,7 @@ public class NGDMapAndUnits extends JPanel implements NewGameDialog.NGDTabPane {
          * Set the Items, from the available SymbolPacks
          */
         public void setItemsWithSymbolPacks() {
-            SymbolPack[] symbolPacks = VariantManager.getSymbolPacks();
+            SymbolPack[] symbolPacks = VariantManager.getInstance().getSymbolPacks();
             ListItem[] items = new ListItem[symbolPacks.length];
             for (int i = 0; i < items.length; i++) {
                 items[i] = new ListItem(symbolPacks[i]);
@@ -456,7 +456,7 @@ public class NGDMapAndUnits extends JPanel implements NewGameDialog.NGDTabPane {
          */
         public ListItem(SymbolPack sp) {
             // resolve thumbnail URI to load icon
-            URL iconURL = VariantManager.getResource(sp, sp.getThumbnailURI());
+            URL iconURL = VariantManager.getInstance().getResource(sp, sp.getThumbnailURI());
             ImageIcon ii = null;
             if (iconURL != null) {
                 ii = new ImageIcon(iconURL);
@@ -480,7 +480,7 @@ public class NGDMapAndUnits extends JPanel implements NewGameDialog.NGDTabPane {
          */
         public ListItem(Variant variant, MapGraphic mg) {
             // resolve thumbnail URI to load icon
-            URL iconURL = VariantManager
+            URL iconURL = VariantManager.getInstance()
                     .getResource(variant, mg.getThumbnailURI());
             ImageIcon ii = null;
             if (iconURL != null) {

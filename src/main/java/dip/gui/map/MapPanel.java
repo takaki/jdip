@@ -331,7 +331,7 @@ public class MapPanel extends JPanel {
         //
         try {
             svgCanvas.setDocument(transform(xmlDoc,
-                    VariantManager.getVariantPackageJarURL(variant)
+                    VariantManager.getInstance().getVariantPackageJarURL(variant)
                             .toString()));
         } catch (Exception e) {
             ErrorDialog.displaySerious(clientFrame, e);
@@ -344,7 +344,7 @@ public class MapPanel extends JPanel {
         if (svgCanvas.getSVGDocument() instanceof SVGOMDocument) {
             final SVGOMDocument omd = (SVGOMDocument) svgCanvas
                     .getSVGDocument();
-            omd.setURLObject(VariantManager.getVariantPackageJarURL(variant));
+            omd.setURLObject(VariantManager.getInstance().getVariantPackageJarURL(variant));
         } else {
             // shouldn't happen.
             Log.println(
@@ -917,7 +917,7 @@ public class MapPanel extends JPanel {
                         }
                     }
 
-                    URL url = VariantManager.getResource(variant, mg.getURI());
+                    URL url = VariantManager.getInstance().getResource(variant, mg.getURI());
                     if (url == null) {
 
                         Exception e = new IllegalStateException(
@@ -928,7 +928,7 @@ public class MapPanel extends JPanel {
                     }
 
 
-                    symbolPack = VariantManager
+                    symbolPack = VariantManager.getInstance()
                             .getSymbolPack(mg, vi.getSymbolPackName(),
                                     vi.getSymbolPackVersion());
 

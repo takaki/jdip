@@ -27,7 +27,7 @@ class XMLSymbolParserTest extends Specification {
 
     def "parse"() {
         setup:
-        VariantManager.init([Paths.get(System.getProperty("user.dir"), "src/test/resources/variants").
+        VariantManager.getInstance().init([Paths.get(System.getProperty("user.dir"), "src/test/resources/variants").
                                      toFile()] as File[]) // TODO: fix
         def pluginUrl = getClass().getResource("/variants/simpleSymbols.zip")
         URLClassLoader urlCL = new URLClassLoader(pluginUrl);

@@ -100,6 +100,9 @@ public class VariantManager {
     private transient URLClassLoader currentUCL;                // The current class loader
     private transient URL currentPackageURL;                    // The current class loader URL
 
+    public static VariantManager getInstance() {
+        return vm;
+    }
 
     /**
      * Initiaize the VariantManager.
@@ -109,7 +112,7 @@ public class VariantManager {
      * <p>
      * Loaded XML may be validated if the isValidating flag is set to true.
      */
-    public static synchronized void init(
+    public synchronized void init(
             final File[] searchPaths) throws ParserConfigurationException, NoVariantsException {
         final long ttime = System.currentTimeMillis();
         final long vptime = ttime;
@@ -256,7 +259,8 @@ public class VariantManager {
                                 throw new IllegalArgumentException(e);
                             }
                         });
-            } catch (final IOException ignored) {
+            } catch (final IOException e) {
+                throw new IllegalArgumentException(e);
             }
 
         }// if(isInWebStart)
@@ -278,7 +282,7 @@ public class VariantManager {
      * exist, only the latest version is returned. The list is
      * sorted in alphabetic order.
      */
-    public static synchronized Variant[] getVariants() {
+    public synchronized Variant[] getVariants() {
 
         if (vm.variants.size() != vm.variantMap.size()) {
             // note that we need to avoid putting duplicates
@@ -304,7 +308,7 @@ public class VariantManager {
      * exist, only the latest version is returned. The list is
      * sorted in alphabetic order.
      */
-    public static synchronized SymbolPack[] getSymbolPacks() {
+    public synchronized SymbolPack[] getSymbolPacks() {
 
         if (vm.symbolPacks.size() != vm.symbolMap.size()) {
             // avoid putting duplicates into the array.
@@ -349,8 +353,8 @@ public class VariantManager {
      * <p>
      * Note: Name is <b>not</b> case-sensitive.
      */
-    public static synchronized SymbolPack getSymbolPack(final String name,
-                                                        final float version) {
+    public synchronized SymbolPack getSymbolPack(final String name,
+                                                 final float version) {
         if (name == null) {
             return null;
         }
@@ -374,9 +378,9 @@ public class VariantManager {
      * <p>
      * Thus it is assured that a SymbolPack will always be obtained.
      */
-    public static synchronized SymbolPack getSymbolPack(final MapGraphic mg,
-                                                        final String symbolPackName,
-                                                        final float symbolPackVersion) {
+    public synchronized SymbolPack getSymbolPack(final MapGraphic mg,
+                                                 final String symbolPackName,
+                                                 final float symbolPackVersion) {
         if (mg == null) {
             throw new IllegalArgumentException();
         }
@@ -414,8 +418,7 @@ public class VariantManager {
      * Returns false if the version is not available or the variant
      * is not found.
      */
-    public static boolean hasVariantVersion(final String name,
-                                            final float version) {
+    public boolean hasVariantVersion(final String name, final float version) {
         return getVariant(name, version) != null;
     }// hasVariantVersion()
 
@@ -425,8 +428,8 @@ public class VariantManager {
      * Returns false if the version is not available or the SymbolPack
      * is not found.
      */
-    public static boolean hasSymbolPackVersion(final String name,
-                                               final float version) {
+    public boolean hasSymbolPackVersion(final String name,
+                                        final float version) {
         return getSymbolPack(name, version) != null;
     }// hasVariantVersion()
 
@@ -435,7 +438,7 @@ public class VariantManager {
      * Returns the versions of a variant that are available.
      * If the variant is not found, a zero-length array is returned.
      */
-    public static synchronized float[] getVariantVersions(final String name) {
+    public synchronized float[] getVariantVersions(final String name) {
         final MapRec mr = vm.variantMap.get(name.toLowerCase());
         if (mr != null) {
             return mr.getVersions();
@@ -448,8 +451,7 @@ public class VariantManager {
      * Returns the versions of a SymbolPack that are available.
      * If the SymbolPack is not found, a zero-length array is returned.
      */
-    public static synchronized float[] getSymbolPackVersions(
-            final String name) {
+    public synchronized float[] getSymbolPackVersions(final String name) {
         final MapRec mr = vm.symbolMap.get(name.toLowerCase());
         if (mr != null) {
             return mr.getVersions();
@@ -462,7 +464,7 @@ public class VariantManager {
     /**
      * Ensures version is positive OR VERSION_NEWEST or VERSION_OLDEST
      */
-    private static void checkVersionConstant(final float version) {
+    private void checkVersionConstant(final float version) {
         if (version <= 0.0f && version != VERSION_NEWEST && version != VERSION_OLDEST) {
             throw new IllegalArgumentException(
                     "invalid version or version constant: " + version);
@@ -476,8 +478,7 @@ public class VariantManager {
      * Typically, getResource(Variant, URI) or getResource(SymbolPack, URI) is
      * preferred to this method.
      */
-    public static synchronized URL getResource(final URL packURL,
-                                               final URI uri) {
+    public synchronized URL getResource(final URL packURL, final URI uri) {
         // ensure we have been initialized...
 
         // if we are in webstart, assume that this is a webstart jar.
@@ -510,7 +511,7 @@ public class VariantManager {
      * to this Variant. Null arguments are illegal. Returns
      * null if the resource cannot be resolved. Threadsafe.
      */
-    public static URL getResource(final Variant variant, final URI uri) {
+    public URL getResource(final Variant variant, final URI uri) {
         if (variant == null) {
             throw new IllegalArgumentException();
         }
@@ -523,7 +524,7 @@ public class VariantManager {
      * to this SymbolPack. Null arguments are illegal. Returns
      * null if the resource cannot be resolved. Threadsafe.
      */
-    public static URL getResource(final SymbolPack symbolPack, final URI uri) {
+    public URL getResource(final SymbolPack symbolPack, final URI uri) {
         if (symbolPack == null) {
             throw new IllegalArgumentException();
         }
@@ -540,7 +541,7 @@ public class VariantManager {
      * e.g.: <code>jar:http:/the.location/ajar.zip!/</code>
      * or <code>jar:file:/c:/plugins/ajar.zip!/</code>
      */
-    public static URL getVariantPackageJarURL(final Variant variant) {
+    public URL getVariantPackageJarURL(final Variant variant) {
         if (variant != null) {
             final VRec vr = getVRec(variant);
             if (vr != null) {
@@ -575,8 +576,7 @@ public class VariantManager {
     /**
      * Internal getResource() implementation
      */
-    private static synchronized URL getResource(final MapRecObj mro,
-                                                final URI uri) {
+    private synchronized URL getResource(final MapRecObj mro, final URI uri) {
         // ensure we have been initialized...
         assert mro != null;
 
@@ -654,7 +654,7 @@ public class VariantManager {
     /**
      * Returns the URLClassLoader for a given URL, or creates a new one....
      */
-    private static URLClassLoader getClassLoader(final URL packageURL) {
+    private URLClassLoader getClassLoader(final URL packageURL) {
         // WARNING: this method is not (itself) threadsafe
         if (packageURL == null) {
             throw new IllegalArgumentException();
@@ -674,7 +674,7 @@ public class VariantManager {
     /**
      * Returns the "file" part of the URL; e.g.: x/y/z.jar, returns z.jar
      */
-    private static String getFile(final URL url) {
+    private String getFile(final URL url) {
         final String s = url.toString();
         return s.substring(s.lastIndexOf("/") + 1, s.length());
     }// getFile()
@@ -682,7 +682,7 @@ public class VariantManager {
     /**
      * Get the webstart plugin name
      */
-    private static String getWSPluginName(final URL url) {
+    private String getWSPluginName(final URL url) {
         final String s = url.toString();
         final int idxExclam = s.indexOf('!');
         if (idxExclam >= 0) {
@@ -710,7 +710,7 @@ public class VariantManager {
      * <p>
      * This primarily applies to Webstart resources
      */
-    private static URL getWSResource(final MapRecObj mro, final URI uri) {
+    private URL getWSResource(final MapRecObj mro, final URI uri) {
         assert vm.isInWebstart;
         if (uri == null || mro == null) {
             return null;
@@ -747,7 +747,7 @@ public class VariantManager {
      * <p>
      * This primarily applies to Webstart resources
      */
-    private static URL getWSResource(final URL packURL, final URI uri) {
+    private URL getWSResource(final URL packURL, final URI uri) {
         /*
             NOTE: this method is used by getResource(URL, URI), which is
 			chiefly used by VariantManager and associated parsers; a VariantRecord
@@ -790,8 +790,8 @@ public class VariantManager {
      * <p>
      * NOTE: names and aliases are always mapped in all lower case.
      */
-    private static void addVariant(final Variant v, final String pluginName,
-                                   final URL pluginURL) throws IOException {
+    private void addVariant(final Variant v, final String pluginName,
+                            final URL pluginURL) throws IOException {
         if (v == null || pluginName == null || pluginURL == null) {
             throw new IllegalArgumentException();
         }
@@ -875,9 +875,8 @@ public class VariantManager {
      * <p>
      * Names are always mapped in all lower case.
      */
-    private static void addSymbolPack(final SymbolPack sp,
-                                      final String pluginName,
-                                      final URL pluginURL) throws IOException {
+    private void addSymbolPack(final SymbolPack sp, final String pluginName,
+                               final URL pluginURL) throws IOException {
         if (sp == null || pluginName == null || pluginURL == null) {
             throw new IllegalArgumentException();
         }
@@ -928,7 +927,7 @@ public class VariantManager {
     /**
      * Gets the VRec associated with a Variant (via name and version)
      */
-    private static VRec getVRec(final Variant v) {
+    private VRec getVRec(final Variant v) {
         final MapRec mapRec = vm.variantMap.get(v.getName().toLowerCase());
         return (VRec) mapRec.get(v.getVersion());
     }// getVRec()
@@ -937,7 +936,7 @@ public class VariantManager {
     /**
      * Gets the SPRec associated with a SymbolPack (via name and version)
      */
-    private static SPRec getSPRec(final SymbolPack sp) {
+    private SPRec getSPRec(final SymbolPack sp) {
         final MapRec mapRec = vm.symbolMap.get(sp.getName().toLowerCase());
         return (SPRec) mapRec.get(sp.getVersion());
     }// getSPRec()
@@ -945,7 +944,7 @@ public class VariantManager {
     /**
      * The value which is stored within the name mapping
      */
-    private static class MapRec {
+    private class MapRec {
         private final ArrayList<MapRecObj> list = new ArrayList<>(2);
 
         // this constructor prevents us from having an empty list.

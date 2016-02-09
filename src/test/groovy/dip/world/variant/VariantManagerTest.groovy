@@ -27,7 +27,7 @@ import java.nio.file.Paths
 class VariantManagerTest extends Specification {
     def "initialize"() {
         setup:
-        VariantManager.init([Paths.get(System.getProperty("user.dir"), "src/test/resources/variants").
+        VariantManager.getInstance().init([Paths.get(System.getProperty("user.dir"), "src/test/resources/variants").
                                      toFile()] as File[])
         when:
         def variant = VariantManager.getVariant("TEST_Borders", 1.0)
@@ -35,12 +35,12 @@ class VariantManagerTest extends Specification {
         variant.getName() == "TEST_Borders"
 
         when:
-        def symbol = VariantManager.getSymbolPack("Simple", 1.0)
+        def symbol = VariantManager.getInstance().getSymbolPack("Simple", 1.0)
         then:
         symbol.getName() == "Simple"
 
         when:
-        def symbolPacks = VariantManager.getSymbolPacks()
+        def symbolPacks = VariantManager.getInstance().getSymbolPacks()
         then:
         symbolPacks.size() == 1
         def symbol0 = symbolPacks[0]
@@ -49,7 +49,7 @@ class VariantManagerTest extends Specification {
 
 
         when:
-        def variants = VariantManager.getVariants()
+        def variants = VariantManager.getInstance().getVariants()
         then:
         variants.size() == 9
         def variant0 = variants[7]
@@ -73,18 +73,18 @@ class VariantManagerTest extends Specification {
         variant0.getMapGraphics()[0].getThumbnailURI() == new URI("simple_thumb.png")
 
         expect:
-        VariantManager.getSymbolPackVersions("Simple") == [1.0] as float[]
-        VariantManager.hasVariantVersion("TEST_Borders", 1.0)
-        VariantManager.hasSymbolPackVersion("Simple", 1.0)
-        VariantManager.getVariantVersions("TEST_Borders") == [1.0] as float[]
-        VariantManager.getResource(variant, new URI("a")) == null
-        VariantManager.getResource(variant, new URI("jar:file:" + System.
+        VariantManager.getInstance().getSymbolPackVersions("Simple") == [1.0] as float[]
+        VariantManager.getInstance().hasVariantVersion("TEST_Borders", 1.0)
+        VariantManager.getInstance().hasSymbolPackVersion("Simple", 1.0)
+        VariantManager.getInstance().getVariantVersions("TEST_Borders") == [1.0] as float[]
+        VariantManager.getInstance().getResource(variant, new URI("a")) == null
+        VariantManager.getInstance().getResource(variant, new URI("jar:file:" + System.
                 getProperty("user.dir") + "/src/test/resources/variants/testVariants.zip!/")) == new URL("jar:file:" + System.
                 getProperty("user.dir") + "/src/test/resources/variants/testVariants.zip!/")
-        VariantManager.getResource(symbol, new URI("jar:file:" + System.
+        VariantManager.getInstance().getResource(symbol, new URI("jar:file:" + System.
                 getProperty("user.dir") + "/src/test/resources/variants/simpleSimbols.zip!/")) == new URL("jar:file:" + System.
                 getProperty("user.dir") + "/src/test/resources/variants/simpleSimbols.zip!/")
-        VariantManager.getVariantPackageJarURL(variant) == new URL("jar:file:" + System.
+        VariantManager.getInstance().getVariantPackageJarURL(variant) == new URL("jar:file:" + System.
                 getProperty("user.dir") + "/src/test/resources/variants/testVariants.zip!/")
 
 

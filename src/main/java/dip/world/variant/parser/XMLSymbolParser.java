@@ -93,7 +93,7 @@ public class XMLSymbolParser implements SymbolParser {
         // add symbols to SymbolPack
 
         // resolve SVG URI
-        final URL url = VariantManager
+        final URL url = VariantManager.getInstance()
                 .getResource(symbolPackURL, symbolPack.getSVGURI());
         if (url == null) {
             throw new IOException(String.format(

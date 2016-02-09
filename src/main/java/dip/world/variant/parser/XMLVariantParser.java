@@ -164,7 +164,7 @@ public class XMLVariantParser implements VariantParser {
         private static AdjCache get(final URI aURI) {
             // see if we already have the URI data cached.
             return adjCache.computeIfAbsent(aURI, adjacencyURI -> {
-                final URL url = VariantManager.getResource(vpURL, adjacencyURI);
+                final URL url = VariantManager.getInstance().getResource(vpURL, adjacencyURI);
                 if (url == null) {
                     throw new IllegalArgumentException(String.format(
                             "Could not convert URI: [%s] from variant package: [%s]",
