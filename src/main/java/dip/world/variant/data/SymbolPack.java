@@ -22,63 +22,92 @@
 //
 package dip.world.variant.data;
 
+import javafx.util.Pair;
+
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A SymbolPack
  */
-public class SymbolPack implements Comparable {
-    private String name = null;
-    private float version = 0.0f;
-    private String description = "";
+@XmlRootElement(name = "SYMBOLS")
+public final class SymbolPack implements Comparable<SymbolPack> {
+    @XmlAttribute(required = true)
+    private String name_;
+    @XmlAttribute(required = true)
+    private double version_;
+    @XmlAttribute(required = true)
     private URI thumbURI;
+    @XmlAttribute(required = true)
     private URI svgURI;
-    private Symbol[] symbols;
-    private CSSStyle[] cssStyles = new CSSStyle[0];
+    @XmlElement(name = "description", required = true)
+    private String description_ = "";
+
+
+    @XmlElementWrapper(name = "SCALING")
+    @XmlElement(name = "SCALE")
+    private List<Scale> scales = Collections.emptyList();
+
+    private List<Symbol> symbols;
+    private List<CSSStyle> cssStyles = Collections.emptyList();
+
+    @XmlRootElement(name = "SCALE")
+    public static class Scale {
+        @XmlAttribute(required = true)
+        private String symbolName;
+        @XmlAttribute(required = true)
+        private float value;
+
+        @SuppressWarnings("unused")
+        public void afterUnmarshal(final Unmarshaller unmarshaller,
+                                   final Object parent) {
+            if (value <= 0.0f) {
+                throw new IllegalArgumentException(
+                        "scale attribute value cannot be negative or zero.");
+            }
+        }
+
+        public String getSymbolName() {
+            return symbolName;
+        }
+
+        public float getValue() {
+            return value;
+        }
+    }
+
+    public Map<String, Float> getScaleMap() {
+        return scales.stream().collect(
+                Collectors.toMap(Scale::getSymbolName, Scale::getValue));
+    }
+
 
     /**
      * The name of the SymbolPack.
      */
     public String getName() {
-        return name;
+        return name_;
     }
 
     /**
      * Version of this SymbolPack
      */
-    public float getVersion() {
-        return version;
+    public double getVersion() {
+        return version_;
     }
 
     /**
      * The description of the SymbolPack.
      */
     public String getDescription() {
-        return description;
-    }
-
-
-    /**
-     * Set the SymbolPack name.
-     */
-    public void setName(String value) {
-        name = value;
-    }
-
-    /**
-     * Set the SymbolPack of this variant
-     */
-    public void setVersion(float value) {
-        version = value;
-    }
-
-    /**
-     * Set the SymbolPack description
-     */
-    public void setDescription(String value) {
-        description = value;
+        return description_;
     }
 
 
@@ -97,93 +126,74 @@ public class SymbolPack implements Comparable {
     }
 
     /**
-     * Set the URI for the thumbnail image
-     */
-    public void setThumbnailURI(String value) {
-        thumbURI = makeURI(value);
-    }
-
-    /**
-     * Set the URI for the Symbol SVG data
-     */
-    public void setSVGURI(String value) {
-        svgURI = makeURI(value);
-    }
-
-
-    /**
      * Get the Symbols
      */
     public Symbol[] getSymbols() {
-        return symbols;
+        return symbols.toArray(new Symbol[symbols.size()]);
     }
 
     /**
      * Get the CSS Style data (if any)
      */
     public CSSStyle[] getCSSStyles() {
-        return cssStyles;
+        return cssStyles.toArray(new CSSStyle[cssStyles.size()]);
     }
 
     /**
      * Do we have any CSS data?
      */
     public boolean hasCSSStyles() {
-        return (cssStyles.length > 0);
+        return cssStyles.size() > 0;
     }
 
     /**
      * Set the CSS Style data
      */
-    public void setCSSStyles(CSSStyle[] styles) {
+    public void setCSSStyles(final CSSStyle[] styles) {
         if (styles == null) {
             throw new IllegalArgumentException();
         }
 
-        this.cssStyles = styles;
+        cssStyles = Arrays.asList(styles);
     }// setCSSStyles()
 
     /**
      * Set the Symbols
      */
-    public void setSymbols(Symbol[] symbols) {
-        this.symbols = symbols;
+    public void setSymbols(final Symbol[] symbols) {
+        this.symbols = Arrays.asList(symbols);
     }
 
     /**
      * Set the Symbols
      */
-    public void setSymbols(List list) {
-        this.symbols = (Symbol[]) list.toArray(new Symbol[list.size()]);
+    public void setSymbols(final List list) {
+        symbols = new ArrayList<>(list);
     }
 
     /**
      * Find the Symbol with the given Name (case sensitive); returns null if name not found.
      */
-    public Symbol getSymbol(String name) {
-        for (int i = 0; i < symbols.length; i++) {
-            if (symbols[i].getName().equals(name)) {
-                return symbols[i];
-            }
-        }
-
-        return null;
+    public Symbol getSymbol(final String name) {
+        return symbols.stream().filter(symbol -> symbol.getName().equals(name))
+                .findFirst().orElse(null);
     }// getSymbol()
 
     /**
      * Comparison, based on Name. Only compares to other SymbolPack objects.
      */
-    public int compareTo(Object o) {
-        return this.getName().compareTo(((SymbolPack) o).getName());
+    @Override
+    public int compareTo(final SymbolPack o) {
+        return name_.compareTo(o.name_);
     }// compareTo()
 
     /**
      * Make a URI from a String
      */
-    private URI makeURI(String uri) {
+    private static URI makeURI(final String uri) {
         try {
             return new URI(uri);
-        } catch (URISyntaxException e) {
+        } catch (final URISyntaxException ignored) {
             return null;
         }
     }// makeURI()
@@ -193,33 +203,30 @@ public class SymbolPack implements Comparable {
      * SymbolPack CSS data styles.
      */
     public static class CSSStyle {
-        private final String name;
-        private final String style;
+        private final Pair<String, String> pair;
 
         /**
          * Create a CSS style
          */
-        public CSSStyle(String name, String style) {
+        public CSSStyle(final String name, final String style) {
             if (name == null || style == null) {
                 throw new IllegalArgumentException();
             }
-
-            this.name = name;
-            this.style = style;
+            pair = new Pair<>(name, style);
         }// CSSStyle()
 
         /**
          * Get the CSS Style name. This will have the '.' in front of it.
          */
         public String getName() {
-            return name;
+            return pair.getKey();
         }
 
         /**
          * Get the CSS Style value.
          */
         public String getStyle() {
-            return style;
+            return pair.getValue();
         }
     }// nested class CSSStyle
 

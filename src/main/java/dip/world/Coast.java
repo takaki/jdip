@@ -24,7 +24,9 @@ package dip.world;
 
 import dip.order.OrderException;
 
-import java.io.InvalidObjectException;
+import javax.xml.bind.annotation.XmlEnumValue;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,31 +36,59 @@ import java.util.regex.Pattern;
  * Coast constants should be used.
  */
 
-public final class Coast implements java.io.Serializable {
-    // transient data
-    transient static private Pattern[] patterns = null;
+public enum Coast {
+    // perhaps make it "?c" ??
+    UNDEFINED("Undefined", "?", 0),
 
-    // internal constants
-    // TODO: these need to be properly internationalized.
-    // To do that, we need internationlization support for coast
-    // normalization and parsing also
-    //
-    private static final String NORTH_FULL = "North Coast";
-    private static final String NORTH_ABBREV = "nc";
-    private static final String SOUTH_FULL = "South Coast";
-    private static final String SOUTH_ABBREV = "sc";
-    private static final String WEST_FULL = "West Coast";
-    private static final String WEST_ABBREV = "wc";
-    private static final String EAST_FULL = "East Coast";
-    private static final String EAST_ABBREV = "ec";
-    private static final String NONE_FULL = "None";
-    private static final String NONE_ABBREV = "mv";
-    private static final String SINGLE_FULL = "Single";
-    private static final String SINGLE_ABBREV = "xc";
-    private static final String WING_FULL = "Wing";
-    private static final String WING_ABBREV = "wx";
-    private static final String UNDEFINED_FULL = "Undefined";
-    private static final String UNDEFINED_ABBREV = "?";    // perhaps make it "?c" ??
+    /**
+     * Constant indicating Wing coast (for Wing movement)
+     */
+    @XmlEnumValue("wx")
+    WING("Wing", "wx", 1),
+    /**
+     * Constant indicating no coast (Army movement)
+     */
+    @XmlEnumValue("mv")
+    NONE("None", "mv", 2),
+    /**
+     * Constant indicating a single Coast (for fleets in coastal land areas, or sea-only provinces)
+     */
+    @XmlEnumValue("xc")
+    SINGLE("Single", "xc", 3),
+    /**
+     * Constant indicating North Coast
+     */
+    @XmlEnumValue("nc")
+    NORTH("North Coast", "nc", 4),
+    /**
+     * Constant indicating South Coast
+     */
+    @XmlEnumValue("sc")
+    SOUTH("South Coast", "sc", 5),
+    /**
+     * Constant indicating West Coast
+     */
+    @XmlEnumValue("sc")
+    WEST("West Coast", "wc", 6),
+    /**
+     * Constant indicating East Coast
+     */
+    @XmlEnumValue("ec")
+    EAST("East Coast", "ec", 7);
+
+
+    // transient data
+    private static transient List<Pattern> patterns = Arrays.asList(
+            // match /xx, -xx, \xx coasts; also takes care of periods.
+            // also matches /x; will not match /xxx (or -xxx)
+            Pattern.compile(
+                    "\\s*[\\-\\\\/](\\p{Alnum}\\.?)(\\p{Alnum}\\.?)\\b"),
+            //
+            // match parenthetical coasts.
+            //patterns[1] = Pattern.compile("\\s*\\([^\\p{Alnum}]*(\\p{Alnum})[^\\p{Alnum}]*(\\p{Alnum})[^)]*\\)");
+            Pattern.compile("\\s*\\(([.[^)]]*)(\\))\\s*"));
+
+
 
 	/* To be used in the future .... parsing to accomodate
     private static final String NW_FULL 		= "Northwest Coast";
@@ -73,40 +103,6 @@ public final class Coast implements java.io.Serializable {
 
 
     // constants
-    /**
-     * Constant indicated an Undefined coast
-     */
-    public static final Coast UNDEFINED = new Coast(UNDEFINED_FULL,
-            UNDEFINED_ABBREV, 0);
-    /**
-     * Constant indicating Wing coast (for Wing movement)
-     */
-    public static final Coast WING = new Coast(WING_FULL, WING_ABBREV, 1);
-    /**
-     * Constant indicating no coast (Army movement)
-     */
-    public static final Coast NONE = new Coast(NONE_FULL, NONE_ABBREV, 2);
-    /**
-     * Constant indicating a single Coast (for fleets in coastal land areas, or sea-only provinces)
-     */
-    public static final Coast SINGLE = new Coast(SINGLE_FULL, SINGLE_ABBREV, 3);
-    /**
-     * Constant indicating North Coast
-     */
-    public static final Coast NORTH = new Coast(NORTH_FULL, NORTH_ABBREV, 4);
-    /**
-     * Constant indicating South Coast
-     */
-    public static final Coast SOUTH = new Coast(SOUTH_FULL, SOUTH_ABBREV, 5);
-    /**
-     * Constant indicating West Coast
-     */
-    public static final Coast WEST = new Coast(WEST_FULL, WEST_ABBREV, 6);
-    /**
-     * Constant indicating East Coast
-     */
-    public static final Coast EAST = new Coast(EAST_FULL, EAST_ABBREV, 7);
-
     /**
      * Alias for Coast.WING
      */
@@ -152,17 +148,13 @@ public final class Coast implements java.io.Serializable {
     private final String abbreviation;
     private final int index;
 
-    // TODO: ?? hashCode should be == index (since index is unique)
-    private transient int hashCode = 0;    // cache the hashCode
-
     /**
      * Constructs a Coast
      */
-    private Coast(String name, String abbreviation, int index) {
+    Coast(final String name, final String abbreviation, final int index) {
         if (index < 0) {
             throw new IllegalArgumentException();
         }
-
         this.name = name;
         this.abbreviation = abbreviation;
         this.index = index;
@@ -194,7 +186,7 @@ public final class Coast implements java.io.Serializable {
     /**
      * Gets the Coast corresponding to an index; null if index is out of range.
      */
-    public static Coast getCoast(int idx) {
+    public static Coast getCoast(final int idx) {
         if (idx >= 0 && idx < IDX_ARRAY.length) {
             return IDX_ARRAY[idx];
         }
@@ -212,13 +204,9 @@ public final class Coast implements java.io.Serializable {
     /**
      * Returns if this Coast is typically displayed
      */
-    public static boolean isDisplayable(Coast coast) {
-        for (int i = 0; i < NOT_DISPLAYED.length; i++) {
-            if (coast == NOT_DISPLAYED[i]) {
-                return false;
-            }
-        }
-        return true;
+    public static boolean isDisplayable(final Coast coast) {
+        return !Arrays.stream(NOT_DISPLAYED)
+                .anyMatch(anotDisplayed -> (coast == anotDisplayed));
     }// isDisplayable()
 
     /**
@@ -233,15 +221,15 @@ public final class Coast implements java.io.Serializable {
      * unparsable coasts, Coast.UNDEFINED is returned.
      * <p>
      */
-    public static Coast parse(String text) {
-        String input = text.toLowerCase().trim();
+    public static Coast parse(final String text) {
+        final String input = text.toLowerCase().trim();
 
         // check if it is just a coast (2-letter) or
         // part of a province name. If we don't check
         // for -/\, then we could be processing part
         // of a province name
         if (input.length() >= 3) {
-            char c = input.charAt(input.length() - 3);
+            final char c = input.charAt(input.length() - 3);
             if (c != '-' && c != '/' && c != '\\') {
                 return UNDEFINED;
             }
@@ -261,7 +249,7 @@ public final class Coast implements java.io.Serializable {
             return LAND;
         }
 
-        return Coast.UNDEFINED;
+        return UNDEFINED;
     }// parse()
 
 
@@ -269,9 +257,9 @@ public final class Coast implements java.io.Serializable {
      * Returns the Province name upto the first Coast seperator
      * character ('-', '/', or '\'); Parentheses are not supported.
      */
-    public static String getProvinceName(String input) {
+    public static String getProvinceName(final String input) {
         if (input.length() > 3) {
-            final int idx = (input.length() - 3);
+            final int idx = input.length() - 3;
             final char c = input.charAt(idx);
             if (c == '-' || c == '/' || c == '\\') {
                 return input.substring(0, idx);
@@ -303,27 +291,12 @@ public final class Coast implements java.io.Serializable {
      * <p>
      * Bug note: the following "xxx-n.c." will be converted to "xxx-nc ." Note the extra period.
      */
-    public static String normalize(String input) throws OrderException {
-        // create patterns, if we have none.
-        // these are threadsafe
-        if (patterns == null) {
-            patterns = new Pattern[2];
-
-            // match /xx, -xx, \xx coasts; also takes care of periods.
-            // also matches /x; will not match /xxx (or -xxx)
-            patterns[0] = Pattern.compile(
-                    "\\s*[\\-\\\\/](\\p{Alnum}\\.?)(\\p{Alnum}\\.?)\\b");
-            //
-            // match parenthetical coasts.
-            //patterns[1] = Pattern.compile("\\s*\\([^\\p{Alnum}]*(\\p{Alnum})[^\\p{Alnum}]*(\\p{Alnum})[^)]*\\)");
-            patterns[1] = Pattern.compile("\\s*\\(([.[^)]]*)(\\))\\s*");
-        }
-
+    public static String normalize(final String input) throws OrderException {
         // start matching.
         String matchInput = input;
-        for (int i = 0; i < patterns.length; i++) {
-            Matcher m = patterns[i].matcher(matchInput);
-            StringBuffer sb = new StringBuffer(matchInput.length());
+        for (Pattern pattern : patterns) {
+            final Matcher m = pattern.matcher(matchInput);
+            final StringBuffer sb = new StringBuffer(matchInput.length());
 
             boolean result = m.find();
             while (result) {
@@ -339,7 +312,7 @@ public final class Coast implements java.io.Serializable {
                     //System.out.println("1: "+m.group(1)+";  2: "+m.group(2));
 
                     if (c2 == ')') {
-                        String group1 = superTrim(m.group(1));
+                        final String group1 = superTrim(m.group(1));
 
                         // test 'full name' and abbreviated coasts inside parentheses
                         if (group1.startsWith("north") || "nc".equals(group1)) {
@@ -358,8 +331,8 @@ public final class Coast implements java.io.Serializable {
                         } else if ("xc".equals(group1)) {
                             m.appendReplacement(sb, "/xc ");
                         }
-                    } else if ((c2 == 'c' && (c1 == 'n' || c1 == 's' || c1 == 'w' || c1 == 'e' || c1 == 'x')) || (c1 == 'm' && c2 == 'v')) {
-                        StringBuffer rep = new StringBuffer(4);
+                    } else if (c2 == 'c' && (c1 == 'n' || c1 == 's' || c1 == 'w' || c1 == 'e' || c1 == 'x') || c1 == 'm' && c2 == 'v') {
+                        final StringBuffer rep = new StringBuffer(4);
                         rep.append('/');
                         rep.append(c1);
                         rep.append(c2);
@@ -388,7 +361,7 @@ public final class Coast implements java.io.Serializable {
      * <br>
      * space, tab, '.'
      */
-    private static String superTrim(String in) {
+    private static String superTrim(final String in) {
         return in.replaceAll("\\.*\\s*\\t*", "");
     }// superTrim()
 
@@ -398,73 +371,9 @@ public final class Coast implements java.io.Serializable {
      * Coast.NORTH, Coast.SOUTH, Coast.WEST, or Coast.EAST
      */
     public boolean isDirectional() {
-        for (int i = 0; i < ANY_DIRECTIONAL.length; i++) {
-            if (this == ANY_DIRECTIONAL[i]) {
-                return true;
-            }
-        }
-
-        return false;
+        return Arrays.stream(ANY_DIRECTIONAL)
+                .anyMatch(aanyDirectional -> this == aanyDirectional);
     }// isDirectionalCoast()
 
-
-    /**
-     * Implementation of Object.hashCode()
-     */
-    public int hashCode() {
-        if (hashCode == 0) {
-            hashCode = name.hashCode();
-        }
-
-        return hashCode;
-    }// hashCode()
-
-
-    /**
-     * Equals implementation (ignores localized names)
-     */
-    public boolean equals(Object obj) {
-        if (obj == this) {
-            return true;
-        } else if (obj instanceof Coast) {
-            final Coast c = (Coast) obj;
-
-            // only index/internal names must match
-            return (this.index == c.index && this.abbreviation
-                    .equals(c.abbreviation) && this.name.equals(c.name));
-        }
-
-        return false;
-    }// equals()
-
-
-    /**
-     * Assigns serialized objects to a single constant reference
-     */
-    protected Object readResolve() throws java.io.ObjectStreamException {
-        Coast coast = null;
-
-        if (name.equals(NORTH_FULL)) {
-            coast = NORTH;
-        } else if (name.equals(SOUTH_FULL)) {
-            coast = SOUTH;
-        } else if (name.equals(WEST_FULL)) {
-            coast = WEST;
-        } else if (name.equals(EAST_FULL)) {
-            coast = EAST;
-        } else if (name.equals(NONE_FULL)) {
-            coast = NONE;
-        } else if (name.equals(SINGLE_FULL)) {
-            coast = SINGLE;
-        } else if (name.equals(WING_FULL)) {
-            coast = WING;
-        } else if (name.equals(UNDEFINED_FULL)) {
-            coast = UNDEFINED;
-        } else {
-            throw new InvalidObjectException("Unknown coast type: " + name);
-        }
-
-        return coast;
-    }// readResolve()
 
 }// class Coast()

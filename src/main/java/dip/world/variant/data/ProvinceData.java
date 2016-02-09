@@ -22,7 +22,15 @@
 //
 package dip.world.variant.data;
 
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
 
@@ -30,13 +38,58 @@ import java.util.List;
 
 
  */
-public class ProvinceData {
-    private String fullName = null;
-    private String[] shortNames = null;
-    private String[] adj_provinces = null;
-    private String[] adj_types = null;
-    private boolean isConvoyableCoast = false;
-    private String[] borders = null;
+@XmlRootElement(name = "PROVINCE")
+public final class ProvinceData {
+
+//    borders IDREFS #IMPLIED
+
+    //    shortname CDATA #REQUIRED
+    @XmlAttribute(name = "shortname", required = true)
+    private String shortName;
+    private List<String> shortNames = new ArrayList<>();
+    @XmlAttribute(name = "fullname", required = true)
+    private String fullName;
+    //    isConvoyableCoast (true|false) "false"
+    @XmlAttribute(name = "isConvoyableCoast", required = true)
+    private boolean isConvoyableCoast;
+    //    borders IDREFS #IMPLIED
+
+    private List<String> borders = Collections.emptyList();
+
+    @XmlElement(name = "UNIQUENAME")
+    private List<UniqueName> uniqueNames = new ArrayList<>();
+
+    @XmlRootElement
+    public static class UniqueName {
+        @XmlAttribute
+        private String name;
+    }
+
+    @XmlRootElement(name = "ADJACENCY")
+    public static class Adjacency {
+        @XmlAttribute
+        private String type;
+        @XmlAttribute
+        private String refs;
+    }
+
+    @XmlElement(name = "ADJACENCY")
+    private List<Adjacency> adjacencies;
+
+    private List<String> adj_provinces;
+    private List<String> adj_types;
+
+    void afterUnmarshal(final Unmarshaller unmarshaller, final Object parent) {
+        adj_provinces = adjacencies.stream().map(a -> a.refs)
+                .collect(Collectors.toList());
+        adj_types = adjacencies.stream().map(a -> a.type)
+                .collect(Collectors.toList());
+        if (shortName != null && !shortName.isEmpty()) {
+            shortNames.add(shortName);
+        }
+        shortNames.addAll(uniqueNames.stream().map(u -> u.name)
+                .collect(Collectors.toList()));
+    }
 
     /**
      * Full name of Province (e.g., Mid-Atlantic Ocean)
@@ -49,56 +102,21 @@ public class ProvinceData {
      * Short (abbreviated) name of Province; (e.g., "mao" or "mid-atlantic")
      */
     public String[] getShortNames() {
-        return shortNames;
+        return shortNames.toArray(new String[shortNames.size()]);
     }
 
     /**
      * Province Adjacency array.
      */
     public String[] getAdjacentProvinceNames() {
-        return adj_provinces;
+        return adj_provinces.toArray(new String[adj_provinces.size()]);
     }
 
     /**
      * Prvoince Adjacency type array.
      */
     public String[] getAdjacentProvinceTypes() {
-        return adj_types;
-    }
-
-    /**
-     * Set full name of province.
-     */
-    public void setFullName(String value) {
-        fullName = value;
-    }
-
-    /**
-     * Set all adjacent province names.
-     */
-    public void setAdjacentProvinceNames(String[] values) {
-        adj_provinces = values;
-    }
-
-    /**
-     * Set all adjacent province types.
-     */
-    public void setAdjacentProvinceTypes(String[] values) {
-        adj_types = values;
-    }
-
-    /**
-     * Set all short (abbreviated) names, from a List.
-     */
-    public void setShortNames(List list) {
-        shortNames = (String[]) list.toArray(new String[list.size()]);
-    }// setShortNames()
-
-    /**
-     * Sets whether this Province is a convoyable coastal province.
-     */
-    public void setConvoyableCoast(boolean value) {
-        isConvoyableCoast = value;
+        return adj_types.toArray(new String[adj_types.size()]);
     }
 
     /**
@@ -111,39 +129,33 @@ public class ProvinceData {
     /**
      * Sets the Border ID names for this province (if any)
      */
-    public void setBorders(List list) {
-        borders = (String[]) list.toArray(new String[list.size()]);
+    // TODO: right?
+    @XmlAttribute(name = "borders")
+    public void setBorders(final String borders) {
+        this.borders = borders.isEmpty() ? Collections
+                .emptyList() : new ArrayList<>(
+                Arrays.asList(borders.split("[, ]+")));
     }// setBorders()
 
     /**
      * Gets the Border ID names for this province (if any)
      */
     public String[] getBorders() {
-        return borders;
+        return borders.toArray(new String[borders.size()]);
     }
 
 
     /**
      * For debugging only!
      */
+    @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer(256);
-        sb.append(this.getClass().getName());
-        sb.append('[');
-        sb.append("fullName=");
-        sb.append(fullName);
-        sb.append(",#shortNames=");
-        sb.append(shortNames.length);
-        sb.append(",#adj_provinces=");
-        sb.append(adj_provinces.length);
-        sb.append(",#adj_types=");
-        sb.append(adj_types.length);
-        sb.append(",isConvoyableCoast=");
-        sb.append(isConvoyableCoast);
-        sb.append(",#borders=");
-        sb.append(borders.length);
-        sb.append(']');
-        return sb.toString();
+        return String.join("", getClass().getName(), "[", "fullName=", fullName,
+                ",#shortNames=", Integer.toString(shortNames.size()),
+                ",#adj_provinces=", Integer.toString(adj_provinces.size()),
+                ",#adj_types=", Integer.toString(adj_types.size()),
+                ",isConvoyableCoast=", Boolean.toString(isConvoyableCoast),
+                ",#borders=", Integer.toString(borders.size()), "]");
     }// toString()
 }// nested class ProvinceData	
 

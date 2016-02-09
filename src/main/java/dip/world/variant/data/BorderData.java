@@ -23,82 +23,32 @@
 package dip.world.variant.data;
 
 
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * Temporary holder for Border data after XML parsing.
  */
-public class BorderData {
-    private String id = null;
-    private String description = null;
-    private String unitTypes = null;
-    private String from = null;
-    private String orderTypes = null;
-    private String baseMoveModifier = null;
-    private String year = null;
-    private String phase = null;
-    private String season = null;
-
-    /**
-     * Sets the Border ID
-     */
-    public void setID(String value) {
-        id = value;
-    }
-
-    /**
-     * Sets the Border description
-     */
-    public void setDescription(String value) {
-        description = value;
-    }
-
-    /**
-     * Sets the Border unit types
-     */
-    public void setUnitTypes(String value) {
-        unitTypes = value;
-    }
-
-    /**
-     * Sets the Border From locations
-     */
-    public void setFrom(String value) {
-        from = value;
-    }
-
-    /**
-     * Sets the Border Order types
-     */
-    public void setOrderTypes(String value) {
-        orderTypes = value;
-    }
-
-    /**
-     * Sets the Border  Support modifier
-     */
-    public void setBaseMoveModifier(String value) {
-        baseMoveModifier = value;
-    }
-
-    /**
-     * Sets the Border Year
-     */
-    public void setYear(String value) {
-        year = value;
-    }
-
-    /**
-     * Sets the Border Phase
-     */
-    public void setPhase(String value) {
-        phase = value;
-    }
-
-    /**
-     * Sets the Border Season
-     */
-    public void setSeason(String value) {
-        season = value;
-    }
+@XmlRootElement(name = "BORDER")
+public final class BorderData {
+    @XmlAttribute(name = "id")
+    private String id;
+    @XmlAttribute(name = "description")
+    private String description;
+    @XmlAttribute(name = "unitTypes")
+    private String unitTypes;
+    @XmlAttribute(name = "from")
+    private String from;
+    @XmlAttribute(name = "orderTypes")
+    private String orderTypes;
+    @XmlAttribute(name = "baseMoveModifier")
+    private String baseMoveModifier;
+    @XmlAttribute(name = "year")
+    private String year;
+    @XmlAttribute(name = "phase")
+    private String phase;
+    @XmlAttribute(name = "season")
+    private String season;
 
     /**
      * Gets the Border ID

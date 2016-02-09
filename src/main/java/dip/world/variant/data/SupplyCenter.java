@@ -22,16 +22,18 @@
 //
 package dip.world.variant.data;
 
-/**
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 
+@XmlRootElement(name="SUPPLYCENTER")
+public final class SupplyCenter {
 
-
-
- */
-public class SupplyCenter {
-    private String provinceName = null;
-    private String powerName = null;
-    private String ownerName = null;
+    @XmlAttribute(name = "province")
+    private String province;
+    @XmlAttribute(name = "homepower")
+    private String powerName;
+    private String owner;
 
     /**
      * Get name of the home supply center; if "none" if none, "any" if any.
@@ -40,26 +42,12 @@ public class SupplyCenter {
         return powerName;
     }
 
-    /**
-     * Sets the name of the home supply center.
-     */
-    public void setHomePowerName(String value) {
-        powerName = value;
-    }
-
 
     /**
      * Get the province name of this supply center.
      */
     public String getProvinceName() {
-        return provinceName;
-    }
-
-    /**
-     * Set the province name of this supply center.
-     */
-    public void setProvinceName(String value) {
-        provinceName = value;
+        return province;
     }
 
 
@@ -67,7 +55,7 @@ public class SupplyCenter {
      * Get the name of the Power that owns this supply center.
      */
     public String getOwnerName() {
-        return ownerName;
+        return owner;
     }
 
     /**
@@ -75,29 +63,30 @@ public class SupplyCenter {
      * <p>
      * "none" is acceptable, but "any" is not.
      */
-    public void setOwnerName(String value) {
+    @XmlAttribute(name = "owner")
+    public void setOwnerName(final String value) {
         if ("any".equalsIgnoreCase(value)) {
             throw new IllegalArgumentException();
         }
 
-        ownerName = value;
+        owner = value;
     }// setOwnerName()
 
+    @SuppressWarnings("unused")
+    void afterUnmarshal(final Unmarshaller unmarshaller,
+                        final Object parent) {
+        if ("any".equalsIgnoreCase(owner)) {
+            throw new IllegalArgumentException();
+        }
+    }
     /**
      * For debugging only!
      */
+    @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer(256);
-        sb.append(this.getClass().getName());
-        sb.append('[');
-        sb.append("provinceName=");
-        sb.append(provinceName);
-        sb.append(",powerName=");
-        sb.append(powerName);
-        sb.append(",ownerName=");
-        sb.append(ownerName);
-        sb.append(']');
-        return sb.toString();
+        return String.join("", getClass().getName(), "[", "provinceName=",
+                province, ",powerName=", powerName, ",ownerName=",
+                owner, "]");
     }// toString()
 }// nested class SupplyCenter
 

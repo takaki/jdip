@@ -22,67 +22,134 @@
 //
 package dip.world.variant.data;
 
+import dip.misc.Utils;
 import dip.world.Phase;
 import dip.world.Power;
+import dip.world.variant.parser.XMLVariantParser.AdjCache;
+import org.xml.sax.SAXException;
 
-import java.util.List;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.io.IOException;
+import java.net.URI;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A Variant.
  */
-public class Variant implements Cloneable, Comparable {
+@XmlRootElement(name = "VARIANT")
+public final class Variant implements Cloneable, Comparable<Variant> {
     // the arrays in general should not be null. They are defined as null initially
     // to make it more apparent should a field not be initialized properly.
     //
-    private String name = null;
-    private boolean isDefault = false;
-    private String description = null;
-    private Power[] powers = null;
-    private Phase phase = null;
-    private InitialState[] istate = null;
-    private SupplyCenter[] supplyCenters = null;
-    private ProvinceData[] provinceData = null;
-    private int vcNumSCForVictory = 0;
-    private int vcMaxYearsNoSCChange = 0;
-    private int vcMaxGameTimeYears = 0;
-    private MapGraphic[] mapGraphics = null;
-    private float version = 0.0f;
-    private NameValuePair[] roNVPs = null;
-    private BorderData[] borderData = null;
-    private boolean allowBCYears = false;
-    private String[] aliases = new String[0];
+    private String name = "";
+    @XmlAttribute(name = "default", required = true)
+    private boolean isDefault;
+
+    @XmlAttribute(name = "version", required = true)
+    private double version;
+
+    private List<String> aliases = Collections.emptyList();
+
+    private String description;
+    @XmlElement(name = "VICTORYCONDITIONS", required = true)
+    public VictoryConditions victoryConditions = new VictoryConditions();
+
+    @XmlElement(name = "POWER")
+    private List<Power> powers;
+
+    @XmlElement(name = "SUPPLYCENTER")
+    private List<SupplyCenter> supplyCenters;
+    @XmlElement(name = "INITIALSTATE")
+    private List<InitialState> istate;
+
+    @XmlElement(name = "MAP")
+    private Map map = new Map();
+
+    @XmlElementWrapper(name = "RULEOPTIONS")
+    @XmlElement(name = "RULEOPTION")
+    private List<NameValuePair> roNVPs;
+
+    @XmlElement(name = "STARTINGTIME", required = true)
+    private StartingTime startingTime = new StartingTime();
+
+    //
+    private List<ProvinceData> provinceData;
+    private List<BorderData> borderData;
+
+    public static class Map {
+        @XmlAttribute(name = "adjacencyURI")
+        private URI adjacencyURI;
+        @XmlElement(name = "MAP_GRAPHIC")
+        private List<MapGraphic> mapGraphics;
+    }
+
+    @XmlRootElement
+    public static class StartingTime {
+        private Phase phase;
+        @XmlAttribute(name = "allowBCYears")
+        private boolean allowBCYears;
+
+        @XmlAttribute(name = "turn")
+        public void setPhase(String val) {
+            phase = Phase.parse(val);
+        }
+
+        void afterUnmarshal(final Unmarshaller unmarshaller,
+                            final Object parent) {
+            if (phase.getYear() < 0) {
+                allowBCYears = true;
+            }
+        }
+    }
+
+    @XmlRootElement
+    public static class VictoryConditions {
+        @XmlElement(name = "WINNING_SUPPLY_CENTERS")
+        private IntWrapper vcNumSCForVictory = new IntWrapper();
+        @XmlElement(name = "YEARS_WITHOUT_SC_CAPTURE")
+        private IntWrapper vcMaxYearsNoSCChange = new IntWrapper();
+        @XmlElement(name = "GAME_LENGTH")
+        private IntWrapper vcMaxGameTimeYears = new IntWrapper();
+
+        @XmlRootElement
+        public static class IntWrapper {
+            @XmlAttribute(name = "value", required = true)
+            private int value;
+        }
+    }
+
+    void afterUnmarshal(final Unmarshaller unmarshaller,
+                        final Object parent) throws IOException, SAXException {
+        // TODO: Remove this
+        final URI uri = map.adjacencyURI;
+        setBorderData(AdjCache.getBorderData(uri)); // TODO: remove AdjCache
+        setProvinceData(AdjCache.getProvinceData(uri)); // TODO: remove AdjCache
+    }
+
 
     /**
      * Class of Rule Option name/value pairs
      */
+    @XmlRootElement
     public static class NameValuePair {
-        private final String name;
-        private final String value;
+        @XmlAttribute
+        private String name;
+        @XmlAttribute
+        private String value;
 
-        /**
-         * Create a NameValuePair. Neither name or value may be null.
-         */
-        public NameValuePair(String name, String value) {
-            if (name == null || value == null) {
-                throw new IllegalArgumentException();
-            }
-            this.name = name;
-            this.value = value;
-        }// NameValuePair()
-
-        /**
-         * Return the Name
-         */
         public String getName() {
             return name;
         }
 
-        /**
-         * Return the Value
-         */
         public String getValue() {
             return value;
         }
+
     }// nested class NameValuePair
 
 
@@ -103,13 +170,13 @@ public class Variant implements Cloneable, Comparable {
      * The aliases (alternate names) of the variant. Never null.
      */
     public String[] getAliases() {
-        return aliases;
+        return aliases.toArray(new String[aliases.size()]);
     }
 
     /**
      * Version of this variant
      */
-    public float getVersion() {
+    public double getVersion() {
         return version;
     }
 
@@ -131,229 +198,198 @@ public class Variant implements Cloneable, Comparable {
      * The starting time.
      */
     public Phase getStartingPhase() {
-        return phase;
+        return startingTime.phase;
     }
 
     /**
      * The starting InitialStates.
      */
     public InitialState[] getInitialStates() {
-        return istate;
+        return istate.toArray(new InitialState[istate.size()]);
     }
 
     /**
      * Returns Powers associated with this Variant.
      */
     public Power[] getPowers() {
-        return powers;
+        return powers.toArray(new Power[powers.size()]);
     }
 
     /**
      * Returns SupplyCenter objects
      */
     public SupplyCenter[] getSupplyCenters() {
-        return supplyCenters;
+        return supplyCenters.toArray(new SupplyCenter[supplyCenters.size()]);
     }
 
     /**
      * Victory Conditions: Number of Supply Centers required for victory.
      */
     public int getNumSCForVictory() {
-        return vcNumSCForVictory;
+        return victoryConditions.vcNumSCForVictory.value;
     }
 
     /**
      * Victory Conditions: Maximum years without a supply-center ownership change before game ends.
      */
     public int getMaxYearsNoSCChange() {
-        return vcMaxYearsNoSCChange;
+        return victoryConditions.vcMaxYearsNoSCChange.value;
     }
 
     /**
      * Victory Conditions: Maximum game duration, in years.
      */
     public int getMaxGameTimeYears() {
-        return vcMaxGameTimeYears;
+        return victoryConditions.vcMaxGameTimeYears.value;
     }
 
     /**
      * The mapGraphics associated with this Variant.
      */
     public MapGraphic[] getMapGraphics() {
-        return mapGraphics;
+        return map.mapGraphics.toArray(new MapGraphic[map.mapGraphics.size()]);
     }
 
     /**
      * The ProvinceData associated with this Variant
      */
     public ProvinceData[] getProvinceData() {
-        return provinceData;
+        return provinceData.toArray(new ProvinceData[provinceData.size()]);
     }
 
     /**
      * The RuleOptions (as name-value pairs) associated with this Variant
      */
     public NameValuePair[] getRuleOptionNVPs() {
-        return roNVPs;
+        return roNVPs.toArray(new NameValuePair[roNVPs.size()]);
     }
 
     /**
      * Gets the BorderData associated with this Variant
      */
     public BorderData[] getBorderData() {
-        return borderData;
+        return borderData.toArray(new BorderData[borderData.size()]);
     }
 
     /**
      * Gets if BC Years are allowed with this Variant
      */
     public boolean getBCYearsAllowed() {
-        return allowBCYears;
+        return startingTime.allowBCYears;
     }
 
 
     /**
      * Set the variant name.
      */
-    public void setName(String value) {
+    @XmlAttribute(name = "name", required = true)
+    public void setName(final String value) {
         name = value;
     }
 
     /**
      * Set the alises. Null is not allowed.
      */
-    public void setAliases(String[] aliases) {
+    public void setAliases(final String[] aliases) {
         if (aliases == null) {
             throw new IllegalArgumentException();
         }
-        this.aliases = aliases;
+        this.aliases = Arrays.asList(aliases);
     }
 
-    /**
-     * Set the version of this variant
-     */
-    public void setVersion(float value) {
-        version = value;
+    @XmlAttribute(name = "aliases", required = true)
+    public void setAliases(final String csv) {
+        final String[] aliases = Utils.parseCSV(csv);
+        setAliases(aliases);
     }
 
     /**
      * Set if this variant is the default variant.
      */
-    public void setDefault(boolean value) {
+    public void setDefault(final boolean value) {
         isDefault = value;
     }
 
     /**
      * Set the description for this variant.
      */
-    public void setDescription(String value) {
+    @XmlElement(name = "DESCRIPTION")
+    public void setDescription(final String value) {
         description = value;
     }
 
     /**
      * Set the starting phase for this variant.
      */
-    public void setStartingPhase(Phase value) {
-        phase = value;
+    public void setStartingPhase(final Phase value) {
+        startingTime.phase = value;
     }
 
     /**
      * Victory Conditions: Number of Supply Centers required for victory.
      */
-    public void setNumSCForVictory(int value) {
-        vcNumSCForVictory = value;
+    public void setNumSCForVictory(final int value) {
+        victoryConditions.vcNumSCForVictory.value = value;
     }
 
     /**
      * Victory Conditions: Maximum years without a supply-center ownership change before game ends.
      */
-    public void setMaxYearsNoSCChange(int value) {
-        vcMaxYearsNoSCChange = value;
+    public void setMaxYearsNoSCChange(final int value) {
+        victoryConditions.vcMaxYearsNoSCChange.value = value;
     }
 
     /**
      * Victory Conditions: Maximum game duration, in years.
      */
-    public void setMaxGameTimeYears(int value) {
-        vcMaxGameTimeYears = value;
+    public void setMaxGameTimeYears(final int value) {
+        victoryConditions.vcMaxGameTimeYears.value = value;
     }
 
     /**
      * Sets the ProvinceData associated with this Variant
      */
-    public void setProvinceData(ProvinceData[] value) {
-        provinceData = value;
+    public void setProvinceData(final ProvinceData[] value) {
+        provinceData = Arrays.asList(value);
     }
 
     /**
      * Sets the BorderData associated with this Variant
      */
-    public void setBorderData(BorderData[] value) {
-        borderData = value;
+    public void setBorderData(final BorderData[] value) {
+        borderData = Arrays.asList(value);
     }
 
     /**
      * Sets whether BC years (negative years) are allowed
      */
-    public void setBCYearsAllowed(boolean value) {
-        allowBCYears = value;
+    public void setBCYearsAllowed(final boolean value) {
+        startingTime.allowBCYears = value;
     }
 
 
     /**
-     * Sets the MapGraphics, from a List
-     */
-    public void setMapGraphics(List mgList) {
-        mapGraphics = (MapGraphic[]) mgList
-                .toArray(new MapGraphic[mgList.size()]);
-    }// setPowers()
-
-    /**
      * Sets the Powers, from a List
      */
-    public void setPowers(List powerList) {
-        powers = (Power[]) powerList.toArray(new Power[powerList.size()]);
+    public void setPowers(final List powerList) {
+        powers = new ArrayList<>(powerList);
     }// setPowers()
-
-    /**
-     * Sets the InitialStates, from a List
-     */
-    public void setInitialStates(List stateList) {
-        istate = (InitialState[]) stateList
-                .toArray(new InitialState[stateList.size()]);
-    }// setInitialStates()
-
-    /**
-     * Sets the supply centers, from a List
-     */
-    public void setSupplyCenters(List supplyCenterList) {
-        supplyCenters = (SupplyCenter[]) supplyCenterList
-                .toArray(new SupplyCenter[supplyCenterList.size()]);
-    }// setSupplyCenters()
-
-    /**
-     * Sets the RuleOptions (as a List of name-value pairs) associated with this Variant
-     */
-    public void setRuleOptionNVPs(List nvpList) {
-        roNVPs = (NameValuePair[]) nvpList
-                .toArray(new NameValuePair[nvpList.size()]);
-    }// setRuleOptionNVPs()
 
 
     /**
      * Changes the active/inactive state of a power. The number of values <b>must</b> equal the number of powers.
      */
-    public void setActiveState(boolean[] values) {
-        if (values.length != powers.length) {
+    public void setActiveState(final boolean[] values) {
+        if (values.length != powers.size()) {
             throw new IllegalArgumentException();
         }
 
-        for (int i = 0; i < powers.length; i++) {
-            if (powers[i].isActive() != values[i]) {
+        for (int i = 0; i < powers.size(); i++) {
+            if (powers.get(i).isActive() != values[i]) {
                 // Powers are constant; we must create a new one.
-                Power old = powers[i];
-                powers[i] = new Power(old.getNames(), old.getAdjective(),
-                        values[i]);
+                final Power old = powers.get(i);
+                powers.set(i, new Power(old.getNames(), old.getAdjective(),
+                        values[i]));
             }
         }
     }// setActiveState()
@@ -362,21 +398,20 @@ public class Variant implements Cloneable, Comparable {
     /**
      * Compares based on Name
      */
-    public int compareTo(Object o) {
-        return this.getName().compareTo(((Variant) o).getName());
+    @Override
+    public int compareTo(final Variant o) {
+        return name.compareTo(o.name);
     }// compareTo()
 
 
     /**
      * Finds the MapGraphic by name; case insensitive.
      */
-    public MapGraphic getMapGrapic(String mgName) {
-        if (mapGraphics != null) {
-            for (int i = 0; i < mapGraphics.length; i++) {
-                if (mapGraphics[i].getName().equalsIgnoreCase(mgName)) {
-                    return mapGraphics[i];
-                }
-            }
+    public MapGraphic getMapGrapic(final String mgName) {
+        if (map.mapGraphics != null) {
+            return map.mapGraphics.stream()
+                    .filter(mapGraphic -> mapGraphic.getName()
+                            .equalsIgnoreCase(mgName)).findFirst().orElse(null);
         }
         return null;
     }// getVariant()
@@ -386,20 +421,10 @@ public class Variant implements Cloneable, Comparable {
      * Gets the default MapGraphic; if there is no default, returns the first one.
      */
     public MapGraphic getDefaultMapGraphic() {
-        MapGraphic mg = null;
+        return map.mapGraphics != null ? map.mapGraphics.stream()
+                .filter(MapGraphic::isDefault).findFirst()
+                .orElse(map.mapGraphics.get(0)) : null;
 
-        if (mapGraphics != null && mapGraphics.length > 0) {
-            mg = mapGraphics[0];
-
-            for (int i = 0; i < mapGraphics.length; i++) {
-                if (mapGraphics[i].isDefault()) {
-                    mg = mapGraphics[i];
-                    break;
-                }
-            }
-        }
-
-        return mg;
     }// getDefaultMapGraphic()
 
 
@@ -422,65 +447,53 @@ public class Variant implements Cloneable, Comparable {
      * 8 arguments are given in total.
      */
     public Object[] getHTMLSummaryArguments() {
-        Object args[] = new Object[8];
-        args[0] = getName();
-        args[1] = getDescription();
-        args[2] = String.valueOf(getNumSCForVictory());
-        if (getStartingPhase() == null) {
-            args[3] = "{bad phase}";
-            args[4] = "{bad phase}";
-            args[5] = "{bad phase}";
+        final Collection<Object> args = new ArrayList<>(8);
+        args.add(name);
+        args.add(description);
+        args.add(String.valueOf(victoryConditions.vcNumSCForVictory.value));
+        if (startingTime.phase == null) {
+            args.add("{bad phase}");
+            args.add("{bad phase}");
+            args.add("{bad phase}");
         } else {
-            args[3] = getStartingPhase().getSeasonType();
-            args[4] = getStartingPhase().getYearType();
-            args[5] = getStartingPhase().getPhaseType();
+            args.add(startingTime.phase.getSeasonType());
+            args.add(startingTime.phase.getYearType());
+            args.add(startingTime.phase.getPhaseType());
         }
-
         // create list of powers
-        StringBuffer sb = new StringBuffer(512);
-        for (int i = 0; i < powers.length; i++) {
-            if (powers[i].isActive()) {
-                sb.append(powers[i].getName());
-            } else {
-                sb.append('(');
-                sb.append(powers[i].getName());
-                sb.append(')');
-            }
+        args.add(powers.stream()
+                .map(power -> power.isActive() ? power.getName() : String
+                        .join("", "(", power.getName(), ")"))
+                .collect(Collectors.joining(", ")));
+        args.add(String.valueOf(powers.size()));
 
-            if (i < (powers.length - 1)) {
-                sb.append(", ");
-            }
-        }
-        args[6] = sb.toString();
-        args[7] = String.valueOf(powers.length);
-
-        return args;
+        return args.toArray(new Object[args.size()]);
     }// getHTMLSummaryArguments()
 
 
     /**
      * Creates a deep clone of all data EXCEPT InitialState / SupplyCenter data / Name / Description
      */
-    public Object clone() throws CloneNotSupportedException {
+    @Override
+    public Variant clone() throws CloneNotSupportedException {
         // shallow clone
-        Variant variant = (Variant) super.clone();
+        final Variant variant = (Variant) super.clone();
 
         // deep clone
         //
         // phase
-        if (this.phase != null) {
+        if (startingTime.phase != null) {
             // cheap...
-            variant.phase = Phase.parse(this.phase.toString());
+            variant.startingTime.phase = Phase
+                    .parse(startingTime.phase.toString());
         }
 
         // powers
-        if (this.powers != null) {
-            variant.powers = new Power[powers.length];
-            for (int i = 0; i < powers.length; i++) {
-                Power thisPower = powers[i];
-                variant.powers[i] = new Power(thisPower.getNames(),
-                        thisPower.getAdjective(), thisPower.isActive());
-            }
+        if (powers != null) {
+            variant.powers = powers.stream()
+                    .map(thisPower -> new Power(thisPower.getNames(),
+                            thisPower.getAdjective(), thisPower.isActive()))
+                    .collect(Collectors.toList());
         }
 
         return variant;
@@ -489,47 +502,22 @@ public class Variant implements Cloneable, Comparable {
     /**
      * For debugging only!
      */
+    @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer(256);
-        sb.append(this.getClass().getName());
-        sb.append('[');
-        sb.append("name=");
-        sb.append(name);
-        sb.append(",isDefault=");
-        sb.append(isDefault);
-        sb.append("powers=");
-        for (int i = 0; i < powers.length; i++) {
-            sb.append(powers[i]);
-            sb.append(',');
-        }
-        sb.append(",phase=");
-        sb.append(phase);
-        sb.append(",istate=");
-        for (int i = 0; i < istate.length; i++) {
-            System.out.println(istate[i]);
-        }
-        sb.append(",supplyCenters=");
-        for (int i = 0; i < supplyCenters.length; i++) {
-            System.out.println(supplyCenters[i]);
-        }
-        sb.append(",provinceData=");
-        for (int i = 0; i < provinceData.length; i++) {
-            System.out.println(provinceData[i]);
-        }
-        sb.append("mapGraphics=");
-        for (int i = 0; i < mapGraphics.length; i++) {
-            System.out.println(mapGraphics[i]);
-        }
-        sb.append(",vcNumSCForVictory=");
-        sb.append(vcNumSCForVictory);
-        sb.append(",vcMaxGameTimeYears=");
-        sb.append(vcMaxGameTimeYears);
-        sb.append(",vcMaxYearsNoSCChange=");
-        sb.append(vcMaxYearsNoSCChange);
-        sb.append(",version=");
-        sb.append(version);
-        sb.append(']');
-        return sb.toString();
+        return String
+                .join("", getClass().getName(), "[", "name=", name.toString(),
+                        ",isDefault=", Boolean.toString(isDefault), "powers=",
+                        powers.stream().map(Power::toString)
+                                .collect(Collectors.joining(",")), ",,phase=",
+                        startingTime.phase.toString(), ",istate=",
+                        ",supplyCenters=", ",provinceData=", "mapGraphics=",
+                        ",vcNumSCForVictory=", Integer.toString(
+                                victoryConditions.vcNumSCForVictory.value),
+                        ",vcMaxGameTimeYears=", Integer.toString(
+                                victoryConditions.vcMaxGameTimeYears.value),
+                        ",vcMaxYearsNoSCChange=", Integer.toString(
+                                victoryConditions.vcMaxYearsNoSCChange.value),
+                        ",version=", Double.toString(version), "]");
     }// toString()
 }// class Variant
 

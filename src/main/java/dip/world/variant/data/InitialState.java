@@ -23,22 +23,30 @@
 package dip.world.variant.data;
 
 import dip.world.Coast;
-import dip.world.Unit;
+import dip.world.Unit.Type;
+
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Sets the Initial State (position) for a province.
  */
-public class InitialState {
-    private String provinceName = null;
-    private String power = null;
-    private Unit.Type unit = null;
-    private Coast coast = null;
+@XmlRootElement(name = "INITIALSTATE")
+public final class InitialState {
+    @XmlAttribute(name = "province", required = true)
+    private String province;
+    @XmlAttribute(name = "power", required = true)
+    private String power;
+    @XmlAttribute(required = true)
+    private Type unit;
+    @XmlAttribute(name = "unitcoast")
+    private Coast unitcoast = Coast.UNDEFINED;
 
     /**
      * Name of province to which this InitialState refers.
      */
     public String getProvinceName() {
-        return provinceName;
+        return province;
     }
 
     /**
@@ -51,7 +59,7 @@ public class InitialState {
     /**
      * Type of unit
      */
-    public Unit.Type getUnitType() {
+    public Type getUnitType() {
         return unit;
     }
 
@@ -59,55 +67,19 @@ public class InitialState {
      * Coast of unit
      */
     public Coast getCoast() {
-        return coast;
-    }
-
-    /**
-     * Set the Province name
-     */
-    public void setProvinceName(String value) {
-        provinceName = value;
-    }
-
-    /**
-     * Set the Power name
-     */
-    public void setPowerName(String value) {
-        power = value;
-    }
-
-    /**
-     * Sets the unit type.
-     */
-    public void setUnitType(Unit.Type value) {
-        unit = value;
-    }
-
-    /**
-     * Sets the coast for the unit.
-     */
-    public void setCoast(Coast value) {
-        coast = value;
+        return unitcoast;
     }
 
 
     /**
      * For debugging only!
      */
+    @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer(256);
-        sb.append(this.getClass().getName());
-        sb.append('[');
-        sb.append("provinceName=");
-        sb.append(provinceName);
-        sb.append(",power=");
-        sb.append(power);
-        sb.append(",unit=");
-        sb.append(unit);
-        sb.append(",coast=");
-        sb.append(coast);
-        sb.append(']');
-        return sb.toString();
+        return String
+                .join("", getClass().getName(), "[", "provinceName=", province,
+                        ",power=", power, ",unit=", unit.toString(), ",coast=",
+                        unitcoast.toString(), "]");
     }// toString()
 }// nested class InitialState
 
