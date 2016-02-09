@@ -22,7 +22,6 @@
 //
 package dip.world.variant;
 
-import dip.gui.dialog.ErrorDialog;
 import dip.misc.Log;
 import dip.misc.Utils;
 import dip.world.variant.data.MapGraphic;
@@ -35,10 +34,7 @@ import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -140,26 +136,27 @@ public class VariantManager {
         // and associate the variant with the URL in a hashtable.
         for (final URL pluginURL1 : vm
                 .searchForFiles(searchPaths, VARIANT_EXTENSIONS)) {
-            final URLClassLoader urlCL = new URLClassLoader(
-                    new URL[]{pluginURL1});
-            final URL variantXMLURL = urlCL.findResource(VARIANT_FILE_NAME);
-            if (variantXMLURL != null) {
-                final String pluginName = getFile(pluginURL1);
+            try (final URLClassLoader urlCL = new URLClassLoader(
+                    new URL[]{pluginURL1})) {
+                final URL variantXMLURL = urlCL.findResource(VARIANT_FILE_NAME);
+                if (variantXMLURL != null) {
+                    final String pluginName = getFile(pluginURL1);
 
-                // parse variant description file, and create hash entry of variant object -> URL
-                try (InputStream is = new BufferedInputStream(
-                        variantXMLURL.openStream())) {
-                    final XMLVariantParser variantParser = new XMLVariantParser(
-                            is, pluginURL1);
-                    // add variants; variants with same name (but older versions) are
-                    // replaced with same-name newer versioned variants
-                    for (final Variant variant : variantParser.getVariants()) {
-                        addVariant(variant, pluginName, pluginURL1);
+                    // parse variant description file, and create hash entry of variant object -> URL
+                    try (InputStream is = new BufferedInputStream(
+                            variantXMLURL.openStream())) {
+                        final XMLVariantParser variantParser = new XMLVariantParser(
+                                is, pluginURL1);
+                        // add variants; variants with same name (but older versions) are
+                        // replaced with same-name newer versioned variants
+                        for (final Variant variant : variantParser
+                                .getVariants()) {
+                            addVariant(variant, pluginName, pluginURL1);
+                        }
                     }
-                } catch (final IOException e) {
-                    // display error dialog
-                    ErrorDialog.displayFileIO(null, e, pluginURL1.toString());
                 }
+            } catch (final IOException e) {
+                throw new UncheckedIOException(e);
             }
         }
 
@@ -186,12 +183,11 @@ public class VariantManager {
                                     addVariant(variant, pluginName, variantURL);
                                 }
                             } catch (final IOException e) {
-                                // display error dialog
-                                ErrorDialog.displayFileIO(null, e,
-                                        variantURL.toString());
+                                throw new UncheckedIOException(e);
                             }
                         });
-            } catch (final IOException ignored) {
+            } catch (final IOException e) {
+                throw new UncheckedIOException(e);
             }
 
         }
@@ -232,11 +228,9 @@ public class VariantManager {
                     addSymbolPack(symbolParser.getSymbolPack(), pluginName,
                             pluginURL);
                 } catch (final IOException e) {
-                    // display error dialog
-                    ErrorDialog.displayFileIO(null, e, pluginURL.toString());
+                    throw new UncheckedIOException(e);
                 } catch (final SAXException | XPathExpressionException e) {
-                    // display error dialog
-                    ErrorDialog.displayGeneral(null, e);
+                    throw new IllegalArgumentException(e);
                 }
             }
         }
@@ -257,12 +251,9 @@ public class VariantManager {
                                 addSymbolPack(symbolParser.getSymbolPack(),
                                         getWSPluginName(symbolURL), symbolURL);
                             } catch (final IOException e) {
-                                // display error dialog
-                                ErrorDialog.displayFileIO(null, e,
-                                        symbolURL.toString());
+                                throw new UncheckedIOException(e);
                             } catch (final SAXException | XPathExpressionException | ParserConfigurationException e) {
-                                // display error dialog
-                                ErrorDialog.displayGeneral(null, e);
+                                throw new IllegalArgumentException(e);
                             }
                         });
             } catch (final IOException ignored) {
