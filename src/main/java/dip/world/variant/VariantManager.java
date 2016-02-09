@@ -74,7 +74,6 @@ public final class VariantManager {
     public static final VersionNumber VERSION_NEWEST = new VersionNumber(-1000,
             0);
 
-
     // variant constants
     private static final List<String> VARIANT_EXTENSIONS = Arrays
             .asList("Variant.zip", "Variants.zip", "Variant.jar",
@@ -120,9 +119,7 @@ public final class VariantManager {
         variantMap.clear();
         symbolMap.clear();
 
-
         // find plugins, create plugin loader
-
 
         // for each plugin, attempt to find the "variants.xml" file inside.
         // if it does not exist, we will not load the file. If it does, we will parse it,
@@ -859,6 +856,9 @@ public final class VariantManager {
          * @param version
          */
         public T get(final VersionNumber version) {
+            if (version.equals(VERSION_NEWEST)) {
+                return getNewest();
+            }
             if (version.compareTo(new VersionNumber(0, 0)) < 0) {
                 throw new IllegalArgumentException(
                         String.format("invalid version or version constant: %s",
