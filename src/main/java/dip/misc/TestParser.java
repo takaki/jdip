@@ -604,7 +604,7 @@ public class TestParser {
 
             // load the default variant (Standard)
             // error if it cannot be found!!
-            Variant variant = VariantManager
+            Variant variant = VariantManager.getInstance()
                     .getVariant(variantName, VariantManager.VERSION_NEWEST);
             if (variant == null) {
                 System.out

@@ -30,7 +30,7 @@ class VariantManagerTest extends Specification {
         VariantManager.getInstance().init([Paths.get(System.getProperty("user.dir"), "src/test/resources/variants").
                                      toFile()] as File[])
         when:
-        def variant = VariantManager.getVariant("TEST_Borders", 1.0)
+        def variant = VariantManager.getInstance().getVariant("TEST_Borders", 1.0)
         then:
         variant.getName() == "TEST_Borders"
 

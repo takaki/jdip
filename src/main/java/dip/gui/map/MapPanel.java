@@ -889,7 +889,7 @@ public class MapPanel extends JPanel {
 
                     // load URL and resolve
                     World.VariantInfo vi = world.getVariantInfo();
-                    Variant variant = VariantManager
+                    Variant variant = VariantManager.getInstance()
                             .getVariant(vi.getVariantName(),
                                     vi.getVariantVersion());
 

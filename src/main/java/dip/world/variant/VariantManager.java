@@ -97,8 +97,6 @@ public class VariantManager {
             .emptyList();            // The sorted Variant list
     private List<SymbolPack> symbolPacks = Collections
             .emptyList();    // The sorted SymbolPack list
-    private URLClassLoader currentUCL;                // The current class loader
-    private URL currentPackageURL;                    // The current class loader URL
 
     public static VariantManager getInstance() {
         return vm;
@@ -123,12 +121,10 @@ public class VariantManager {
         }
 
         // perform cleanup
-        vm.variantMap.clear();
-        vm.variants = Collections.emptyList();
-        vm.currentUCL = null;
-        vm.currentPackageURL = null;
-        vm.symbolPacks = Collections.emptyList();
-        vm.symbolMap.clear();
+        variantMap.clear();
+        variants = Collections.emptyList();
+        symbolPacks = Collections.emptyList();
+        symbolMap.clear();
 
 
         // find plugins, create plugin loader
@@ -166,9 +162,9 @@ public class VariantManager {
 
         // if we are in webstart, search for variants within webstart jars
 
-        if (vm.isInWebstart) {
+        if (isInWebstart) {
             try {
-                Collections.list(vm.getClass().getClassLoader()
+                Collections.list(getClass().getClassLoader()
                         .getResources(VARIANT_FILE_NAME)).stream()
                         .forEach(variantURL -> {
                             // parse variant description file, and create hash entry of variant object -> URL
@@ -196,7 +192,7 @@ public class VariantManager {
         }
 
         // check: did we find *any* variants? Throw an exception.
-        if (vm.variantMap.isEmpty()) {
+        if (variantMap.isEmpty()) {
             throw new NoVariantsException(
                     String.join("", "No variants found on path: ",
                             Arrays.stream(searchPaths).map(File::toString)
@@ -240,10 +236,10 @@ public class VariantManager {
 
         // if we are in webstart, search for variants within webstart jars
 
-        if (vm.isInWebstart) {
+        if (isInWebstart) {
 
             try {
-                Collections.list(vm.getClass().getClassLoader()
+                Collections.list(getClass().getClassLoader()
                         .getResources(SYMBOL_FILE_NAME)).stream()
                         .forEach(symbolURL -> {
                             // parse variant description file, and create hash entry of variant object -> URL
@@ -267,7 +263,7 @@ public class VariantManager {
 
 
         // check: did we find *any* symbol packs? Throw an exception.
-        if (vm.symbolMap.isEmpty()) {
+        if (symbolMap.isEmpty()) {
             throw new NoVariantsException(
                     String.join("", "No SymbolPacks found on path: ",
                             Arrays.stream(searchPaths).map(File::toString)
@@ -284,15 +280,15 @@ public class VariantManager {
      */
     public synchronized Variant[] getVariants() {
 
-        if (vm.variants.size() != vm.variantMap.size()) {
+        if (variants.size() != variantMap.size()) {
             // note that we need to avoid putting duplicates
             // into the array.
             //
             final Collection<MapRec> set = new HashSet<>(
-                    vm.variantMap.values());// a set of MapRecs
+                    variantMap.values());// a set of MapRecs
 
             // fill variant list with variants.
-            vm.variants = set.stream().map(mr -> {
+            variants = set.stream().map(mr -> {
                 final MapRecObj mro = mr.get(VERSION_NEWEST);
                 assert mro != null;
                 return ((VRec) mro).getVariant();
@@ -300,7 +296,7 @@ public class VariantManager {
                     .collect(Collectors.toList());
         }
 
-        return vm.variants.toArray(new Variant[vm.variants.size()]);
+        return variants.toArray(new Variant[variants.size()]);
     }// getVariants()
 
     /**
@@ -310,13 +306,13 @@ public class VariantManager {
      */
     public synchronized SymbolPack[] getSymbolPacks() {
 
-        if (vm.symbolPacks.size() != vm.symbolMap.size()) {
+        if (symbolPacks.size() != symbolMap.size()) {
             // avoid putting duplicates into the array.
             final Collection<MapRec> set = new HashSet<>(
-                    vm.symbolMap.values()); // a set of MapRecs
+                    symbolMap.values()); // a set of MapRecs
 
             // fill variant list with variants.
-            vm.symbolPacks = set.stream().map(mr -> {
+            symbolPacks = set.stream().map(mr -> {
                 final MapRecObj mro = mr.get(VERSION_NEWEST);
                 assert mro != null;
                 return ((SPRec) mro).getSymbolPack();
@@ -324,7 +320,7 @@ public class VariantManager {
                     .collect(Collectors.toList());
         }
 
-        return vm.symbolPacks.toArray(new SymbolPack[vm.symbolPacks.size()]);
+        return symbolPacks.toArray(new SymbolPack[symbolPacks.size()]);
     }// getSymbolPacks()
 
 
@@ -335,9 +331,9 @@ public class VariantManager {
      * <p>
      * Note: Name is <b>not</b> case-sensitive.
      */
-    public static synchronized Variant getVariant(final String name,
+    public synchronized Variant getVariant(final String name,
                                                   final float version) {
-        final MapRec mr = vm.variantMap.get(name.toLowerCase());
+        final MapRec mr = variantMap.get(name.toLowerCase());
         if (mr != null) {
             return ((VRec) mr.get(version)).getVariant();
         }
@@ -359,7 +355,7 @@ public class VariantManager {
             return null;
         }
 
-        final MapRec mr = vm.symbolMap.get(name.toLowerCase());
+        final MapRec mr = symbolMap.get(name.toLowerCase());
         if (mr != null) {
             return ((SPRec) mr.get(version)).getSymbolPack();
         }
@@ -439,7 +435,7 @@ public class VariantManager {
      * If the variant is not found, a zero-length array is returned.
      */
     public synchronized float[] getVariantVersions(final String name) {
-        final MapRec mr = vm.variantMap.get(name.toLowerCase());
+        final MapRec mr = variantMap.get(name.toLowerCase());
         if (mr != null) {
             return mr.getVersions();
         }
@@ -452,7 +448,7 @@ public class VariantManager {
      * If the SymbolPack is not found, a zero-length array is returned.
      */
     public synchronized float[] getSymbolPackVersions(final String name) {
-        final MapRec mr = vm.symbolMap.get(name.toLowerCase());
+        final MapRec mr = symbolMap.get(name.toLowerCase());
         if (mr != null) {
             return mr.getVersions();
         }
@@ -482,7 +478,7 @@ public class VariantManager {
         // ensure we have been initialized...
 
         // if we are in webstart, assume that this is a webstart jar.
-        if (vm.isInWebstart) {
+        if (isInWebstart) {
             final URL url = getWSResource(packURL, uri);
 
             // if cannot get it, fall through.
@@ -585,7 +581,7 @@ public class VariantManager {
         }
 
         // if we are in webstart, assume that this is a webstart jar.
-        if (vm.isInWebstart) {
+        if (isInWebstart) {
             final URL url = getWSResource(mro, uri);
 
             // if cannot get it, fall through.
@@ -659,15 +655,7 @@ public class VariantManager {
         if (packageURL == null) {
             throw new IllegalArgumentException();
         }
-
-        // see if a classloader for this url already exists (cache of 1)
-        if (packageURL.equals(vm.currentPackageURL)) {
-            return vm.currentUCL;
-        }
-
-        vm.currentUCL = new URLClassLoader(new URL[]{packageURL});
-        vm.currentPackageURL = packageURL;
-        return vm.currentUCL;
+        return new URLClassLoader(new URL[]{packageURL});
     }// getClassLoader()
 
 
@@ -711,13 +699,13 @@ public class VariantManager {
      * This primarily applies to Webstart resources
      */
     private URL getWSResource(final MapRecObj mro, final URI uri) {
-        assert vm.isInWebstart;
+        assert isInWebstart;
         if (uri == null || mro == null) {
             return null;
         }
 
         try {
-            return Collections.list(vm.getClass().getClassLoader()
+            return Collections.list(getClass().getClassLoader()
                     .getResources(uri.toString())).stream().filter(url -> {
                 // deconflict. Note that this is not, and cannot be, foolproof;
                 // due to name-mangling by webstart. For example, if two plugins
@@ -754,10 +742,10 @@ public class VariantManager {
 			has not yet been created. So we cannot use that; the internal
 			logic here is slightly different.
 		*/
-        assert vm.isInWebstart;
+        assert isInWebstart;
 
         try {
-            return Collections.list(vm.getClass().getClassLoader()
+            return Collections.list(getClass().getClassLoader()
                     .getResources(uri.toString())).stream().filter(url -> {
 
                 // deconflict. Note that this is not, and cannot be, foolproof;
@@ -805,15 +793,15 @@ public class VariantManager {
 
         // see if we are mapped to a MapRec already.
         //
-        MapRec mapRec = vm.variantMap.get(vName);
+        MapRec mapRec = variantMap.get(vName);
         if (mapRec == null) {
             // not yet mapped! let's map it.
             mapRec = new MapRec(vr);
-            vm.variantMap.put(vName, mapRec);
+            variantMap.put(vName, mapRec);
         } else {
             // we are mapped. See if this version has been added.
             // If not, we'll add it.
-            if (!mapRec.add(vr) && !vm.isInWebstart) {
+            if (!mapRec.add(vr) && !isInWebstart) {
                 final VRec vrec2 = (VRec) mapRec.get(v.getVersion());
                 final Variant v2 = vrec2.getVariant();
 
@@ -843,10 +831,10 @@ public class VariantManager {
             // not if it's "" though...
             if (!"".equals(aliase)) {
                 final String alias = aliase.toLowerCase();
-                final MapRec testMapRec = vm.variantMap.get(alias);
+                final MapRec testMapRec = variantMap.get(alias);
                 if (testMapRec == null) {
                     // add alias
-                    vm.variantMap.put(alias, mapRec);
+                    variantMap.put(alias, mapRec);
                 } else if (testMapRec != mapRec) {
                     // ERROR! incorrect alias map
                     final Variant v2 = ((VRec) testMapRec.get(VERSION_OLDEST))
@@ -890,14 +878,14 @@ public class VariantManager {
 
         // see if we are mapped to a MapRec already.
         //
-        MapRec mapRec = vm.symbolMap.get(spName);
+        MapRec mapRec = symbolMap.get(spName);
         if (mapRec == null) {
             // not yet mapped! let's map it.
             mapRec = new MapRec(spRec);
-            vm.symbolMap.put(spName, mapRec);
+            symbolMap.put(spName, mapRec);
         } else {
             // we are mapped. See if this version has been added.
-            if (!mapRec.add(spRec) && !vm.isInWebstart) {
+            if (!mapRec.add(spRec) && !isInWebstart) {
                 final SPRec spRec2 = (SPRec) mapRec.get(sp.getVersion());
                 final SymbolPack sp2 = spRec2.getSymbolPack();
                 if (sp2.getVersion() == sp.getVersion()) {
@@ -928,7 +916,7 @@ public class VariantManager {
      * Gets the VRec associated with a Variant (via name and version)
      */
     private VRec getVRec(final Variant v) {
-        final MapRec mapRec = vm.variantMap.get(v.getName().toLowerCase());
+        final MapRec mapRec = variantMap.get(v.getName().toLowerCase());
         return (VRec) mapRec.get(v.getVersion());
     }// getVRec()
 
@@ -937,7 +925,7 @@ public class VariantManager {
      * Gets the SPRec associated with a SymbolPack (via name and version)
      */
     private SPRec getSPRec(final SymbolPack sp) {
-        final MapRec mapRec = vm.symbolMap.get(sp.getName().toLowerCase());
+        final MapRec mapRec = symbolMap.get(sp.getName().toLowerCase());
         return (SPRec) mapRec.get(sp.getVersion());
     }// getSPRec()
 
