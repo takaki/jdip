@@ -77,11 +77,11 @@ public class VariantManager {
 
 
     // variant constants
-    private static final String VARIANT_EXTENSIONS[] = {"Variant.zip", "Variants.zip", "Variant.jar", "Variants.jar"};
+    private static final String[] VARIANT_EXTENSIONS = {"Variant.zip", "Variants.zip", "Variant.jar", "Variants.jar"};
     private static final String VARIANT_FILE_NAME = "variants.xml";
 
     // symbol constants
-    private static final String SYMBOL_EXTENSIONS[] = {"Symbols.zip", "Symbols.jar"};
+    private static final String[] SYMBOL_EXTENSIONS = {"Symbols.zip", "Symbols.jar"};
     private static final String SYMBOL_FILE_NAME = "symbols.xml";
 
     // class variables
@@ -89,16 +89,16 @@ public class VariantManager {
 
     // instance variables
     private final boolean isInWebstart;
-    private HashMap<String, MapRec> variantMap;    // map of lowercased Variant names to MapRec objects (which contain VRecs)
-    private HashMap<String, MapRec> symbolMap;    // lowercase symbol names to MapRec objects (which contain SPRecs)
+    private final Map<String, MapRec> variantMap;    // map of lowercased Variant names to MapRec objects (which contain VRecs)
+    private final Map<String, MapRec> symbolMap;    // lowercase symbol names to MapRec objects (which contain SPRecs)
 
     // cached variables to enhance performance of getResource() methods
-    private transient List<Variant> variants = Collections
+    private List<Variant> variants = Collections
             .emptyList();            // The sorted Variant list
-    private transient List<SymbolPack> symbolPacks = Collections
+    private List<SymbolPack> symbolPacks = Collections
             .emptyList();    // The sorted SymbolPack list
-    private transient URLClassLoader currentUCL;                // The current class loader
-    private transient URL currentPackageURL;                    // The current class loader URL
+    private URLClassLoader currentUCL;                // The current class loader
+    private URL currentPackageURL;                    // The current class loader URL
 
     public static VariantManager getInstance() {
         return vm;
