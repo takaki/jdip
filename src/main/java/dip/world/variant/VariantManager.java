@@ -778,40 +778,35 @@ public class VariantManager {
 
         // see if we are mapped to a MapRec already.
         //
-        MapRec<VRec> mapRec = variantMap.get(vName);
-        if (mapRec == null) {
-            // not yet mapped! let's map it.
-            mapRec = new MapRec<>(vRec);
-            variantMap.put(vName, mapRec);
-        } else {
-            // we are mapped. See if this version has been added.
-            // If not, we'll add it.
-            if (!mapRec.add(vRec) && !inWebstart) {
-                final VRec vRec2 = mapRec.get(variant.getVersion());
-                // 2 variants with identical versions! we are confused!
-                // try to provide as much helpful info as possible.
-                throw new IllegalArgumentException(String.format(
-                        "Two variants with identical version numbers have been found.\n" +
-                                "Conflicting version: \n" +
-                                "Variant 1: %s\n" +
-                                "Variant 2: %s\n", variant.toString(),
-                        vRec2.getVariant().toString()));
-            }
+        final MapRec<VRec> mapVRec = variantMap
+                .computeIfAbsent(vName, vn -> new MapRec<>());
+        // we are mapped. See if this version has been added.
+        // If not, we'll add it.
+        if (!mapVRec.add(vRec) && !inWebstart) {
+            final VRec vRec2 = mapVRec.get(variant.getVersion());
+            // 2 variants with identical versions! we are confused!
+            // try to provide as much helpful info as possible.
+            throw new IllegalArgumentException(String.format(
+                    "Two variants with identical version numbers have been found.\n" +
+                            "Conflicting version: \n" +
+                            "Variant 1: %s\n" +
+                            "Variant 2: %s\n", variant.toString(),
+                    vRec2.getVariant().toString()));
         }
 
         // map the aliases and/or check that aliases refer to the
         // same MapRec (this prevents two different Variants with the same
         // alias from causing a subtle error)
         //
-        for (final String aliase : variant.getAliases()) {
+        for (final String vAlias : variant.getAliases()) {
             // not if it's "" though...
-            if (!"".equals(aliase)) {
-                final String alias = aliase.toLowerCase();
+            if (!"".equals(vAlias)) {
+                final String alias = vAlias.toLowerCase();
                 final MapRec<VRec> testMapRec = variantMap.get(alias);
                 if (testMapRec == null) {
                     // add alias
-                    variantMap.put(alias, mapRec);
-                } else if (!Objects.equals(testMapRec, mapRec)) {
+                    variantMap.put(alias, mapVRec);
+                } else if (!Objects.equals(testMapRec, mapVRec)) {
 // ERROR! incorrect alias map
                     final VRec v2 = testMapRec.get(VERSION_OLDEST);
                     throw new IllegalArgumentException(String.format(
@@ -838,7 +833,7 @@ public class VariantManager {
     private void addSymbolPack(final SymbolPack sp, final String pluginName,
                                final URL pluginURL) {
         if (sp == null || pluginName == null || pluginURL == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Null argument(s)");
         }
 
         final SPRec spRec = new SPRec(pluginURL, pluginName, sp);
@@ -847,30 +842,26 @@ public class VariantManager {
 
         // see if we are mapped to a MapRec already.
         //
-        MapRec<SPRec> mapRec = symbolMap.get(spName);
-        if (mapRec == null) {
-            // not yet mapped! let's map it.
-            mapRec = new MapRec<>(spRec);
-            symbolMap.put(spName, mapRec);
-        } else {
-            // we are mapped. See if this version has been added.
-            if (!mapRec.add(spRec) && !inWebstart) {
-                final SPRec spRec2 = mapRec.get(sp.getVersion());
-                if (spRec2.getVersion() == sp.getVersion()) {
-                    // 2 SymbolPacks with identical versions! we are confused!
-                    // try to provide as much helpful info as possible.
-                    throw new IllegalArgumentException(String.format(
-                            "Two SymbolPcaks with identical version numbers have been found.\n" +
-                                    "Conflicting version: \n" +
-                                    "SymbolPack 1: %s\n" +
-                                    "SymbolPack 2: %s\n", sp.toString(),
-                            spRec2.getSymbolPack().toString()));
-                }
-            }
+        final MapRec<SPRec> mapSPRec = symbolMap
+                .computeIfAbsent(spName, sn -> new MapRec<>());
 
-            // we haven't been added (not a dupe); add
-            mapRec.add(spRec);
+        // we are mapped. See if this version has been added.
+        if (!mapSPRec.add(spRec) && !inWebstart) {
+            final SPRec spRec2 = mapSPRec.get(sp.getVersion());
+            if (spRec2.getVersion() == sp.getVersion()) {
+                // 2 SymbolPacks with identical versions! we are confused!
+                // try to provide as much helpful info as possible.
+                throw new IllegalArgumentException(String.format(
+                        "Two SymbolPaks with identical version numbers have been found.\n" +
+                                "Conflicting version: \n" +
+                                "SymbolPack 1: %s\n" +
+                                "SymbolPack 2: %s\n", sp.toString(),
+                        spRec2.getSymbolPack().toString()));
+            }
         }
+
+        // we haven't been added (not a dupe); add
+        mapSPRec.add(spRec);
     }// addSymbolPack()
 
 
@@ -903,6 +894,10 @@ public class VariantManager {
                 throw new IllegalArgumentException();
             }
             list.add(obj);
+        }
+
+        MapRec() {
+
         }
 
         public int size() {
