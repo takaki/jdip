@@ -88,7 +88,7 @@ public class VariantManager {
     private static final VariantManager vm = new VariantManager();
 
     // instance variables
-    private final boolean isInWebstart;
+    private final boolean inWebstart;
     private final Map<String, MapRec> variantMap;    // map of lowercased Variant names to MapRec objects (which contain VRecs)
     private final Map<String, MapRec> symbolMap;    // lowercase symbol names to MapRec objects (which contain SPRecs)
 
@@ -133,8 +133,8 @@ public class VariantManager {
         // for each plugin, attempt to find the "variants.xml" file inside.
         // if it does not exist, we will not load the file. If it does, we will parse it,
         // and associate the variant with the URL in a hashtable.
-        for (final URL pluginURL1 : vm
-                .searchForFiles(searchPaths, VARIANT_EXTENSIONS)) {
+        for (final URL pluginURL1 : searchForFiles(searchPaths,
+                VARIANT_EXTENSIONS)) {
             try (final URLClassLoader urlCL = new URLClassLoader(
                     new URL[]{pluginURL1})) {
                 final URL variantXMLURL = urlCL.findResource(VARIANT_FILE_NAME);
@@ -162,7 +162,7 @@ public class VariantManager {
 
         // if we are in webstart, search for variants within webstart jars
 
-        if (isInWebstart) {
+        if (inWebstart) {
             try {
                 Collections.list(getClass().getClassLoader()
                         .getResources(VARIANT_FILE_NAME)).stream()
@@ -211,8 +211,8 @@ public class VariantManager {
         // for each plugin, attempt to find the "variants.xml" file inside.
         // if it does not exist, we will not load the file. If it does, we will parse it,
         // and associate the variant with the URL in a hashtable.
-        for (final URL pluginURL : vm
-                .searchForFiles(searchPaths, SYMBOL_EXTENSIONS)) {
+        for (final URL pluginURL : searchForFiles(searchPaths,
+                SYMBOL_EXTENSIONS)) {
             final URLClassLoader urlCL = new URLClassLoader(
                     new URL[]{pluginURL});
             final URL symbolXMLURL = urlCL.findResource(SYMBOL_FILE_NAME);
@@ -236,7 +236,7 @@ public class VariantManager {
 
         // if we are in webstart, search for variants within webstart jars
 
-        if (isInWebstart) {
+        if (inWebstart) {
 
             try {
                 Collections.list(getClass().getClassLoader()
@@ -332,7 +332,7 @@ public class VariantManager {
      * Note: Name is <b>not</b> case-sensitive.
      */
     public synchronized Variant getVariant(final String name,
-                                                  final float version) {
+                                           final float version) {
         final MapRec mr = variantMap.get(name.toLowerCase());
         if (mr != null) {
             return ((VRec) mr.get(version)).getVariant();
@@ -478,7 +478,7 @@ public class VariantManager {
         // ensure we have been initialized...
 
         // if we are in webstart, assume that this is a webstart jar.
-        if (isInWebstart) {
+        if (inWebstart) {
             final URL url = getWSResource(packURL, uri);
 
             // if cannot get it, fall through.
@@ -581,7 +581,7 @@ public class VariantManager {
         }
 
         // if we are in webstart, assume that this is a webstart jar.
-        if (isInWebstart) {
+        if (inWebstart) {
             final URL url = getWSResource(mro, uri);
 
             // if cannot get it, fall through.
@@ -615,7 +615,7 @@ public class VariantManager {
     private VariantManager() {
         variantMap = new HashMap(53);
         symbolMap = new HashMap(17);
-        isInWebstart = Utils.isInWebstart();
+        inWebstart = Utils.isInWebstart();
     }// VariantManager()
 
 
@@ -699,7 +699,7 @@ public class VariantManager {
      * This primarily applies to Webstart resources
      */
     private URL getWSResource(final MapRecObj mro, final URI uri) {
-        assert isInWebstart;
+        assert inWebstart;
         if (uri == null || mro == null) {
             return null;
         }
@@ -742,7 +742,7 @@ public class VariantManager {
 			has not yet been created. So we cannot use that; the internal
 			logic here is slightly different.
 		*/
-        assert isInWebstart;
+        assert inWebstart;
 
         try {
             return Collections.list(getClass().getClassLoader()
@@ -779,15 +779,12 @@ public class VariantManager {
      * NOTE: names and aliases are always mapped in all lower case.
      */
     private void addVariant(final Variant v, final String pluginName,
-                            final URL pluginURL) throws IOException {
+                            final URL pluginURL) {
         if (v == null || pluginName == null || pluginURL == null) {
             throw new IllegalArgumentException();
         }
 
-        final VRec vr = new VRec();
-        vr.setPluginName(pluginName);
-        vr.setURL(pluginURL);
-        vr.setVariant(v);
+        final VRec vr = new VRec(pluginURL, pluginName, v);
 
         final String vName = v.getName().toLowerCase();
 
@@ -801,24 +798,20 @@ public class VariantManager {
         } else {
             // we are mapped. See if this version has been added.
             // If not, we'll add it.
-            if (!mapRec.add(vr) && !isInWebstart) {
+            if (!mapRec.add(vr) && !inWebstart) {
                 final VRec vrec2 = (VRec) mapRec.get(v.getVersion());
                 final Variant v2 = vrec2.getVariant();
 
                 // 2 variants with identical versions! we are confused!
                 // try to provide as much helpful info as possible.
-                throw new IOException(
+                throw new IllegalArgumentException(String.format(
                         "Two variants with identical version numbers have been found.\n" +
-                                "Conflicting version: " + v
-                                .getVersion() + "\n" +
-                                "Variant 1: name=" + v
-                                .getName() + "; pluginName = " + vr
-                                .getPluginName() + "; pluginURL = " + vr
-                                .getURL() + "\n" +
-                                "Variant 2: name=" + v2
-                                .getName() + "; pluginName = " + vrec2
-                                .getPluginName() + "; pluginURL = " + vrec2
-                                .getURL() + "\n");
+                                "Conflicting version: %s\n" +
+                                "Variant 1: name=%s; pluginName = %s; pluginURL = %s\n" +
+                                "Variant 2: name=%s; pluginName = %s; pluginURL = %s\n",
+                        v.getVersion(), v.getName(), vr.getPluginName(),
+                        vr.getURL(), v2.getName(), vrec2.getPluginName(),
+                        vrec2.getURL()));
             }
         }
 
@@ -826,8 +819,7 @@ public class VariantManager {
         // same MapRec (this prevents two different Variants with the same
         // alias from causing a subtle error)
         //
-        final String[] aliases = v.getAliases();
-        for (final String aliase : aliases) {
+        for (final String aliase : v.getAliases()) {
             // not if it's "" though...
             if (!"".equals(aliase)) {
                 final String alias = aliase.toLowerCase();
@@ -839,15 +831,12 @@ public class VariantManager {
                     // ERROR! incorrect alias map
                     final Variant v2 = ((VRec) testMapRec.get(VERSION_OLDEST))
                             .getVariant();
-                    throw new IOException(
+                    throw new IllegalArgumentException(String.format(
                             "Two variants have a conflicting (non-unique) alias.\n" +
-                                    "Variant 1: name=" + v
-                                    .getName() + "; version=" + v.getVersion() +
-                                    "; pluginName = " + vr
-                                    .getPluginName() + "; pluginURL = " + vr
-                                    .getURL() + "\n" +
-                                    "Variant 2: name=" + v2
-                                    .getName() + "; (must check all variants with this name)\n");
+                                    "Variant 1: name=%s; version=%s; pluginName = %s; pluginURL = %s\n" +
+                                    "Variant 2: name=%s; (must check all variants with this name)\n",
+                            v.getName(), v.getVersion(), vr.getPluginName(),
+                            vr.getURL(), v2.getName()));
                 }
                 // else {} : we are already mapped correctly. Nothing to change.
             }
@@ -864,15 +853,12 @@ public class VariantManager {
      * Names are always mapped in all lower case.
      */
     private void addSymbolPack(final SymbolPack sp, final String pluginName,
-                               final URL pluginURL) throws IOException {
+                               final URL pluginURL) {
         if (sp == null || pluginName == null || pluginURL == null) {
             throw new IllegalArgumentException();
         }
 
-        final SPRec spRec = new SPRec();
-        spRec.setPluginName(pluginName);
-        spRec.setURL(pluginURL);
-        spRec.setSymbolPack(sp);
+        final SPRec spRec = new SPRec(pluginURL, pluginName, sp);
 
         final String spName = sp.getName().toLowerCase();
 
@@ -885,24 +871,21 @@ public class VariantManager {
             symbolMap.put(spName, mapRec);
         } else {
             // we are mapped. See if this version has been added.
-            if (!mapRec.add(spRec) && !isInWebstart) {
+            if (!mapRec.add(spRec) && !inWebstart) {
                 final SPRec spRec2 = (SPRec) mapRec.get(sp.getVersion());
                 final SymbolPack sp2 = spRec2.getSymbolPack();
                 if (sp2.getVersion() == sp.getVersion()) {
                     // 2 SymbolPacks with identical versions! we are confused!
                     // try to provide as much helpful info as possible.
-                    throw new IOException(
+                    throw new IllegalArgumentException(String.format(
                             "Two SymbolPcaks with identical version numbers have been found.\n" +
-                                    "Conflicting version: " + sp
-                                    .getVersion() + "\n" +
-                                    "SymbolPack 1: name=" + sp
-                                    .getName() + "; pluginName = " + spRec
-                                    .getPluginName() + "; pluginURL = " + spRec
-                                    .getURL() + "\n" +
-                                    "SymbolPack 2: name=" + sp2
-                                    .getName() + "; pluginName = " + spRec2
-                                    .getPluginName() + "; pluginURL = " + spRec2
-                                    .getURL() + "\n");
+                                    "Conflicting version: %s\n" +
+                                    "SymbolPack 1: name=%s; pluginName = %s; pluginURL = %s\n" +
+                                    "SymbolPack 2: name=%s; pluginName = %s; pluginURL = %s\n",
+                            sp.getVersion(), sp.getName(),
+                            spRec.getPluginName(), spRec.getURL(),
+                            sp2.getName(), spRec2.getPluginName(),
+                            spRec2.getURL()));
                 }
             }
 
@@ -1014,23 +997,20 @@ public class VariantManager {
      * MapRec stores a list of ObjRecs
      */
     private abstract static class MapRecObj {
-        private URL fileURL;
-        private String pluginName;
+        private final URL fileURL;
+        private final String pluginName;
 
-        public String getPluginName() {
+        MapRecObj(final URL fileURL, final String pluginName) {
+            this.fileURL = fileURL;
+            this.pluginName = pluginName;
+        }
+
+        public final String getPluginName() {
             return pluginName;
         }
 
-        public void setPluginName(final String value) {
-            pluginName = value;
-        }
-
-        public URL getURL() {
+        public final URL getURL() {
             return fileURL;
-        }
-
-        public void setURL(final URL value) {
-            fileURL = value;
         }
 
         public abstract float getVersion();
@@ -1042,14 +1022,15 @@ public class VariantManager {
      * An ObjRec for Variant objects
      */
     private static final class VRec extends MapRecObj {
-        private Variant variant;
+        private final Variant variant;
+
+        VRec(final URL pluginURL, final String pluginName, final Variant v) {
+            super(pluginURL, pluginName);
+            variant = v;
+        }
 
         public Variant getVariant() {
             return variant;
-        }
-
-        public void setVariant(final Variant value) {
-            variant = value;
         }
 
         @Override
@@ -1062,14 +1043,16 @@ public class VariantManager {
      * An ObjRec for SymbolPack objects
      */
     private static final class SPRec extends MapRecObj {
-        private SymbolPack symbolPack;
+        private final SymbolPack symbolPack;
+
+        SPRec(final URL pluginURL, final String pluginName,
+              final SymbolPack sp) {
+            super(pluginURL, pluginName);
+            symbolPack = sp;
+        }
 
         public SymbolPack getSymbolPack() {
             return symbolPack;
-        }
-
-        public void setSymbolPack(final SymbolPack value) {
-            symbolPack = value;
         }
 
         @Override
