@@ -33,7 +33,6 @@ import dip.world.variant.parser.XMLSymbolParser;
 import dip.world.variant.parser.XMLVariantParser;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.BufferedInputStream;
@@ -114,8 +113,8 @@ public class VariantManager {
      * <p>
      * Loaded XML may be validated if the isValidating flag is set to true.
      */
-    public static synchronized void init(final File[] searchPaths,
-                                         final boolean isValidating) throws ParserConfigurationException, NoVariantsException {
+    public static synchronized void init(
+            final File[] searchPaths) throws ParserConfigurationException, NoVariantsException {
         final long ttime = System.currentTimeMillis();
         final long vptime = ttime;
         Log.println("VariantManager.init()");
@@ -134,27 +133,6 @@ public class VariantManager {
 
 
         // find plugins, create plugin loader
-
-        // setup document builder
-        final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-
-        try {
-            // this may improve performance, and really only apply to Xerces
-            dbf.setAttribute(
-                    "http://apache.org/xml/features/dom/defer-node-expansion",
-                    Boolean.FALSE);
-            dbf.setAttribute(
-                    "http://apache.org/xml/properties/input-buffer-size", 4096);
-            dbf.setAttribute(
-                    "http://apache.org/xml/features/nonvalidating/load-external-dtd",
-                    Boolean.FALSE);
-        } catch (final Exception e) {
-            Log.println("VM: Could not set XML feature.", e);
-        }
-
-        dbf.setValidating(isValidating);
-        dbf.setCoalescing(false);
-        dbf.setIgnoringComments(true);
 
 
         // for each plugin, attempt to find the "variants.xml" file inside.
@@ -236,7 +214,6 @@ public class VariantManager {
 
 
         // now, parse symbol packs
-        final XMLSymbolParser symbolParser = new XMLSymbolParser(dbf);
 
         // find plugins, create plugin loader
 
@@ -254,7 +231,8 @@ public class VariantManager {
                 // parse variant description file, and create hash entry of variant object -> URL
                 try (InputStream is = new BufferedInputStream(
                         symbolXMLURL.openStream())) {
-                    symbolParser.parse(is, pluginURL);
+                    final XMLSymbolParser symbolParser = new XMLSymbolParser(is,
+                            pluginURL);
                     addSymbolPack(symbolParser.getSymbolPack(), pluginName,
                             pluginURL);
                 } catch (final IOException e) {
@@ -278,14 +256,15 @@ public class VariantManager {
                             // parse variant description file, and create hash entry of variant object -> URL
                             try (InputStream is = new BufferedInputStream(
                                     symbolURL.openStream())) {
-                                symbolParser.parse(is, symbolURL);
+                                final XMLSymbolParser symbolParser = new XMLSymbolParser(
+                                        is, symbolURL);
                                 addSymbolPack(symbolParser.getSymbolPack(),
                                         getWSPluginName(symbolURL), symbolURL);
                             } catch (final IOException e) {
                                 // display error dialog
                                 ErrorDialog.displayFileIO(null, e,
                                         symbolURL.toString());
-                            } catch (final SAXException | XPathExpressionException e) {
+                            } catch (final SAXException | XPathExpressionException | ParserConfigurationException e) {
                                 // display error dialog
                                 ErrorDialog.displayGeneral(null, e);
                             }

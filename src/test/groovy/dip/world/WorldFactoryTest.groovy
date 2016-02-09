@@ -42,7 +42,7 @@ class WorldFactoryTest extends Specification {
     def "check standard map"() {
         setup:
         VariantManager.init([Paths.get(System.getProperty("user.dir"), "src/test/resources/variants").
-                                     toFile()] as File[], false)
+                                     toFile()] as File[])
         when:
         def variant = VariantManager.getVariants()[7]
         def world = WorldFactory.getInstance().createWorld(variant)

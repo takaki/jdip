@@ -600,7 +600,7 @@ public class TestParser {
 
         try {
             // parse variants
-            VariantManager.init(new File[]{defaultVariantSearchDir}, false);
+            VariantManager.init(new File[]{defaultVariantSearchDir});
 
             // load the default variant (Standard)
             // error if it cannot be found!!

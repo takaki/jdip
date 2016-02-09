@@ -28,7 +28,7 @@ class VariantManagerTest extends Specification {
     def "initialize"() {
         setup:
         VariantManager.init([Paths.get(System.getProperty("user.dir"), "src/test/resources/variants").
-                                     toFile()] as File[], false)
+                                     toFile()] as File[])
         when:
         def variant = VariantManager.getVariant("TEST_Borders", 1.0)
         then:

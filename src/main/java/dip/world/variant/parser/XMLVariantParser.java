@@ -192,7 +192,7 @@ public class XMLVariantParser implements VariantParser {
      * inserted into a hashtable for later recall.
      */
     @XmlRootElement(name = "MAP_DEFINITION")
-    public static class MapDef {
+    public static final class MapDef {
         @XmlID
         @XmlAttribute(required = true)
         private String id;
@@ -212,12 +212,8 @@ public class XMLVariantParser implements VariantParser {
                             final Object parent) {
             if (title != null && title.isEmpty()) {
                 throw new IllegalArgumentException(
-                        "map id=" + id + " missing a title (name)");
+                        String.format("map id=%s missing a title (name)", id));
             }
-        }
-
-        public String getID() {
-            return id;
         }
 
         public String getTitle() {
@@ -230,10 +226,6 @@ public class XMLVariantParser implements VariantParser {
 
         public String getThumbURI() {
             return thumbURI;
-        }
-
-        public String getPrefUnitStyle() {
-            return preferredUnitStyle;
         }
 
         public String getDescription() {
