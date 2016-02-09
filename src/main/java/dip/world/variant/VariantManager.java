@@ -97,8 +97,6 @@ public class VariantManager {
     private final Map<String, MapRec<SPRec>> symbolMap;    // lowercase symbol names to MapRec objects (which contain SPRecs)
 
     // cached variables to enhance performance of getResource() methods
-    private List<Variant> variants = Collections
-            .emptyList();// The sorted Variant list
     private List<SymbolPack> symbolPacks = Collections
             .emptyList();// The sorted SymbolPack list
 
@@ -126,7 +124,6 @@ public class VariantManager {
 
         // perform cleanup
         variantMap.clear();
-        variants = Collections.emptyList();
         symbolPacks = Collections.emptyList();
         symbolMap.clear();
 
@@ -284,19 +281,19 @@ public class VariantManager {
      */
     public synchronized Variant[] getVariants() {
 
-        if (variants.size() != variantMap.size()) {
-            // note that we need to avoid putting duplicates
-            // into the array.
+        // The sorted Variant list
 
-            // fill variant list with variants.
-            variants = variantMap.values().stream().distinct().map(mr -> {
-                final VRec mro = mr.get(VERSION_NEWEST);
-                assert mro != null;
-                return mro.getVariant();
-            }).sorted().collect(Collectors.toList());
-        }
+        // note that we need to avoid putting duplicates
+        // into the array.
 
-        return variants.toArray(new Variant[variants.size()]);
+        // fill variant list with variants.
+
+        return variantMap.values().stream().distinct()
+                .map(mr -> {
+                    final VRec mro = mr.get(VERSION_NEWEST);
+                    assert mro != null;
+                    return mro.getVariant();
+                }).sorted().toArray(Variant[]::new);
     }// getVariants()
 
     /**
