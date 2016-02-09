@@ -19,12 +19,29 @@ package dip.world.variant.data;
 import java.util.Objects;
 
 public final class VersionNumber implements Comparable<VersionNumber> {
-    final int major;
-    final int minor;
+    int major;
+    int minor;
 
     public VersionNumber(final int major, final int minor) {
         this.major = major;
         this.minor = minor;
+    }
+
+    public void set(final String version) {
+        final String[] tokens = version.split("\\.");
+        switch (tokens.length) {
+            case 1:
+                major = Integer.valueOf(tokens[0]);
+                minor = 0;
+                break;
+            case 2:
+                major = Integer.valueOf(tokens[0]);
+                minor = Integer.valueOf(tokens[1]);
+                break;
+            default:
+                throw new IllegalArgumentException(
+                        "Not version number: " + version);
+        }
     }
 
     @Override
@@ -48,5 +65,11 @@ public final class VersionNumber implements Comparable<VersionNumber> {
     @Override
     public int hashCode() {
         return Objects.hash(major, minor);
+    }
+
+    @Override
+    public String toString() {
+        return String
+                .join(".", Integer.toString(major), Integer.toString(minor));
     }
 }

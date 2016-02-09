@@ -21,10 +21,10 @@ package dip.world.variant.data
 import spock.lang.Specification
 
 class VersionNumberTest extends Specification {
+    def v10 = new VersionNumber(1, 0)
 
-    def "eqaul"() {
+    def "test compare"() {
         def v09 = new VersionNumber(0, 9)
-        def v10 = new VersionNumber(1, 0)
         def v10a = new VersionNumber(1, 0)
         def v11 = new VersionNumber(1, 1)
         expect:
@@ -33,5 +33,16 @@ class VersionNumberTest extends Specification {
         v10 > v09
         v09 < v10
         v09 != v10
+    }
+
+    def "test toString"() {
+        expect:
+        v10.toString() == "1.0"
+    }
+
+    def "test parse" () {
+        expect:
+        v10.set("2.0")
+        v10 == new VersionNumber(2,0)
     }
 }
