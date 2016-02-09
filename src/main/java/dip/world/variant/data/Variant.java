@@ -49,7 +49,9 @@ public final class Variant implements Cloneable, Comparable<Variant> {
     private String name = "";
     @XmlAttribute(name = "default", required = true)
     private boolean isDefault;
-    private float version;
+
+    @XmlAttribute(name = "version", required = true)
+    private double version;
 
     private List<String> aliases = Collections.emptyList();
 
@@ -174,7 +176,7 @@ public final class Variant implements Cloneable, Comparable<Variant> {
     /**
      * Version of this variant
      */
-    public float getVersion() {
+    public double getVersion() {
         return version;
     }
 
@@ -299,14 +301,6 @@ public final class Variant implements Cloneable, Comparable<Variant> {
     public void setAliases(final String csv) {
         final String[] aliases = Utils.parseCSV(csv);
         setAliases(aliases);
-    }
-
-    /**
-     * Set the version of this variant
-     */
-    @XmlAttribute(name = "version", required = true)
-    public void setVersion(final float value) {
-        version = value;
     }
 
     /**
@@ -523,7 +517,7 @@ public final class Variant implements Cloneable, Comparable<Variant> {
                                 victoryConditions.vcMaxGameTimeYears.value),
                         ",vcMaxYearsNoSCChange=", Integer.toString(
                                 victoryConditions.vcMaxYearsNoSCChange.value),
-                        ",version=", Float.toString(version), "]");
+                        ",version=", Double.toString(version), "]");
     }// toString()
 }// class Variant
 

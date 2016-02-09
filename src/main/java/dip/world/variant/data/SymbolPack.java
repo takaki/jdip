@@ -42,7 +42,7 @@ public final class SymbolPack implements Comparable<SymbolPack> {
     @XmlAttribute(required = true)
     private String name_;
     @XmlAttribute(required = true)
-    private float version_;
+    private double version_;
     @XmlAttribute(required = true)
     private URI thumbURI;
     @XmlAttribute(required = true)
@@ -99,7 +99,7 @@ public final class SymbolPack implements Comparable<SymbolPack> {
     /**
      * Version of this SymbolPack
      */
-    public float getVersion() {
+    public double getVersion() {
         return version_;
     }
 

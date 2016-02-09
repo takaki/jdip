@@ -469,8 +469,8 @@ public class World implements Serializable {
         private String variantName;
         private String mapName;
         private String symbolsName;
-        private float variantVersion;
-        private float symbolsVersion;
+        private double variantVersion;
+        private double symbolsVersion;
         private RuleOptions ruleOptions;
 
         /**
@@ -502,16 +502,18 @@ public class World implements Serializable {
 
         /**
          * Set the Variant version.
+         * @param value
          */
-        public void setVariantVersion(float value) {
+        public void setVariantVersion(double value) {
             checkVersion(value);
             this.variantVersion = value;
         }
 
         /**
          * Set the Symbol pack version.
+         * @param value
          */
-        public void setSymbolPackVersion(float value) {
+        public void setSymbolPackVersion(double value) {
             checkVersion(value);
             this.symbolsVersion = value;
         }
@@ -548,14 +550,14 @@ public class World implements Serializable {
         /**
          * Get the Variant version.
          */
-        public float getVariantVersion() {
+        public double getVariantVersion() {
             return this.variantVersion;
         }
 
         /**
          * Get the Symbol pack version.
          */
-        public float getSymbolPackVersion() {
+        public double getSymbolPackVersion() {
             return this.symbolsVersion;
         }
 
@@ -573,8 +575,9 @@ public class World implements Serializable {
 
         /**
          * ensures Version is a value &gt;0.0f
+         * @param v
          */
-        private void checkVersion(float v) {
+        private void checkVersion(double v) {
             if (v <= 0.0f) {
                 throw new IllegalArgumentException("version: " + v);
             }

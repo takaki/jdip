@@ -70,11 +70,11 @@ public class VariantManager {
     /**
      * Version Constant representing the most recent version of a Variant or SymbolPack
      */
-    public static final float VERSION_NEWEST = -1000.0f;
+    public static final double VERSION_NEWEST = -1000.0;
     /**
      * Version Constant representing the most oldest version of a Variant or SymbolPack
      */
-    public static final float VERSION_OLDEST = -2000.0f;
+    public static final double VERSION_OLDEST = -2000.0;
 
 
     // variant constants
@@ -336,7 +336,7 @@ public class VariantManager {
      * Note: Name is <b>not</b> case-sensitive.
      */
     public synchronized Variant getVariant(final String name,
-                                           final float version) {
+                                           final double version) {
         final MapRec mr = variantMap.get(name.toLowerCase());
         if (mr != null) {
             return ((VRec) mr.get(version)).getVariant();
@@ -354,7 +354,7 @@ public class VariantManager {
      * Note: Name is <b>not</b> case-sensitive.
      */
     public synchronized SymbolPack getSymbolPack(final String name,
-                                                 final float version) {
+                                                 final double version) {
         if (name == null) {
             return null;
         }
@@ -380,7 +380,7 @@ public class VariantManager {
      */
     public synchronized SymbolPack getSymbolPack(final MapGraphic mg,
                                                  final String symbolPackName,
-                                                 final float symbolPackVersion) {
+                                                 final double symbolPackVersion) {
         if (mg == null) {
             throw new IllegalArgumentException();
         }
@@ -388,7 +388,7 @@ public class VariantManager {
         // safety:
         // if version is invalid (< 0.0f), convert to VERSION_NEWEST
         // automatically. Log this method, though
-        float spVersion = symbolPackVersion;
+        double spVersion = symbolPackVersion;
         if (spVersion <= 0.0f) {
             Log.println(
                     "WARNING: VariantManager.getSymbolPack() called with symbolPackVersion of <= 0.0f. Check parameters.");
@@ -418,7 +418,7 @@ public class VariantManager {
      * Returns false if the version is not available or the variant
      * is not found.
      */
-    public boolean hasVariantVersion(final String name, final float version) {
+    public boolean hasVariantVersion(final String name, final double version) {
         return getVariant(name, version) != null;
     }// hasVariantVersion()
 
@@ -429,7 +429,7 @@ public class VariantManager {
      * is not found.
      */
     public boolean hasSymbolPackVersion(final String name,
-                                        final float version) {
+                                        final double version) {
         return getSymbolPack(name, version) != null;
     }// hasVariantVersion()
 
@@ -438,33 +438,35 @@ public class VariantManager {
      * Returns the versions of a variant that are available.
      * If the variant is not found, a zero-length array is returned.
      */
-    public synchronized float[] getVariantVersions(final String name) {
+    public synchronized double[] getVariantVersions(final String name) {
         final MapRec mr = variantMap.get(name.toLowerCase());
         if (mr != null) {
             return mr.getVersions();
         }
 
-        return new float[0];
+        return new double[0];
     }// getVariantVersions()
 
     /**
      * Returns the versions of a SymbolPack that are available.
      * If the SymbolPack is not found, a zero-length array is returned.
      */
-    public synchronized float[] getSymbolPackVersions(final String name) {
+    public synchronized double[] getSymbolPackVersions(final String name) {
         final MapRec mr = symbolMap.get(name.toLowerCase());
         if (mr != null) {
             return mr.getVersions();
         }
 
-        return new float[0];
+        return new double[0];
     }// getSymbolPackVersions()
 
 
     /**
      * Ensures version is positive OR VERSION_NEWEST or VERSION_OLDEST
+     *
+     * @param version
      */
-    private void checkVersionConstant(final float version) {
+    private void checkVersionConstant(final double version) {
         if (version <= 0.0f && version != VERSION_NEWEST && version != VERSION_OLDEST) {
             throw new IllegalArgumentException(
                     "invalid version or version constant: " + version);
@@ -947,8 +949,8 @@ public class VariantManager {
         /**
          * Get all available versions
          */
-        public float[] getVersions() {
-            final float[] versions = new float[list.size()];
+        public double[] getVersions() {
+            final double[] versions = new double[list.size()];
             for (int i = 0; i < list.size(); i++) {
                 final MapRecObj mro = list.get(i);
                 versions[i] = mro.getVersion();
@@ -961,8 +963,10 @@ public class VariantManager {
          * Get the desired version. Supports version constants.
          * Returns null if version not found (shouldn't occur if
          * version constants used, and at least one element exists)
+         *
+         * @param version
          */
-        public MapRecObj get(final float version) {
+        public MapRecObj get(final double version) {
             checkVersionConstant(version);
 
             final int size = list.size();
@@ -1011,7 +1015,7 @@ public class VariantManager {
             return fileURL;
         }
 
-        public abstract float getVersion();
+        public abstract double getVersion();
 
     }// inner class ObjRec
 
@@ -1032,7 +1036,7 @@ public class VariantManager {
         }
 
         @Override
-        public float getVersion() {
+        public double getVersion() {
             return variant.getVersion();
         }
     }// inner class VRec
@@ -1054,7 +1058,7 @@ public class VariantManager {
         }
 
         @Override
-        public float getVersion() {
+        public double getVersion() {
             return symbolPack.getVersion();
         }
     }// inner class SPRec

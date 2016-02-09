@@ -1012,7 +1012,7 @@ public class MapMetadata {
          * are different between the width and height attributes (e.g.,
          * "px" and "cm"). And numbers cannot be negative, either.
          */
-        public SymbolSize(String w, String h, float scale,
+        public SymbolSize(String w, String h, double scale,
                           Element element) throws MapException {
             Object[] tmp = makeValues(w, h, scale, element);
 
@@ -1074,7 +1074,7 @@ public class MapMetadata {
          * 0:width, 1:height, 2:radius, 3:radius (as a float),
          * 4: units ("" if none)
          */
-        private Object[] makeValues(String w, String h, float scale,
+        private Object[] makeValues(String w, String h, double scale,
                                     Element el) throws MapException {
             Object[] obj = parseDim(w, el, ATT_WIDTH);
             float width = ((Float) obj[0]).floatValue();

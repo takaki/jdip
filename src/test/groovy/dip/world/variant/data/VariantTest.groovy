@@ -33,7 +33,7 @@ class VariantTest extends Specification {
         setup:
         instance.setName("0")
         instance.setAliases(["a"] as String[])
-        instance.setVersion(1.0)
+//        instance.setVersion(1.0)
         instance.setDefault(true)
         instance.setDescription("d")
         instance.setStartingPhase(phase)
@@ -53,7 +53,7 @@ class VariantTest extends Specification {
         expect:
         instance.getName() == "0"
         instance.getAliases() == ["a"] as String[]
-        instance.getVersion() == 1.0f
+//        instance.getVersion() == 1.0f
         instance.isDefault()
         instance.getDescription() == "d"
         instance.getStartingPhase() == phase

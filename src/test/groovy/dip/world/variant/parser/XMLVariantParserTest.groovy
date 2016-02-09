@@ -77,6 +77,7 @@ class XMLVariantParserTest extends Specification {
 
 
         std.getBorderData().size() == 0
+        std.getVersion() == 1.0d
 
         std.toString() == "dip.world.variant.data.Variant[name=DATC_Standard,isDefault=false" +
                 "powers=France,Austria,Turkey,Russia,England,Germany,Italy,," +

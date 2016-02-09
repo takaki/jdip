@@ -318,7 +318,7 @@ public class ErrorDialog extends TextViewer {
      */
     public static void displayVariantVersionMismatch(JFrame parent,
                                                      World.VariantInfo vi,
-                                                     float availableVersion) {
+                                                     double availableVersion) {
         Object[] args = new Object[3];
 
         args[0] = vi.getVariantName();

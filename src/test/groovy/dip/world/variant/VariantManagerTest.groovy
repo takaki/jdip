@@ -73,10 +73,10 @@ class VariantManagerTest extends Specification {
         variant0.getMapGraphics()[0].getThumbnailURI() == new URI("simple_thumb.png")
 
         expect:
-        VariantManager.getInstance().getSymbolPackVersions("Simple") == [1.0] as float[]
+        VariantManager.getInstance().getSymbolPackVersions("Simple") == [1.0] as double[]
         VariantManager.getInstance().hasVariantVersion("TEST_Borders", 1.0)
         VariantManager.getInstance().hasSymbolPackVersion("Simple", 1.0)
-        VariantManager.getInstance().getVariantVersions("TEST_Borders") == [1.0] as float[]
+        VariantManager.getInstance().getVariantVersions("TEST_Borders") == [1.0] as double[]
         VariantManager.getInstance().getResource(variant, new URI("a")) == null
         VariantManager.getInstance().getResource(variant, new URI("jar:file:" + System.
                 getProperty("user.dir") + "/src/test/resources/variants/testVariants.zip!/")) == new URL("jar:file:" + System.
