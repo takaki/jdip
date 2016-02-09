@@ -28,7 +28,7 @@ import org.w3c.dom.Element;
 /**
  * A Symbol
  */
-public class Symbol {
+public final class Symbol {
     /**
      * Default (identity) scale factor
      */

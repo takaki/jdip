@@ -26,15 +26,15 @@ class InitialStateTest extends Specification {
     def instance = new InitialState()
 
     def "getter and setter"() {
-        instance.setProvinceName("1")
-        instance.setPowerName("2")
+//        instance.setProvinceName("1")
+//        instance.setPowerName("2")
         instance.setUnitType(Unit.Type.ARMY)
         instance.setCoast(Coast.EAST)
         expect:
-        instance.getProvinceName() == "1"
-        instance.getPowerName() == "2"
+        instance.getProvinceName() == null
+        instance.getPowerName() == null
         instance.getUnitType() == Unit.Type.ARMY
         instance.getCoast() == Coast.EAST
-        instance.toString() == "dip.world.variant.data.InitialState[provinceName=1,power=2,unit=A,coast=East Coast]"
+        instance.toString() == "dip.world.variant.data.InitialState[provinceName=null,power=null,unit=A,coast=East Coast]"
     }
 }

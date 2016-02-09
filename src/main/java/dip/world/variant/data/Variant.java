@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
  * A Variant.
  */
 @XmlRootElement(name = "VARIANT")
-public class Variant implements Cloneable, Comparable<Variant> {
+public final class Variant implements Cloneable, Comparable<Variant> {
     // the arrays in general should not be null. They are defined as null initially
     // to make it more apparent should a field not be initialized properly.
     //
@@ -374,39 +374,11 @@ public class Variant implements Cloneable, Comparable<Variant> {
 
 
     /**
-     * Sets the MapGraphics, from a List
-     */
-    public void setMapGraphics(final List mgList) {
-        map.mapGraphics = new ArrayList<>(mgList);
-    }// setPowers()
-
-    /**
      * Sets the Powers, from a List
      */
     public void setPowers(final List powerList) {
         powers = new ArrayList<>(powerList);
     }// setPowers()
-
-    /**
-     * Sets the InitialStates, from a List
-     */
-    public void setInitialStates(final List stateList) {
-        istate = new ArrayList<>(stateList);
-    }// setInitialStates()
-
-    /**
-     * Sets the supply centers, from a List
-     */
-    public void setSupplyCenters(final List supplyCenterList) {
-        supplyCenters = new ArrayList<>(supplyCenterList);
-    }// setSupplyCenters()
-
-    /**
-     * Sets the RuleOptions (as a List of name-value pairs) associated with this Variant
-     */
-    public void setRuleOptionNVPs(final List nvpList) {
-        roNVPs = new ArrayList<>(nvpList);
-    }// setRuleOptionNVPs()
 
 
     /**

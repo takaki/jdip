@@ -24,14 +24,14 @@ class SupplyCenterTest extends Specification {
     def instance = new SupplyCenter()
 
     def "setter and getter"() {
-        instance.setHomePowerName("0")
-        instance.setProvinceName("1")
+//        instance.setHomePowerName("0")
+//        instance.setProvinceName("1")
         instance.setOwnerName("2")
         expect:
-        instance.getHomePowerName() == "0"
-        instance.getProvinceName() == "1"
+//        instance.getHomePowerName() == "0"
+//        instance.getProvinceName() == "1"
         instance.getOwnerName() == "2"
-        instance.toString() == "dip.world.variant.data.SupplyCenter[provinceName=1,powerName=0,ownerName=2]"
+        instance.toString() == "dip.world.variant.data.SupplyCenter[provinceName=null,powerName=null,ownerName=2]"
     }
 
     def "check illegal arguments" () {

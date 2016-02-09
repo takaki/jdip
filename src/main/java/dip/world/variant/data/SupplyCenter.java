@@ -27,13 +27,12 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="SUPPLYCENTER")
-public class SupplyCenter {
+public final class SupplyCenter {
 
     @XmlAttribute(name = "province")
     private String province;
     @XmlAttribute(name = "homepower")
     private String powerName;
-    @XmlAttribute(name = "owner")
     private String owner;
 
     /**
@@ -43,26 +42,12 @@ public class SupplyCenter {
         return powerName;
     }
 
-    /**
-     * Sets the name of the home supply center.
-     */
-    public void setHomePowerName(final String value) {
-        powerName = value;
-    }
-
 
     /**
      * Get the province name of this supply center.
      */
     public String getProvinceName() {
         return province;
-    }
-
-    /**
-     * Set the province name of this supply center.
-     */
-    public void setProvinceName(final String value) {
-        province = value;
     }
 
 
@@ -78,6 +63,7 @@ public class SupplyCenter {
      * <p>
      * "none" is acceptable, but "any" is not.
      */
+    @XmlAttribute(name = "owner")
     public void setOwnerName(final String value) {
         if ("any".equalsIgnoreCase(value)) {
             throw new IllegalArgumentException();

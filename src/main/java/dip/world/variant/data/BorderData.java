@@ -30,88 +30,25 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Temporary holder for Border data after XML parsing.
  */
 @XmlRootElement(name = "BORDER")
-public class BorderData {
-    private String id;
-    private String description;
-    private String unitTypes;
-    private String from;
-    private String orderTypes;
-    private String baseMoveModifier;
-    private String year;
-    private String phase;
-    private String season;
-
-    /**
-     * Sets the Border ID
-     */
+public final class BorderData {
     @XmlAttribute(name = "id")
-    public void setID(String value) {
-        id = value;
-    }
-
-    /**
-     * Sets the Border description
-     */
+    private String id;
     @XmlAttribute(name = "description")
-    public void setDescription(String value) {
-        description = value;
-    }
-
-    /**
-     * Sets the Border unit types
-     */
+    private String description;
     @XmlAttribute(name = "unitTypes")
-    public void setUnitTypes(String value) {
-        unitTypes = value;
-    }
-
-    /**
-     * Sets the Border From locations
-     */
+    private String unitTypes;
     @XmlAttribute(name = "from")
-    public void setFrom(String value) {
-        from = value;
-    }
-
-    /**
-     * Sets the Border Order types
-     */
+    private String from;
     @XmlAttribute(name = "orderTypes")
-    public void setOrderTypes(String value) {
-        orderTypes = value;
-    }
-
-    /**
-     * Sets the Border  Support modifier
-     */
+    private String orderTypes;
     @XmlAttribute(name = "baseMoveModifier")
-    public void setBaseMoveModifier(String value) {
-        baseMoveModifier = value;
-    }
-
-    /**
-     * Sets the Border Year
-     */
+    private String baseMoveModifier;
     @XmlAttribute(name = "year")
-    public void setYear(String value) {
-        year = value;
-    }
-
-    /**
-     * Sets the Border Phase
-     */
+    private String year;
     @XmlAttribute(name = "phase")
-    public void setPhase(String value) {
-        phase = value;
-    }
-
-    /**
-     * Sets the Border Season
-     */
+    private String phase;
     @XmlAttribute(name = "season")
-    public void setSeason(String value) {
-        season = value;
-    }
+    private String season;
 
     /**
      * Gets the Border ID
