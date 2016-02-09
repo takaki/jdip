@@ -32,10 +32,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.function.Function;
 
 @XmlRootElement
-public class MapGraphic {
+public final class MapGraphic {
     @XmlAttribute(name = "default")
     private boolean isDefault;
     @XmlAttribute(name = "preferredUnitStyle")
@@ -73,32 +72,6 @@ public class MapGraphic {
         }
     }
 
-
-    public MapGraphic(final String uri, final boolean isDefault,
-                      final String name, final String description,
-                      final String thumbURI, final String prefSPName) {
-        if (name == null) {
-            throw new IllegalArgumentException();
-        }
-
-        this.name = name;
-        this.isDefault = isDefault;
-        desc = description;
-        this.prefSPName = prefSPName != null && prefSPName
-                .isEmpty() ? null : prefSPName;
-
-        // set URI
-        Function<String, URI> setURI = u -> {
-            try {
-                return new URI(u);
-            } catch (final URISyntaxException ignored) {
-                return null;
-            }
-        };
-
-        this.uri = setURI.apply(uri);
-        this.thumbURI = setURI.apply(thumbURI);
-    }// MapGraphic()
 
     /**
      * The URI for a map SVG file.

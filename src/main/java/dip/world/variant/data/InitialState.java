@@ -32,7 +32,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Sets the Initial State (position) for a province.
  */
 @XmlRootElement(name = "INITIALSTATE")
-public class InitialState {
+public final class InitialState {
     @XmlAttribute(required = true)
     private String province;
     @XmlAttribute(name = "power", required = true)
@@ -71,30 +71,16 @@ public class InitialState {
     }
 
     /**
-     * Set the Province name
-     */
-    public void setProvinceName(String value) {
-        province = value;
-    }
-
-    /**
-     * Set the Power name
-     */
-    public void setPowerName(String value) {
-        power = value;
-    }
-
-    /**
      * Sets the unit type.
      */
-    public void setUnitType(Type value) {
+    public void setUnitType(final Type value) {
         unit = value;
     }
 
     /**
      * Sets the coast for the unit.
      */
-    public void setCoast(Coast value) {
+    public void setCoast(final Coast value) {
         unitcoast = value;
     }
 

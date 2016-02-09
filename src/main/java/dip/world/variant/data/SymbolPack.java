@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
  * A SymbolPack
  */
 @XmlRootElement(name = "SYMBOLS")
-public class SymbolPack implements Comparable<SymbolPack> {
+public final class SymbolPack implements Comparable<SymbolPack> {
     @XmlAttribute(required = true)
     private String name_;
     @XmlAttribute(required = true)

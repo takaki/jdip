@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 
  */
 @XmlRootElement(name = "PROVINCE")
-public class ProvinceData {
+public final class ProvinceData {
 
 //    borders IDREFS #IMPLIED
 
@@ -47,6 +47,7 @@ public class ProvinceData {
     @XmlAttribute(name = "shortname", required = true)
     private String shortName;
     private List<String> shortNames = new ArrayList<>();
+    @XmlAttribute(name = "fullname", required = true)
     private String fullName;
     //    isConvoyableCoast (true|false) "false"
     @XmlAttribute(name = "isConvoyableCoast", required = true)
@@ -116,42 +117,6 @@ public class ProvinceData {
      */
     public String[] getAdjacentProvinceTypes() {
         return adj_types.toArray(new String[adj_types.size()]);
-    }
-
-    /**
-     * Set full name of province.
-     */
-    @XmlAttribute(name = "fullname", required = true)
-    public void setFullName(final String value) {
-        fullName = value;
-    }
-
-    /**
-     * Set all adjacent province names.
-     */
-    public void setAdjacentProvinceNames(final String[] values) {
-        adj_provinces = Arrays.asList(values);
-    }
-
-    /**
-     * Set all adjacent province types.
-     */
-    public void setAdjacentProvinceTypes(final String[] values) {
-        adj_types = Arrays.asList(values);
-    }
-
-    /**
-     * Set all short (abbreviated) names, from a List.
-     */
-    public void setShortNames(final List list) {
-        shortNames = new ArrayList<>(list);
-    }// setShortNames()
-
-    /**
-     * Sets whether this Province is a convoyable coastal province.
-     */
-    public void setConvoyableCoast(final boolean value) {
-        isConvoyableCoast = value;
     }
 
     /**
