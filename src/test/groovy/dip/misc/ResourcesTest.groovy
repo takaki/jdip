@@ -23,7 +23,7 @@ import spock.lang.Specification
 import java.util.function.Predicate
 
 class ResourcesTest extends Specification {
-    def "get recursive" (){
+    def "get recursive"() {
         expect:
         Resources.getResourceURLs(new Predicate<URL>() {
             @Override
@@ -31,6 +31,12 @@ class ResourcesTest extends Specification {
                 return url.toString().contains("test/variants")
             }
         }).size() == 3
-
+        Resources.getResourceURLs(new Predicate<URL>() {
+            @Override
+            boolean test(URL url) {
+                return url.toString().contains("main/variants")
+            }
+        }).size() == 114
+        Resources.getResourceURLs().size() == 39717 || Resources.getResourceURLs().size() == 9411
     }
 }
