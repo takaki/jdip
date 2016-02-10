@@ -41,29 +41,28 @@ import java.util.stream.Stream;
 public enum Resources {
     FileSystems;
 
-    private static void iterateFileSystem(final File r, final Predicate<URL> f,
-                                          final Set<URL> s) {
-        try (final Stream<Path> list = Files.list(r.toPath())) {
-            list.filter(path -> Files.isDirectory(path))
-                    .forEach(path -> iterateFileSystem(path.toFile(), f, s));
+    private static Collection<URL> iterateFileSystem(final Path r,
+                                                     final Predicate<URL> f) {
+        final Set<URL> us = new HashSet<>();
+        try {
+            try (final Stream<Path> list = Files.list(r)) {
+                list.filter(path -> Files.isDirectory(path))
+                        .forEach(path -> us.addAll(iterateFileSystem(path, f)));
+            }
+            try (final Stream<Path> list = Files.list(r)) {
+                us.addAll(list.filter(path -> Files.isRegularFile(path))
+                        .map(path -> {
+                            try {
+                                return path.toUri().toURL();
+                            } catch (MalformedURLException e) {
+                                throw new UncheckedIOException(e);
+                            }
+                        }).filter(f::test).collect(Collectors.toList()));
+            }
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-        try (final Stream<Path> list = Files.list(r.toPath())) {
-            s.addAll(
-                    list.filter(path -> Files.isRegularFile(path)).map(path -> {
-                        try {
-                            return path.toUri().toURL();
-                        } catch (MalformedURLException e) {
-                            throw new UncheckedIOException(e);
-                        }
-                    }).filter(f::test).collect(Collectors.toList()));
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
-
-
-
+        return us;
     }
 
     private static void iterateJarFile(final File file, final Predicate<URL> f,
@@ -83,7 +82,7 @@ public enum Resources {
     private static void iterateEntry(final File p, final Predicate<URL> f,
                                      final Set<URL> s) throws IOException {
         if (p.isDirectory()) {
-            iterateFileSystem(p, f, s);
+            s.addAll(iterateFileSystem(p.toPath(), f));
         } else if (p.isFile() && p.getName().toLowerCase().endsWith(".jar")) {
             iterateJarFile(p, f, s);
         }
