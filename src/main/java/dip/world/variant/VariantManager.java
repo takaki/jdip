@@ -23,7 +23,6 @@
 package dip.world.variant;
 
 import dip.misc.Log;
-import dip.misc.Utils;
 import dip.world.variant.data.MapGraphic;
 import dip.world.variant.data.SymbolPack;
 import dip.world.variant.data.Variant;
@@ -89,7 +88,7 @@ public final class VariantManager {
     private static final VariantManager vm = new VariantManager();
 
     // instance variables
-    private final boolean inWebstart;
+    private static final boolean inWebstart = false;
     private final Map<String, MapRec<VRec>> variantMap;    // map of lowercased Variant names to MapRec objects (which contain VRecs)
     private final Map<String, MapRec<SPRec>> symbolMap;    // lowercase symbol names to MapRec objects (which contain SPRecs)
 
@@ -574,7 +573,6 @@ public final class VariantManager {
     private VariantManager() {
         variantMap = new HashMap<>(53);
         symbolMap = new HashMap<>(17);
-        inWebstart = Utils.isInWebstart();
     }// VariantManager()
 
 
