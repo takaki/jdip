@@ -23,7 +23,6 @@
 package dip.world.variant;
 
 import dip.misc.Log;
-import dip.misc.Utils;
 import dip.world.variant.data.MapGraphic;
 import dip.world.variant.data.SymbolPack;
 import dip.world.variant.data.Variant;
@@ -88,8 +87,6 @@ public final class VariantManager {
     // class variables
     private static final VariantManager vm = new VariantManager();
 
-    // instance variables
-    private final boolean inWebstart;
     private final Map<String, MapRec<VRec>> variantMap;    // map of lowercased Variant names to MapRec objects (which contain VRecs)
     private final Map<String, MapRec<SPRec>> symbolMap;    // lowercase symbol names to MapRec objects (which contain SPRecs)
 
@@ -153,35 +150,6 @@ public final class VariantManager {
 
         // if we are in webstart, search for variants within webstart jars
 
-        if (inWebstart) {
-            try {
-                Collections.list(getClass().getClassLoader()
-                        .getResources(VARIANT_FILE_NAME)).stream()
-                        .forEach(variantURL -> {
-                            // parse variant description file, and create hash entry of variant object -> URL
-                            try (InputStream is = new BufferedInputStream(
-                                    variantURL.openStream())) {
-                                final String pluginName = getWSPluginName(
-                                        variantURL);
-                                // setup variant parser
-                                final VariantParser variantParser = new XMLVariantParser(
-                                        is, variantURL);
-                                // add variants; variants with same name (but older versions) are
-                                // replaced with same-name newer versioned variants
-                                for (final Variant variant : variantParser
-                                        .getVariants()) {
-                                    addVariant(variant, pluginName, variantURL);
-                                }
-                            } catch (final IOException e) {
-                                throw new UncheckedIOException(e);
-                            }
-                        });
-            } catch (final IOException e) {
-                throw new UncheckedIOException(e);
-            }
-
-        }
-
         // check: did we find *any* variants? Throw an exception.
         if (variantMap.isEmpty()) {
             throw new NoVariantsException(
@@ -226,31 +194,6 @@ public final class VariantManager {
         }
 
         // if we are in webstart, search for variants within webstart jars
-
-        if (inWebstart) {
-
-            try {
-                Collections.list(getClass().getClassLoader()
-                        .getResources(SYMBOL_FILE_NAME)).stream()
-                        .forEach(symbolURL -> {
-                            // parse variant description file, and create hash entry of variant object -> URL
-                            try (InputStream is = new BufferedInputStream(
-                                    symbolURL.openStream())) {
-                                final SymbolParser symbolParser = new XMLSymbolParser(
-                                        is, symbolURL);
-                                addSymbolPack(symbolParser.getSymbolPack(),
-                                        getWSPluginName(symbolURL), symbolURL);
-                            } catch (final IOException e) {
-                                throw new UncheckedIOException(e);
-                            } catch (final SAXException | XPathExpressionException | ParserConfigurationException e) {
-                                throw new IllegalArgumentException(e);
-                            }
-                        });
-            } catch (final IOException e) {
-                throw new IllegalArgumentException(e);
-            }
-
-        }// if(isInWebStart)
 
 
         // check: did we find *any* symbol packs? Throw an exception.
@@ -437,14 +380,6 @@ public final class VariantManager {
         // ensure we have been initialized...
 
         // if we are in webstart, assume that this is a webstart jar.
-        if (inWebstart) {
-            final URL url = getWSResource(packURL, uri);
-
-            // if cannot get it, fall through.
-            if (url != null) {
-                return url;
-            }
-        }
 
         // if URI has a defined scheme, convert to a URL (if possible) and return it.
         if (uri.getScheme() != null) {
@@ -540,14 +475,6 @@ public final class VariantManager {
         }
 
         // if we are in webstart, assume that this is a webstart jar.
-        if (inWebstart) {
-            final URL url = getWSResource(mro, uri);
-
-            // if cannot get it, fall through.
-            if (url != null) {
-                return url;
-            }
-        }
 
 
         // if URI has a defined scheme, convert to a URL (if possible) and return it.
@@ -574,7 +501,6 @@ public final class VariantManager {
     private VariantManager() {
         variantMap = new HashMap<>(53);
         symbolMap = new HashMap<>(17);
-        inWebstart = Utils.isInWebstart();
     }// VariantManager()
 
 
@@ -624,97 +550,12 @@ public final class VariantManager {
     }// getFile()
 
     /**
-     * Get the webstart plugin name
-     */
-    private static String getWSPluginName(final URL url) {
-        final String s = url.toString();
-        final int idxExclam = s.indexOf('!');
-        if (idxExclam >= 0) {
-            return s.substring(s.lastIndexOf("/", idxExclam) + 1, idxExclam);
-        } else {
-            return s;
-        }
-    }// getWSPluginName()
-
-    /**
      * Checks if the fileName ends with an allowed extension; if so, returns true.
      */
     private static boolean checkFileName(final String fileName,
                                          final Collection<String> extensions) {
         return extensions.stream().anyMatch(fileName::endsWith);
     }// checkFileName()
-
-
-    /**
-     * Get a resource for a variant. This uses the variantName to
-     * deconflict, if multiple resources exist with the same name.
-     * <p>
-     * Conflict occur when plugins are loaded under the same ClassLoader,
-     * because variant plugin namespace is not unique.
-     * <p>
-     * This primarily applies to Webstart resources
-     */
-    private URL getWSResource(final MapRecObj mro, final URI uri) {
-        assert inWebstart;
-        if (uri == null || mro == null) {
-            return null;
-        }
-
-// deconflict. Note that this is not, and cannot be, foolproof;
-// due to name-mangling by webstart. For example, if two plugins
-// called "test" and "Supertest" exist, test may find the data
-// file within Supertest because indexOf(test, SuperTest) >= 0
-//
-// however, if we can get the mangled name and set it as the
-// 'pluginName', we can be foolproof.
-//
-        try {
-            return Collections.list(getClass().getClassLoader()
-                    .getResources(uri.toString())).stream()
-                    .filter(url -> url.getPath()
-                            .contains(mro.getPluginName() + "!")).findFirst()
-                    .orElse(null);
-        } catch (final IOException ignored) {
-            return null;
-        }
-    }// getWSResource()
-
-
-    /**
-     * Get a resource for a variant. This uses the variantName to
-     * deconflict, if multiple resources exist with the same name.
-     * <p>
-     * Conflict occur when plugins are loaded under the same ClassLoader,
-     * because variant plugin namespace is not unique.
-     * <p>
-     * This primarily applies to Webstart resources
-     */
-    private URL getWSResource(final URL packURL, final URI uri) {
-        /*
-            NOTE: this method is used by getResource(URL, URI), which is
-			chiefly used by VariantManager and associated parsers; a VariantRecord
-			has not yet been created. So we cannot use that; the internal
-			logic here is slightly different.
-		*/
-        assert inWebstart;
-
-// deconflict. Note that this is not, and cannot be, foolproof;
-// due to name-mangling by webstart. For example, if two plugins
-// called "test" and "Supertest" exist, test may find the data
-// file within Supertest because indexOf(test, SuperTest) >= 0
-//
-// however, if we can get the mangled name and set it as the
-// 'pluginName', we can be foolproof.
-        try {
-            return Collections.list(getClass().getClassLoader()
-                    .getResources(uri.toString())).stream().filter(url -> {
-                final String lcPath = url.getPath();
-                return lcPath.contains(getWSPluginName(packURL));
-            }).findAny().orElse(null);
-        } catch (final IOException ignored) {
-            return null;
-        }
-    }// getWSResource()
 
 
     /**
