@@ -26,6 +26,8 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.CodeSource;
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,25 +36,34 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public enum Resources {
-    ;
+    FileSystems;
 
     private static void iterateFileSystem(final File r, final Predicate<URL> f,
                                           final Set<URL> s) {
-        final File[] files = r.listFiles();
-        if (files != null) {
-            Arrays.stream(files).filter(File::isDirectory).forEach(file -> {
-                iterateFileSystem(file, f, s);
-            });
-            s.addAll(Arrays.stream(files).filter(File::isFile).map(file -> {
-                try {
-                    return file.toURI().toURL();
-                } catch (MalformedURLException e) {
-                    throw new UncheckedIOException(e);
-                }
-            }).filter(f::test).collect(Collectors.toList()));
+        try (final Stream<Path> list = Files.list(r.toPath())) {
+            list.filter(path -> Files.isDirectory(path))
+                    .forEach(path -> iterateFileSystem(path.toFile(), f, s));
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
         }
+        try (final Stream<Path> list = Files.list(r.toPath())) {
+            s.addAll(
+                    list.filter(path -> Files.isRegularFile(path)).map(path -> {
+                        try {
+                            return path.toUri().toURL();
+                        } catch (MalformedURLException e) {
+                            throw new UncheckedIOException(e);
+                        }
+                    }).filter(f::test).collect(Collectors.toList()));
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+
+
+
     }
 
     private static void iterateJarFile(final File file, final Predicate<URL> f,
