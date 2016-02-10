@@ -19,7 +19,6 @@ package dip.misc;
 
 // reference http://www.codeproject.com/Articles/512501/Recursive-Resource-Gathering-in-Java
 
-import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.MalformedURLException;
@@ -28,18 +27,16 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.CodeSource;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public enum Resources {
-    FileSystems;
+    ;
 
     private static Collection<URL> iterateFileSystem(final Path r,
                                                      final Predicate<URL> f) {
@@ -66,29 +63,31 @@ public enum Resources {
         return us;
     }
 
-    private static Collection<URL> iterateJarFile(final File file,
+    private static Collection<URL> iterateJarFile(final Path path,
                                                   final Predicate<URL> f) throws IOException {
-        final Collection<URL> us = new HashSet<>();
-        try (final JarFile jFile = new JarFile(file)) {
-            us.addAll(jFile.stream().filter(j -> !j.isDirectory()).map(j -> {
-                try {
-                    return new URL("jar", "",
-                            file.toURI() + "!/" + j.getName());
-                } catch (MalformedURLException e) {
-                    throw new IllegalArgumentException(e);
-                }
-            }).filter(f::test).collect(Collectors.toList()));
+        try (final JarFile jFile = new JarFile(path.toFile())) {
+            return new HashSet<>(
+                    jFile.stream().filter(j -> !j.isDirectory()).map(j -> {
+                        try {
+                            return new URL("jar", "",
+                                    path.toUri() + "!/" + j.getName());
+                        } catch (MalformedURLException e) {
+                            throw new IllegalArgumentException(e);
+                        }
+                    }).filter(f::test).collect(Collectors.toList()));
         }
-        return us;
     }
 
-    private static void iterateEntry(final File p, final Predicate<URL> f,
-                                     final Set<URL> s) throws IOException {
-        if (p.isDirectory()) {
-            s.addAll(iterateFileSystem(p.toPath(), f));
-        } else if (p.isFile() && p.getName().toLowerCase().endsWith(".jar")) {
-            s.addAll(iterateJarFile(p, f));
+    private static Collection<URL> iterateEntry(final Path path,
+                                                final Predicate<URL> f) throws IOException {
+        if (Files.isDirectory(path)) {
+            return new HashSet<>(iterateFileSystem(path, f));
         }
+        if (Files.isRegularFile(path) && path.toFile().getName().toLowerCase()
+                .endsWith(".jar")) {
+            return new HashSet<>(iterateJarFile(path, f));
+        }
+        return Collections.emptySet();
     }
 
     public static Set<URL> getResourceURLs() {
@@ -101,12 +100,13 @@ public enum Resources {
     }
 
     public static Set<URL> getResourceURLs(final Predicate<URL> filter) {
-        final Set<URL> collectedURLs = new HashSet<>();
         final URLClassLoader ucl = (URLClassLoader) ClassLoader
                 .getSystemClassLoader();
+        final Set<URL> collectedURLs = new HashSet<>();
         Arrays.stream(ucl.getURLs()).forEach(url -> {
             try {
-                iterateEntry(new File(url.toURI()), filter, collectedURLs);
+                collectedURLs
+                        .addAll(iterateEntry(Paths.get(url.toURI()), filter));
             } catch (URISyntaxException | IOException e) {
                 throw new IllegalArgumentException(e);
             }
@@ -114,12 +114,12 @@ public enum Resources {
         return collectedURLs;
     }
 
-    public static Set<URL> getResourceURLs(final Class rootClass,
+    public static Set<URL> getResourceURLs(final Class<?> rootClass,
                                            final Predicate<URL> filter) throws IOException, URISyntaxException {
         final Set<URL> collectedURLs = new HashSet<>();
         final CodeSource src = rootClass.getProtectionDomain().getCodeSource();
-        iterateEntry(new File(src.getLocation().toURI()), filter,
-                collectedURLs);
+        collectedURLs.addAll(iterateEntry(Paths.get(src.getLocation().toURI()),
+                filter));
         return collectedURLs;
     }
 }
