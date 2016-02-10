@@ -43,11 +43,12 @@ public enum Resources {
 
     private static Collection<URL> iterateFileSystem(final Path r,
                                                      final Predicate<URL> f) {
-        final Set<URL> us = new HashSet<>();
+        final Collection<URL> us = new HashSet<>();
         try {
             try (final Stream<Path> list = Files.list(r)) {
-                list.filter(path -> Files.isDirectory(path))
-                        .forEach(path -> us.addAll(iterateFileSystem(path, f)));
+                us.addAll(list.filter(path -> Files.isDirectory(path))
+                        .flatMap(path -> iterateFileSystem(path, f).stream())
+                        .collect(Collectors.toList()));
             }
             try (final Stream<Path> list = Files.list(r)) {
                 us.addAll(list.filter(path -> Files.isRegularFile(path))
@@ -59,16 +60,17 @@ public enum Resources {
                             }
                         }).filter(f::test).collect(Collectors.toList()));
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new UncheckedIOException(e);
         }
         return us;
     }
 
-    private static void iterateJarFile(final File file, final Predicate<URL> f,
-                                       final Collection<URL> s) throws IOException {
+    private static Collection<URL> iterateJarFile(final File file,
+                                                  final Predicate<URL> f) throws IOException {
+        final Collection<URL> us = new HashSet<>();
         try (final JarFile jFile = new JarFile(file)) {
-            s.addAll(jFile.stream().filter(j -> !j.isDirectory()).map(j -> {
+            us.addAll(jFile.stream().filter(j -> !j.isDirectory()).map(j -> {
                 try {
                     return new URL("jar", "",
                             file.toURI() + "!/" + j.getName());
@@ -77,6 +79,7 @@ public enum Resources {
                 }
             }).filter(f::test).collect(Collectors.toList()));
         }
+        return us;
     }
 
     private static void iterateEntry(final File p, final Predicate<URL> f,
@@ -84,7 +87,7 @@ public enum Resources {
         if (p.isDirectory()) {
             s.addAll(iterateFileSystem(p.toPath(), f));
         } else if (p.isFile() && p.getName().toLowerCase().endsWith(".jar")) {
-            iterateJarFile(p, f, s);
+            s.addAll(iterateJarFile(p, f));
         }
     }
 
