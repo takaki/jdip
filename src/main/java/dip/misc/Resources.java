@@ -29,7 +29,6 @@ import java.nio.file.Paths;
 import java.security.CodeSource;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.jar.JarFile;
@@ -43,28 +42,23 @@ public enum Resources {
 
     private static Set<URL> iterateFileSystem(final Path r,
                                               final Predicate<URL> f) {
-        try {
-            final Set<URL> us = new HashSet<>();
-            try (final Stream<Path> list = Files.list(r)) {
-                us.addAll(list.filter(path -> Files.isDirectory(path))
-                        .flatMap(path -> iterateFileSystem(path, f).stream())
-                        .collect(Collectors.toList()));
-            }
-            try (final Stream<Path> list = Files.list(r)) {
-                us.addAll(list.filter(path -> Files.isRegularFile(path))
-                        .map(path -> {
-                            try {
-                                return path.toUri().toURL();
-                            } catch (MalformedURLException e) {
-                                throw new UncheckedIOException(e);
-                            }
-                        }).filter(f::test).collect(Collectors.toList()));
-            }
-            return us;
+        try (final Stream<Path> list = Files.list(r)) {
+            return list.flatMap(path -> {
+                if (Files.isDirectory(path)) {
+                    return iterateFileSystem(path, f).stream();
+                }
+                if (Files.isRegularFile(path)) {
+                    try {
+                        return Stream.of(path.toUri().toURL()).filter(f::test);
+                    } catch (MalformedURLException e) {
+                        throw new UncheckedIOException(e);
+                    }
+                }
+                return Stream.empty();
+            }).collect(Collectors.toSet());
         } catch (final IOException e) {
             throw new UncheckedIOException(e);
         }
-
     }
 
     private static Set<URL> iterateJarFile(final Path path,
