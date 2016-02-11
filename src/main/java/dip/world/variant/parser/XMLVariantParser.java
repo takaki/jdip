@@ -75,11 +75,13 @@ public class XMLVariantParser implements VariantParser {
 
         // cleanup cache (very important to remove references!)
         AdjCache.clear();
-        AdjCache.setVariantPackageURL(variantsXMLURL);
+        AdjCache.setVariantPackageURL();
 
         final RootVariants rootVariants = JAXB
                 .unmarshal(variantsXMLURL, RootVariants.class);
         variantList = rootVariants.variants;
+        variantList.stream()
+                .forEach(variant -> variant.setBaseURL(variantsXMLURL));
         Log.printTimed(time, "   time: ");
     }// parse()
 
@@ -106,7 +108,6 @@ public class XMLVariantParser implements VariantParser {
      * this is a simpler solution)
      */
     public static class AdjCache {
-        private static URL vpURL;
         private static final LRUCache<URI, AdjCache> adjCache = new LRUCache<>(
                 6); // URI -> AdjCache objects
 
@@ -123,8 +124,7 @@ public class XMLVariantParser implements VariantParser {
         /**
          * Sets the variant package URL
          */
-        public static void setVariantPackageURL(final URL variantPackageURL) {
-            vpURL = variantPackageURL;
+        public static void setVariantPackageURL() {
         }// setVariantPackageURL()
 
 
@@ -162,8 +162,9 @@ public class XMLVariantParser implements VariantParser {
             // see if we already have the URI data cached.
             return adjCache.computeIfAbsent(aURI, adjacencyURI -> {
                 try {
-                    final URL url = new URL(vpURL, adjacencyURI.toString());
-                    final XMLProvinceParser pp = new XMLProvinceParser(url);
+                    // final URL url = new URL(vpURL, adjacencyURI.toString());
+                    final XMLProvinceParser pp = new XMLProvinceParser(
+                            adjacencyURI.toURL());
                     return new AdjCache(Arrays.asList(pp.getProvinceData()),
                             Arrays.asList(pp.getBorderData()));
                 } catch (MalformedURLException e) {

@@ -34,7 +34,7 @@ import dip.world.variant.parser.XMLSymbolParser;
 import dip.world.variant.parser.XMLVariantParser;
 
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.*;
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -124,19 +124,14 @@ public final class VariantManager {
         Resources.getResourceURLs(url -> {
             return url.getPath().endsWith(VARIANT_FILE_NAME);
         }).forEach(variantXMLURL -> {
-            final String pluginName = variantXMLURL.getFile(); // TODO
+            final String pluginName = variantXMLURL.getFile(); // FIXME
             // parse variant description file, and create hash entry of variant object -> URL
-            try (InputStream is = new BufferedInputStream(
-                    variantXMLURL.openStream())) {
-                final VariantParser variantParser = new XMLVariantParser(
-                        variantXMLURL);
-                // add variants; variants with same name (but older versions) are
-                // replaced with same-name newer versioned variants
-                for (final Variant variant : variantParser.getVariants()) {
-                    addVariant(variant, pluginName, variantXMLURL);
-                }
-            } catch (final IOException e) {
-                throw new UncheckedIOException(e);
+            final VariantParser variantParser = new XMLVariantParser(
+                    variantXMLURL);
+            // add variants; variants with same name (but older versions) are
+            // replaced with same-name newer versioned variants
+            for (final Variant variant : variantParser.getVariants()) {
+                addVariant(variant, pluginName, variantXMLURL);
             }
         });
 
@@ -153,10 +148,7 @@ public final class VariantManager {
 
         ///////////////// SYMBOLS /////////////////////////
 
-
         // now, parse symbol packs
-
-        // find plugins, create plugin loader
 
         // for each plugin, attempt to find the "variants.xml" file inside.
         // if it does not exist, we will not load the file. If it does, we will parse it,
@@ -166,27 +158,19 @@ public final class VariantManager {
         }).forEach(symbolXMLURL -> {
             if (symbolXMLURL != null) {
                 final String pluginName = symbolXMLURL.getFile(); // FIXME
-                try (InputStream is = new BufferedInputStream(
-                        symbolXMLURL.openStream())) {
+                try {
                     final SymbolParser symbolParser = new XMLSymbolParser(
                             symbolXMLURL);
                     addSymbolPack(symbolParser.getSymbolPack(), pluginName,
                             symbolXMLURL);
-                } catch (final IOException e) {
-                    throw new UncheckedIOException(e);
-                } catch (final ParserConfigurationException e) {
+                } catch (ParserConfigurationException | MalformedURLException e) {
                     throw new IllegalArgumentException(e);
                 }
             }
         });
 
-        // if we are in webstart, search for variants within webstart jars
-
-
         // check: did we find *any* symbol packs? Throw an exception.
-        if (symbolMap.isEmpty())
-
-        {
+        if (symbolMap.isEmpty()) {
             throw new NoVariantsException(
                     String.join("", "No SymbolPacks found on path: ",
                             Arrays.stream(searchPaths).map(File::toString)
