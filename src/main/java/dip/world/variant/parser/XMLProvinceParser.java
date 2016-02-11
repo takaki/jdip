@@ -67,7 +67,7 @@ public class XMLProvinceParser implements ProvinceParser {
             borderList = rootProvinces.borderDatas;
             provinceList = rootProvinces.provinces;
             Log.printTimed(time, "   province parse time: ");
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new UncheckedIOException(e);
         }
 

@@ -102,7 +102,7 @@ public final class VariantManager {
      * Loaded XML may be validated if the isValidating flag is set to true.
      */
     public synchronized void init(
-            final File[] searchPaths) throws ParserConfigurationException, NoVariantsException {
+            final File[] searchPaths) throws NoVariantsException {
         final long ttime = System.currentTimeMillis();
         final long vptime = ttime;
         Log.println("VariantManager.init()");
@@ -523,7 +523,7 @@ public final class VariantManager {
 
         final String name = variant.getName().toLowerCase();
 
-// see if we are mapped to a MapRec already.
+        // see if we are mapped to a MapRec already.
         final MapRec<VRec> mapVRec = variantMap
                 .computeIfAbsent(name, key -> new MapRec<>());
         // we are mapped. See if this version has been added.

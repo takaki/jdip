@@ -33,7 +33,6 @@ import javax.xml.bind.annotation.*;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -80,7 +79,7 @@ public final class Variant implements Cloneable, Comparable<Variant> {
 
     private URL baseURL;
 
-    public void setBaseURL(URL baseURL) {
+    public void setBaseURL(final URL baseURL) {
         this.baseURL = baseURL;
     }
 
@@ -98,7 +97,7 @@ public final class Variant implements Cloneable, Comparable<Variant> {
         private boolean allowBCYears;
 
         @XmlAttribute(name = "turn")
-        public void setPhase(String val) {
+        public void setPhase(final String val) {
             phase = Phase.parse(val);
         }
 
@@ -255,10 +254,10 @@ public final class Variant implements Cloneable, Comparable<Variant> {
      */
     public ProvinceData[] getProvinceData() {
         try {
-            final URL url = new URL(baseURL, map.adjacencyURI.toString());
-            return AdjCache
-                    .getProvinceData(url.toURI());// TODO: remove AdjCache
-        } catch (MalformedURLException | URISyntaxException e) {
+            final URL url = new URL(baseURL,
+                    map.adjacencyURI.toString());
+            return AdjCache.getProvinceData(url);// TODO: remove AdjCache
+        } catch (final MalformedURLException e) {
             throw new IllegalArgumentException(e);
         }
 
@@ -276,9 +275,10 @@ public final class Variant implements Cloneable, Comparable<Variant> {
      */
     public BorderData[] getBorderData() {
         try {
-            final URL url = new URL(baseURL, map.adjacencyURI.toString());
-            return AdjCache.getBorderData(url.toURI()); // TODO: remove AdjCache
-        } catch (MalformedURLException | URISyntaxException e) {
+            final URL url = new URL(baseURL,
+                    map.adjacencyURI.toString());
+            return AdjCache.getBorderData(url); // TODO: remove AdjCache
+        } catch (final MalformedURLException e) {
             throw new IllegalArgumentException(e);
         }
     }
