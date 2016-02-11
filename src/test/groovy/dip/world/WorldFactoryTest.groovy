@@ -44,7 +44,13 @@ class WorldFactoryTest extends Specification {
         VariantManager.getInstance().init([Paths.get(System.getProperty("user.dir"), "src/test/resources/variants").
                                      toFile()] as File[])
         when:
-        def variant = VariantManager.getInstance().getVariants()[7]
+        true
+
+        then:
+        VariantManager.getInstance().getVariants().size() == 43
+
+        when:
+        def variant = VariantManager.getInstance().getVariants()[18]
         def world = WorldFactory.getInstance().createWorld(variant)
         world.getPhaseSet()
 

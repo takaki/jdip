@@ -18,25 +18,15 @@
 
 package dip.world.variant.parser
 
-import dip.world.variant.VariantManager
 import dip.world.variant.data.VersionNumber
 import spock.lang.Specification
-
-import java.nio.file.Paths
 
 class XMLSymbolParserTest extends Specification {
 
     def "parse"() {
-        setup:
-        VariantManager.getInstance().init([Paths.get(System.getProperty("user.dir"), "src/test/resources/variants").
-                                     toFile()] as File[]) // TODO: fix
-        def pluginUrl = getClass().getResource("/variants/simpleSymbols.zip")
-        URLClassLoader urlCL = new URLClassLoader(pluginUrl);
-        URL variantXMLURL = urlCL.findResource("symbols.xml")
-        InputStream is = new BufferedInputStream(variantXMLURL.openStream());
-
         when:
-        def instance = new XMLSymbolParser(is, pluginUrl)
+        def url = getClass().getResource("/variants/symbols/simple/symbols.xml")
+        def instance = new XMLSymbolParser(url)
         def symbolpack = instance.getSymbolPack()
         then:
         symbolpack.getName() == "Simple"

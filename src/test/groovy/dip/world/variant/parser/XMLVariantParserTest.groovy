@@ -18,25 +18,15 @@
 
 package dip.world.variant.parser
 
-import dip.world.variant.VariantManager
 import dip.world.variant.data.VersionNumber
 import spock.lang.Specification
-
-import java.nio.file.Paths
 
 class XMLVariantParserTest extends Specification {
 
     def "parse"() {
-        setup:
-        VariantManager.getInstance().init([Paths.get(System.getProperty("user.dir"), "src/test/resources/variants").
-                                     toFile()] as File[]) // TODO: fix
-        def pluginUrl = getClass().getResource("/variants/testVariants.zip")
-        URLClassLoader urlCL = new URLClassLoader(pluginUrl);
-        URL variantXMLURL = urlCL.findResource("variants.xml")
-        InputStream is = new BufferedInputStream(variantXMLURL.openStream());
-
         when:
-        def instance = new XMLVariantParser(is, pluginUrl)
+        def url = getClass().getResource("/variants/test/variants.xml")
+        def instance = new XMLVariantParser(url)
         def variants = instance.getVariants()
         def std = variants[0]
         then:

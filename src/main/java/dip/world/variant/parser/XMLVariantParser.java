@@ -24,7 +24,6 @@ package dip.world.variant.parser;
 
 import dip.misc.LRUCache;
 import dip.misc.Log;
-import dip.world.variant.VariantManager;
 import dip.world.variant.data.BorderData;
 import dip.world.variant.data.ProvinceData;
 import dip.world.variant.data.Variant;
@@ -38,7 +37,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,20 +69,20 @@ public class XMLVariantParser implements VariantParser {
      * Note that when this method is called, any previous Variants (if any exist) are
      * cleared.
      */
-    public XMLVariantParser(final InputStream is, final URL variantPackageURL) {
-        if (variantPackageURL == null) {
+    public XMLVariantParser(final URL variantsXMLURL) {
+        if (variantsXMLURL == null) {
             throw new IllegalArgumentException();
         }
 
-        Log.println("XMLVariantParser: Parsing: ", variantPackageURL);
+        Log.println("XMLVariantParser: Parsing: ", variantsXMLURL);
         final long time = System.currentTimeMillis();
 
         // cleanup cache (very important to remove references!)
         AdjCache.clear();
-        AdjCache.setVariantPackageURL(variantPackageURL);
+        AdjCache.setVariantPackageURL(variantsXMLURL);
 
         final RootVariants rootVariants = JAXB
-                .unmarshal(is, RootVariants.class);
+                .unmarshal(variantsXMLURL, RootVariants.class);
         variantList = rootVariants.variants;
         Log.printTimed(time, "   time: ");
     }// parse()
@@ -164,8 +165,15 @@ public class XMLVariantParser implements VariantParser {
         private static AdjCache get(final URI aURI) {
             // see if we already have the URI data cached.
             return adjCache.computeIfAbsent(aURI, adjacencyURI -> {
-                final URL url = VariantManager.getInstance()
-                        .getResource(vpURL, adjacencyURI);
+                URL url
+//                        VariantManager.getInstance()
+//                        .getResource(vpURL, adjacencyURI);
+                        ;
+                try {
+                    url = vpURL.toURI().resolve(adjacencyURI).toURL();
+                } catch (URISyntaxException | MalformedURLException e) {
+                    throw new IllegalArgumentException(e);
+                }
                 if (url == null) {
                     throw new IllegalArgumentException(String.format(
                             "Could not convert URI: [%s] from variant package: [%s]",

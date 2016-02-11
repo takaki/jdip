@@ -23,6 +23,7 @@
 package dip.world.variant;
 
 import dip.misc.Log;
+import dip.misc.Resources;
 import dip.world.variant.data.MapGraphic;
 import dip.world.variant.data.SymbolPack;
 import dip.world.variant.data.Variant;
@@ -36,10 +37,7 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLClassLoader;
+import java.net.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -121,34 +119,26 @@ public final class VariantManager {
         // for each plugin, attempt to find the "variants.xml" file inside.
         // if it does not exist, we will not load the file. If it does, we will parse it,
         // and associate the variant with the URL in a hashtable.
-        for (final URL pluginURL1 : searchForFiles(Arrays.asList(searchPaths),
-                VARIANT_EXTENSIONS)) {
-            try (final URLClassLoader urlCL = new URLClassLoader(
-                    new URL[]{pluginURL1})) {
-                final URL variantXMLURL = urlCL.findResource(VARIANT_FILE_NAME);
-                if (variantXMLURL != null) {
-                    final String pluginName = getFile(pluginURL1);
-
-                    // parse variant description file, and create hash entry of variant object -> URL
-                    try (InputStream is = new BufferedInputStream(
-                            variantXMLURL.openStream())) {
-                        final VariantParser variantParser = new XMLVariantParser(
-                                is, pluginURL1);
-                        // add variants; variants with same name (but older versions) are
-                        // replaced with same-name newer versioned variants
-                        for (final Variant variant : variantParser
-                                .getVariants()) {
-                            addVariant(variant, pluginName, pluginURL1);
-                        }
-                    }
+        // TODO: check File[] searchPaths ?
+        Resources.getResourceURLs(url -> {
+            return url.getPath().endsWith(VARIANT_FILE_NAME);
+        }).forEach(variantXMLURL -> {
+            final String pluginName = variantXMLURL.getFile(); // TODO
+            // parse variant description file, and create hash entry of variant object -> URL
+            try (InputStream is = new BufferedInputStream(
+                    variantXMLURL.openStream())) {
+                final VariantParser variantParser = new XMLVariantParser(
+                        variantXMLURL);
+                // add variants; variants with same name (but older versions) are
+                // replaced with same-name newer versioned variants
+                for (final Variant variant : variantParser.getVariants()) {
+                    addVariant(variant, pluginName, variantXMLURL);
                 }
             } catch (final IOException e) {
                 throw new UncheckedIOException(e);
             }
-        }
+        });
 
-
-        // if we are in webstart, search for variants within webstart jars
 
         // check: did we find *any* variants? Throw an exception.
         if (variantMap.isEmpty()) {
@@ -170,39 +160,38 @@ public final class VariantManager {
         // for each plugin, attempt to find the "variants.xml" file inside.
         // if it does not exist, we will not load the file. If it does, we will parse it,
         // and associate the variant with the URL in a hashtable.
-        for (final URL pluginURL : searchForFiles(Arrays.asList(searchPaths),
-                SYMBOL_EXTENSIONS)) {
-            final URLClassLoader urlCL = new URLClassLoader(
-                    new URL[]{pluginURL});
-            final URL symbolXMLURL = urlCL.findResource(SYMBOL_FILE_NAME);
+        Resources.getResourceURLs(url -> {
+            return url.getPath().endsWith(SYMBOL_FILE_NAME);
+        }).forEach(symbolXMLURL -> {
             if (symbolXMLURL != null) {
-                final String pluginName = getFile(pluginURL);
-
-                // parse variant description file, and create hash entry of variant object -> URL
+                final String pluginName = symbolXMLURL.getFile(); // FIXME
                 try (InputStream is = new BufferedInputStream(
                         symbolXMLURL.openStream())) {
-                    final SymbolParser symbolParser = new XMLSymbolParser(is,
-                            pluginURL);
+                    final SymbolParser symbolParser = new XMLSymbolParser(
+                            symbolXMLURL);
                     addSymbolPack(symbolParser.getSymbolPack(), pluginName,
-                            pluginURL);
+                            symbolXMLURL);
                 } catch (final IOException e) {
                     throw new UncheckedIOException(e);
-                } catch (final SAXException | XPathExpressionException e) {
+                } catch (final SAXException | XPathExpressionException | URISyntaxException | ParserConfigurationException e) {
                     throw new IllegalArgumentException(e);
                 }
             }
-        }
+        });
 
         // if we are in webstart, search for variants within webstart jars
 
 
         // check: did we find *any* symbol packs? Throw an exception.
-        if (symbolMap.isEmpty()) {
+        if (symbolMap.isEmpty())
+
+        {
             throw new NoVariantsException(
                     String.join("", "No SymbolPacks found on path: ",
                             Arrays.stream(searchPaths).map(File::toString)
                                     .collect(Collectors.joining("; ")), "; "));
         }
+
         Log.printTimed(ttime, "VariantManager: total parsing time: ");
     }// init()
 
@@ -390,7 +379,7 @@ public final class VariantManager {
             }
         }
 
-        // resolve & load.
+// resolve & load.
         final URLClassLoader classLoader = getClassLoader(packURL);
         return classLoader.findResource(uri.toString());
     }// getResource()
@@ -581,7 +570,7 @@ public final class VariantManager {
 
         final String name = variant.getName().toLowerCase();
 
-        // see if we are mapped to a MapRec already.
+// see if we are mapped to a MapRec already.
         final MapRec<VRec> mapVRec = variantMap
                 .computeIfAbsent(name, key -> new MapRec<>());
         // we are mapped. See if this version has been added.
@@ -625,7 +614,7 @@ public final class VariantManager {
         }
         final SPRec spRec = new SPRec(pluginURL, pluginName, sp);
         final String spName = sp.getName().toLowerCase();
-        // see if we are mapped to a MapRec already.
+// see if we are mapped to a MapRec already.
         final MapRec<SPRec> mapSPRec = symbolMap
                 .computeIfAbsent(spName, sn -> new MapRec<>());
         // we are mapped. See if this version has been added.
