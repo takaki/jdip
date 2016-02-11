@@ -74,8 +74,6 @@ public class XMLVariantParser implements VariantParser {
         final long time = System.currentTimeMillis();
 
         // cleanup cache (very important to remove references!)
-        AdjCache.clear();
-        AdjCache.setVariantPackageURL();
 
         final RootVariants rootVariants = JAXB
                 .unmarshal(variantsXMLURL, RootVariants.class);
@@ -122,21 +120,6 @@ public class XMLVariantParser implements VariantParser {
         }
 
         /**
-         * Sets the variant package URL
-         */
-        public static void setVariantPackageURL() {
-        }// setVariantPackageURL()
-
-
-        /**
-         * Clears the cache.
-         */
-        public static void clear() {
-            adjCache.clear();
-        }// clear()
-
-
-        /**
          * Gets the ProvinceData for a given adjacency URI
          */
         public static ProvinceData[] getProvinceData(final URI adjacencyURI) {
@@ -170,12 +153,8 @@ public class XMLVariantParser implements VariantParser {
                 } catch (MalformedURLException e) {
                     throw new IllegalArgumentException(e);
                 }
-
-                //Log.println("  AdjCache: not in cache: ", adjacencyURI);
-
             });
         }// get()
-
     }// inner class AdjCache
 
 
