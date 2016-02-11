@@ -30,7 +30,11 @@ import javax.xml.bind.JAXB;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +44,7 @@ import java.util.List;
 public class XMLProvinceParser implements ProvinceParser {
 
     private final List<ProvinceData> provinceList;
-    private final List<BorderData> borderList ;
+    private final List<BorderData> borderList;
 
     @XmlRootElement(name = "PROVINCES")
     public static class RootProvinces {
@@ -54,14 +58,19 @@ public class XMLProvinceParser implements ProvinceParser {
     /**
      * Create an XMLProvinceParser
      */
-    public XMLProvinceParser(final InputStream is) {
+    public XMLProvinceParser(final URL provinceXMLURL) {
         final long time = System.currentTimeMillis();
+        try (InputStream is = new BufferedInputStream(
+                provinceXMLURL.openStream())) {
+            final RootProvinces rootProvinces = JAXB
+                    .unmarshal(is, RootProvinces.class);
+            borderList = rootProvinces.borderDatas;
+            provinceList = rootProvinces.provinces;
+            Log.printTimed(time, "   province parse time: ");
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
 
-        final RootProvinces rootProvinces = JAXB
-                .unmarshal(is, RootProvinces.class);
-        borderList = rootProvinces.borderDatas;
-        provinceList = rootProvinces.provinces;
-        Log.printTimed(time, "   province parse time: ");
     }// XMLProvinceParser()
 
     /**

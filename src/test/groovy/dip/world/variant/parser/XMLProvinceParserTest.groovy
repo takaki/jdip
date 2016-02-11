@@ -22,33 +22,11 @@ import spock.lang.Specification
 
 class XMLProvinceParserTest extends Specification {
 
-    def "parse stringstream"() {
-        def input = '<PROVINCES>' +
-                '<BORDER_DEFINITIONS>' +
-                '<!-- individual test -->' +
-                '<BORDER id="seasonBorder" description="Season: Spring" season="Spring"/></BORDER_DEFINITIONS>' +
-
-                '<!-- name, abbreviation, and adjacency data for all provinces -->' +
-                '<!-- virtually identical to Judge format -->' +
-                '<PROVINCE shortname="swi" fullname="Switzerland">' +
-                '<ADJACENCY type="mv" refs="swi" />' +
-                '</PROVINCE></PROVINCES>'
-        when:
-        def instance = new XMLProvinceParser(new ByteArrayInputStream(input.getBytes()))
-        def provinceData = instance.getProvinceData()
-        def borderData = instance.getBorderData()
-        then:
-        provinceData.size() == 1
-        provinceData[0].getFullName() == "Switzerland"
-        borderData.size() == 1
-        borderData[0].getSeason() == "Spring"
-
-    }
 
     def "parse test/std_adjacency"() {
-        def stream = XMLProvinceParser.class.getResourceAsStream("/variants/test/std_adjacency.xml")
+        def url = XMLProvinceParser.class.getResource("/variants/test/std_adjacency.xml")
         when:
-        def instance = new XMLProvinceParser(stream)
+        def instance = new XMLProvinceParser(url)
         then:
         instance.getProvinceData().size() == 75
         instance.getBorderData().size() == 0
@@ -65,12 +43,15 @@ class XMLProvinceParserTest extends Specification {
     }
 
     def "parse test/std_border"() {
-        def stream = XMLProvinceParser.class.getResourceAsStream("/variants/test/std_borders.xml")
+        def url = XMLProvinceParser.class.getResource("/variants/test/std_borders.xml")
         when:
-        def instance = new XMLProvinceParser(stream)
+        def instance = new XMLProvinceParser(url)
         then:
         instance.getProvinceData().size() == 75
         instance.getBorderData().size() == 12
+
+        instance.getProvinceData()[0].getFullName() == "Adriatic Sea"
+        instance.getBorderData()[0].getSeason() == "Spring"
 
 //        when:
 //        instance.close()

@@ -40,7 +40,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import java.io.*;
-import java.net.URISyntaxException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -58,7 +58,7 @@ public class XMLSymbolParser implements SymbolParser {
      * Create an XMLSymbolParser
      */
     public XMLSymbolParser(
-            final URL symbolXMLURL) throws ParserConfigurationException, IOException, SAXException, XPathExpressionException, URISyntaxException {
+            final URL symbolXMLURL) throws ParserConfigurationException, MalformedURLException {
         // setup document builder
         final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
@@ -93,8 +93,8 @@ public class XMLSymbolParser implements SymbolParser {
         // add symbols to SymbolPack
 
         // resolve SVG URI
-        final URL url = symbolXMLURL.toURI().resolve(symbolPack.getSVGURI())
-                .toURL();
+        final URL url = new URL(symbolXMLURL,
+                symbolPack.getSVGURI().toString());
 
         // parse resolved URI into a Document
 
@@ -106,8 +106,9 @@ public class XMLSymbolParser implements SymbolParser {
                     svgDoc, XPathConstants.STRING);
 
             // get style CDATA
-            if (style != null && style.isEmpty()) {
-                throw new IOException("CDATA in <style> node is null.");
+            if (style == null) {
+                throw new IllegalArgumentException(
+                        "CDATA in <style> node is null.");
             }
             // break input into lines
             try (final BufferedReader br = new BufferedReader(
@@ -144,9 +145,13 @@ public class XMLSymbolParser implements SymbolParser {
                     }).collect(Collectors.toList());
             if (list.stream().map(Symbol::getName).distinct().count() != list
                     .size()) {
-                throw new IOException("ID is duplicated.");
+                throw new IllegalArgumentException("ID is duplicated.");
             }
             symbolPack.setSymbols(list);
+        } catch (final IOException e) {
+            throw new UncheckedIOException(e);
+        } catch (SAXException | XPathExpressionException e) {
+            throw new IllegalArgumentException(e);
         }
         Log.printTimed(time, "    time: ");
 

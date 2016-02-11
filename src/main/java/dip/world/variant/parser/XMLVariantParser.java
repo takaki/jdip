@@ -34,12 +34,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -165,31 +161,17 @@ public class XMLVariantParser implements VariantParser {
         private static AdjCache get(final URI aURI) {
             // see if we already have the URI data cached.
             return adjCache.computeIfAbsent(aURI, adjacencyURI -> {
-                URL url
-//                        VariantManager.getInstance()
-//                        .getResource(vpURL, adjacencyURI);
-                        ;
                 try {
-                    url = vpURL.toURI().resolve(adjacencyURI).toURL();
-                } catch (URISyntaxException | MalformedURLException e) {
+                    final URL url = new URL(vpURL, adjacencyURI.toString());
+                    final XMLProvinceParser pp = new XMLProvinceParser(url);
+                    return new AdjCache(Arrays.asList(pp.getProvinceData()),
+                            Arrays.asList(pp.getBorderData()));
+                } catch (MalformedURLException e) {
                     throw new IllegalArgumentException(e);
-                }
-                if (url == null) {
-                    throw new IllegalArgumentException(String.format(
-                            "Could not convert URI: [%s] from variant package: [%s]",
-                            adjacencyURI, vpURL));
                 }
 
                 //Log.println("  AdjCache: not in cache: ", adjacencyURI);
 
-                try (InputStream is = new BufferedInputStream(
-                        url.openStream())) {
-                    final XMLProvinceParser pp = new XMLProvinceParser(is);
-                    return new AdjCache(Arrays.asList(pp.getProvinceData()),
-                            Arrays.asList(pp.getBorderData()));
-                } catch (IOException e) {
-                    throw new IllegalArgumentException(e);
-                }
             });
         }// get()
 

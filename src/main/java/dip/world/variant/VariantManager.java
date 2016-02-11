@@ -32,12 +32,13 @@ import dip.world.variant.parser.SymbolParser;
 import dip.world.variant.parser.VariantParser;
 import dip.world.variant.parser.XMLSymbolParser;
 import dip.world.variant.parser.XMLVariantParser;
-import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPathExpressionException;
 import java.io.*;
-import java.net.*;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -173,7 +174,7 @@ public final class VariantManager {
                             symbolXMLURL);
                 } catch (final IOException e) {
                     throw new UncheckedIOException(e);
-                } catch (final SAXException | XPathExpressionException | URISyntaxException | ParserConfigurationException e) {
+                } catch (final ParserConfigurationException e) {
                     throw new IllegalArgumentException(e);
                 }
             }
@@ -494,30 +495,6 @@ public final class VariantManager {
 
 
     /**
-     * Searches the given paths for files ending with the given extension(s).
-     * Returns URLs.
-     */
-    private static List<URL> searchForFiles(final Collection<File> searchPaths,
-                                            final Collection<String> extensions) {
-
-        // internal error if list == null; means that
-        // searchPaths[] is not a directory!
-        return searchPaths.stream().map(File::listFiles)
-                .filter(list -> list != null).flatMap(Arrays::stream)
-                .filter(File::isFile)
-                .filter(aList -> checkFileName(aList.getPath(), extensions))
-                .map(aList -> {
-                    try {
-                        return aList.toURI().toURL();
-                    } catch (final MalformedURLException e) {
-                        throw new IllegalArgumentException(e);
-                        // do nothing; we just won't add it
-                    }
-                }).collect(Collectors.toList());
-    }// searchForFiles()
-
-
-    /**
      * Returns the URLClassLoader for a given URL, or creates a new one....
      */
 
@@ -537,14 +514,6 @@ public final class VariantManager {
         final String s = url.toString();
         return s.substring(s.lastIndexOf("/") + 1, s.length());
     }// getFile()
-
-    /**
-     * Checks if the fileName ends with an allowed extension; if so, returns true.
-     */
-    private static boolean checkFileName(final String fileName,
-                                         final Collection<String> extensions) {
-        return extensions.stream().anyMatch(fileName::endsWith);
-    }// checkFileName()
 
 
     /**
