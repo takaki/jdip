@@ -123,7 +123,40 @@ public final class VariantManager {
             // add variants; variants with same name (but older versions) are
             // replaced with same-name newer versioned variants
             for (final Variant variant : variantParser.getVariants()) {
-                addVariant(variant, pluginName, variantXMLURL);
+                if (variant == null || pluginName == null || variantXMLURL == null) {
+                    throw new IllegalArgumentException("null argument(s).");
+                }
+
+                final VRec vRec = new VRec(variantXMLURL, pluginName, variant);
+
+                final String name = variant.getName().toLowerCase();
+
+                // see if we are mapped to a MapRec already.
+                final MapRec<VRec> mapVRec = variantMap
+                        .computeIfAbsent(name, key -> new MapRec<>());
+                // we are mapped. See if this version has been added.
+                // If not, we'll add it.
+                mapVRec.add(vRec);
+
+                // map the aliases and/or check that aliases refer to the
+                // same MapRec (this prevents two different Variants with the same
+                // alias from causing a subtle error)
+                //
+                variant.getAliases().stream()
+                        .filter(alias -> alias != null && !alias.isEmpty())
+                        .map(String::toLowerCase).forEach(alias -> {
+                    final MapRec<VRec> testMapVRec = variantMap
+                            .computeIfAbsent(alias, key -> mapVRec);
+                    if (!Objects.equals(testMapVRec, mapVRec)) {
+                        // ERROR! incorrect alias map
+                        throw new IllegalArgumentException(String.format(
+                                "Two variants have a conflicting (non-unique) alias.\n" +
+                                        "VRec 1: %s\n" +
+                                        "VRec 2: %s\n" +
+                                        "(must check all variants with this name)\n",
+                                mapVRec.toString(), testMapVRec.toString()));
+                    }
+                });
             }
         });
 
@@ -446,58 +479,6 @@ public final class VariantManager {
         final String s = url.toString();
         return s.substring(s.lastIndexOf("/") + 1, s.length());
     }// getFile()
-
-
-    /**
-     * Adds a Variant. If the variant already exists with the same
-     * name, checks the version. If the same version already exists,
-     * an exception is thrown. If not, the new version is also added.
-     * If we are in Web Start, however, no exception is thrown.
-     * <p>
-     * All names and aliases are mapped to the MapRec, not the VRec.
-     * When mapping an alias, if it corresponds to a DIFFERENT
-     * MapRec, an exception is thrown (this represents a non-unique
-     * alias).
-     * <p>
-     * NOTE: names and aliases are always mapped in all lower case.
-     */
-    private void addVariant(final Variant variant, final String pluginName,
-                            final URL pluginURL) {
-        if (variant == null || pluginName == null || pluginURL == null) {
-            throw new IllegalArgumentException("null argument(s).");
-        }
-
-        final VRec vRec = new VRec(pluginURL, pluginName, variant);
-
-        final String name = variant.getName().toLowerCase();
-
-        // see if we are mapped to a MapRec already.
-        final MapRec<VRec> mapVRec = variantMap
-                .computeIfAbsent(name, key -> new MapRec<>());
-        // we are mapped. See if this version has been added.
-        // If not, we'll add it.
-        mapVRec.add(vRec);
-
-        // map the aliases and/or check that aliases refer to the
-        // same MapRec (this prevents two different Variants with the same
-        // alias from causing a subtle error)
-        //
-        variant.getAliases().stream()
-                .filter(alias -> alias != null && !alias.isEmpty())
-                .map(String::toLowerCase).forEach(alias -> {
-            final MapRec<VRec> testMapVRec = variantMap
-                    .computeIfAbsent(alias, key -> mapVRec);
-            if (!Objects.equals(testMapVRec, mapVRec)) {
-                // ERROR! incorrect alias map
-                throw new IllegalArgumentException(String.format(
-                        "Two variants have a conflicting (non-unique) alias.\n" +
-                                "VRec 1: %s\n" +
-                                "VRec 2: %s\n" +
-                                "(must check all variants with this name)\n",
-                        mapVRec.toString(), testMapVRec.toString()));
-            }
-        });
-    }// addVariant()
 
 
     /**
