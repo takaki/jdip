@@ -28,7 +28,6 @@ import dip.world.variant.data.MapGraphic;
 import dip.world.variant.data.SymbolPack;
 import dip.world.variant.data.Variant;
 import dip.world.variant.data.VersionNumber;
-import dip.world.variant.parser.SymbolParser;
 import dip.world.variant.parser.VariantParser;
 import dip.world.variant.parser.XMLSymbolParser;
 import dip.world.variant.parser.XMLVariantParser;
@@ -146,17 +145,13 @@ public final class VariantManager {
         }).forEach(symbolXMLURL -> {
             final String pluginName = symbolXMLURL.getFile(); // FIXME
             try {
-                final SymbolParser symbolParser = new XMLSymbolParser(
-                        symbolXMLURL);
-                final SymbolPack sp = symbolParser.getSymbolPack();
-                if (sp == null || pluginName == null || symbolXMLURL == null) {
-                    throw new IllegalArgumentException("Null argument(s)");
-                }
+                final SymbolPack sp = new XMLSymbolParser(symbolXMLURL)
+                        .getSymbolPack();
                 final SPRec spRec = new SPRec(symbolXMLURL, pluginName, sp);
-                final String spName = sp.getName().toLowerCase();
-// see if we are mapped to a MapRec already.
+                // see if we are mapped to a MapRec already.
                 final MapRec<SPRec> mapSPRec = symbolMap
-                        .computeIfAbsent(spName, sn -> new MapRec<>());
+                        .computeIfAbsent(sp.getName().toLowerCase(),
+                                sn -> new MapRec<>());
                 // we are mapped. See if this version has been added.
                 mapSPRec.add(spRec);
             } catch (ParserConfigurationException | MalformedURLException e) {
