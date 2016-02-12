@@ -23,13 +23,10 @@ import dip.world.Unit
 import dip.world.variant.data.VersionNumber
 import spock.lang.Specification
 
-import java.nio.file.Paths
-
 class VariantManagerTest extends Specification {
     def "initialize"() {
         setup:
-        VariantManager.getInstance().init([Paths.get(System.getProperty("user.dir"), "src/test/resources/variants").
-                                                   toFile()] as File[])
+        VariantManager.getInstance().init()
         when:
         def variant = VariantManager.getInstance().getVariant("TEST_Borders", VersionNumber.parse('1.0'))
         then:

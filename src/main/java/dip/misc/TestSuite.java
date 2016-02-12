@@ -321,7 +321,7 @@ public final class TestSuite {
             }
 
             // parse variants
-            VariantManager.getInstance().init(new File[]{defaultVariantSearchDir});
+            VariantManager.getInstance().init();
 
             // load the default variant (Standard)
             // error if it cannot be found!!

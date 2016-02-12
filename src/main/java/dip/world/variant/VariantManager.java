@@ -34,13 +34,11 @@ import dip.world.variant.parser.XMLSymbolParser;
 import dip.world.variant.parser.XMLVariantParser;
 
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 /**
@@ -101,15 +99,10 @@ public final class VariantManager {
      * <p>
      * Loaded XML may be validated if the isValidating flag is set to true.
      */
-    public synchronized void init(
-            final File[] searchPaths) throws NoVariantsException {
+    public synchronized void init() throws NoVariantsException {
         final long ttime = System.currentTimeMillis();
         final long vptime = ttime;
         Log.println("VariantManager.init()");
-
-        if (searchPaths == null || searchPaths.length == 0) {
-            throw new IllegalArgumentException();
-        }
 
         // perform cleanup
         variantMap.clear();
@@ -138,10 +131,7 @@ public final class VariantManager {
 
         // check: did we find *any* variants? Throw an exception.
         if (variantMap.isEmpty()) {
-            throw new NoVariantsException(
-                    String.join("", "No variants found on path: ",
-                            Arrays.stream(searchPaths).map(File::toString)
-                                    .collect(Collectors.joining("; ")), "; "));
+            throw new NoVariantsException("No variants found");
         }
 
         Log.printTimed(vptime, "VariantManager: variant parsing time: ");
@@ -171,10 +161,7 @@ public final class VariantManager {
 
         // check: did we find *any* symbol packs? Throw an exception.
         if (symbolMap.isEmpty()) {
-            throw new NoVariantsException(
-                    String.join("", "No SymbolPacks found on path: ",
-                            Arrays.stream(searchPaths).map(File::toString)
-                                    .collect(Collectors.joining("; ")), "; "));
+            throw new NoVariantsException("No SymbolPacks found");
         }
 
         Log.printTimed(ttime, "VariantManager: total parsing time: ");
