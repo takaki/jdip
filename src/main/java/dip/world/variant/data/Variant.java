@@ -403,23 +403,19 @@ public final class Variant implements Cloneable, Comparable<Variant> {
     /**
      * Finds the MapGraphic by name; case insensitive.
      */
-    public MapGraphic getMapGrapic(final String mgName) {
-        if (map.mapGraphics != null) {
-            return map.mapGraphics.stream()
-                    .filter(mapGraphic -> mapGraphic.getName()
-                            .equalsIgnoreCase(mgName)).findFirst().orElse(null);
-        }
-        return null;
+    public Optional<MapGraphic> getMapGrapic(final String mgName) {
+        return map.mapGraphics.stream()
+                .filter(mapGraphic -> mapGraphic.getName()
+                        .equalsIgnoreCase(mgName)).findFirst();
     }// getVariant()
 
 
     /**
      * Gets the default MapGraphic; if there is no default, returns the first one.
      */
-    public MapGraphic getDefaultMapGraphic() {
-        return map.mapGraphics != null ? map.mapGraphics.stream()
-                .filter(MapGraphic::isDefault).findFirst()
-                .orElse(map.mapGraphics.get(0)) : null;
+    public Optional<MapGraphic> getDefaultMapGraphic() {
+        return map.mapGraphics.stream()
+                .filter(MapGraphic::isDefault).findFirst();
 
     }// getDefaultMapGraphic()
 

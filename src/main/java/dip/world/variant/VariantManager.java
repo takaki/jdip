@@ -40,6 +40,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 /**
@@ -174,11 +175,10 @@ public final class VariantManager {
         // note that we need to avoid putting duplicates
         // into the array.
         // fill variant list with variants.
-        return variantMap.values().stream().distinct().map(mr -> {
-            final VRec mro = mr.getNewest();
-            assert mro != null;
-            return mro.getVariant();
-        }).sorted().collect(Collectors.toList());
+        return variantMap.values().stream().distinct().flatMap(
+                rec -> rec.getNewest().map(vrec -> Stream.of(vrec.getVariant()))
+                        .orElse(Stream.empty())).sorted()
+                .collect(Collectors.toList());
     }// getVariants()
 
     /**
@@ -189,11 +189,11 @@ public final class VariantManager {
     public synchronized List<SymbolPack> getSymbolPacks() {
         // avoid putting duplicates into the array.
         // fill variant list with variants.
-        return symbolMap.values().stream().distinct().map(mr1 -> {
-            final SPRec mro1 = mr1.getNewest();
-            assert mro1 != null;
-            return mro1.getSymbolPack();
-        }).sorted().collect(Collectors.toList());
+        return symbolMap.values().stream().distinct().flatMap(
+                rec -> rec.getNewest()
+                        .map(sprec -> Stream.of(sprec.getSymbolPack()))
+                        .orElse(Stream.empty())).sorted()
+                .collect(Collectors.toList());
     }// getSymbolPacks()
 
 
@@ -204,14 +204,10 @@ public final class VariantManager {
      * <p>
      * Note: Name is <b>not</b> case-sensitive.
      */
-    public synchronized Variant getVariant(final String name,
-                                           final VersionNumber version) {
-        final MapRec<VRec> mr = variantMap.get(name.toLowerCase());
-        if (mr != null) {
-            return mr.get(version).getVariant();
-        }
-
-        return null;
+    public synchronized Optional<Variant> getVariant(final String name,
+                                                     final VersionNumber version) {
+        return Optional.ofNullable(variantMap.get(name.toLowerCase()))
+                .flatMap(mr -> mr.get(version).map(VRec::getVariant));
     }// getVariant()
 
 
@@ -222,18 +218,11 @@ public final class VariantManager {
      * <p>
      * Note: Name is <b>not</b> case-sensitive.
      */
-    public synchronized SymbolPack getSymbolPack(final String name,
-                                                 final VersionNumber version) {
-        if (name == null) {
-            return null;
-        }
-
-        final MapRec<SPRec> mr = symbolMap.get(name.toLowerCase());
-        if (mr != null) {
-            return mr.get(version).getSymbolPack();
-        }
-
-        return null;
+    public synchronized Optional<SymbolPack> getSymbolPack(final String name,
+                                                           final VersionNumber version) {
+        return Optional.ofNullable(name).flatMap(name0 -> Optional
+                .ofNullable(symbolMap.get(name0.toLowerCase())))
+                .flatMap(mr -> mr.get(version).map(SPRec::getSymbolPack));
     }// getSymbolPack()
 
     /**
@@ -247,9 +236,9 @@ public final class VariantManager {
      * <p>
      * Thus it is assured that a SymbolPack will always be obtained.
      */
-    public synchronized SymbolPack getSymbolPack(final MapGraphic mg,
-                                                 final String symbolPackName,
-                                                 final VersionNumber symbolPackVersion) {
+    public synchronized Optional<SymbolPack> getSymbolPack(final MapGraphic mg,
+                                                           final String symbolPackName,
+                                                           final VersionNumber symbolPackVersion) {
         if (mg == null) {
             throw new IllegalArgumentException();
         }
@@ -264,20 +253,22 @@ public final class VariantManager {
             spVersion = VERSION_NEWEST;
         }
 
-        SymbolPack sp = getSymbolPack(symbolPackName, spVersion);
-        if (sp == null) {
-            sp = getSymbolPack(symbolPackName, VERSION_NEWEST);
-            if (sp == null && mg.getPreferredSymbolPackName() != null) {
-                sp = getSymbolPack(mg.getPreferredSymbolPackName(),
+        final Optional<SymbolPack> sp0 = getSymbolPack(symbolPackName,
+                spVersion);
+        if (!sp0.isPresent()) {
+            final Optional<SymbolPack> sp = getSymbolPack(symbolPackName,
+                    VERSION_NEWEST);
+            if (!sp.isPresent() && mg.getPreferredSymbolPackName() != null) {
+                return getSymbolPack(mg.getPreferredSymbolPackName(),
                         VERSION_NEWEST);
             }
 
-            if (sp == null) {
-                sp = getSymbolPacks().get(0);
+            if (!sp.isPresent()) {
+                return Optional.of(getSymbolPacks().get(0));
             }
         }
 
-        return sp;
+        return sp0;
     }// getSymbolPack()
 
 
@@ -310,9 +301,8 @@ public final class VariantManager {
      */
     public synchronized List<VersionNumber> getVariantVersions(
             final String name) {
-        final MapRec<VRec> mr = variantMap.get(name.toLowerCase());
-        return mr == null ? Collections.emptyList() : mr.getVersions();
-
+        return Optional.ofNullable(variantMap.get(name.toLowerCase()))
+                .map(MapRec::getVersions).orElse(Collections.emptyList());
     }// getVariantVersions()
 
     /**
@@ -321,37 +311,10 @@ public final class VariantManager {
      */
     public synchronized List<VersionNumber> getSymbolPackVersions(
             final String name) {
-        final MapRec<SPRec> mr = symbolMap.get(name.toLowerCase());
-        return mr == null ? Collections.emptyList() : mr.getVersions();
+        return Optional.ofNullable(symbolMap.get(name.toLowerCase()))
+                .map(MapRec::getVersions).orElse(Collections.emptyList());
 
     }// getSymbolPackVersions()
-
-
-    /**
-     * Gets a specific resource for a Variant or a SymbolPack, given a URL to
-     * the package and a reference URI. Threadsafe.
-     * <p>
-     * Typically, getResource(Variant, URI) or getResource(SymbolPack, URI) is
-     * preferred to this method.
-     */
-    public synchronized URL getResource(final URL packURL, final URI uri) {
-        // ensure we have been initialized...
-
-        // if we are in webstart, assume that this is a webstart jar.
-
-        // if URI has a defined scheme, convert to a URL (if possible) and return it.
-        if (uri.getScheme() != null) {
-            try {
-                return uri.toURL();
-            } catch (final MalformedURLException e) {
-                return null;
-            }
-        }
-
-// resolve & load.
-        final URLClassLoader classLoader = getClassLoader(packURL);
-        return classLoader.findResource(uri.toString());
-    }// getResource()
 
 
     /**
@@ -359,11 +322,11 @@ public final class VariantManager {
      * to this Variant. Null arguments are illegal. Returns
      * null if the resource cannot be resolved. Threadsafe.
      */
-    public URL getResource(final Variant variant, final URI uri) {
+    public Optional<URL> getResource(final Variant variant, final URI uri) {
         if (variant == null) {
             throw new IllegalArgumentException();
         }
-        return getResource(getVRec(variant), uri);
+        return getVRec(variant).flatMap(vRec -> getResource(vRec, uri));
     }// getResource()
 
 
@@ -372,11 +335,12 @@ public final class VariantManager {
      * to this SymbolPack. Null arguments are illegal. Returns
      * null if the resource cannot be resolved. Threadsafe.
      */
-    public URL getResource(final SymbolPack symbolPack, final URI uri) {
+    public Optional<URL> getResource(final SymbolPack symbolPack,
+                                     final URI uri) {
         if (symbolPack == null) {
             throw new IllegalArgumentException();
         }
-        return getResource(getSPRec(symbolPack), uri);
+        return getSPRec(symbolPack).flatMap(spRec -> getResource(spRec, uri));
     }// getResource()
 
 
@@ -389,67 +353,46 @@ public final class VariantManager {
      * e.g.: <code>jar:http:/the.location/ajar.zip!/</code>
      * or <code>jar:file:/c:/plugins/ajar.zip!/</code>
      */
-    public URL getVariantPackageJarURL(final Variant variant) {
-        if (variant != null) {
-            final VRec vr = getVRec(variant);
-            if (vr != null) {
-                assert vr.getURL() != null;
-
-                final URL url = vr.getURL();
-                final String txtUrl = url.toString();
-
-                if (txtUrl.startsWith("jar:")) {
-                    return url;
-                } else {
-                    final StringBuffer sb = new StringBuffer(
-                            txtUrl.length() + 8);
-                    sb.append("jar:");
-                    sb.append(txtUrl);
-                    sb.append("!/");
-
+    public Optional<URL> getVariantPackageJarURL(final Variant variant) {
+        return Optional.ofNullable(variant).flatMap(v -> getVRec(v)
+                .flatMap(vrec -> Optional.ofNullable(vrec.getURL()))
+                .flatMap(url -> {
+                    final String txtUrl = url.toString();
+                    if (txtUrl.startsWith("jar:")) {
+                        return Optional.of(url);
+                    }
                     try {
-                        return new URL(sb.toString());
+                        return Optional
+                                .of(new URL(String.format("jar:%s!/", txtUrl)));
                     } catch (final MalformedURLException e) {
                         Log.println("Could not convert ", url,
                                 " to a JAR url.");
                         Log.println("Exception: ", e);
+                        return Optional.empty();
                     }
-                }
-            }
-        }
-
-        return null;
+                }));
     }// getVariantPackageURL()
 
     /**
      * Internal getResource() implementation
      */
-    private synchronized URL getResource(final MapRecObj mro, final URI uri) {
-        // ensure we have been initialized...
-        assert mro != null;
-
-        if (uri == null) {
-            throw new IllegalArgumentException("null URI");
+    private synchronized Optional<URL> getResource(final MapRecObj mro,
+                                                   final URI uri) {
+        if (mro == null || uri == null) {
+            throw new IllegalArgumentException("null MapRecObj or URI");
         }
-
-        // if we are in webstart, assume that this is a webstart jar.
-
 
         // if URI has a defined scheme, convert to a URL (if possible) and return it.
         if (uri.getScheme() != null) {
             try {
-                return uri.toURL();
-            } catch (final MalformedURLException e) {
-                return null;
+                return Optional.of(uri.toURL());
+            } catch (final MalformedURLException ignored) {
+                return Optional.empty();
             }
         }
-
-        // find the URL
-        if (mro.getURL() != null) {
-            return getClassLoader(mro.getURL()).findResource(uri.toString());
-        }
-
-        return null;
+        return Optional.ofNullable(mro.getURL())
+                .map(getURL -> getClassLoader(getURL)
+                        .findResource(uri.toString()));
     }// getResource()
 
 
@@ -562,7 +505,7 @@ public final class VariantManager {
     /**
      * Gets the VRec associated with a Variant (via name and version)
      */
-    private VRec getVRec(final Variant v) {
+    private Optional<VRec> getVRec(final Variant v) {
         final MapRec<VRec> mapRec = variantMap.get(v.getName().toLowerCase());
         return mapRec.get(v.getVersion());
     }// getVRec()
@@ -571,7 +514,7 @@ public final class VariantManager {
     /**
      * Gets the SPRec associated with a SymbolPack (via name and version)
      */
-    private SPRec getSPRec(final SymbolPack sp) {
+    private Optional<SPRec> getSPRec(final SymbolPack sp) {
         final MapRec<SPRec> mapRec = symbolMap.get(sp.getName().toLowerCase());
         return mapRec.get(sp.getVersion());
     }// getSPRec()
@@ -622,7 +565,7 @@ public final class VariantManager {
          *
          * @param version
          */
-        public T get(final VersionNumber version) {
+        public Optional<T> get(final VersionNumber version) {
             if (version.equals(VERSION_NEWEST)) {
                 return getNewest();
             }
@@ -633,14 +576,14 @@ public final class VariantManager {
             }
             return list.stream()
                     .filter(list -> list.getVersion().equals(version))
-                    .findFirst().orElse(null);
+                    .findFirst();
 
         }// get()
 
-        public T getNewest() {
+        public Optional<T> getNewest() {
             return list.stream()
                     .sorted(Comparator.comparing(MapRecObj::getVersion))
-                    .reduce((a, b) -> b).orElse(null);
+                    .reduce((a, b) -> b);
         }
     }// inner class VMRec
 

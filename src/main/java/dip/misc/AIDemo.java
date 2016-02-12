@@ -116,7 +116,7 @@ public class AIDemo {
         // Throw an error if it isn't found!
         //
         Variant variant = VariantManager.getInstance()
-                .getVariant(VARIANT_NAME, VariantManager.VERSION_NEWEST);
+                .getVariant(VARIANT_NAME, VariantManager.VERSION_NEWEST).orElse(null);
         if (variant == null) {
             throw new IOException("Cannot find variant " + VARIANT_NAME);
         }

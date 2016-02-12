@@ -344,7 +344,7 @@ public class MapPanel extends JPanel {
         if (svgCanvas.getSVGDocument() instanceof SVGOMDocument) {
             final SVGOMDocument omd = (SVGOMDocument) svgCanvas
                     .getSVGDocument();
-            omd.setURLObject(VariantManager.getInstance().getVariantPackageJarURL(variant));
+            omd.setURLObject(VariantManager.getInstance().getVariantPackageJarURL(variant).orElse(null));
         } else {
             // shouldn't happen.
             Log.println(
@@ -891,7 +891,7 @@ public class MapPanel extends JPanel {
                     World.VariantInfo vi = world.getVariantInfo();
                     Variant variant = VariantManager.getInstance()
                             .getVariant(vi.getVariantName(),
-                                    vi.getVariantVersion());
+                                    vi.getVariantVersion()).orElse(null);
 
                     // TODO: clean this loading logic up
                     if (variant == null) {
@@ -902,10 +902,10 @@ public class MapPanel extends JPanel {
                         ErrorDialog.displayGeneral(clientFrame, e);
                     }
 
-                    MapGraphic mg = variant.getMapGrapic(vi.getMapName());
+                    MapGraphic mg = variant.getMapGrapic(vi.getMapName()).orElse(null);
                     if (mg == null) {
                         // try a default map graphic
-                        mg = variant.getDefaultMapGraphic();
+                        mg = variant.getDefaultMapGraphic().orElse(null);
 
                         if (mg == null) {
                             Exception e = new IllegalStateException(
@@ -917,7 +917,7 @@ public class MapPanel extends JPanel {
                         }
                     }
 
-                    URL url = VariantManager.getInstance().getResource(variant, mg.getURI());
+                    URL url = VariantManager.getInstance().getResource(variant, mg.getURI()).orElse(null);
                     if (url == null) {
 
                         Exception e = new IllegalStateException(
@@ -930,7 +930,7 @@ public class MapPanel extends JPanel {
 
                     symbolPack = VariantManager.getInstance()
                             .getSymbolPack(mg, vi.getSymbolPackName(),
-                                    vi.getSymbolPackVersion());
+                                    vi.getSymbolPackVersion()).orElse(null);
 
                     // actual loading starts here
                     //

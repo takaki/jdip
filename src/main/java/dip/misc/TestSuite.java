@@ -326,7 +326,7 @@ public final class TestSuite {
             // load the default variant (Standard)
             // error if it cannot be found!!
             Variant variant = VariantManager.getInstance()
-                    .getVariant(variantName, VariantManager.VERSION_NEWEST);
+                    .getVariant(variantName, VariantManager.VERSION_NEWEST).orElse(null);
             if (variant == null) {
                 throw new Exception("Cannot find variant " + variantName);
             }

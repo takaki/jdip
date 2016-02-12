@@ -593,7 +593,7 @@ public class PersistenceManager {
         if (VariantManager.getInstance().getVariant(vi.getVariantName(),
                 vi.getVariantVersion()) == null) {
             Variant variant = VariantManager.getInstance().getVariant(vi.getVariantName(),
-                    VariantManager.VERSION_NEWEST);
+                    VariantManager.VERSION_NEWEST).orElse(null);
             if (variant == null) {
                 // we don't have the variant AT ALL
                 ErrorDialog.displayVariantNotAvailable(clientFrame, vi);

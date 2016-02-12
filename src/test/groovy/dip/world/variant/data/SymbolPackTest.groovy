@@ -53,8 +53,8 @@ class SymbolPackTest extends Specification {
 //        instance.getThumbnailURI() == new URI("3")
 //        instance.getSVGURI() == new URI("4")
         instance.getSymbols() == [symbol] as Symbol[]
-        instance.getSymbol("name") == symbol
-        instance.getSymbol("foo") == null
+        instance.getSymbol("name").get() == symbol
+        instance.getSymbol("foo").orElse(null) == null
         //instance.getCSSStyles() == styles
         !instance.hasCSSStyles()
     }

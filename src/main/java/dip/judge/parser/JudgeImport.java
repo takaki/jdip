@@ -123,7 +123,7 @@ public class JudgeImport {
     private void procJudgeInput() throws IOException, PatternSyntaxException {
         // determine if we can load the variant
         Variant variant = VariantManager.getInstance()
-                .getVariant(jp.getVariantName(), VariantManager.VERSION_NEWEST);
+                .getVariant(jp.getVariantName(), VariantManager.VERSION_NEWEST).orElse(null);
         if (variant == null) {
             throw new IOException(Utils.getLocalString(JI_VARIANT_NOTFOUND,
                     jp.getVariantName()));
@@ -164,7 +164,7 @@ public class JudgeImport {
         World.VariantInfo variantInfo = world.getVariantInfo();
         variantInfo.setVariantName(variant.getName());
         variantInfo.setVariantVersion(variant.getVersion());
-        variantInfo.setMapName(variant.getDefaultMapGraphic().getName());
+        variantInfo.setMapName(variant.getDefaultMapGraphic().orElse(null).getName());
 
         // set general metadata
         GameMetadata gmd = world.getGameMetadata();

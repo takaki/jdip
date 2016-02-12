@@ -80,7 +80,7 @@ public class MapPicker extends HeaderDialog {
 
         World.VariantInfo vi = world.getVariantInfo();
         Variant variant = VariantManager.getInstance()
-                .getVariant(vi.getVariantName(), vi.getVariantVersion());
+                .getVariant(vi.getVariantName(), vi.getVariantVersion()).orElse(null);
         mauSelector = new NGDMapAndUnits();
         mauSelector.variantChanged(variant);
 

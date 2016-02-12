@@ -459,7 +459,7 @@ public class NGDMapAndUnits extends JPanel implements NewGameDialog.NGDTabPane {
         public ListItem(SymbolPack sp) {
             // resolve thumbnail URI to load icon
             URL iconURL = VariantManager.getInstance()
-                    .getResource(sp, sp.getThumbnailURI());
+                    .getResource(sp, sp.getThumbnailURI()).orElse(null);
             ImageIcon ii = null;
             if (iconURL != null) {
                 ii = new ImageIcon(iconURL);
@@ -484,7 +484,7 @@ public class NGDMapAndUnits extends JPanel implements NewGameDialog.NGDTabPane {
         public ListItem(Variant variant, MapGraphic mg) {
             // resolve thumbnail URI to load icon
             URL iconURL = VariantManager.getInstance()
-                    .getResource(variant, mg.getThumbnailURI());
+                    .getResource(variant, mg.getThumbnailURI()).orElse(null);
             ImageIcon ii = null;
             if (iconURL != null) {
                 ii = new ImageIcon(iconURL);

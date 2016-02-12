@@ -30,7 +30,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -175,9 +174,9 @@ public final class SymbolPack implements Comparable<SymbolPack> {
     /**
      * Find the Symbol with the given Name (case sensitive); returns null if name not found.
      */
-    public Symbol getSymbol(final String name) {
+    public Optional<Symbol> getSymbol(final String name) {
         return symbols.stream().filter(symbol -> symbol.getName().equals(name))
-                .findFirst().orElse(null);
+                .findFirst();
     }// getSymbol()
 
     /**
@@ -187,17 +186,6 @@ public final class SymbolPack implements Comparable<SymbolPack> {
     public int compareTo(final SymbolPack o) {
         return name.compareTo(o.name);
     }// compareTo()
-
-    /**
-     * Make a URI from a String
-     */
-    private static URI makeURI(final String uri) {
-        try {
-            return new URI(uri);
-        } catch (final URISyntaxException ignored) {
-            return null;
-        }
-    }// makeURI()
 
 
     /**
