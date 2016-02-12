@@ -122,7 +122,7 @@ public class JudgeImport {
      */
     private void procJudgeInput() throws IOException, PatternSyntaxException {
         // determine if we can load the variant
-        Variant variant = VariantManager.getInstance()
+        Variant variant = new VariantManager()
                 .getVariant(jp.getVariantName(), VariantManager.VERSION_NEWEST).orElse(null);
         if (variant == null) {
             throw new IOException(Utils.getLocalString(JI_VARIANT_NOTFOUND,

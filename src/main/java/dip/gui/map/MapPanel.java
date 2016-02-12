@@ -331,7 +331,7 @@ public class MapPanel extends JPanel {
         //
         try {
             svgCanvas.setDocument(transform(xmlDoc,
-                    VariantManager.getInstance().getVariantPackageJarURL(variant)
+                    new VariantManager().getVariantPackageJarURL(variant)
                             .toString()));
         } catch (Exception e) {
             ErrorDialog.displaySerious(clientFrame, e);
@@ -344,7 +344,7 @@ public class MapPanel extends JPanel {
         if (svgCanvas.getSVGDocument() instanceof SVGOMDocument) {
             final SVGOMDocument omd = (SVGOMDocument) svgCanvas
                     .getSVGDocument();
-            omd.setURLObject(VariantManager.getInstance().getVariantPackageJarURL(variant).orElse(null));
+            omd.setURLObject(new VariantManager().getVariantPackageJarURL(variant).orElse(null));
         } else {
             // shouldn't happen.
             Log.println(
@@ -889,7 +889,7 @@ public class MapPanel extends JPanel {
 
                     // load URL and resolve
                     World.VariantInfo vi = world.getVariantInfo();
-                    Variant variant = VariantManager.getInstance()
+                    Variant variant = new VariantManager()
                             .getVariant(vi.getVariantName(),
                                     vi.getVariantVersion()).orElse(null);
 
@@ -917,7 +917,7 @@ public class MapPanel extends JPanel {
                         }
                     }
 
-                    URL url = VariantManager.getInstance().getResource(variant, mg.getURI()).orElse(null);
+                    URL url = new VariantManager().getResource(variant, mg.getURI()).orElse(null);
                     if (url == null) {
 
                         Exception e = new IllegalStateException(
@@ -928,7 +928,7 @@ public class MapPanel extends JPanel {
                     }
 
 
-                    symbolPack = VariantManager.getInstance()
+                    symbolPack = new VariantManager()
                             .getSymbolPack(mg, vi.getSymbolPackName(),
                                     vi.getSymbolPackVersion()).orElse(null);
 

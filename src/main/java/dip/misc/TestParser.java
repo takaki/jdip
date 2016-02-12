@@ -600,12 +600,13 @@ public class TestParser {
 
         try {
             // parse variants
-            VariantManager.getInstance().init();
+            VariantManager variantManager = new VariantManager();
 
             // load the default variant (Standard)
             // error if it cannot be found!!
-            Variant variant = VariantManager.getInstance()
-                    .getVariant(variantName, VariantManager.VERSION_NEWEST).orElse(null);
+            Variant variant = variantManager
+                    .getVariant(variantName, VariantManager.VERSION_NEWEST)
+                    .orElse(null);
             if (variant == null) {
                 System.out
                         .println("ERROR: cannot find variant: " + variantName);

@@ -77,7 +77,7 @@ public class SymbolInjector {
         this.sp = sp;
 
         // resolve URL
-        URL url = VariantManager.getInstance().getResource(variant, mg.getURI()).orElse(null);
+        URL url = new VariantManager().getResource(variant, mg.getURI()).orElse(null);
         if (url == null) {
             throw new IOException();
         }

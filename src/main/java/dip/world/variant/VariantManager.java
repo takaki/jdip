@@ -83,15 +83,9 @@ public final class VariantManager {
             .asList("Symbols.zip", "Symbols.jar");
     private static final String SYMBOL_FILE_NAME = "symbols.xml";
 
-    // class variables
-    private static final VariantManager vm = new VariantManager();
-
     private final Map<String, MapRec<VRec>> variantMap;    // map of lowercased Variant names to MapRec objects (which contain VRecs)
     private final Map<String, MapRec<SPRec>> symbolMap;    // lowercase symbol names to MapRec objects (which contain SPRecs)
 
-    public static VariantManager getInstance() {
-        return vm;
-    }
 
     /**
      * Initiaize the VariantManager.
@@ -101,67 +95,17 @@ public final class VariantManager {
      * <p>
      * Loaded XML may be validated if the isValidating flag is set to true.
      */
-    public synchronized void init() throws NoVariantsException {
-
+    /**
+     * Singleton
+     */
+    public VariantManager() {
         // perform cleanup
-        variantMap.clear();
-        symbolMap.clear();
 
         // find plugins, create plugin loader
 
         // for each plugin, attempt to find the "variants.xml" file inside.
         // if it does not exist, we will not load the file. If it does, we will parse it,
         // and associate the variant with the URL in a hashtable.
-        // TODO: check File[] searchPaths ?
-//        Resources.getResourceURLs(url -> {
-//            return url.getPath().endsWith(VARIANT_FILE_NAME);
-//        }).forEach(variantXMLURL -> {
-//            final String pluginName = variantXMLURL.getFile(); // FIXME
-//            // parse variant description file, and create hash entry of variant object -> URL
-//            final VariantParser variantParser = new XMLVariantParser(
-//                    variantXMLURL);
-//            // add variants; variants with same name (but older versions) are
-//            // replaced with same-name newer versioned variants
-//            for (final Variant variant : variantParser.getVariants()) {
-//                if (variant == null || pluginName == null || variantXMLURL == null) {
-//                    throw new IllegalArgumentException("null argument(s).");
-//                }
-//
-//                final VRec vRec = new VRec(variantXMLURL, pluginName, variant);
-//
-//                final String name = variant.getName().toLowerCase();
-//
-//                // see if we are mapped to a MapRec already.
-//                final MapRec<VRec> mapVRec = variantMap
-//                        .computeIfAbsent(name, key -> new MapRec<>());
-//                // we are mapped. See if this version has been added.
-//                // If not, we'll add it.
-//                mapVRec.add(vRec);
-//
-//                // map the aliases and/or check that aliases refer to the
-//                // same MapRec (this prevents two different Variants with the same
-//                // alias from causing a subtle error)
-//                //
-//                variant.getAliases().stream()
-//                        .filter(alias -> alias != null && !alias.isEmpty())
-//                        .map(String::toLowerCase).forEach(alias -> {
-//                    final MapRec<VRec> testMapVRec = variantMap
-//                            .computeIfAbsent(alias, key -> mapVRec);
-//                    if (!Objects.equals(testMapVRec, mapVRec)) {
-//                        // ERROR! incorrect alias map
-//                        throw new IllegalArgumentException(String.format(
-//                                "Two variants have a conflicting (non-unique) alias.\n" +
-//                                        "VRec 1: %s\n" +
-//                                        "VRec 2: %s\n" +
-//                                        "(must check all variants with this name)\n",
-//                                mapVRec.toString(), testMapVRec.toString()));
-//                    }
-//                });
-//            }
-//        });
-
-
-        // // // // -- ************ --
         final Map<String, MapRec<VRec>> collect = Resources
                 .getResourceURLs(url -> {
                     return url.getPath().endsWith(VARIANT_FILE_NAME);
@@ -182,7 +126,7 @@ public final class VariantManager {
                                 .collect(MapRec<VRec>::new, MapRec::add,
                                         (mr0, mr1) -> {
                                         })));
-        variantMap.putAll(collect.entrySet().stream().flatMap(entry -> {
+        variantMap = collect.entrySet().stream().flatMap(entry -> {
             final List<String> keys = new ArrayList<>(
                     entry.getValue().getNewest().get().getVariant()
                             .getAliases());
@@ -190,12 +134,7 @@ public final class VariantManager {
             keys.add(origin);
             return keys.stream()
                     .map(key -> new Pair<>(key, collect.get(origin)));
-        }).collect(Collectors.toMap(Pair::getKey, Pair::getValue)));
-
-        // check: did we find *any* variants? Throw an exception.
-        if (variantMap.isEmpty()) {
-            throw new NoVariantsException("No variants found");
-        }
+        }).collect(Collectors.toMap(Pair::getKey, Pair::getValue));
 
 
         ///////////////// SYMBOLS /////////////////////////
@@ -206,7 +145,7 @@ public final class VariantManager {
         // if it does not exist, we will not load the file. If it does, we will parse it,
         // and associate the variant with the URL in a hashtable.
 
-        symbolMap.putAll(Resources.getResourceURLs(url -> {
+        symbolMap = Resources.getResourceURLs(url -> {
             return url.getPath().endsWith(SYMBOL_FILE_NAME);
         }).stream().map(symbolXMLURL -> {
             try { // FIXME pluginName
@@ -221,30 +160,19 @@ public final class VariantManager {
                         entry -> entry.getValue().stream()
                                 .collect(MapRec<SPRec>::new, MapRec::add,
                                         (mr0, mr1) -> {
-                                        }))));
+                                        })));
 
-//        Resources.getResourceURLs(url -> {
-//            return url.getPath().endsWith(SYMBOL_FILE_NAME);
-//        }).forEach(symbolXMLURL -> {
-//            final String pluginName = symbolXMLURL.getFile(); // FIXME
-//            try {
-//                final SymbolPack sp = new XMLSymbolParser(symbolXMLURL)
-//                        .getSymbolPack();
-//                final SPRec spRec = new SPRec(symbolXMLURL, pluginName, sp);
-//                // see if we are mapped to a MapRec already.
-//                final MapRec<SPRec> mapSPRec = symbolMap
-//                        .computeIfAbsent(sp.getName().toLowerCase(),
-//                                sn -> new MapRec<>());
-//                // we are mapped. See if this version has been added.
-//                mapSPRec.add(spRec);
-//            } catch (ParserConfigurationException | MalformedURLException e) {
-//                throw new IllegalArgumentException(e);
-//            }
-//        });
-
-        // check: did we find *any* symbol packs? Throw an exception.
-        if (symbolMap.isEmpty()) {
-            throw new NoVariantsException("No SymbolPacks found");
+        // check: did we find *any* variants? Throw an exception.
+        try {
+            if (variantMap.isEmpty()) {
+                throw new NoVariantsException("No variants found");
+            }
+            // check: did we find *any* symbol packs? Throw an exception.
+            if (symbolMap.isEmpty()) {
+                throw new NoVariantsException("No SymbolPacks found");
+            }
+        } catch (NoVariantsException e) {
+            throw new IllegalArgumentException(e);
         }
 
     }// init()
@@ -479,15 +407,6 @@ public final class VariantManager {
                 .map(getURL -> getClassLoader(getURL)
                         .findResource(uri.toString()));
     }// getResource()
-
-
-    /**
-     * Singleton
-     */
-    private VariantManager() {
-        variantMap = new HashMap<>(53);
-        symbolMap = new HashMap<>(17);
-    }// VariantManager()
 
 
     /**

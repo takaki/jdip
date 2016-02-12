@@ -26,15 +26,15 @@ import spock.lang.Specification
 class VariantManagerTest extends Specification {
     def "alias check"() {
         when:
-        VariantManager.getInstance().init()
-        def vs = VariantManager.getInstance().getVariants();
+        def vm = new VariantManager()
+        def vs = vm.getVariants();
         then:
         vs.size() == 43
         //        vs.each { v -> println "${v}" }
         // def sl = VariantManager.getInstance().getVariant("Standard", new VersionNumber(1, 0)).get()
         when:
-        def sl0 = VariantManager.getInstance().getVariant("Shift-Left", new VersionNumber(1, 0)).get()
-        def sl1 = VariantManager.getInstance().getVariant("shiftleft", new VersionNumber(1, 0)).get()
+        def sl0 = vm.getVariant("Shift-Left", new VersionNumber(1, 0)).get()
+        def sl1 = vm.getVariant("shiftleft", new VersionNumber(1, 0)).get()
         then:
         sl0 == sl1
 
@@ -42,19 +42,19 @@ class VariantManagerTest extends Specification {
 
     def "initialize"() {
         setup:
-        VariantManager.getInstance().init()
+        def vm = new VariantManager()
         when:
-        def variant = VariantManager.getInstance().getVariant("TEST_Borders", VersionNumber.parse('1.0')).get()
+        def variant = vm.getVariant("TEST_Borders", VersionNumber.parse('1.0')).get()
         then:
         variant.getName() == "TEST_Borders"
 
         when:
-        def symbol = VariantManager.getInstance().getSymbolPack("Simple", VersionNumber.parse('1.0')).get()
+        def symbol = vm.getSymbolPack("Simple", VersionNumber.parse('1.0')).get()
         then:
         symbol.getName() == "Simple"
 
         when:
-        def symbolPacks = VariantManager.getInstance().getSymbolPacks()
+        def symbolPacks = vm.getSymbolPacks()
         then:
         symbolPacks.size() == 6
         def symbol0 = symbolPacks[5]
@@ -63,7 +63,7 @@ class VariantManagerTest extends Specification {
 
 
         when:
-        def variants = VariantManager.getInstance().getVariants()
+        def variants = vm.getVariants()
         then:
         variants.size() == 43
         def variant0 = variants[18]
@@ -87,21 +87,21 @@ class VariantManagerTest extends Specification {
         variant0.getMapGraphics()[0].getThumbnailURI() == new URI("simple_thumb.png")
 
         expect:
-        VariantManager.getInstance().getSymbolPackVersions("Simple") == [VersionNumber.parse('1.0')] as VersionNumber[]
-        VariantManager.getInstance().hasVariantVersion("TEST_Borders", VersionNumber.parse('1.0'))
-        VariantManager.getInstance().hasSymbolPackVersion("Simple", VersionNumber.parse('1.0'))
-        VariantManager.getInstance().getVariantVersions("TEST_Borders") == [VersionNumber.
+        vm.getSymbolPackVersions("Simple") == [VersionNumber.parse('1.0')] as VersionNumber[]
+        vm.hasVariantVersion("TEST_Borders", VersionNumber.parse('1.0'))
+        vm.hasSymbolPackVersion("Simple", VersionNumber.parse('1.0'))
+        vm.getVariantVersions("TEST_Borders") == [VersionNumber.
                                                                                     parse('1.0')] as VersionNumber[]
-        VariantManager.getInstance().getResource(variant, new URI("a")).orElse(null) == null
-        VariantManager.getInstance().getResource(variant, new URI("jar:file:" + System.
+        vm.getResource(variant, new URI("a")).orElse(null) == null
+        vm.getResource(variant, new URI("jar:file:" + System.
                 getProperty("user.dir") + "/src/test/resources/variants/testVariants.zip!/")).
                 orElse(null) == new URL("jar:file:" + System.
                 getProperty("user.dir") + "/src/test/resources/variants/testVariants.zip!/")
-        VariantManager.getInstance().getResource(symbol, new URI("jar:file:" + System.
+        vm.getResource(symbol, new URI("jar:file:" + System.
                 getProperty("user.dir") + "/src/test/resources/variants/simpleSimbols.zip!/")).
                 orElse(null) == new URL("jar:file:" + System.
                 getProperty("user.dir") + "/src/test/resources/variants/simpleSimbols.zip!/")
-//        VariantManager.getInstance().getVariantPackageJarURL(variant) == new URL("jar:file:" + System.
+//        vm.getVariantPackageJarURL(variant) == new URL("jar:file:" + System.
 //                getProperty("user.dir") + "/src/test/resources/variants/testVariants.zip!/")
 
 
