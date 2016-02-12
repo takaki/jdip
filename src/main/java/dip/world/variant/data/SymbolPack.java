@@ -175,9 +175,9 @@ public final class SymbolPack implements Comparable<SymbolPack> {
     /**
      * Find the Symbol with the given Name (case sensitive); returns null if name not found.
      */
-    public Symbol getSymbol(final String name) {
+    public Optional<Symbol> getSymbol(final String name) {
         return symbols.stream().filter(symbol -> symbol.getName().equals(name))
-                .findFirst().orElse(null);
+                .findFirst();
     }// getSymbol()
 
     /**

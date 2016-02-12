@@ -980,7 +980,7 @@ public class MapMetadata {
         String w = el.getAttribute(ATT_WIDTH).trim();
         String h = el.getAttribute(ATT_HEIGHT).trim();
 
-        Symbol symbol = sp.getSymbol(name);
+        Symbol symbol = sp.getSymbol(name).orElse(null);
         if (symbol == null) {
             throw new MapException("Element " + el
                     .getTagName() + " symbol named \"" + name + "\" not found in symbol pack! Case sensitive.");
