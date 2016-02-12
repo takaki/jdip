@@ -112,7 +112,7 @@ public class NGDVariantSelect extends JPanel implements NewGameDialog.NGDTabPane
         if (!listModel.isEmpty()) {
             // search and find the (last) default
             // if no default exists, select the first variant.
-            Variant[] variants = VariantManager.getInstance().getVariants()
+            Variant[] variants = new VariantManager().getVariants()
                     .toArray(new Variant[0]);
             defaultVariant = null;
             for (int i = 0; i < variants.length; i++) {
@@ -186,7 +186,7 @@ public class NGDVariantSelect extends JPanel implements NewGameDialog.NGDTabPane
      * Initializes the variant list
      */
     private void makeVariantList() {
-        Variant[] variants = VariantManager.getInstance().getVariants()
+        Variant[] variants = new VariantManager().getVariants()
                 .toArray(new Variant[0]);
         listModel.clear();
         for (int i = 0; i < variants.length; i++) {
@@ -217,7 +217,7 @@ public class NGDVariantSelect extends JPanel implements NewGameDialog.NGDTabPane
             variantList.ensureIndexIsVisible(idx);
         }
 
-        Variant selectedVariant = VariantManager.getInstance().getVariants()
+        Variant selectedVariant = new VariantManager().getVariants()
                 .get(idx);
 
         // set text, depending upon selection

@@ -32,7 +32,7 @@ class VariantTest extends Specification {
         def england = new Power(["England"] as String[], "English", true)
         setup:
         instance.setName("0")
-        instance.setAliases(["a"] as String[])
+//        instance.setAliases(["a"] as String[])
 //        instance.setVersion(1.0)
         instance.setDefault(true)
         instance.setDescription("d")
@@ -52,7 +52,7 @@ class VariantTest extends Specification {
 
         expect:
         instance.getName() == "0"
-        instance.getAliases() == ["a"] as String[]
+//        instance.getAliases() == ["a"] as String[]
 //        instance.getVersion() == 1.0f
         instance.isDefault()
         instance.getDescription() == "d"

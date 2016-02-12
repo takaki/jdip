@@ -320,12 +320,10 @@ public final class TestSuite {
                         System.getProperty("user.dir"), VARIANT_DIR);
             }
 
-            // parse variants
-            VariantManager.getInstance().init();
 
             // load the default variant (Standard)
             // error if it cannot be found!!
-            Variant variant = VariantManager.getInstance()
+            Variant variant = new VariantManager()
                     .getVariant(variantName, VariantManager.VERSION_NEWEST).orElse(null);
             if (variant == null) {
                 throw new Exception("Cannot find variant " + variantName);

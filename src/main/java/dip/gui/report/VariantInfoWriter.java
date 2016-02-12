@@ -101,7 +101,7 @@ public class VariantInfoWriter {
 
         // get selcted variant
         World.VariantInfo vi = world.getVariantInfo();
-        Variant variant = VariantManager.getInstance()
+        Variant variant = new VariantManager()
                 .getVariant(vi.getVariantName(), vi.getVariantVersion()).orElse(null);
 
         // get 8 main arguments

@@ -1635,24 +1635,24 @@ public class ClientFrame extends JFrame {
      * Handle variant parsing.... and initialize the variant manager
      */
     private void initVariantManager() {
-        try {
-            VariantManager.getInstance().init();
-        } catch (dip.world.variant.NoVariantsException e) {
-            // display informative message, as a popup
-            Utils.popupError(null, Utils.getLocalString(
-                    "ClientFrame.error.novariants.dialog.title"), Utils.getText(
-                    Utils.getLocalString(
-                            "ClientFrame.error.novariants.dialog.text.location")));
-
-            // give the user a chance to set the variant dir path
-            final File file = GeneralPreferencePanel.setVariantDir(null, true);
-            if (file == null) {
-                ErrorDialog.displayFatal(this, e);
-            } else {
-                variantDirPath = file;
-                initVariantManager();
-            }
-        }
+//        try {
+            new VariantManager(); // FIXME
+//        } catch (dip.world.variant.NoVariantsException e) {
+//            // display informative message, as a popup
+//            Utils.popupError(null, Utils.getLocalString(
+//                    "ClientFrame.error.novariants.dialog.title"), Utils.getText(
+//                    Utils.getLocalString(
+//                            "ClientFrame.error.novariants.dialog.text.location")));
+//
+//            // give the user a chance to set the variant dir path
+//            final File file = GeneralPreferencePanel.setVariantDir(null, true);
+//            if (file == null) {
+//                ErrorDialog.displayFatal(this, e);
+//            } else {
+//                variantDirPath = file;
+//                initVariantManager();
+//            }
+//        }
     }// initVariantManager()
 
 }// class ClientFrame

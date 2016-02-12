@@ -38,16 +38,14 @@ class WorldFactoryTest extends Specification {
     }
 
     def "check standard map"() {
-        setup:
-        VariantManager.getInstance().init()
         when:
-        true
+        def vm = new VariantManager()
 
         then:
-        VariantManager.getInstance().getVariants().size() == 43
+        vm.getVariants().size() == 43
 
         when:
-        def variant = VariantManager.getInstance().getVariants()[18]
+        def variant = new VariantManager().getVariants()[18]
         def world = WorldFactory.getInstance().createWorld(variant)
         world.getPhaseSet()
 
