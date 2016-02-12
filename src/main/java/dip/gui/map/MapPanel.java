@@ -902,7 +902,7 @@ public class MapPanel extends JPanel {
                         ErrorDialog.displayGeneral(clientFrame, e);
                     }
 
-                    MapGraphic mg = variant.getMapGrapic(vi.getMapName());
+                    MapGraphic mg = variant.getMapGrapic(vi.getMapName()).get();
                     if (mg == null) {
                         // try a default map graphic
                         mg = variant.getDefaultMapGraphic();
