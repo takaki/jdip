@@ -28,6 +28,7 @@ import dip.world.variant.VariantManager;
 import dip.world.variant.data.MapGraphic;
 import dip.world.variant.data.Symbol;
 import dip.world.variant.data.SymbolPack;
+import dip.world.variant.data.SymbolPack.CSSStyle;
 import dip.world.variant.data.Variant;
 import dip.world.variant.parser.FastEntityResolver;
 import dip.world.variant.parser.XMLErrorHandler;
@@ -42,6 +43,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 
 
 /**
@@ -145,7 +147,7 @@ public class SymbolInjector {
             }
 
             // append data (if any)
-            mergeCSS(cdsNode, sp.getCSSStyles());
+            mergeCSS(cdsNode, sp.getCSSStyles().toArray(new CSSStyle[0]));
         }
 
         // find all <g> or <symbol> under defs with same tag names.
@@ -153,12 +155,12 @@ public class SymbolInjector {
         //
         HashMap defsElementMap = elementMapper(defs, ID_ATTRIBUTE);
 
-        final Symbol[] symbols = sp.getSymbols();
+        final List<Symbol> symbols = sp.getSymbols();
         assert (symbols != null);
-        assert (symbols.length > 0);
+        assert (symbols.size() > 0);
 
-        for (int i = 0; i < symbols.length; i++) {
-            Symbol symbol = symbols[i];
+        for (int i = 0; i < symbols.size(); i++) {
+            Symbol symbol = symbols.get(i);
             Element element = (Element) defsElementMap.get(symbol.getName());
             if (element == null) {
                 // does not exist! add

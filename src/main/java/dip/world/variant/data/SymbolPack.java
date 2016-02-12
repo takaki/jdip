@@ -129,22 +129,22 @@ public final class SymbolPack implements Comparable<SymbolPack> {
     /**
      * Get the Symbols
      */
-    public Symbol[] getSymbols() {
-        return symbols.toArray(new Symbol[symbols.size()]);
+    public List<Symbol> getSymbols() {
+        return Collections.unmodifiableList(symbols);
     }
 
     /**
      * Get the CSS Style data (if any)
      */
-    public CSSStyle[] getCSSStyles() {
-        return cssStyles.toArray(new CSSStyle[cssStyles.size()]);
+    public List<CSSStyle> getCSSStyles() {
+        return Collections.unmodifiableList(cssStyles);
     }
 
     /**
      * Do we have any CSS data?
      */
     public boolean hasCSSStyles() {
-        return cssStyles.size() > 0;
+        return !cssStyles.isEmpty();
     }
 
     /**
