@@ -354,7 +354,7 @@ public class NGDMapAndUnits extends JPanel implements NewGameDialog.NGDTabPane {
          */
         public void setItemsWithSymbolPacks() {
             SymbolPack[] symbolPacks = VariantManager.getInstance()
-                    .getSymbolPacks();
+                    .getSymbolPacks().toArray(new SymbolPack[0]);
             ListItem[] items = new ListItem[symbolPacks.length];
             for (int i = 0; i < items.length; i++) {
                 items[i] = new ListItem(symbolPacks[i]);

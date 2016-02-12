@@ -39,6 +39,7 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -168,7 +169,7 @@ public final class VariantManager {
      * exist, only the latest version is returned. The list is
      * sorted in alphabetic order.
      */
-    public synchronized Variant[] getVariants() {
+    public synchronized List<Variant> getVariants() {
         // The sorted Variant list
         // note that we need to avoid putting duplicates
         // into the array.
@@ -177,7 +178,7 @@ public final class VariantManager {
             final VRec mro = mr.getNewest();
             assert mro != null;
             return mro.getVariant();
-        }).sorted().toArray(Variant[]::new);
+        }).sorted().collect(Collectors.toList());
     }// getVariants()
 
     /**
@@ -185,14 +186,14 @@ public final class VariantManager {
      * exist, only the latest version is returned. The list is
      * sorted in alphabetic order.
      */
-    public synchronized SymbolPack[] getSymbolPacks() {
+    public synchronized List<SymbolPack> getSymbolPacks() {
         // avoid putting duplicates into the array.
         // fill variant list with variants.
         return symbolMap.values().stream().distinct().map(mr1 -> {
             final SPRec mro1 = mr1.getNewest();
             assert mro1 != null;
             return mro1.getSymbolPack();
-        }).sorted().toArray(SymbolPack[]::new);
+        }).sorted().collect(Collectors.toList());
     }// getSymbolPacks()
 
 
@@ -272,7 +273,7 @@ public final class VariantManager {
             }
 
             if (sp == null) {
-                sp = getSymbolPacks()[0];
+                sp = getSymbolPacks().get(0);
             }
         }
 
@@ -307,9 +308,10 @@ public final class VariantManager {
      * Returns the versions of a variant that are available.
      * If the variant is not found, a zero-length array is returned.
      */
-    public synchronized VersionNumber[] getVariantVersions(final String name) {
+    public synchronized List<VersionNumber> getVariantVersions(
+            final String name) {
         final MapRec<VRec> mr = variantMap.get(name.toLowerCase());
-        return mr == null ? new VersionNumber[0] : mr.getVersions();
+        return mr == null ? Collections.emptyList() : mr.getVersions();
 
     }// getVariantVersions()
 
@@ -317,10 +319,10 @@ public final class VariantManager {
      * Returns the versions of a SymbolPack that are available.
      * If the SymbolPack is not found, a zero-length array is returned.
      */
-    public synchronized VersionNumber[] getSymbolPackVersions(
+    public synchronized List<VersionNumber> getSymbolPackVersions(
             final String name) {
         final MapRec<SPRec> mr = symbolMap.get(name.toLowerCase());
-        return mr == null ? new VersionNumber[0] : mr.getVersions();
+        return mr == null ? Collections.emptyList() : mr.getVersions();
 
     }// getSymbolPackVersions()
 
@@ -608,9 +610,9 @@ public final class VariantManager {
         /**
          * Get all available versions
          */
-        public VersionNumber[] getVersions() {
+        public List<VersionNumber> getVersions() {
             return list.stream().map(T::getVersion)
-                    .toArray(VersionNumber[]::new);
+                    .collect(Collectors.toList());
         }// getVersions()
 
         /**
