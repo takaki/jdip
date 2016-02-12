@@ -23,8 +23,6 @@ import dip.world.variant.VariantManager
 import dip.world.variant.data.Variant
 import spock.lang.Specification
 
-import java.nio.file.Paths
-
 class WorldFactoryTest extends Specification {
     def "getInstance"() {
         expect:
@@ -41,10 +39,15 @@ class WorldFactoryTest extends Specification {
 
     def "check standard map"() {
         setup:
-        VariantManager.getInstance().init([Paths.get(System.getProperty("user.dir"), "src/test/resources/variants").
-                                     toFile()] as File[])
+        VariantManager.getInstance().init()
         when:
-        def variant = VariantManager.getInstance().getVariants()[7]
+        true
+
+        then:
+        VariantManager.getInstance().getVariants().size() == 43
+
+        when:
+        def variant = VariantManager.getInstance().getVariants()[18]
         def world = WorldFactory.getInstance().createWorld(variant)
         world.getPhaseSet()
 

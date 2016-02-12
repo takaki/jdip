@@ -23,7 +23,6 @@
 package dip.world.variant.parser;
 
 import dip.misc.Log;
-import dip.world.variant.VariantManager;
 import dip.world.variant.data.Symbol;
 import dip.world.variant.data.SymbolPack;
 import dip.world.variant.data.SymbolPack.CSSStyle;
@@ -41,6 +40,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import java.io.*;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -57,8 +57,8 @@ public class XMLSymbolParser implements SymbolParser {
     /**
      * Create an XMLSymbolParser
      */
-    public XMLSymbolParser(final InputStream is,
-                           final URL symbolPackURL) throws ParserConfigurationException, IOException, SAXException, XPathExpressionException {
+    public XMLSymbolParser(
+            final URL symbolXMLURL) throws ParserConfigurationException, MalformedURLException {
         // setup document builder
         final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
@@ -85,21 +85,16 @@ public class XMLSymbolParser implements SymbolParser {
         docBuilder.setErrorHandler(new XMLErrorHandler());
         FastEntityResolver.attach(docBuilder);
 
-        Log.println("XMLSymbolParser: Parsing: ", symbolPackURL);
+        Log.println("XMLSymbolParser: Parsing: ", symbolXMLURL);
         final long time = System.currentTimeMillis();
 
-        symbolPack = JAXB.unmarshal(is, SymbolPack.class);
+        symbolPack = JAXB.unmarshal(symbolXMLURL, SymbolPack.class);
         // extract symbol SVG into symbols
         // add symbols to SymbolPack
 
         // resolve SVG URI
-        final URL url = VariantManager.getInstance()
-                .getResource(symbolPackURL, symbolPack.getSVGURI());
-        if (url == null) {
-            throw new IOException(String.format(
-                    "Could not convert URI: %s from SymbolPack: %s",
-                    symbolPack.getSVGURI(), symbolPackURL));
-        }
+        final URL url = new URL(symbolXMLURL,
+                symbolPack.getSVGURI().toString());
 
         // parse resolved URI into a Document
 
@@ -111,8 +106,9 @@ public class XMLSymbolParser implements SymbolParser {
                     svgDoc, XPathConstants.STRING);
 
             // get style CDATA
-            if (style != null && style.isEmpty()) {
-                throw new IOException("CDATA in <style> node is null.");
+            if (style == null) {
+                throw new IllegalArgumentException(
+                        "CDATA in <style> node is null.");
             }
             // break input into lines
             try (final BufferedReader br = new BufferedReader(
@@ -149,9 +145,13 @@ public class XMLSymbolParser implements SymbolParser {
                     }).collect(Collectors.toList());
             if (list.stream().map(Symbol::getName).distinct().count() != list
                     .size()) {
-                throw new IOException("ID is duplicated.");
+                throw new IllegalArgumentException("ID is duplicated.");
             }
             symbolPack.setSymbols(list);
+        } catch (final IOException e) {
+            throw new UncheckedIOException(e);
+        } catch (SAXException | XPathExpressionException e) {
+            throw new IllegalArgumentException(e);
         }
         Log.printTimed(time, "    time: ");
 

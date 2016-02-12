@@ -31,7 +31,9 @@ import org.xml.sax.SAXException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.*;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -75,9 +77,11 @@ public final class Variant implements Cloneable, Comparable<Variant> {
     @XmlElement(name = "STARTINGTIME", required = true)
     private StartingTime startingTime = new StartingTime();
 
-    //
-    private List<ProvinceData> provinceData;
-    private List<BorderData> borderData;
+    private URL baseURL;
+
+    public void setBaseURL(final URL baseURL) {
+        this.baseURL = baseURL;
+    }
 
     public static class Map {
         @XmlAttribute(name = "adjacencyURI")
@@ -93,7 +97,7 @@ public final class Variant implements Cloneable, Comparable<Variant> {
         private boolean allowBCYears;
 
         @XmlAttribute(name = "turn")
-        public void setPhase(String val) {
+        public void setPhase(final String val) {
             phase = Phase.parse(val);
         }
 
@@ -124,9 +128,6 @@ public final class Variant implements Cloneable, Comparable<Variant> {
     void afterUnmarshal(final Unmarshaller unmarshaller,
                         final Object parent) throws IOException, SAXException {
         // TODO: Remove this
-        final URI uri = map.adjacencyURI;
-        setBorderData(AdjCache.getBorderData(uri)); // TODO: remove AdjCache
-        setProvinceData(AdjCache.getProvinceData(uri)); // TODO: remove AdjCache
     }
 
 
@@ -252,7 +253,14 @@ public final class Variant implements Cloneable, Comparable<Variant> {
      * The ProvinceData associated with this Variant
      */
     public ProvinceData[] getProvinceData() {
-        return provinceData.toArray(new ProvinceData[provinceData.size()]);
+        try {
+            final URL url = new URL(baseURL,
+                    map.adjacencyURI.toString());
+            return AdjCache.getProvinceData(url);// TODO: remove AdjCache
+        } catch (final MalformedURLException e) {
+            throw new IllegalArgumentException(e);
+        }
+
     }
 
     /**
@@ -266,7 +274,13 @@ public final class Variant implements Cloneable, Comparable<Variant> {
      * Gets the BorderData associated with this Variant
      */
     public BorderData[] getBorderData() {
-        return borderData.toArray(new BorderData[borderData.size()]);
+        try {
+            final URL url = new URL(baseURL,
+                    map.adjacencyURI.toString());
+            return AdjCache.getBorderData(url); // TODO: remove AdjCache
+        } catch (final MalformedURLException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     /**
@@ -342,20 +356,6 @@ public final class Variant implements Cloneable, Comparable<Variant> {
      */
     public void setMaxGameTimeYears(final int value) {
         victoryConditions.vcMaxGameTimeYears.value = value;
-    }
-
-    /**
-     * Sets the ProvinceData associated with this Variant
-     */
-    public void setProvinceData(final ProvinceData[] value) {
-        provinceData = Arrays.asList(value);
-    }
-
-    /**
-     * Sets the BorderData associated with this Variant
-     */
-    public void setBorderData(final BorderData[] value) {
-        borderData = Arrays.asList(value);
     }
 
     /**

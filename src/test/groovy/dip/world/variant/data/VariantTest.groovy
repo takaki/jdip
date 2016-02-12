@@ -40,8 +40,8 @@ class VariantTest extends Specification {
         instance.setNumSCForVictory(10)
         instance.setMaxYearsNoSCChange(20)
         instance.setMaxGameTimeYears(30)
-        instance.setProvinceData()
-        instance.setBorderData()
+        //instance.setProvinceData()
+        //instance.setBorderData()
         instance.setBCYearsAllowed(true)
 //        instance.setMapGraphics([map])
         instance.setPowers([power, england])
@@ -64,9 +64,9 @@ class VariantTest extends Specification {
         instance.getMaxYearsNoSCChange()
         instance.getMaxGameTimeYears()
 //        instance.getMapGraphics()
-        instance.getProvinceData().size() == 0
+//        instance.getProvinceData().size() == 0
 //        instance.getRuleOptionNVPs().size() == 0
-        instance.getBorderData().size() == 0
+//        instance.getBorderData().size() == 0
         instance.getBCYearsAllowed()
 //        instance.getMapGrapic("name") == map
 //        instance.getMapGrapic("hoge") == null
