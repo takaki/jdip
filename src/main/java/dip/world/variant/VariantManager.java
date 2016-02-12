@@ -100,9 +100,6 @@ public final class VariantManager {
      * Loaded XML may be validated if the isValidating flag is set to true.
      */
     public synchronized void init() throws NoVariantsException {
-        final long ttime = System.currentTimeMillis();
-        final long vptime = ttime;
-        Log.println("VariantManager.init()");
 
         // perform cleanup
         variantMap.clear();
@@ -134,7 +131,6 @@ public final class VariantManager {
             throw new NoVariantsException("No variants found");
         }
 
-        Log.printTimed(vptime, "VariantManager: variant parsing time: ");
 
         ///////////////// SYMBOLS /////////////////////////
 
@@ -164,7 +160,6 @@ public final class VariantManager {
             throw new NoVariantsException("No SymbolPacks found");
         }
 
-        Log.printTimed(ttime, "VariantManager: total parsing time: ");
     }// init()
 
 
