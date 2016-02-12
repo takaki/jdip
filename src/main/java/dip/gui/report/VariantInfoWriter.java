@@ -32,6 +32,7 @@ import dip.world.variant.data.Variant;
 
 import javax.swing.*;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.Set;
 
 
@@ -101,11 +102,11 @@ public class VariantInfoWriter {
 
         // get selcted variant
         World.VariantInfo vi = world.getVariantInfo();
-        Variant variant = VariantManager.getInstance()
+        Optional<Variant> variant = VariantManager.getInstance()
                 .getVariant(vi.getVariantName(), vi.getVariantVersion());
 
         // get 8 main arguments
-        Object[] oldArgs = variant.getHTMLSummaryArguments().toArray(new Object[0]);
+        Object[] oldArgs = variant.get().getHTMLSummaryArguments().toArray(new Object[0]); // FIXME
 
         // make extra space
         Object[] newArgs = new Object[oldArgs.length + 1];

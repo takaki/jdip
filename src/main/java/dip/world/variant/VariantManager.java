@@ -204,14 +204,13 @@ public final class VariantManager {
      * <p>
      * Note: Name is <b>not</b> case-sensitive.
      */
-    public synchronized Variant getVariant(final String name,
-                                           final VersionNumber version) {
+    public synchronized Optional<Variant> getVariant(final String name,
+                                                     final VersionNumber version) {
         final MapRec<VRec> mr = variantMap.get(name.toLowerCase());
         if (mr != null) {
-            return mr.get(version).map(VRec::getVariant).orElse(null);
+            return mr.get(version).map(VRec::getVariant);
         }
-
-        return null;
+        return Optional.empty();
     }// getVariant()
 
 
@@ -222,18 +221,17 @@ public final class VariantManager {
      * <p>
      * Note: Name is <b>not</b> case-sensitive.
      */
-    public synchronized SymbolPack getSymbolPack(final String name,
-                                                 final VersionNumber version) {
+    public synchronized Optional<SymbolPack> getSymbolPack(final String name,
+                                                           final VersionNumber version) {
         if (name == null) {
-            return null;
+            return Optional.empty();
         }
-
         final MapRec<SPRec> mr = symbolMap.get(name.toLowerCase());
         if (mr != null) {
-            return mr.get(version).map(SPRec::getSymbolPack).orElse(null);
+            return mr.get(version).map(SPRec::getSymbolPack);
         }
 
-        return null;
+        return Optional.empty();
     }// getSymbolPack()
 
     /**
@@ -247,9 +245,9 @@ public final class VariantManager {
      * <p>
      * Thus it is assured that a SymbolPack will always be obtained.
      */
-    public synchronized SymbolPack getSymbolPack(final MapGraphic mg,
-                                                 final String symbolPackName,
-                                                 final VersionNumber symbolPackVersion) {
+    public synchronized Optional<SymbolPack> getSymbolPack(final MapGraphic mg,
+                                                           final String symbolPackName,
+                                                           final VersionNumber symbolPackVersion) {
         if (mg == null) {
             throw new IllegalArgumentException();
         }
@@ -264,20 +262,22 @@ public final class VariantManager {
             spVersion = VERSION_NEWEST;
         }
 
-        SymbolPack sp = getSymbolPack(symbolPackName, spVersion);
-        if (sp == null) {
-            sp = getSymbolPack(symbolPackName, VERSION_NEWEST);
+        final Optional<SymbolPack> sp0 = getSymbolPack(symbolPackName,
+                spVersion);
+        if (!sp0.isPresent()) {
+            final Optional<SymbolPack> sp = getSymbolPack(symbolPackName,
+                    VERSION_NEWEST);
             if (sp == null && mg.getPreferredSymbolPackName() != null) {
-                sp = getSymbolPack(mg.getPreferredSymbolPackName(),
+                return getSymbolPack(mg.getPreferredSymbolPackName(),
                         VERSION_NEWEST);
             }
 
             if (sp == null) {
-                sp = getSymbolPacks().get(0);
+                return Optional.of(getSymbolPacks().get(0));
             }
         }
 
-        return sp;
+        return sp0;
     }// getSymbolPack()
 
 

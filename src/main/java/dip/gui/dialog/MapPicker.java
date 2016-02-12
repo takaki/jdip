@@ -31,6 +31,8 @@ import dip.world.variant.data.MapGraphic;
 import dip.world.variant.data.SymbolPack;
 import dip.world.variant.data.Variant;
 
+import java.util.Optional;
+
 
 /**
  * This redisplays the Map and Symbols tab from the New Game Dialog,
@@ -79,10 +81,10 @@ public class MapPicker extends HeaderDialog {
         this.world = world;
 
         World.VariantInfo vi = world.getVariantInfo();
-        Variant variant = VariantManager.getInstance()
+        Optional<Variant> variant = VariantManager.getInstance()
                 .getVariant(vi.getVariantName(), vi.getVariantVersion());
         mauSelector = new NGDMapAndUnits();
-        mauSelector.variantChanged(variant);
+        mauSelector.variantChanged(variant.get()); // FIXME
 
         // find which map graphic is selected
         originalMapName = vi.getMapName();

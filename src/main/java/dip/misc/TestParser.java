@@ -604,22 +604,22 @@ public class TestParser {
 
             // load the default variant (Standard)
             // error if it cannot be found!!
-            Variant variant = VariantManager.getInstance()
+            Optional<Variant> variant = VariantManager.getInstance()
                     .getVariant(variantName, VariantManager.VERSION_NEWEST);
-            if (variant == null) {
+            if (! variant.isPresent() ) {
                 System.out
                         .println("ERROR: cannot find variant: " + variantName);
                 System.exit(1);
             }
 
             // create the world
-            world = WorldFactory.getInstance().createWorld(variant);
+            world = WorldFactory.getInstance().createWorld(variant.get());
             turnState = world.getLastTurnState();
             map = world.getMap();
 
             // set the RuleOptions in the World (this is normally done
             // by the GUI)
-            world.setRuleOptions(RuleOptions.createFromVariant(variant));
+            world.setRuleOptions(RuleOptions.createFromVariant(variant.get()));
         } catch (Exception e) {
             System.out.println("ERROR: could not create variant.");
             System.out.println(e);

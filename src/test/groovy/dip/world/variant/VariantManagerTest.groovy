@@ -28,12 +28,12 @@ class VariantManagerTest extends Specification {
         setup:
         VariantManager.getInstance().init()
         when:
-        def variant = VariantManager.getInstance().getVariant("TEST_Borders", VersionNumber.parse('1.0'))
+        def variant = VariantManager.getInstance().getVariant("TEST_Borders", VersionNumber.parse('1.0')).get()
         then:
         variant.getName() == "TEST_Borders"
 
         when:
-        def symbol = VariantManager.getInstance().getSymbolPack("Simple", VersionNumber.parse('1.0'))
+        def symbol = VariantManager.getInstance().getSymbolPack("Simple", VersionNumber.parse('1.0')).get()
         then:
         symbol.getName() == "Simple"
 

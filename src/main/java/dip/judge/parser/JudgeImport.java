@@ -34,6 +34,7 @@ import dip.world.variant.data.Variant;
 
 import java.io.*;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.regex.PatternSyntaxException;
 
 /**
@@ -122,19 +123,19 @@ public class JudgeImport {
      */
     private void procJudgeInput() throws IOException, PatternSyntaxException {
         // determine if we can load the variant
-        Variant variant = VariantManager.getInstance()
+        Optional<Variant> variant = VariantManager.getInstance()
                 .getVariant(jp.getVariantName(), VariantManager.VERSION_NEWEST);
-        if (variant == null) {
+        if (! variant.isPresent()) {
             throw new IOException(Utils.getLocalString(JI_VARIANT_NOTFOUND,
                     jp.getVariantName()));
         }
 
         // create the world
         try {
-            world = WorldFactory.getInstance().createWorld(variant);
+            world = WorldFactory.getInstance().createWorld(variant.get());
 
             // essential! create the default rules
-            world.setRuleOptions(RuleOptions.createFromVariant(variant));
+            world.setRuleOptions(RuleOptions.createFromVariant(variant.get()));
 
         } catch (InvalidWorldException e) {
             throw new IOException(e.getMessage());
@@ -162,9 +163,9 @@ public class JudgeImport {
 
         // set essential world data (variant name, map graphic to use)
         World.VariantInfo variantInfo = world.getVariantInfo();
-        variantInfo.setVariantName(variant.getName());
-        variantInfo.setVariantVersion(variant.getVersion());
-        variantInfo.setMapName(variant.getDefaultMapGraphic().getName());
+        variantInfo.setVariantName(variant.get().getName());
+        variantInfo.setVariantVersion(variant.get().getVersion());
+        variantInfo.setMapName(variant.get().getDefaultMapGraphic().getName());
 
         // set general metadata
         GameMetadata gmd = world.getGameMetadata();
@@ -194,7 +195,7 @@ public class JudgeImport {
                     jp, position);
             world = jih.getWorld();
         } else if (jp.getType() == JudgeParser.JP_TYPE_RESULTS) {
-            procResults(jp, variant.getName());
+            procResults(jp, variant.get().getName());
         } else if (jp.getType() == JudgeParser.JP_TYPE_GAMESTART) {
             jp.prependText("Subject: " + jp.getJudgeName() + ":" + jp
                     .getGameName() + " - " +

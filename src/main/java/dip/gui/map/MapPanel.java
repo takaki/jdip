@@ -889,7 +889,7 @@ public class MapPanel extends JPanel {
 
                     // load URL and resolve
                     World.VariantInfo vi = world.getVariantInfo();
-                    Variant variant = VariantManager.getInstance()
+                    Optional<Variant> variant = VariantManager.getInstance()
                             .getVariant(vi.getVariantName(),
                                     vi.getVariantVersion());
 
@@ -902,11 +902,11 @@ public class MapPanel extends JPanel {
                         ErrorDialog.displayGeneral(clientFrame, e);
                     }
 
-                    MapGraphic mg = variant.getMapGrapic(vi.getMapName())
-                            .orElse(null);
+                    MapGraphic mg = variant.get().getMapGrapic(vi.getMapName())
+                            .orElse(null);// FIXME
                     if (mg == null) {
                         // try a default map graphic
-                        mg = variant.getDefaultMapGraphic();
+                        mg = variant.get().getDefaultMapGraphic();// FIXME
 
                         if (mg == null) {
                             Exception e = new IllegalStateException(
@@ -919,7 +919,7 @@ public class MapPanel extends JPanel {
                     }
 
                     Optional<URL> url = VariantManager.getInstance()
-                            .getResource(variant, mg.getURI());
+                            .getResource(variant.get(), mg.getURI()); // FIXME
                     if (!url.isPresent()) {
 
                         Exception e = new IllegalStateException(
@@ -932,7 +932,7 @@ public class MapPanel extends JPanel {
 
                     symbolPack = VariantManager.getInstance()
                             .getSymbolPack(mg, vi.getSymbolPackName(),
-                                    vi.getSymbolPackVersion());
+                                    vi.getSymbolPackVersion()).orElse(null); // FIXME
 
                     // actual loading starts here
                     //
@@ -943,11 +943,11 @@ public class MapPanel extends JPanel {
 
                     try {
                         SymbolInjector si = new SymbolInjector(clientFrame,
-                                variant, mg, symbolPack);
+                                variant.get(), mg, symbolPack);// FIXME
                         statusBar.incPBValue();
                         si.inject();
                         statusBar.incPBValue();
-                        setDocument(si.getDocument(), variant);
+                        setDocument(si.getDocument(), variant.get()); // FIXME
                     } catch (Exception e) {
                         statusBar
                                 .setText(Utils.getLocalString(DOC_LOAD_FAILED));

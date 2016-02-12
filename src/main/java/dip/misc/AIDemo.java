@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * This class is meant to be an illustrative example of how to use
@@ -115,7 +116,7 @@ public class AIDemo {
         // Load the variant (VARIANT_NAME) that we want.
         // Throw an error if it isn't found!
         //
-        Variant variant = VariantManager.getInstance()
+        Optional<Variant> variant = VariantManager.getInstance()
                 .getVariant(VARIANT_NAME, VariantManager.VERSION_NEWEST);
         if (variant == null) {
             throw new IOException("Cannot find variant " + VARIANT_NAME);
@@ -126,13 +127,13 @@ public class AIDemo {
         // which contains Province and Power information, as well as TurnStates,
         // which hold turn and Position information.
         //
-        World newWorld = WorldFactory.getInstance().createWorld(variant);
+        World newWorld = WorldFactory.getInstance().createWorld(variant.get());
         System.out.println("World created!");
 
         // Set the RuleOptions in the World. This sets the RuleOptions to their
         // defaults, which is usually what we want.
         //
-        newWorld.setRuleOptions(RuleOptions.createFromVariant(variant));
+        newWorld.setRuleOptions(RuleOptions.createFromVariant(variant.get()));
 
         // This is to illustrate some features of the dip.world.Map object.
         //
