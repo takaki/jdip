@@ -38,6 +38,7 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -140,24 +141,42 @@ public final class VariantManager {
         // for each plugin, attempt to find the "variants.xml" file inside.
         // if it does not exist, we will not load the file. If it does, we will parse it,
         // and associate the variant with the URL in a hashtable.
-        Resources.getResourceURLs(url -> {
+
+        symbolMap.putAll(Resources.getResourceURLs(url -> {
             return url.getPath().endsWith(SYMBOL_FILE_NAME);
-        }).forEach(symbolXMLURL -> {
-            final String pluginName = symbolXMLURL.getFile(); // FIXME
-            try {
-                final SymbolPack sp = new XMLSymbolParser(symbolXMLURL)
-                        .getSymbolPack();
-                final SPRec spRec = new SPRec(symbolXMLURL, pluginName, sp);
-                // see if we are mapped to a MapRec already.
-                final MapRec<SPRec> mapSPRec = symbolMap
-                        .computeIfAbsent(sp.getName().toLowerCase(),
-                                sn -> new MapRec<>());
-                // we are mapped. See if this version has been added.
-                mapSPRec.add(spRec);
+        }).stream().map(symbolXMLURL -> {
+            try { // FIXME pluginName
+                return new SPRec(symbolXMLURL, symbolXMLURL.getFile(),
+                        new XMLSymbolParser(symbolXMLURL).getSymbolPack());
             } catch (ParserConfigurationException | MalformedURLException e) {
                 throw new IllegalArgumentException(e);
             }
-        });
+        }).collect(Collectors.groupingBy(
+                spRec -> spRec.getSymbolPack().getName().toLowerCase()))
+                .entrySet().stream().collect(Collectors.toMap(Entry::getKey,
+                        entry -> entry.getValue().stream()
+                                .collect(MapRec<SPRec>::new, MapRec::add,
+                                        (mr0, mr1) -> {
+                                        }))));
+
+//        Resources.getResourceURLs(url -> {
+//            return url.getPath().endsWith(SYMBOL_FILE_NAME);
+//        }).forEach(symbolXMLURL -> {
+//            final String pluginName = symbolXMLURL.getFile(); // FIXME
+//            try {
+//                final SymbolPack sp = new XMLSymbolParser(symbolXMLURL)
+//                        .getSymbolPack();
+//                final SPRec spRec = new SPRec(symbolXMLURL, pluginName, sp);
+//                // see if we are mapped to a MapRec already.
+//                final MapRec<SPRec> mapSPRec = symbolMap
+//                        .computeIfAbsent(sp.getName().toLowerCase(),
+//                                sn -> new MapRec<>());
+//                // we are mapped. See if this version has been added.
+//                mapSPRec.add(spRec);
+//            } catch (ParserConfigurationException | MalformedURLException e) {
+//                throw new IllegalArgumentException(e);
+//            }
+//        });
 
         // check: did we find *any* symbol packs? Throw an exception.
         if (symbolMap.isEmpty()) {
