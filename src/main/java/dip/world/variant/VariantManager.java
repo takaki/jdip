@@ -516,7 +516,7 @@ public final class VariantManager {
         // same MapRec (this prevents two different Variants with the same
         // alias from causing a subtle error)
         //
-        Arrays.stream(variant.getAliases())
+        variant.getAliases().stream()
                 .filter(alias -> alias != null && !alias.isEmpty())
                 .map(String::toLowerCase).forEach(alias -> {
             final MapRec<VRec> testMapVRec = variantMap

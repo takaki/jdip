@@ -170,7 +170,7 @@ public class NGDStartOptions extends JPanel implements NewGameDialog.NGDTabPane 
 
         // set spinners
         setSpinner(vcSC, original.getNumSCForVictory(), 1,
-                original.getSupplyCenters().length);
+                original.getSupplyCenters().size());
         setSpinner(vcSCChange, original.getMaxYearsNoSCChange(), 0, 9999);
         setSpinner(vcDuration, original.getMaxGameTimeYears(), 0, 9999);
     }// resetData()

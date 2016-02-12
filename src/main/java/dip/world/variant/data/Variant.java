@@ -168,8 +168,8 @@ public final class Variant implements Cloneable, Comparable<Variant> {
     /**
      * The aliases (alternate names) of the variant. Never null.
      */
-    public String[] getAliases() {
-        return aliases.toArray(new String[aliases.size()]);
+    public List<String> getAliases() {
+        return Collections.unmodifiableList(aliases);
     }
 
     /**
@@ -203,22 +203,22 @@ public final class Variant implements Cloneable, Comparable<Variant> {
     /**
      * The starting InitialStates.
      */
-    public InitialState[] getInitialStates() {
-        return istate.toArray(new InitialState[istate.size()]);
+    public List<InitialState> getInitialStates() {
+        return Collections.unmodifiableList(istate);
     }
 
     /**
      * Returns Powers associated with this Variant.
      */
-    public Power[] getPowers() {
-        return powers.toArray(new Power[powers.size()]);
+    public List<Power> getPowers() {
+        return Collections.unmodifiableList(powers);
     }
 
     /**
      * Returns SupplyCenter objects
      */
-    public SupplyCenter[] getSupplyCenters() {
-        return supplyCenters.toArray(new SupplyCenter[supplyCenters.size()]);
+    public List<SupplyCenter> getSupplyCenters() {
+        return Collections.unmodifiableList(supplyCenters);
     }
 
     /**
@@ -245,8 +245,8 @@ public final class Variant implements Cloneable, Comparable<Variant> {
     /**
      * The mapGraphics associated with this Variant.
      */
-    public MapGraphic[] getMapGraphics() {
-        return map.mapGraphics.toArray(new MapGraphic[map.mapGraphics.size()]);
+    public List<MapGraphic> getMapGraphics() {
+        return map.mapGraphics;
     }
 
     /**
@@ -266,8 +266,8 @@ public final class Variant implements Cloneable, Comparable<Variant> {
     /**
      * The RuleOptions (as name-value pairs) associated with this Variant
      */
-    public NameValuePair[] getRuleOptionNVPs() {
-        return roNVPs.toArray(new NameValuePair[roNVPs.size()]);
+    public List<NameValuePair> getRuleOptionNVPs() {
+        return Collections.unmodifiableList(roNVPs);
     }
 
     /**
@@ -369,7 +369,7 @@ public final class Variant implements Cloneable, Comparable<Variant> {
     /**
      * Sets the Powers, from a List
      */
-    public void setPowers(final List powerList) {
+    public void setPowers(final List<Power> powerList) {
         powers = new ArrayList<>(powerList);
     }// setPowers()
 
@@ -444,7 +444,7 @@ public final class Variant implements Cloneable, Comparable<Variant> {
      * </ol>
      * 8 arguments are given in total.
      */
-    public Object[] getHTMLSummaryArguments() {
+    public Collection<Object> getHTMLSummaryArguments() {
         final Collection<Object> args = new ArrayList<>(8);
         args.add(name);
         args.add(description);
@@ -465,7 +465,7 @@ public final class Variant implements Cloneable, Comparable<Variant> {
                 .collect(Collectors.joining(", ")));
         args.add(String.valueOf(powers.size()));
 
-        return args.toArray(new Object[args.size()]);
+        return args;
     }// getHTMLSummaryArguments()
 
 

@@ -220,7 +220,7 @@ public class NGDVariantSelect extends JPanel implements NewGameDialog.NGDTabPane
         // set text, depending upon selection
         //
         textPanel.setText(Utils.format(description,
-                selectedVariant.getHTMLSummaryArguments()));
+                selectedVariant.getHTMLSummaryArguments().toArray(new Object[0])));
         textPanel.setCaretPosition(0);    // scroll to top
         textPanel.repaint();
 
