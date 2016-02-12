@@ -144,16 +144,23 @@ public final class VariantManager {
         Resources.getResourceURLs(url -> {
             return url.getPath().endsWith(SYMBOL_FILE_NAME);
         }).forEach(symbolXMLURL -> {
-            if (symbolXMLURL != null) {
-                final String pluginName = symbolXMLURL.getFile(); // FIXME
-                try {
-                    final SymbolParser symbolParser = new XMLSymbolParser(
-                            symbolXMLURL);
-                    addSymbolPack(symbolParser.getSymbolPack(), pluginName,
-                            symbolXMLURL);
-                } catch (ParserConfigurationException | MalformedURLException e) {
-                    throw new IllegalArgumentException(e);
+            final String pluginName = symbolXMLURL.getFile(); // FIXME
+            try {
+                final SymbolParser symbolParser = new XMLSymbolParser(
+                        symbolXMLURL);
+                final SymbolPack sp = symbolParser.getSymbolPack();
+                if (sp == null || pluginName == null || symbolXMLURL == null) {
+                    throw new IllegalArgumentException("Null argument(s)");
                 }
+                final SPRec spRec = new SPRec(symbolXMLURL, pluginName, sp);
+                final String spName = sp.getName().toLowerCase();
+// see if we are mapped to a MapRec already.
+                final MapRec<SPRec> mapSPRec = symbolMap
+                        .computeIfAbsent(spName, sn -> new MapRec<>());
+                // we are mapped. See if this version has been added.
+                mapSPRec.add(spRec);
+            } catch (ParserConfigurationException | MalformedURLException e) {
+                throw new IllegalArgumentException(e);
             }
         });
 
@@ -477,29 +484,6 @@ public final class VariantManager {
             }
         });
     }// addVariant()
-
-    /**
-     * Adds a SymbolPack. If the SymbolPack already exists with the same
-     * name, checks the version. If the same version already exists,
-     * an exception is thrown. If not, the new version is also added.
-     * <p>
-     * SymbolPacks do not support aliases.
-     * <p>
-     * Names are always mapped in all lower case.
-     */
-    private void addSymbolPack(final SymbolPack sp, final String pluginName,
-                               final URL pluginURL) {
-        if (sp == null || pluginName == null || pluginURL == null) {
-            throw new IllegalArgumentException("Null argument(s)");
-        }
-        final SPRec spRec = new SPRec(pluginURL, pluginName, sp);
-        final String spName = sp.getName().toLowerCase();
-// see if we are mapped to a MapRec already.
-        final MapRec<SPRec> mapSPRec = symbolMap
-                .computeIfAbsent(spName, sn -> new MapRec<>());
-        // we are mapped. See if this version has been added.
-        mapSPRec.add(spRec);
-    }// addSymbolPack()
 
 
     /**
