@@ -30,7 +30,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -187,17 +186,6 @@ public final class SymbolPack implements Comparable<SymbolPack> {
     public int compareTo(final SymbolPack o) {
         return name.compareTo(o.name);
     }// compareTo()
-
-    /**
-     * Make a URI from a String
-     */
-    private static URI makeURI(final String uri) {
-        try {
-            return new URI(uri);
-        } catch (final URISyntaxException ignored) {
-            return null;
-        }
-    }// makeURI()
 
 
     /**

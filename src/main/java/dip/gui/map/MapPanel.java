@@ -906,7 +906,7 @@ public class MapPanel extends JPanel {
                             .orElse(null);// FIXME
                     if (mg == null) {
                         // try a default map graphic
-                        mg = variant.get().getDefaultMapGraphic();// FIXME
+                        mg = variant.get().getDefaultMapGraphic().orElse(null);// FIXME
 
                         if (mg == null) {
                             Exception e = new IllegalStateException(

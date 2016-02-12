@@ -165,7 +165,7 @@ public class JudgeImport {
         World.VariantInfo variantInfo = world.getVariantInfo();
         variantInfo.setVariantName(variant.get().getName());
         variantInfo.setVariantVersion(variant.get().getVersion());
-        variantInfo.setMapName(variant.get().getDefaultMapGraphic().getName());
+        variantInfo.setMapName(variant.get().getDefaultMapGraphic().orElse(null).getName());
 
         // set general metadata
         GameMetadata gmd = world.getGameMetadata();
