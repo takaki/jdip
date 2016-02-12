@@ -150,12 +150,12 @@ public final class SymbolPack implements Comparable<SymbolPack> {
     /**
      * Set the CSS Style data
      */
-    public void setCSSStyles(final CSSStyle[] styles) {
+    public void setCSSStyles(final List<CSSStyle> styles) {
         if (styles == null) {
             throw new IllegalArgumentException();
         }
 
-        cssStyles = Arrays.asList(styles);
+        cssStyles = new ArrayList<>(styles);
     }// setCSSStyles()
 
     /**
@@ -168,7 +168,7 @@ public final class SymbolPack implements Comparable<SymbolPack> {
     /**
      * Set the Symbols
      */
-    public void setSymbols(final List list) {
+    public void setSymbols(final List<Symbol> list) {
         symbols = new ArrayList<>(list);
     }
 

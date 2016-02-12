@@ -127,7 +127,7 @@ public class XMLSymbolParser implements SymbolParser {
                             }
                             // create CSS Style
                             return new CSSStyle(tokens[0], tokens[1]);
-                        }).toArray(CSSStyle[]::new));
+                        }).collect(Collectors.toList()));
             }
 
 
