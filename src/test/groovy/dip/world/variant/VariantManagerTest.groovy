@@ -76,12 +76,12 @@ class VariantManagerTest extends Specification {
         VariantManager.getInstance().hasSymbolPackVersion("Simple", VersionNumber.parse('1.0'))
         VariantManager.getInstance().getVariantVersions("TEST_Borders") == [VersionNumber.
                                                                                     parse('1.0')] as VersionNumber[]
-        VariantManager.getInstance().getResource(variant, new URI("a")) == null
+        VariantManager.getInstance().getResource(variant, new URI("a")).orElse(null) == null
         VariantManager.getInstance().getResource(variant, new URI("jar:file:" + System.
-                getProperty("user.dir") + "/src/test/resources/variants/testVariants.zip!/")) == new URL("jar:file:" + System.
+                getProperty("user.dir") + "/src/test/resources/variants/testVariants.zip!/")).orElse(null) == new URL("jar:file:" + System.
                 getProperty("user.dir") + "/src/test/resources/variants/testVariants.zip!/")
         VariantManager.getInstance().getResource(symbol, new URI("jar:file:" + System.
-                getProperty("user.dir") + "/src/test/resources/variants/simpleSimbols.zip!/")) == new URL("jar:file:" + System.
+                getProperty("user.dir") + "/src/test/resources/variants/simpleSimbols.zip!/")).orElse(null) == new URL("jar:file:" + System.
                 getProperty("user.dir") + "/src/test/resources/variants/simpleSimbols.zip!/")
 //        VariantManager.getInstance().getVariantPackageJarURL(variant) == new URL("jar:file:" + System.
 //                getProperty("user.dir") + "/src/test/resources/variants/testVariants.zip!/")

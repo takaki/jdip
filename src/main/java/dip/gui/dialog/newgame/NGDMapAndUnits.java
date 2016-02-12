@@ -38,6 +38,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.net.URL;
+import java.util.Optional;
 
 
 /**
@@ -458,11 +459,11 @@ public class NGDMapAndUnits extends JPanel implements NewGameDialog.NGDTabPane {
          */
         public ListItem(SymbolPack sp) {
             // resolve thumbnail URI to load icon
-            URL iconURL = VariantManager.getInstance()
+            Optional<URL> iconURL = VariantManager.getInstance()
                     .getResource(sp, sp.getThumbnailURI());
             ImageIcon ii = null;
-            if (iconURL != null) {
-                ii = new ImageIcon(iconURL);
+            if (iconURL.isPresent()) {
+                ii = new ImageIcon(iconURL.get());
                 if (ii != null) {
                     if (ii.getIconWidth() > MAX_ICON_WIDTH || ii
                             .getIconHeight() > MAX_ICON_HEIGHT) {
@@ -483,11 +484,11 @@ public class NGDMapAndUnits extends JPanel implements NewGameDialog.NGDTabPane {
          */
         public ListItem(Variant variant, MapGraphic mg) {
             // resolve thumbnail URI to load icon
-            URL iconURL = VariantManager.getInstance()
+            Optional<URL> iconURL = VariantManager.getInstance()
                     .getResource(variant, mg.getThumbnailURI());
             ImageIcon ii = null;
-            if (iconURL != null) {
-                ii = new ImageIcon(iconURL);
+            if (iconURL.isPresent()) {
+                ii = new ImageIcon(iconURL.get());
                 if (ii != null) {
                     if (ii.getIconWidth() > MAX_ICON_WIDTH || ii
                             .getIconHeight() > MAX_ICON_HEIGHT) {

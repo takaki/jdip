@@ -60,6 +60,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URL;
+import java.util.Optional;
 
 /**
  * The Main Map display component.
@@ -166,8 +167,7 @@ public class MapPanel extends JPanel {
 
         // determine if the platform supports custom cursors.
         if (!d.equals(new Dimension(0, 0)) && (colors != 0)) {
-            ImageIcon ii = Utils
-                    .getImageIcon("common/cursors/nodrop.gif");
+            ImageIcon ii = Utils.getImageIcon("common/cursors/nodrop.gif");
             if (ii == null) {
                 // error loading cursor! just use default cursor.
                 // this may not be the best cursor to use.
@@ -330,9 +330,8 @@ public class MapPanel extends JPanel {
         // subtle bugs emerge if we do not.
         //
         try {
-            svgCanvas.setDocument(transform(xmlDoc,
-                    VariantManager.getInstance().getVariantPackageJarURL(variant)
-                            .toString()));
+            svgCanvas.setDocument(transform(xmlDoc, VariantManager.getInstance()
+                    .getVariantPackageJarURL(variant).orElse(null).toString())); // FIXME
         } catch (Exception e) {
             ErrorDialog.displaySerious(clientFrame, e);
         }
@@ -344,7 +343,8 @@ public class MapPanel extends JPanel {
         if (svgCanvas.getSVGDocument() instanceof SVGOMDocument) {
             final SVGOMDocument omd = (SVGOMDocument) svgCanvas
                     .getSVGDocument();
-            omd.setURLObject(VariantManager.getInstance().getVariantPackageJarURL(variant));
+            omd.setURLObject(VariantManager.getInstance()
+                    .getVariantPackageJarURL(variant).orElse(null)); // FIXME
         } else {
             // shouldn't happen.
             Log.println(
@@ -902,7 +902,8 @@ public class MapPanel extends JPanel {
                         ErrorDialog.displayGeneral(clientFrame, e);
                     }
 
-                    MapGraphic mg = variant.getMapGrapic(vi.getMapName()).orElse(null);
+                    MapGraphic mg = variant.getMapGrapic(vi.getMapName())
+                            .orElse(null);
                     if (mg == null) {
                         // try a default map graphic
                         mg = variant.getDefaultMapGraphic();
@@ -917,8 +918,9 @@ public class MapPanel extends JPanel {
                         }
                     }
 
-                    URL url = VariantManager.getInstance().getResource(variant, mg.getURI());
-                    if (url == null) {
+                    Optional<URL> url = VariantManager.getInstance()
+                            .getResource(variant, mg.getURI());
+                    if (!url.isPresent()) {
 
                         Exception e = new IllegalStateException(
                                 Utils.getLocalString(MP_VARIANT_NOT_FOUND,

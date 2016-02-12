@@ -44,6 +44,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -77,15 +78,15 @@ public class SymbolInjector {
         this.sp = sp;
 
         // resolve URL
-        URL url = VariantManager.getInstance().getResource(variant, mg.getURI());
-        if (url == null) {
+        Optional<URL> url = VariantManager.getInstance().getResource(variant, mg.getURI());
+        if (! url.isPresent()) {
             throw new IOException();
         }
 
         // load URL into DOM Document
         InputStream is = null;
         try {
-            is = new BufferedInputStream(url.openStream());
+            is = new BufferedInputStream(url.get().openStream());
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             dbf.setNamespaceAware(true);    // essential!
             dbf.setValidating(cf.getValidating());
