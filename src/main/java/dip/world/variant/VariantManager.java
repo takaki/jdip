@@ -72,15 +72,7 @@ public final class VariantManager {
     public static final VersionNumber VERSION_NEWEST = new VersionNumber(-1000,
             0);
 
-    // variant constants
-    private static final List<String> VARIANT_EXTENSIONS = Arrays
-            .asList("Variant.zip", "Variants.zip", "Variant.jar",
-                    "Variants.jar");
     private static final String VARIANT_FILE_NAME = "variants.xml";
-
-    // symbol constants
-    private static final List<String> SYMBOL_EXTENSIONS = Arrays
-            .asList("Symbols.zip", "Symbols.jar");
     private static final String SYMBOL_FILE_NAME = "symbols.xml";
 
     private final Map<String, MapRec<VRec>> variantMap;    // map of lowercased Variant names to MapRec objects (which contain VRecs)
@@ -106,6 +98,7 @@ public final class VariantManager {
         // for each plugin, attempt to find the "variants.xml" file inside.
         // if it does not exist, we will not load the file. If it does, we will parse it,
         // and associate the variant with the URL in a hashtable.
+
         final Map<String, MapRec<VRec>> collect = Resources
                 .getResourceURLs(url -> {
                     return url.getPath().endsWith(VARIANT_FILE_NAME);
@@ -137,13 +130,7 @@ public final class VariantManager {
         }).collect(Collectors.toMap(Pair::getKey, Pair::getValue));
 
 
-        ///////////////// SYMBOLS /////////////////////////
-
         // now, parse symbol packs
-
-        // for each plugin, attempt to find the "variants.xml" file inside.
-        // if it does not exist, we will not load the file. If it does, we will parse it,
-        // and associate the variant with the URL in a hashtable.
 
         symbolMap = Resources.getResourceURLs(url -> {
             return url.getPath().endsWith(SYMBOL_FILE_NAME);
@@ -161,22 +148,7 @@ public final class VariantManager {
                                 .collect(MapRec<SPRec>::new, MapRec::add,
                                         (mr0, mr1) -> {
                                         })));
-
-        // check: did we find *any* variants? Throw an exception.
-        try {
-            if (variantMap.isEmpty()) {
-                throw new NoVariantsException("No variants found");
-            }
-            // check: did we find *any* symbol packs? Throw an exception.
-            if (symbolMap.isEmpty()) {
-                throw new NoVariantsException("No SymbolPacks found");
-            }
-        } catch (NoVariantsException e) {
-            throw new IllegalArgumentException(e);
-        }
-
-    }// init()
-
+    }
 
     /**
      * Returns the known Variants. If multiple versions of a Variant
