@@ -53,7 +53,9 @@ public final class Variant implements Cloneable, Comparable<Variant> {
     @XmlAttribute(name = "version", required = true)
     private String version;
 
-    private List<String> aliases = Collections.emptyList();
+    //    private List<String> aliases = Collections.emptyList();
+    @XmlAttribute(name = "aliases", required = true)
+    private String aliases = "";
 
     private String description;
     @XmlElement(name = "VICTORYCONDITIONS", required = true)
@@ -169,7 +171,9 @@ public final class Variant implements Cloneable, Comparable<Variant> {
      * The aliases (alternate names) of the variant. Never null.
      */
     public List<String> getAliases() {
-        return Collections.unmodifiableList(aliases);
+        return aliases.isEmpty() ? Collections.emptyList() : Arrays
+                .asList(Utils.parseCSV(aliases));
+        //return Collections.unmodifiableList(aliases);
     }
 
     /**
@@ -300,18 +304,17 @@ public final class Variant implements Cloneable, Comparable<Variant> {
     /**
      * Set the alises. Null is not allowed.
      */
-    public void setAliases(final String[] aliases) {
-        if (aliases == null) {
-            throw new IllegalArgumentException();
-        }
-        this.aliases = Arrays.asList(aliases);
-    }
+//    public void setAliases(final String[] aliases) {
+//        if (aliases == null) {
+//            throw new IllegalArgumentException();
+//        }
+//        this.aliases = Arrays.asList(aliases);
+//    }
 
-    @XmlAttribute(name = "aliases", required = true)
-    public void setAliases(final String csv) {
-        final String[] aliases = Utils.parseCSV(csv);
-        setAliases(aliases);
-    }
+//    public void setAliases(final String csv) {
+//        final String[] aliases = Utils.parseCSV(csv);
+//        setAliases(aliases);
+//    }
 
     /**
      * Set if this variant is the default variant.
@@ -414,8 +417,8 @@ public final class Variant implements Cloneable, Comparable<Variant> {
      * Gets the default MapGraphic; if there is no default, returns the first one.
      */
     public Optional<MapGraphic> getDefaultMapGraphic() {
-        return map.mapGraphics.stream()
-                .filter(MapGraphic::isDefault).findFirst();
+        return map.mapGraphics.stream().filter(MapGraphic::isDefault)
+                .findFirst();
 
     }// getDefaultMapGraphic()
 

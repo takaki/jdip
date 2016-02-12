@@ -186,10 +186,11 @@ public final class VariantManager {
             final List<String> keys = new ArrayList<>(
                     entry.getValue().getNewest().get().getVariant()
                             .getAliases());
-            keys.add(entry.getKey());
-            return keys.stream().map(key -> new Pair<>(key, collect.get(key)));
-        }).collect(Collectors
-                .toMap(Pair::getKey, Pair::getValue)));
+            final String origin = entry.getKey();
+            keys.add(origin);
+            return keys.stream()
+                    .map(key -> new Pair<>(key, collect.get(origin)));
+        }).collect(Collectors.toMap(Pair::getKey, Pair::getValue)));
 
         // check: did we find *any* variants? Throw an exception.
         if (variantMap.isEmpty()) {
