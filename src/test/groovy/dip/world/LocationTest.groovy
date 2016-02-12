@@ -22,7 +22,7 @@ import dip.order.OrderException
 import spock.lang.Specification
 
 class LocationTest extends Specification {
-    def spain = new Province("Spain", ["spa"] as String[], 0, false)
+    def spain = new Province("Spain", ["spa"], 0, false)
     def spa_sc = new Location(spain, Coast.SOUTH)
     def spa_sc0 = new Location(spain, Coast.UNDEFINED)
 
@@ -32,9 +32,9 @@ class LocationTest extends Specification {
         then:
         thrown(IllegalArgumentException)
         where:
-        province                                       | coast
-        null                                           | Coast.EAST
-        new Province("S", ["s"] as String[], 0, false) | null
+        province                           | coast
+        null                               | Coast.EAST
+        new Province("S", ["s"], 0, false) | null
     }
 
     def "instance"() {

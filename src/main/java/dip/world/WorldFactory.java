@@ -97,7 +97,7 @@ public class WorldFactory {
             ProvinceData provinceData = provinceDataArray[i];
 
             // get short names
-            String[] shortNames = provinceData.getShortNames();
+            List<String> shortNames = provinceData.getShortNames();
 
             // verify uniqueness of names
             if (!isUnique(provNameMap, provinceData.getFullName(),
@@ -129,10 +129,10 @@ public class WorldFactory {
         for (int i = 0; i < provinceDataArray.length; i++) {
             ProvinceData provinceData = provinceDataArray[i];
 
-            String[] adjProvinceTypes = provinceData.getAdjacentProvinceTypes();
-            String[] adjProvinceNames = provinceData.getAdjacentProvinceNames();
+            List<String> adjProvinceTypes = provinceData.getAdjacentProvinceTypes();
+            List<String> adjProvinceNames = provinceData.getAdjacentProvinceNames();
 
-            if (adjProvinceTypes.length != adjProvinceNames.length) {
+            if (adjProvinceTypes.size() != adjProvinceNames.size()) {
                 throw new InvalidWorldException(
                         Utils.getLocalString(WF_PROV_MISMATCH));
             }
@@ -145,16 +145,16 @@ public class WorldFactory {
             Province.Adjacency adjacency = province.getAdjacency();
 
             // parse adjacency data, then set it for this province
-            for (int adjIdx = 0; adjIdx < adjProvinceTypes.length; adjIdx++) {
+            for (int adjIdx = 0; adjIdx < adjProvinceTypes.size(); adjIdx++) {
                 // get the coast type.
-                Coast coast = Coast.parse(adjProvinceTypes[adjIdx]);
+                Coast coast = Coast.parse(adjProvinceTypes.get(adjIdx));
 
                 // clear the location list (we re-use it)
                 locationList.clear();
 
                 // parse provinces, making locations for each
                 // provinces must be seperated by " " or "," or ";" or ":"
-                String input = adjProvinceNames[adjIdx].trim().toLowerCase();
+                String input = adjProvinceNames.get(adjIdx).trim().toLowerCase();
                 StringTokenizer st = new StringTokenizer(input, " ,;:\t\n\r",
                         false);
                 while (st.hasMoreTokens()) {
@@ -213,14 +213,15 @@ public class WorldFactory {
                 Province province = (Province) provNameMap
                         .get(provinceData.getFullName().toLowerCase());
 
-                String[] borderNames = provinceData.getBorders();
-                for (int bIdx = 0; bIdx < borderNames.length; bIdx++) {
-                    Border border = (Border) borderMap.get(borderNames[bIdx]);
+                List<String> borderNames = provinceData.getBorders();
+                for (int bIdx = 0; bIdx < borderNames.size(); bIdx++) {
+                    Border border = (Border) borderMap.get(
+                            borderNames.get(bIdx));
                     if (border == null) {
                         throw new InvalidWorldException(
                                 Utils.getLocalString(WF_BAD_BORDER_NAME,
                                         province.getShortName(),
-                                        borderNames[bIdx]));
+                                        borderNames.get(bIdx)));
                     }
 
                     list.add(border);
@@ -468,13 +469,13 @@ public class WorldFactory {
 
     // verify all names are unique. (hasn't yet been added to the map)
     private boolean isUnique(HashMap provNameMap, String fullname,
-                             String[] shortnames) {
+                             List<String> shortnames) {
         if (provNameMap.get(fullname.toLowerCase()) != null) {
             return false;
         }
 
-        for (int i = 0; i < shortnames.length; i++) {
-            if (provNameMap.get(shortnames[i].toLowerCase()) != null) {
+        for (int i = 0; i < shortnames.size(); i++) {
+            if (provNameMap.get(shortnames.get(i).toLowerCase()) != null) {
                 return false;
             }
         }

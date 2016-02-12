@@ -24,6 +24,7 @@ package dip.order;
 import dip.misc.Log;
 import dip.world.*;
 
+import java.util.Collections;
 import java.util.StringTokenizer;
 
 /**
@@ -707,11 +708,12 @@ public class OrderFormat {
                                           OrderFactory of) {
         // this is about the ONLY time Province or Power objects are
         // created using 'new'
-        Province prov1 = new Province("Livonia", new String[]{"lvn"}, 0, false);
-        Province prov2 = new Province("St. Petersburg", new String[]{"stp"}, 0,
-                false);
-        Province prov3 = new Province("Golf of Bothnia", new String[]{"gob"}, 0,
-                false);
+        Province prov1 = new Province("Livonia",
+                Collections.singletonList("lvn"), 0, false);
+        Province prov2 = new Province("St. Petersburg",
+                Collections.singletonList("stp"), 0, false);
+        Province prov3 = new Province("Golf of Bothnia",
+                Collections.singletonList("gob"), 0, false);
 
         Power power1 = new Power(new String[]{"Russia"}, "Russian", true);
         Power power2 = new Power(new String[]{"German"}, "German", true);

@@ -26,6 +26,7 @@ import dip.order.Order;
 import dip.world.Unit.Type;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -193,13 +194,13 @@ public class Province implements Serializable, Comparable<Province> {
      * These are created by a WorldFactory, or through de-serialization.
      * Null names are not allowed. At least one shortName is required.
      */
-    public Province(final String fullName, final String[] shortNames,
+    public Province(final String fullName, final List<String> shortNames,
                     final int index, final boolean isConvoyableCoast) {
         if (fullName == null || shortNames == null) {
             throw new IllegalArgumentException("null full or short name(s)");
         }
 
-        if (shortNames.length < 1) {
+        if (shortNames.size() < 1) {
             throw new IllegalArgumentException(
                     "at least one shortName required");
         }
@@ -209,7 +210,7 @@ public class Province implements Serializable, Comparable<Province> {
         }
 
         this.fullName = fullName;
-        this.shortNames = Arrays.asList(shortNames);
+        this.shortNames = new ArrayList<>(shortNames);
         this.index = index;
         this.isConvoyableCoast = isConvoyableCoast;
         adjacency = new Adjacency();

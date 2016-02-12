@@ -101,22 +101,22 @@ public final class ProvinceData {
     /**
      * Short (abbreviated) name of Province; (e.g., "mao" or "mid-atlantic")
      */
-    public String[] getShortNames() {
-        return shortNames.toArray(new String[shortNames.size()]);
+    public List<String> getShortNames() {
+        return Collections.unmodifiableList(shortNames);
     }
 
     /**
      * Province Adjacency array.
      */
-    public String[] getAdjacentProvinceNames() {
-        return adj_provinces.toArray(new String[adj_provinces.size()]);
+    public List<String> getAdjacentProvinceNames() {
+        return Collections.unmodifiableList(adj_provinces);
     }
 
     /**
      * Prvoince Adjacency type array.
      */
-    public String[] getAdjacentProvinceTypes() {
-        return adj_types.toArray(new String[adj_types.size()]);
+    public List<String> getAdjacentProvinceTypes() {
+        return Collections.unmodifiableList(adj_types);
     }
 
     /**
@@ -140,8 +140,8 @@ public final class ProvinceData {
     /**
      * Gets the Border ID names for this province (if any)
      */
-    public String[] getBorders() {
-        return borders.toArray(new String[borders.size()]);
+    public List<String> getBorders() {
+        return Collections.unmodifiableList(borders);
     }
 
 

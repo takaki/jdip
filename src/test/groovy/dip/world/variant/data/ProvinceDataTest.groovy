@@ -34,7 +34,7 @@ class ProvinceDataTest extends Specification {
 
         expect:
         instance.getFullName() == null
-        instance.getShortNames().length == 0
+        instance.getShortNames().size() == 0
 //        instance.getAdjacentProvinceNames() == ["1"] as String[]
 //        instance.getAdjacentProvinceTypes() == ["2"] as String[]
         ! instance.getConvoyableCoast()
