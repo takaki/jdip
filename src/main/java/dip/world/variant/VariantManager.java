@@ -258,12 +258,12 @@ public final class VariantManager {
         if (!sp0.isPresent()) {
             final Optional<SymbolPack> sp = getSymbolPack(symbolPackName,
                     VERSION_NEWEST);
-            if (sp == null && mg.getPreferredSymbolPackName() != null) {
+            if (!sp.isPresent() && mg.getPreferredSymbolPackName() != null) {
                 return getSymbolPack(mg.getPreferredSymbolPackName(),
                         VERSION_NEWEST);
             }
 
-            if (sp == null) {
+            if (!sp.isPresent()) {
                 return Optional.of(getSymbolPacks().get(0));
             }
         }
@@ -301,9 +301,8 @@ public final class VariantManager {
      */
     public synchronized List<VersionNumber> getVariantVersions(
             final String name) {
-        final MapRec<VRec> mr = variantMap.get(name.toLowerCase());
-        return mr == null ? Collections.emptyList() : mr.getVersions();
-
+        return Optional.ofNullable(variantMap.get(name.toLowerCase()))
+                .map(MapRec::getVersions).orElse(Collections.emptyList());
     }// getVariantVersions()
 
     /**
@@ -312,8 +311,8 @@ public final class VariantManager {
      */
     public synchronized List<VersionNumber> getSymbolPackVersions(
             final String name) {
-        final MapRec<SPRec> mr = symbolMap.get(name.toLowerCase());
-        return mr == null ? Collections.emptyList() : mr.getVersions();
+        return Optional.ofNullable(symbolMap.get(name.toLowerCase()))
+                .map(MapRec::getVersions).orElse(Collections.emptyList());
 
     }// getSymbolPackVersions()
 
