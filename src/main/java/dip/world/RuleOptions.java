@@ -30,6 +30,7 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -411,22 +412,22 @@ public class RuleOptions implements Serializable {
         Class clazz = ruleOpts.getClass();
 
         // look up all name-value pairs via reflection.
-        Variant.NameValuePair[] nvps = variant.getRuleOptionNVPs();
-        for (int i = 0; i < nvps.length; i++) {
+        List<Variant.NameValuePair> nvps = variant.getRuleOptionNVPs();
+        for (int i = 0; i < nvps.size(); i++) {
             Option option = null;
             OptionValue optionValue = null;
 
             // first, check the name
             try {
-                Field field = clazz.getField(nvps[i].getName());
+                Field field = clazz.getField(nvps.get(i).getName());
                 option = (Option) field.get(null);
 
-                field = clazz.getField(nvps[i].getValue());
+                field = clazz.getField(nvps.get(i).getValue());
                 optionValue = (OptionValue) field.get(null);
             } catch (Exception e) {
                 throw new InvalidWorldException(
-                        Utils.getLocalString(RO_BAD_NVP, nvps[i].getName(),
-                                nvps[i].getValue(), e.getMessage()));
+                        Utils.getLocalString(RO_BAD_NVP, nvps.get(i).getName(),
+                                nvps.get(i).getValue(), e.getMessage()));
             }
 
 
@@ -434,7 +435,7 @@ public class RuleOptions implements Serializable {
             if (!option.isAllowed(optionValue)) {
                 throw new InvalidWorldException(
                         Utils.getLocalString(RO_BAD_OPTIONVALUE,
-                                nvps[i].getValue(), nvps[i].getName()));
+                                nvps.get(i).getValue(), nvps.get(i).getName()));
             }
 
             // set option

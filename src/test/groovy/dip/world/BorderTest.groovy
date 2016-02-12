@@ -23,8 +23,8 @@ import spock.lang.Specification
 import spock.lang.Unroll
 
 class BorderTest extends Specification {
-    def loc0 = new Location(new Province("Moscow", ["Mos"] as String[], 0, false), Coast.NONE)
-    def loc1 = new Location(new Province("Ukraine", ["Ukr"] as String[], 1, false), Coast.NONE)
+    def loc0 = new Location(new Province("Moscow", ["Mos"], 0, false), Coast.NONE)
+    def loc1 = new Location(new Province("Ukraine", ["Ukr"], 1, false), Coast.NONE)
     def border = new Border("id", "description", "Army  ", [loc0] as Location[], "dip.order.Move", "1", "Spring   Fall", "Movement", "1900, 2000")
 
     def "test canTransit"() {
@@ -67,7 +67,7 @@ class BorderTest extends Specification {
 
     @Unroll
     def "illegal '#id' throw InvalidBorderException"() {
-        def loc0 = new Location(new Province("Moscow", ["Mos"] as String[], 0, false), Coast.NONE)
+        def loc0 = new Location(new Province("Moscow", ["Mos"], 0, false), Coast.NONE)
         when:
         new Border(id, description, units, from, orders, bMM, season, phase, year)
 
@@ -76,16 +76,16 @@ class BorderTest extends Specification {
 
         where:
         // "id" | "description" | "Army  " | [loc0] as Location[] | "dip.order.Move" | "1"              | "Spring   Fall" | "Movement" | "1900,2000"
-        id            | description   | units    | from                 | orders           | bMM | season          | phase      | year
-        "phase"       | "description" | "Army  " | [loc0] as Location[] | "dip.order.Move" | "1" | "Spring   Fall" | "phase"    | "1900,2000"
-        "year"        | "description" | "Army  " | [loc0] as Location[] | "dip.order.Move" | "1" | "Spring   Fall" | "Movement" | "1900 1950 2000"
-        "odd year"    | "description" | "Army  " | [loc0] as Location[] | "dip.order.Move" | "1" | "Spring   Fall" | "Movement" | "odd  1900"
-        "even year"   | "description" | "Army  " | [loc0] as Location[] | "dip.order.Move" | "1" | "Spring   Fall" | "Movement" | "even 1900"
-        "splitter"    | "description" | "Army  " | [loc0] as Location[] | "dip.order.Move" | "1" | "Spring   Fall" | "Movement" | "1900|2000"
-        "season"      | "description" | "Army  " | [loc0] as Location[] | "dip.order.Move" | "1" | "season"        | "Movement" | "1900,2000"
-        "year"        | "description" | "Army  " | [loc0] as Location[] | "dip.order.Move" | "1" | "Spring   Fall" | "Movement" | "11900,2000"
-        "units"       | "description" | "Hoge  " | [loc0] as Location[] | "dip.order.Move" | "1" | "Spring   Fall" | "Movement" | "1900,2000"
-        "orders"      | "description" | "Army  " | [loc0] as Location[] | "dip.order.Hoge" | "1" | "Spring   Fall" | "Movement" | "1900,2000"
+        id          | description   | units    | from                 | orders           | bMM | season          | phase      | year
+        "phase"     | "description" | "Army  " | [loc0] as Location[] | "dip.order.Move" | "1" | "Spring   Fall" | "phase"    | "1900,2000"
+        "year"      | "description" | "Army  " | [loc0] as Location[] | "dip.order.Move" | "1" | "Spring   Fall" | "Movement" | "1900 1950 2000"
+        "odd year"  | "description" | "Army  " | [loc0] as Location[] | "dip.order.Move" | "1" | "Spring   Fall" | "Movement" | "odd  1900"
+        "even year" | "description" | "Army  " | [loc0] as Location[] | "dip.order.Move" | "1" | "Spring   Fall" | "Movement" | "even 1900"
+        "splitter"  | "description" | "Army  " | [loc0] as Location[] | "dip.order.Move" | "1" | "Spring   Fall" | "Movement" | "1900|2000"
+        "season"    | "description" | "Army  " | [loc0] as Location[] | "dip.order.Move" | "1" | "season"        | "Movement" | "1900,2000"
+        "year"      | "description" | "Army  " | [loc0] as Location[] | "dip.order.Move" | "1" | "Spring   Fall" | "Movement" | "11900,2000"
+        "units"     | "description" | "Hoge  " | [loc0] as Location[] | "dip.order.Move" | "1" | "Spring   Fall" | "Movement" | "1900,2000"
+        "orders"    | "description" | "Army  " | [loc0] as Location[] | "dip.order.Hoge" | "1" | "Spring   Fall" | "Movement" | "1900,2000"
         // "empty order" | "description" | "Army  " | [loc0] as Location[] | ""               | "1" | "Spring   Fall" | "Movement" | "1900,2000"
     }
 }

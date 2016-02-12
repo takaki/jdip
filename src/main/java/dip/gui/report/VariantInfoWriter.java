@@ -105,7 +105,7 @@ public class VariantInfoWriter {
                 .getVariant(vi.getVariantName(), vi.getVariantVersion());
 
         // get 8 main arguments
-        Object[] oldArgs = variant.getHTMLSummaryArguments();
+        Object[] oldArgs = variant.getHTMLSummaryArguments().toArray(new Object[0]);
 
         // make extra space
         Object[] newArgs = new Object[oldArgs.length + 1];

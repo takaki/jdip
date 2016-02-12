@@ -21,12 +21,12 @@ package dip.world
 import spock.lang.Specification
 
 class ProvinceTest extends Specification {
-    def mos = new Province("Moscow", ["mos"] as String[], 0, false)
-    def aaa = new Province("AAA000", ["aaa"] as String[], 0, false)
+    def mos = new Province("Moscow", ["mos"], 0, false)
+    def aaa = new Province("AAA000", ["aaa"], 0, false)
 
-    def bbb = new Province("BBB000", ["bbb"] as String[], 0, false)
-    def ccc = new Province("CCC000", ["ccc"] as String[], 0, false)
-    def ddd = new Province("DDD000", ["ddd"] as String[], 0, false)
+    def bbb = new Province("BBB000", ["bbb"], 0, false)
+    def ccc = new Province("CCC000", ["ccc"], 0, false)
+    def ddd = new Province("DDD000", ["ddd"], 0, false)
     def locb = new Location(bbb, Coast.LAND)
     def locc = new Location(ccc, Coast.LAND)
     def locd = new Location(ddd, Coast.LAND)
@@ -54,11 +54,11 @@ class ProvinceTest extends Specification {
         thrown(IllegalArgumentException)
 
         where:
-        fullname | shortnames          | index
-        null     | ["mos"] as String[] | 0
-        "Moscow" | null                | 0
-        "Moscow" | ["mos"] as String[] | -1
-        "Moscow" | [] as String[]      | 0
+        fullname | shortnames | index
+        null     | ["mos"]    | 0
+        "Moscow" | null       | 0
+        "Moscow" | ["mos"]    | -1
+        "Moscow" | []         | 0
 
     }
 
