@@ -36,6 +36,7 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -77,16 +78,16 @@ public class XMLProvinceParser implements ProvinceParser {
      * Returns the ProvinceData objects, or an empty list.
      */
     @Override
-    public ProvinceData[] getProvinceData() {
-        return provinceList.toArray(new ProvinceData[provinceList.size()]);
+    public List<ProvinceData> getProvinceData() {
+        return Collections.unmodifiableList(provinceList);
     }// getProvinceData()
 
     /**
      * Returns the BorderData objects, or an empty list.
      */
     @Override
-    public BorderData[] getBorderData() {
-        return borderList.toArray(new BorderData[borderList.size()]);
+    public List<BorderData> getBorderData() {
+        return Collections.unmodifiableList(borderList);
     }// getBorderData()
 
 

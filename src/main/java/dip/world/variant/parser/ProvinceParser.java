@@ -25,6 +25,8 @@ package dip.world.variant.parser;
 import dip.world.variant.data.BorderData;
 import dip.world.variant.data.ProvinceData;
 
+import java.util.List;
+
 /**
  * Interface for parsers; parsers must return ProvinceData and BorderData
  * arrays.
@@ -34,11 +36,11 @@ public interface ProvinceParser {
     /**
      * Returns the ProvinceData
      */
-    ProvinceData[] getProvinceData();
+    List<ProvinceData> getProvinceData();
 
     /**
      * Returns the BorderData
      */
-    BorderData[] getBorderData();
+    List<BorderData> getBorderData();
 
 }// interface ProvinceParser

@@ -36,7 +36,6 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -76,8 +75,8 @@ public class XMLVariantParser implements VariantParser {
         final RootVariants rootVariants = JAXB
                 .unmarshal(variantsXMLURL, RootVariants.class);
         variantList = rootVariants.variants;
-        variantList.stream()
-                .forEach(variant -> variant.setBaseURL(variantsXMLURL)); // FIXME
+        variantList.stream().forEach(
+                variant -> variant.setBaseURL(variantsXMLURL)); // FIXME
         Log.printTimed(time, "   time: ");
     }// parse()
 
@@ -119,6 +118,7 @@ public class XMLVariantParser implements VariantParser {
 
         /**
          * Gets the ProvinceData for a given adjacency URI
+         *
          * @param adjacencyURL
          */
         public static ProvinceData[] getProvinceData(final URL adjacencyURL) {
@@ -130,6 +130,7 @@ public class XMLVariantParser implements VariantParser {
 
         /**
          * Gets the BorderData for a given adjacency URI
+         *
          * @param adjacencyURL
          */
         public static BorderData[] getBorderData(final URL adjacencyURL) {
@@ -147,8 +148,7 @@ public class XMLVariantParser implements VariantParser {
                 // final URL url = new URL(vpURL, adjacencyURI.toString());
                 final XMLProvinceParser pp = new XMLProvinceParser(
                         adjacencyURI);
-                return new AdjCache(Arrays.asList(pp.getProvinceData()),
-                        Arrays.asList(pp.getBorderData()));
+                return new AdjCache(pp.getProvinceData(), pp.getBorderData());
             });
         }// get()
     }// inner class AdjCache
