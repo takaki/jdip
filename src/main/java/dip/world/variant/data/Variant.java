@@ -252,10 +252,9 @@ public final class Variant implements Cloneable, Comparable<Variant> {
     /**
      * The ProvinceData associated with this Variant
      */
-    public ProvinceData[] getProvinceData() {
+    public List<ProvinceData> getProvinceData() {
         try {
-            final URL url = new URL(baseURL,
-                    map.adjacencyURI.toString());
+            final URL url = new URL(baseURL, map.adjacencyURI.toString());
             return AdjCache.getProvinceData(url);// TODO: remove AdjCache
         } catch (final MalformedURLException e) {
             throw new IllegalArgumentException(e);
@@ -273,10 +272,9 @@ public final class Variant implements Cloneable, Comparable<Variant> {
     /**
      * Gets the BorderData associated with this Variant
      */
-    public BorderData[] getBorderData() {
+    public List<BorderData> getBorderData() {
         try {
-            final URL url = new URL(baseURL,
-                    map.adjacencyURI.toString());
+            final URL url = new URL(baseURL, map.adjacencyURI.toString());
             return AdjCache.getBorderData(url); // TODO: remove AdjCache
         } catch (final MalformedURLException e) {
             throw new IllegalArgumentException(e);

@@ -36,6 +36,7 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -88,8 +89,8 @@ public class XMLVariantParser implements VariantParser {
      * this will return any information.
      */
     @Override
-    public Variant[] getVariants() {
-        return variantList.toArray(new Variant[variantList.size()]);
+    public List<Variant> getVariants() {
+        return Collections.unmodifiableList(variantList);
     }// getVariants()
 
 
@@ -121,10 +122,10 @@ public class XMLVariantParser implements VariantParser {
          *
          * @param adjacencyURL
          */
-        public static ProvinceData[] getProvinceData(final URL adjacencyURL) {
+        public static List<ProvinceData> getProvinceData(
+                final URL adjacencyURL) {
             final AdjCache ac = get(adjacencyURL);
-            return ac.provinceData
-                    .toArray(new ProvinceData[ac.provinceData.size()]);
+            return Collections.unmodifiableList(ac.provinceData);
         }// getProvinceData()
 
 
@@ -133,9 +134,9 @@ public class XMLVariantParser implements VariantParser {
          *
          * @param adjacencyURL
          */
-        public static BorderData[] getBorderData(final URL adjacencyURL) {
+        public static List<BorderData> getBorderData(final URL adjacencyURL) {
             final AdjCache ac = get(adjacencyURL);
-            return ac.borderData.toArray(new BorderData[ac.borderData.size()]);
+            return Collections.unmodifiableList(ac.borderData);
         }// getBorderData()
 
 

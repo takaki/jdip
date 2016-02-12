@@ -24,6 +24,8 @@ package dip.world.variant.parser;
 
 import dip.world.variant.data.Variant;
 
+import java.util.List;
+
 /**
  * Parses a Variant description.
  */
@@ -32,6 +34,6 @@ public interface VariantParser {
     /**
      * Returns an array of Variant objects.
      */
-    public Variant[] getVariants();
+    public List<Variant> getVariants();
 
 }// interface VariantParser
