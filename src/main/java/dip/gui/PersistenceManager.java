@@ -45,7 +45,6 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Optional;
 
 
 /**
@@ -593,18 +592,17 @@ public class PersistenceManager {
 
         if (VariantManager.getInstance().getVariant(vi.getVariantName(),
                 vi.getVariantVersion()) == null) {
-            Optional<Variant> variant = VariantManager.getInstance()
-                    .getVariant(vi.getVariantName(),
-                            VariantManager.VERSION_NEWEST);
-            if (!variant.isPresent()) {
+            Variant variant = VariantManager.getInstance().getVariant(vi.getVariantName(),
+                    VariantManager.VERSION_NEWEST).orElse(null);
+            if (variant == null) {
                 // we don't have the variant AT ALL
                 ErrorDialog.displayVariantNotAvailable(clientFrame, vi);
                 return null;
             } else {
                 // try most current version: HOWEVER, warn the user that it might not work
                 ErrorDialog.displayVariantVersionMismatch(clientFrame, vi,
-                        variant.get().getVersion());
-                vi.setVariantVersion(variant.get().getVersion());
+                        variant.getVersion());
+                vi.setVariantVersion(variant.getVersion());
             }
         }
 

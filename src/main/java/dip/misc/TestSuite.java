@@ -325,20 +325,20 @@ public final class TestSuite {
 
             // load the default variant (Standard)
             // error if it cannot be found!!
-            Optional<Variant> variant = VariantManager.getInstance()
-                    .getVariant(variantName, VariantManager.VERSION_NEWEST);
+            Variant variant = VariantManager.getInstance()
+                    .getVariant(variantName, VariantManager.VERSION_NEWEST).orElse(null);
             if (variant == null) {
                 throw new Exception("Cannot find variant " + variantName);
             }
 
             // create the world
-            world = WorldFactory.getInstance().createWorld(variant.get());
+            world = WorldFactory.getInstance().createWorld(variant);
             templateTurnState = world.getLastTurnState();
             world.removeTurnState(templateTurnState);
 
             // set the RuleOptions in the World (this is normally done
             // by the GUI)
-            world.setRuleOptions(RuleOptions.createFromVariant(variant.get()));
+            world.setRuleOptions(RuleOptions.createFromVariant(variant));
         } catch (Exception e) {
             println("Init error: ", e);
             e.printStackTrace();

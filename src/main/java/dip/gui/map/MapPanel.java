@@ -60,7 +60,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URL;
-import java.util.Optional;
 
 /**
  * The Main Map display component.
@@ -167,7 +166,8 @@ public class MapPanel extends JPanel {
 
         // determine if the platform supports custom cursors.
         if (!d.equals(new Dimension(0, 0)) && (colors != 0)) {
-            ImageIcon ii = Utils.getImageIcon("common/cursors/nodrop.gif");
+            ImageIcon ii = Utils
+                    .getImageIcon("common/cursors/nodrop.gif");
             if (ii == null) {
                 // error loading cursor! just use default cursor.
                 // this may not be the best cursor to use.
@@ -330,8 +330,9 @@ public class MapPanel extends JPanel {
         // subtle bugs emerge if we do not.
         //
         try {
-            svgCanvas.setDocument(transform(xmlDoc, VariantManager.getInstance()
-                    .getVariantPackageJarURL(variant).orElse(null).toString())); // FIXME
+            svgCanvas.setDocument(transform(xmlDoc,
+                    VariantManager.getInstance().getVariantPackageJarURL(variant)
+                            .toString()));
         } catch (Exception e) {
             ErrorDialog.displaySerious(clientFrame, e);
         }
@@ -343,8 +344,7 @@ public class MapPanel extends JPanel {
         if (svgCanvas.getSVGDocument() instanceof SVGOMDocument) {
             final SVGOMDocument omd = (SVGOMDocument) svgCanvas
                     .getSVGDocument();
-            omd.setURLObject(VariantManager.getInstance()
-                    .getVariantPackageJarURL(variant).orElse(null)); // FIXME
+            omd.setURLObject(VariantManager.getInstance().getVariantPackageJarURL(variant).orElse(null));
         } else {
             // shouldn't happen.
             Log.println(
@@ -889,9 +889,9 @@ public class MapPanel extends JPanel {
 
                     // load URL and resolve
                     World.VariantInfo vi = world.getVariantInfo();
-                    Optional<Variant> variant = VariantManager.getInstance()
+                    Variant variant = VariantManager.getInstance()
                             .getVariant(vi.getVariantName(),
-                                    vi.getVariantVersion());
+                                    vi.getVariantVersion()).orElse(null);
 
                     // TODO: clean this loading logic up
                     if (variant == null) {
@@ -902,11 +902,10 @@ public class MapPanel extends JPanel {
                         ErrorDialog.displayGeneral(clientFrame, e);
                     }
 
-                    MapGraphic mg = variant.get().getMapGrapic(vi.getMapName())
-                            .orElse(null);// FIXME
+                    MapGraphic mg = variant.getMapGrapic(vi.getMapName()).orElse(null);
                     if (mg == null) {
                         // try a default map graphic
-                        mg = variant.get().getDefaultMapGraphic().orElse(null);// FIXME
+                        mg = variant.getDefaultMapGraphic().orElse(null);
 
                         if (mg == null) {
                             Exception e = new IllegalStateException(
@@ -918,9 +917,8 @@ public class MapPanel extends JPanel {
                         }
                     }
 
-                    Optional<URL> url = VariantManager.getInstance()
-                            .getResource(variant.get(), mg.getURI()); // FIXME
-                    if (!url.isPresent()) {
+                    URL url = VariantManager.getInstance().getResource(variant, mg.getURI()).orElse(null);
+                    if (url == null) {
 
                         Exception e = new IllegalStateException(
                                 Utils.getLocalString(MP_VARIANT_NOT_FOUND,
@@ -932,7 +930,7 @@ public class MapPanel extends JPanel {
 
                     symbolPack = VariantManager.getInstance()
                             .getSymbolPack(mg, vi.getSymbolPackName(),
-                                    vi.getSymbolPackVersion()).orElse(null); // FIXME
+                                    vi.getSymbolPackVersion()).orElse(null);
 
                     // actual loading starts here
                     //
@@ -943,11 +941,11 @@ public class MapPanel extends JPanel {
 
                     try {
                         SymbolInjector si = new SymbolInjector(clientFrame,
-                                variant.get(), mg, symbolPack);// FIXME
+                                variant, mg, symbolPack);
                         statusBar.incPBValue();
                         si.inject();
                         statusBar.incPBValue();
-                        setDocument(si.getDocument(), variant.get()); // FIXME
+                        setDocument(si.getDocument(), variant);
                     } catch (Exception e) {
                         statusBar
                                 .setText(Utils.getLocalString(DOC_LOAD_FAILED));
