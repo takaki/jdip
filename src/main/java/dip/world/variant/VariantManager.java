@@ -319,33 +319,6 @@ public final class VariantManager {
 
 
     /**
-     * Gets a specific resource for a Variant or a SymbolPack, given a URL to
-     * the package and a reference URI. Threadsafe.
-     * <p>
-     * Typically, getResource(Variant, URI) or getResource(SymbolPack, URI) is
-     * preferred to this method.
-     */
-    public synchronized URL getResource(final URL packURL, final URI uri) {
-        // ensure we have been initialized...
-
-        // if we are in webstart, assume that this is a webstart jar.
-
-        // if URI has a defined scheme, convert to a URL (if possible) and return it.
-        if (uri.getScheme() != null) {
-            try {
-                return uri.toURL();
-            } catch (final MalformedURLException e) {
-                return null;
-            }
-        }
-
-// resolve & load.
-        final URLClassLoader classLoader = getClassLoader(packURL);
-        return classLoader.findResource(uri.toString());
-    }// getResource()
-
-
-    /**
      * Gets a specific resource by properly resolving the URI
      * to this Variant. Null arguments are illegal. Returns
      * null if the resource cannot be resolved. Threadsafe.
@@ -354,7 +327,7 @@ public final class VariantManager {
         if (variant == null) {
             throw new IllegalArgumentException();
         }
-        return getVRec(variant).map(vRec -> getResource(vRec, uri));
+        return getVRec(variant).flatMap(vRec -> getResource(vRec, uri));
     }// getResource()
 
 
@@ -368,7 +341,7 @@ public final class VariantManager {
         if (symbolPack == null) {
             throw new IllegalArgumentException();
         }
-        return getSPRec(symbolPack).map(spRec -> getResource(spRec, uri));
+        return getSPRec(symbolPack).flatMap(spRec -> getResource(spRec, uri));
     }// getResource()
 
 
@@ -404,32 +377,23 @@ public final class VariantManager {
     /**
      * Internal getResource() implementation
      */
-    private synchronized URL getResource(final MapRecObj mro, final URI uri) {
-        // ensure we have been initialized...
-        assert mro != null;
-
-        if (uri == null) {
-            throw new IllegalArgumentException("null URI");
+    private synchronized Optional<URL> getResource(final MapRecObj mro,
+                                                   final URI uri) {
+        if (mro == null || uri == null) {
+            throw new IllegalArgumentException("null MapRecObj or URI");
         }
-
-        // if we are in webstart, assume that this is a webstart jar.
-
 
         // if URI has a defined scheme, convert to a URL (if possible) and return it.
         if (uri.getScheme() != null) {
             try {
-                return uri.toURL();
-            } catch (final MalformedURLException e) {
-                return null;
+                return Optional.of(uri.toURL());
+            } catch (final MalformedURLException ignored) {
+                return Optional.empty();
             }
         }
-
-        // find the URL
-        if (mro.getURL() != null) {
-            return getClassLoader(mro.getURL()).findResource(uri.toString());
-        }
-
-        return null;
+        return Optional.ofNullable(mro.getURL())
+                .map(getURL -> getClassLoader(getURL)
+                        .findResource(uri.toString()));
     }// getResource()
 
 
