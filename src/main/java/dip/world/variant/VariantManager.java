@@ -28,9 +28,9 @@ import dip.world.variant.data.MapGraphic;
 import dip.world.variant.data.SymbolPack;
 import dip.world.variant.data.Variant;
 import dip.world.variant.data.VersionNumber;
-import dip.world.variant.parser.VariantParser;
 import dip.world.variant.parser.XMLSymbolParser;
 import dip.world.variant.parser.XMLVariantParser;
+import javafx.util.Pair;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.net.MalformedURLException;
@@ -113,53 +113,83 @@ public final class VariantManager {
         // if it does not exist, we will not load the file. If it does, we will parse it,
         // and associate the variant with the URL in a hashtable.
         // TODO: check File[] searchPaths ?
-        Resources.getResourceURLs(url -> {
-            return url.getPath().endsWith(VARIANT_FILE_NAME);
-        }).forEach(variantXMLURL -> {
-            final String pluginName = variantXMLURL.getFile(); // FIXME
-            // parse variant description file, and create hash entry of variant object -> URL
-            final VariantParser variantParser = new XMLVariantParser(
-                    variantXMLURL);
-            // add variants; variants with same name (but older versions) are
-            // replaced with same-name newer versioned variants
-            for (final Variant variant : variantParser.getVariants()) {
-                if (variant == null || pluginName == null || variantXMLURL == null) {
-                    throw new IllegalArgumentException("null argument(s).");
-                }
+//        Resources.getResourceURLs(url -> {
+//            return url.getPath().endsWith(VARIANT_FILE_NAME);
+//        }).forEach(variantXMLURL -> {
+//            final String pluginName = variantXMLURL.getFile(); // FIXME
+//            // parse variant description file, and create hash entry of variant object -> URL
+//            final VariantParser variantParser = new XMLVariantParser(
+//                    variantXMLURL);
+//            // add variants; variants with same name (but older versions) are
+//            // replaced with same-name newer versioned variants
+//            for (final Variant variant : variantParser.getVariants()) {
+//                if (variant == null || pluginName == null || variantXMLURL == null) {
+//                    throw new IllegalArgumentException("null argument(s).");
+//                }
+//
+//                final VRec vRec = new VRec(variantXMLURL, pluginName, variant);
+//
+//                final String name = variant.getName().toLowerCase();
+//
+//                // see if we are mapped to a MapRec already.
+//                final MapRec<VRec> mapVRec = variantMap
+//                        .computeIfAbsent(name, key -> new MapRec<>());
+//                // we are mapped. See if this version has been added.
+//                // If not, we'll add it.
+//                mapVRec.add(vRec);
+//
+//                // map the aliases and/or check that aliases refer to the
+//                // same MapRec (this prevents two different Variants with the same
+//                // alias from causing a subtle error)
+//                //
+//                variant.getAliases().stream()
+//                        .filter(alias -> alias != null && !alias.isEmpty())
+//                        .map(String::toLowerCase).forEach(alias -> {
+//                    final MapRec<VRec> testMapVRec = variantMap
+//                            .computeIfAbsent(alias, key -> mapVRec);
+//                    if (!Objects.equals(testMapVRec, mapVRec)) {
+//                        // ERROR! incorrect alias map
+//                        throw new IllegalArgumentException(String.format(
+//                                "Two variants have a conflicting (non-unique) alias.\n" +
+//                                        "VRec 1: %s\n" +
+//                                        "VRec 2: %s\n" +
+//                                        "(must check all variants with this name)\n",
+//                                mapVRec.toString(), testMapVRec.toString()));
+//                    }
+//                });
+//            }
+//        });
 
-                final VRec vRec = new VRec(variantXMLURL, pluginName, variant);
 
-                final String name = variant.getName().toLowerCase();
-
-                // see if we are mapped to a MapRec already.
-                final MapRec<VRec> mapVRec = variantMap
-                        .computeIfAbsent(name, key -> new MapRec<>());
-                // we are mapped. See if this version has been added.
-                // If not, we'll add it.
-                mapVRec.add(vRec);
-
-                // map the aliases and/or check that aliases refer to the
-                // same MapRec (this prevents two different Variants with the same
-                // alias from causing a subtle error)
-                //
-                variant.getAliases().stream()
-                        .filter(alias -> alias != null && !alias.isEmpty())
-                        .map(String::toLowerCase).forEach(alias -> {
-                    final MapRec<VRec> testMapVRec = variantMap
-                            .computeIfAbsent(alias, key -> mapVRec);
-                    if (!Objects.equals(testMapVRec, mapVRec)) {
-                        // ERROR! incorrect alias map
-                        throw new IllegalArgumentException(String.format(
-                                "Two variants have a conflicting (non-unique) alias.\n" +
-                                        "VRec 1: %s\n" +
-                                        "VRec 2: %s\n" +
-                                        "(must check all variants with this name)\n",
-                                mapVRec.toString(), testMapVRec.toString()));
-                    }
-                });
-            }
-        });
-
+        // // // // -- ************ --
+        final Map<String, MapRec<VRec>> collect = Resources
+                .getResourceURLs(url -> {
+                    return url.getPath().endsWith(VARIANT_FILE_NAME);
+                }).stream().flatMap(variantXMLURL -> {
+                    // parse variant description file, and create hash entry of variant object -> URL
+                    // add variants; variants with same name (but older versions) are
+                    // replaced with same-name newer versioned variants
+                    return new XMLVariantParser(variantXMLURL).getVariants()
+                            .stream().map(variant -> {// FIXME
+                                final VRec vRec = new VRec(variantXMLURL,
+                                        variantXMLURL.getFile(), variant);
+                                return vRec;
+                            });
+                }).collect(Collectors.groupingBy(
+                        vRec -> vRec.getVariant().getName().toLowerCase()))
+                .entrySet().stream().collect(Collectors.toMap(Entry::getKey,
+                        entry -> entry.getValue().stream()
+                                .collect(MapRec<VRec>::new, MapRec::add,
+                                        (mr0, mr1) -> {
+                                        })));
+        variantMap.putAll(collect.entrySet().stream().flatMap(entry -> {
+            final List<String> keys = new ArrayList<>(
+                    entry.getValue().getNewest().get().getVariant()
+                            .getAliases());
+            keys.add(entry.getKey());
+            return keys.stream().map(key -> new Pair<>(key, collect.get(key)));
+        }).collect(Collectors
+                .toMap(Pair::getKey, Pair::getValue)));
 
         // check: did we find *any* variants? Throw an exception.
         if (variantMap.isEmpty()) {
