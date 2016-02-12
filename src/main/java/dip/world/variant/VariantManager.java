@@ -206,11 +206,8 @@ public final class VariantManager {
      */
     public synchronized Optional<Variant> getVariant(final String name,
                                                      final VersionNumber version) {
-        final MapRec<VRec> mr = variantMap.get(name.toLowerCase());
-        if (mr != null) {
-            return mr.get(version).map(VRec::getVariant);
-        }
-        return Optional.empty();
+        return Optional.ofNullable(variantMap.get(name.toLowerCase()))
+                .flatMap(mr -> mr.get(version).map(VRec::getVariant));
     }// getVariant()
 
 
@@ -223,15 +220,9 @@ public final class VariantManager {
      */
     public synchronized Optional<SymbolPack> getSymbolPack(final String name,
                                                            final VersionNumber version) {
-        if (name == null) {
-            return Optional.empty();
-        }
-        final MapRec<SPRec> mr = symbolMap.get(name.toLowerCase());
-        if (mr != null) {
-            return mr.get(version).map(SPRec::getSymbolPack);
-        }
-
-        return Optional.empty();
+        return Optional.ofNullable(name).flatMap(name0 -> Optional
+                .ofNullable(symbolMap.get(name0.toLowerCase())))
+                .flatMap(mr -> mr.get(version).map(SPRec::getSymbolPack));
     }// getSymbolPack()
 
     /**
@@ -391,10 +382,9 @@ public final class VariantManager {
      * or <code>jar:file:/c:/plugins/ajar.zip!/</code>
      */
     public Optional<URL> getVariantPackageJarURL(final Variant variant) {
-        return Optional.ofNullable(variant)
-                .flatMap(v -> getVRec(v).flatMap(vrec -> {
-                    assert vrec.getURL() != null;
-                    final URL url = vrec.getURL();
+        return Optional.ofNullable(variant).flatMap(v -> getVRec(v)
+                .flatMap(vrec -> Optional.ofNullable(vrec.getURL()))
+                .flatMap(url -> {
                     final String txtUrl = url.toString();
                     if (txtUrl.startsWith("jar:")) {
                         return Optional.of(url);
