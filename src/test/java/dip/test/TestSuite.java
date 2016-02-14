@@ -180,16 +180,16 @@ public final class TestSuite {
     private static float parseTime = -1;
     private static final String VARIANT_DIR = "variants";
 
-    private Map keyMap = null;
+    private Map<String, LinkedList<String>> keyMap = null;
 
 
     private static String inFileName = null;
 
-    private List cases = new ArrayList(10);
+    private List<Case> cases = new ArrayList<Case>(10);
     private World world = null;
     private TurnState templateTurnState;
     private StdAdjudicator stdJudge = null;
-    private List failedCaseNames = new ArrayList(10);
+    private List<String> failedCaseNames = new ArrayList<String>(10);
     private static final int benchTimes = 1;
 
     // VARIANT_ALL name
@@ -264,7 +264,7 @@ public final class TestSuite {
         int nFail = 0;
         int nCases = 0;
 
-        final List unRezParadoxes = new LinkedList();
+        final List<String> unRezParadoxes = new LinkedList<String>();
 
         final long startMillis = System.currentTimeMillis();    // start timing!
 
@@ -356,7 +356,7 @@ public final class TestSuite {
 
         println("\nFailed Cases:");
         println("=============");
-        Iterator iter = failedCaseNames.iterator();
+        Iterator<String> iter = failedCaseNames.iterator();
         while (iter.hasNext()) {
             println("   ", iter.next());
         }
@@ -366,7 +366,7 @@ public final class TestSuite {
         println("=====================");
         iter = unRezParadoxes.iterator();
         while (iter.hasNext()) {
-            println("   " + ((String) iter.next()));
+            println("   " + (iter.next()));
         }
         println("   [total: ", unRezParadoxes.size(), "]");
 
@@ -668,12 +668,12 @@ public final class TestSuite {
 
         // tsTemplate: template turnstate to create the current, and (if needed) previous
         // turnstates.
-        public Case(final String name, final String phaseName, final List pre, final List ord,
-                    final List post, final List supplySCOwnersList, final List preDislodgedList,
-                    final List postDislodgedList, final List orderResultList) {
+        public Case(final String name, final String phaseName, final List<String> pre, final List<String> ord,
+                    final List<String> post, final List<String> supplySCOwnersList, final List<String> preDislodgedList,
+                    final List<String> postDislodgedList, final List<String> orderResultList) {
             this.name = name;
-            final List temp = new ArrayList(50);
-            Iterator iter = null;
+            final List<java.io.Serializable> temp = new ArrayList<java.io.Serializable>(50);
+            Iterator<String> iter = null;
             of = OrderParser.getInstance();
 
 
@@ -708,7 +708,7 @@ public final class TestSuite {
             temp.clear();
             iter = pre.iterator();
             while (iter.hasNext()) {
-                final String line = (String) iter.next();
+                final String line = iter.next();
                 final Order order = parseOrder(line, currentTS, true);
                 temp.add(order);
             }
@@ -720,7 +720,7 @@ public final class TestSuite {
             temp.clear();
             iter = ord.iterator();
             while (iter.hasNext()) {
-                final String line = (String) iter.next();
+                final String line = iter.next();
                 final Order order = parseOrder(line, currentTS, false);
                 temp.add(order);
             }
@@ -731,7 +731,7 @@ public final class TestSuite {
             temp.clear();
             iter = post.iterator();
             while (iter.hasNext()) {
-                final String line = (String) iter.next();
+                final String line = iter.next();
                 final Order order = parseOrder(line, currentTS, true);
                 temp.add(order);
             }
@@ -743,7 +743,7 @@ public final class TestSuite {
                 temp.clear();
                 iter = preDislodgedList.iterator();
                 while (iter.hasNext()) {
-                    final String line = (String) iter.next();
+                    final String line = iter.next();
                     final Order order = parseOrder(line, currentTS, true);
                     temp.add(order);
                 }
@@ -756,7 +756,7 @@ public final class TestSuite {
                 temp.clear();
                 iter = postDislodgedList.iterator();
                 while (iter.hasNext()) {
-                    final String line = (String) iter.next();
+                    final String line = iter.next();
                     final Order order = parseOrder(line, currentTS, true);
                     temp.add(order);
                 }
@@ -769,7 +769,7 @@ public final class TestSuite {
                 temp.clear();
                 iter = supplySCOwnersList.iterator();
                 while (iter.hasNext()) {
-                    final String line = (String) iter.next();
+                    final String line = iter.next();
                     final Order order = parseOrder(line, currentTS, true);
                     temp.add(order);
                 }
@@ -789,7 +789,7 @@ public final class TestSuite {
                 temp.clear();
                 iter = orderResultList.iterator();
                 while (iter.hasNext()) {
-                    String line = (String) iter.next();
+                    String line = iter.next();
                     OrderResult.ResultType ordResultType = null;
 
                     // success or failure??
@@ -834,7 +834,7 @@ public final class TestSuite {
                         .toArray(new OrderResult[temp.size()]);
 
                 // add results to previous turnstate
-                previousTS.setResultList(new ArrayList(temp));
+                previousTS.setResultList(new ArrayList<java.io.Serializable>(temp));
 
                 // add positions/ownership/orders to current turnstate
                 //
@@ -1086,7 +1086,7 @@ public final class TestSuite {
                         if (inCase) {
                             if (currentKey.equals(POSTSTATE_SAME)) {
                                 // just copy prestate data
-                                final List list = getListForKeyType(POSTSTATE);
+                                final List<String> list = getListForKeyType(POSTSTATE);
                                 list.addAll(getListForKeyType(PRESTATE));
                             } else if (currentKey.equals(PRESTATE_SETPHASE)) {
                                 // phase appears after keyword
@@ -1094,7 +1094,7 @@ public final class TestSuite {
                             } else if (key == null) // important: we don't want to add key lines to the lists
                             {
                                 // we need to get a list.
-                                final List list = getListForKeyType(currentKey);
+                                final List<String> list = getListForKeyType(currentKey);
                                 list.add(line);
                             }
                         } else {
@@ -1174,13 +1174,13 @@ public final class TestSuite {
 
     private void clearAndSetupKeyMap() {
         if (keyMap == null) {
-            keyMap = new HashMap(23);
+            keyMap = new HashMap<String, LinkedList<String>>(23);
         }
 
         keyMap.clear();
 
         for (final String aKEY_TYPES_WITH_LIST : KEY_TYPES_WITH_LIST) {
-            keyMap.put(aKEY_TYPES_WITH_LIST, new LinkedList());
+            keyMap.put(aKEY_TYPES_WITH_LIST, new LinkedList<String>());
         }
     }// setupKeyMap()
 
@@ -1210,8 +1210,8 @@ public final class TestSuite {
     }// getKeyType()
 
 
-    private List getListForKeyType(final String keyType) {
-        return (List) keyMap.get(keyType);
+    private List<String> getListForKeyType(final String keyType) {
+        return keyMap.get(keyType);
     }// getListForKeyType()
 
 
