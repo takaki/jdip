@@ -445,7 +445,7 @@ public final class TestSuite {
     private void printOrders(final Case currentCase) {
         final Order[] orders = currentCase.getOrders();
         for (final Order order : orders) {
-            LOGGER.debug("{}{}", "  ", order.toString());
+            LOGGER.debug("{}{}", "  ", order);
         }
 
         if (orders.length == 0) {
@@ -647,19 +647,19 @@ public final class TestSuite {
      * Holds a Case
      */
     private final class Case {
-        private DefineState[] preState;
-        private DefineState[] postState;
+        private final DefineState[] preState;
+        private final DefineState[] postState;
         private DefineState[] preDislodged;
         private DefineState[] postDislodged;
         private DefineState[] supplySCOwners;    // all types are 'army'
         private OrderResult[] results;
 
-        private Order[] orders;
+        private final Order[] orders;
         private final String name;
         private Phase phase;
-        private OrderParser of;
-        private TurnState currentTS;
-        private TurnState previousTS;
+        private final OrderParser of;
+        private final TurnState currentTS;
+        private final TurnState previousTS;
 
         // tsTemplate: template turnstate to create the current, and (if needed) previous
         // turnstates.
