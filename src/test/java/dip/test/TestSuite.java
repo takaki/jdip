@@ -175,9 +175,15 @@ public final class TestSuite {
 
     // warning: POSTSTATE_SAME MUST come before POSTSTATE (since we use startsWith())
     // "other" == not CASE (begin) or END
-    private static final String[] KEY_TYPES_OTHER = {ORDERS, POSTSTATE_SAME, PRESTATE_SETPHASE, PRESTATE_RESULTS, PRESTATE_SUPPLYCENTER_OWNERS, PRESTATE_DISLODGED, POSTSTATE_DISLODGED, PRESTATE, POSTSTATE, VARIANT_ALL};
+    private static final List<String> KEY_TYPES_OTHER = Arrays
+            .asList(ORDERS, POSTSTATE_SAME, PRESTATE_SETPHASE, PRESTATE_RESULTS,
+                    PRESTATE_SUPPLYCENTER_OWNERS, PRESTATE_DISLODGED,
+                    POSTSTATE_DISLODGED, PRESTATE, POSTSTATE, VARIANT_ALL);
 
-    private static final String[] KEY_TYPES_WITH_LIST = {ORDERS, PRESTATE_SUPPLYCENTER_OWNERS, PRESTATE_RESULTS, PRESTATE_DISLODGED, POSTSTATE_DISLODGED, POSTSTATE, PRESTATE};
+    private static final List<String> KEY_TYPES_WITH_LIST = Arrays
+            .asList(ORDERS, PRESTATE_SUPPLYCENTER_OWNERS, PRESTATE_RESULTS,
+                    PRESTATE_DISLODGED, POSTSTATE_DISLODGED, POSTSTATE,
+                    PRESTATE);
 
 
     private static float parseTime = -1;
@@ -390,7 +396,7 @@ public final class TestSuite {
         // if in 'brief' mode, only print out summary statistics
 
         // exit
-        if(nFail > 0 ) {
+        if (nFail > 0) {
             throw new RuntimeException("Did not pass tests.");
         }
 
