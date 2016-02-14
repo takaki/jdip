@@ -32,12 +32,10 @@ import dip.process.StdAdjudicator;
 import dip.world.*;
 import dip.world.variant.VariantManager;
 import dip.world.variant.data.Variant;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.Serializable;
+import java.io.*;
 import java.util.*;
 import java.util.Map;
 
@@ -158,6 +156,8 @@ import java.util.Map;
  * </pre>
  */
 public final class TestSuite {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestSuite.class);
+
     // constants
     private static final String VARIANT_ALL = "variant_all";
     private static final String CASE = "case";
@@ -385,6 +385,7 @@ public final class TestSuite {
 
         // exit
         System.exit(nFail);
+
     }// evaluate()
 
 
