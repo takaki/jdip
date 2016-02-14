@@ -156,7 +156,8 @@ import java.util.Map;
  * </pre>
  */
 public final class TestSuite {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TestSuite.class);
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(TestSuite.class);
 
     // constants
     private static final String VARIANT_ALL = "variant_all";
@@ -202,7 +203,7 @@ public final class TestSuite {
      * Start the TestSuite
      */
     public static void main(final String[] args) {
-        inFileName= "etc/test_data/datc_v2.4_06_remove6.e.4.txt";
+        inFileName = "etc/test_data/datc_v2.4_06_remove6.e.4.txt";
 // {"etc/test_data/datc_v2.4_09.txt","etc/test_data/dipai.txt","etc/test_data/explicitConvoys.txt","etc/test_data/real.txt","etc/test_data/wing.txt"};
 
         Log.setLogging(null);
@@ -348,7 +349,8 @@ public final class TestSuite {
 
         // print stats
         //
-        final long time = System.currentTimeMillis() - startMillis;    // end timing!
+        final long time = System
+                .currentTimeMillis() - startMillis;    // end timing!
         println("End: ", new Date());
 
         // total time: includes setup/adjudication/comparison
@@ -599,11 +601,11 @@ public final class TestSuite {
         /**
          * Create a UnitPos
          */
-        public UnitPos(final Position pos, final Province prov, final boolean isDislodged) {
+        public UnitPos(final Position pos, final Province prov,
+                       final boolean isDislodged) {
             province = prov;
             this.isDislodged = isDislodged;
-            unit = isDislodged ? pos.getDislodgedUnit(prov) : pos
-                    .getUnit(prov);
+            unit = isDislodged ? pos.getDislodgedUnit(prov) : pos.getUnit(prov);
             if (unit == null) {
                 throw new IllegalArgumentException();
             }
@@ -671,9 +673,13 @@ public final class TestSuite {
 
         // tsTemplate: template turnstate to create the current, and (if needed) previous
         // turnstates.
-        public Case(final String name, final String phaseName, final List<String> pre, final List<String> ord,
-                    final List<String> post, final List<String> supplySCOwnersList, final List<String> preDislodgedList,
-                    final List<String> postDislodgedList, final List<String> orderResultList) {
+        public Case(final String name, final String phaseName,
+                    final List<String> pre, final List<String> ord,
+                    final List<String> post,
+                    final List<String> supplySCOwnersList,
+                    final List<String> preDislodgedList,
+                    final List<String> postDislodgedList,
+                    final List<String> orderResultList) {
             this.name = name;
             final List<Serializable> temp = new ArrayList<Serializable>(50);
             Iterator<String> iter = null;
@@ -715,8 +721,7 @@ public final class TestSuite {
                 final Order order = parseOrder(line, currentTS, true);
                 temp.add(order);
             }
-            preState = temp
-                    .toArray(new DefineState[temp.size()]);
+            preState = temp.toArray(new DefineState[temp.size()]);
 
 
             // ord
@@ -738,8 +743,7 @@ public final class TestSuite {
                 final Order order = parseOrder(line, currentTS, true);
                 temp.add(order);
             }
-            postState = temp
-                    .toArray(new DefineState[temp.size()]);
+            postState = temp.toArray(new DefineState[temp.size()]);
 
             // prestate dislodged
             if (preDislodgedList != null) {
@@ -750,8 +754,7 @@ public final class TestSuite {
                     final Order order = parseOrder(line, currentTS, true);
                     temp.add(order);
                 }
-                preDislodged = temp
-                        .toArray(new DefineState[temp.size()]);
+                preDislodged = temp.toArray(new DefineState[temp.size()]);
             }
 
             // poststate dislodged
@@ -763,8 +766,7 @@ public final class TestSuite {
                     final Order order = parseOrder(line, currentTS, true);
                     temp.add(order);
                 }
-                postDislodged = temp
-                        .toArray(new DefineState[temp.size()]);
+                postDislodged = temp.toArray(new DefineState[temp.size()]);
             }
 
             // supply-center owners
@@ -776,8 +778,7 @@ public final class TestSuite {
                     final Order order = parseOrder(line, currentTS, true);
                     temp.add(order);
                 }
-                supplySCOwners = temp
-                        .toArray(new DefineState[temp.size()]);
+                supplySCOwners = temp.toArray(new DefineState[temp.size()]);
             }
 
 
@@ -833,8 +834,7 @@ public final class TestSuite {
                     temp.add(new OrderResult(order, ordResultType,
                             " (prestate)"));
                 }
-                results = temp
-                        .toArray(new OrderResult[temp.size()]);
+                results = temp.toArray(new OrderResult[temp.size()]);
 
                 // add results to previous turnstate
                 previousTS.setResultList(new ArrayList<Serializable>(temp));
@@ -844,7 +844,8 @@ public final class TestSuite {
                 // add orders, first clearing any existing orders in the turnstate
                 currentTS.clearAllOrders();
                 for (final Order order : orders) {
-                    final List orderList = currentTS.getOrders(order.getPower());
+                    final List orderList = currentTS
+                            .getOrders(order.getPower());
                     orderList.add(order);
                     currentTS.setOrders(order.getPower(), orderList);
                 }
@@ -1089,7 +1090,8 @@ public final class TestSuite {
                         if (inCase) {
                             if (currentKey.equals(POSTSTATE_SAME)) {
                                 // just copy prestate data
-                                final List<String> list = getListForKeyType(POSTSTATE);
+                                final List<String> list = getListForKeyType(
+                                        POSTSTATE);
                                 list.addAll(getListForKeyType(PRESTATE));
                             } else if (currentKey.equals(PRESTATE_SETPHASE)) {
                                 // phase appears after keyword
@@ -1097,7 +1099,8 @@ public final class TestSuite {
                             } else if (key == null) // important: we don't want to add key lines to the lists
                             {
                                 // we need to get a list.
-                                final List<String> list = getListForKeyType(currentKey);
+                                final List<String> list = getListForKeyType(
+                                        currentKey);
                                 list.add(line);
                             }
                         } else {
@@ -1229,31 +1232,22 @@ public final class TestSuite {
 	
 	*/
     private static final void println(final String s1) {
-        System.out.println(s1);
+        LOGGER.debug(s1);
     }
 
-    private static final void println(final String s1, final int i1, final String s2) {
-        final StringBuffer sb = new StringBuffer(256);
-        sb.append(s1);
-        sb.append(i1);
-        sb.append(s2);
-        System.out.println(sb);
+    private static final void println(final String s1, final int i1,
+                                      final String s2) {
+        LOGGER.debug("{}{}{}", s1, Integer.toString(i1), s2);
     }
 
     private static final void println(final String s1, final Object o2) {
-        final StringBuffer sb = new StringBuffer(256);
-        sb.append(s1);
-        sb.append(o2);
-        System.out.println(sb);
+        LOGGER.debug("{}{}", s1, o2);
     }
 
 
-    private static final void println(final String s1, final Object o2, final Object o3) {
-        final StringBuffer sb = new StringBuffer(256);
-        sb.append(s1);
-        sb.append(o2);
-        sb.append(o3);
-        System.out.println(sb);
+    private static final void println(final String s1, final Object o2,
+                                      final Object o3) {
+        LOGGER.debug("{}{}{}", s1, o2, o3);
     }
 
 }// class TestSuite
