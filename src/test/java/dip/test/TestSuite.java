@@ -289,7 +289,8 @@ public final class TestSuite {
             world.setTurnState(currentCase.getPreviousTurnState());
 
             // print case name
-            LOGGER.debug("\n\n");
+            LOGGER.debug("");
+            LOGGER.debug("");
             LOGGER.debug(
                     "=CASE==================================================================");
             LOGGER.debug("{}{}", "  ", currentCase.getName());
@@ -367,19 +368,22 @@ public final class TestSuite {
         final float thruPut = 1000.0f / orderTime;
         final float score = (float) nPass / nCases * 100.0f;
 
-        LOGGER.debug("\nFailed Cases:");
+        LOGGER.debug("");
+                LOGGER.debug("Failed Cases:");
         LOGGER.debug("=============");
         failedCaseNames.forEach(name -> LOGGER.debug("{}{}", "   ", name));
         LOGGER.debug("   [total: {}]", failedCaseNames.size());
 
-        LOGGER.debug("\nUnresolved Paradoxes:");
+        LOGGER.debug("");
+        LOGGER.debug("Unresolved Paradoxes:");
         LOGGER.debug("=====================");
         unRezParadoxes.forEach(paradox -> LOGGER.debug("   {}", paradox));
         LOGGER.debug("{}{}{}", "   [total: ",
                 Integer.toString(unRezParadoxes.size()), "]");
 
         // print to log
-        LOGGER.debug("\nStatistics:");
+        LOGGER.debug("");
+        LOGGER.debug("Statistics:");
         LOGGER.debug("===========");
         LOGGER.debug("    Case parse time: {} seconds.", parseTime);
         LOGGER.debug(
@@ -434,7 +438,7 @@ public final class TestSuite {
         }
 
         // print dislodged units
-        if (c.getPreDislodged().size() > 0) {
+        if (!c.getPreDislodged().isEmpty()) {
             LOGGER.debug(
                     "=PRE-STATE DISLODGED===================================================");
             for (final Order dsOrd : c.getPreDislodged()) {
@@ -452,7 +456,7 @@ public final class TestSuite {
             LOGGER.debug("{}{}", "  ", order);
         }
 
-        if (currentCase.getOrders().size() == 0) {
+        if (currentCase.getOrders().isEmpty()) {
             LOGGER.debug("  [none]");
         }
     }// printOrders()
