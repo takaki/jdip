@@ -278,7 +278,7 @@ public final class TestSuite {
         final long startMillis = System.currentTimeMillis();    // start timing!
 
         // all cases in an array
-        final Case[] allCases = cases.toArray(new Case[cases.size()]);
+        final List<Case> allCases = cases;
 
         // 'typical' mode (testing).
         // we keep stats and may or may not have logging
@@ -420,8 +420,7 @@ public final class TestSuite {
                     "=PRESTATE_RESULTS======================================================");
             LOGGER.debug("{}{}", "  From ",
                     c.getPreviousTurnState().getPhase());
-            final OrderResult[] or = c.getResults();
-            for (final OrderResult anOr : or) {
+            for (final OrderResult anOr : c.getResults()) {
                 LOGGER.debug("{}{}", "    ", anOr);
             }
         }
@@ -431,8 +430,7 @@ public final class TestSuite {
         if (c.getPreState().length > 0) {
             LOGGER.debug(
                     "=PRE-STATE=============================================================");
-            final DefineState[] dsOrds = c.getPreState();
-            for (final DefineState dsOrd : dsOrds) {
+            for (final DefineState dsOrd : c.getPreState()) {
                 LOGGER.debug("{}{}", "   ", dsOrd);
             }
         }
@@ -441,8 +439,7 @@ public final class TestSuite {
         if (c.getPreDislodged().length > 0) {
             LOGGER.debug(
                     "=PRE-STATE DISLODGED===================================================");
-            final DefineState[] dsOrds = c.getPreDislodged();
-            for (final DefineState dsOrd : dsOrds) {
+            for (final DefineState dsOrd : c.getPreDislodged()) {
                 LOGGER.debug("{}{}", "   ", dsOrd);
             }
         }
@@ -453,12 +450,11 @@ public final class TestSuite {
      * Prints the orders in a case
      */
     private void printOrders(final Case currentCase) {
-        final Order[] orders = currentCase.getOrders();
-        for (final Order order : orders) {
+        for (final Order order : currentCase.getOrders()) {
             LOGGER.debug("{}{}", "  ", order);
         }
 
-        if (orders.length == 0) {
+        if (currentCase.getOrders().length == 0) {
             LOGGER.debug("  [none]");
         }
     }// printOrders()
@@ -875,9 +871,8 @@ public final class TestSuite {
                 // no need to validate units
                 if (supplySCOwners.length > 0) {
                     // first erase old info
-                    final Province[] provinces = position.getProvinces();
 
-                    for (final Province province : provinces) {
+                    for (final Province province : position.getProvinces()) {
                         if (position.hasSupplyCenterOwner(province)) {
                             position.setSupplyCenterOwner(province, null);
                         }
