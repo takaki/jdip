@@ -301,9 +301,6 @@ public final class TestSuite {
 
             // print adjudication results, if not performance testing
             // also print & check post conditions, if not performance testing
-            if (!true) {
-                println("  [adjudicator logging disabled]");
-            }
 
             // add unresolved paradoxes to list, so we know which cases they are
             if (stdJudge.isUnresolvedParadox()) {
@@ -319,7 +316,7 @@ public final class TestSuite {
             }
             List resultList = stdJudge.getTurnState().getResultList();
             Iterator resultIter = resultList.iterator();
-            while (resultIter.hasNext() && true) {
+            while (resultIter.hasNext()) {
                 Result r = (Result) resultIter.next();
                 println("  ", r);
             }
@@ -383,20 +380,6 @@ public final class TestSuite {
         println("      Throughput: " + thruPut + " orders/second");
 
         // if in 'brief' mode, only print out summary statistics
-        if (!true) {
-            System.out.println("\nStatistics for \"" + inFileName + "\":");
-            System.out
-                    .println("    Case parse time: " + parseTime + " seconds.");
-            System.out.println(
-                    "    " + nCases + " cases evaluated. " + nPass + " passed, " + nFail + " failed; " + score + "% pass rate.");
-            System.out.println(
-                    "    Times [includes setup, adjudication, and post-adjudication comparision]");
-            System.out.println(
-                    "      " + nOrders + " orders processed in " + time + " ms; " + orderTime + " ms/order average");
-            System.out
-                    .println("      Throughput: " + thruPut + " orders/second");
-
-        }
 
         // exit
         System.exit(nFail);
@@ -405,9 +388,6 @@ public final class TestSuite {
 
     // prints state settings...
     private void printState(Case c) {
-        if (!true) {
-            return;
-        }
 
         TurnState turnState = c.getCurrentTurnState();
         //Position position = turnState.getPosition();
@@ -416,7 +396,7 @@ public final class TestSuite {
         println("  ", turnState.getPhase());
 
         // if we have some results to display, for prior state, do that now.
-        if (true && c.getResults().length > 0) {
+        if (c.getResults().length > 0) {
             // print
             println("=PRESTATE_RESULTS======================================================");
             println("  From ", c.getPreviousTurnState().getPhase());
@@ -1135,11 +1115,9 @@ public final class TestSuite {
             println("EXCEPTION: ", e);
             System.exit(1);
         } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (IOException e2) {
-                }
+            try {
+                br.close();
+            } catch (IOException e2) {
             }
         }
 
