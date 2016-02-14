@@ -486,16 +486,14 @@ public final class TestSuite {
         //
         Set resolvedUnits = new HashSet();
 
-        Province[] provs = pos.getUnitProvinces();
-        for (final Province prov1 : provs) {
+        for (final Province prov1 : pos.getUnitProvinces()) {
             if (!resolvedUnits.add(new UnitPos(pos, prov1, false))) {
                 throw new IllegalStateException(
                         "CompareState: Internal error (non dislodged)");
             }
         }
 
-        provs = pos.getDislodgedUnitProvinces();
-        for (final Province prov : provs) {
+        for (final Province prov : pos.getDislodgedUnitProvinces()) {
             if (!resolvedUnits.add(new UnitPos(pos, prov, true))) {
                 throw new IllegalStateException(
                         "CompareState: Internal error (dislodged)");
@@ -511,16 +509,14 @@ public final class TestSuite {
         //
         Set caseUnits = new HashSet();
 
-        DefineState[] dsOrds = c.getPostState();
-        for (final DefineState dsOrd1 : dsOrds) {
+        for (final DefineState dsOrd1 : c.getPostState()) {
             if (!caseUnits.add(new UnitPos(dsOrd1, false))) {
                 LOGGER.debug("ERROR: duplicate POSTSTATE position: {}", dsOrd1);
                 return false;
             }
         }
 
-        dsOrds = c.getPostDislodged();
-        for (final DefineState dsOrd : dsOrds) {
+        for (final DefineState dsOrd : c.getPostDislodged()) {
             if (!caseUnits.add(new UnitPos(dsOrd, true))) {
                 LOGGER.debug(
                         "ERROR: duplicate POSTSTATE_DISLODGED position: {}",
@@ -672,7 +668,6 @@ public final class TestSuite {
                     final List<String> orderResultList)  {
             this.name = name;
             final List<Serializable> temp = new ArrayList<>(50);
-            Iterator<String> iter = null;
             of = OrderParser.getInstance();
 
 
@@ -704,7 +699,7 @@ public final class TestSuite {
 
             // pre
             temp.clear();
-            iter = pre.iterator();
+            Iterator<String> iter = pre.iterator();
             while (iter.hasNext()) {
                 final String line = iter.next();
                 final Order order = parseOrder(line, currentTS, true);
@@ -843,8 +838,7 @@ public final class TestSuite {
                 final Position position = currentTS.getPosition();
 
                 // ensure all powers are active
-                final Power[] powers = world.getMap().getPowers();
-                for (final Power power : powers) {
+                for (final Power power : world.getMap().getPowers()) {
                     position.setEliminated(power, false);
                 }
 
@@ -977,9 +971,6 @@ public final class TestSuite {
         BufferedReader br = null;
 
         // per case data that is NOT in List format
-        String caseName = null;
-        String phaseName = null;
-        boolean inCase = false;        // we are in a CASE
 
         // setup reader
         try {
@@ -995,6 +986,9 @@ public final class TestSuite {
             String currentKey = null;
             int lineCount = 1;
 
+            String caseName = null;
+            boolean inCase = false;        // we are in a CASE
+            String phaseName = null;
             while (rawLine != null) {
                 final String line = filterLine(rawLine);
                 final String key = getKeyType(line);
@@ -1109,7 +1103,7 @@ public final class TestSuite {
         } finally {
             try {
                 br.close();
-            } catch (final IOException e2) {
+            } catch (final IOException ignored) {
             }
         }
 
