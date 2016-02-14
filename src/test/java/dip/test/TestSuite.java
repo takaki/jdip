@@ -277,13 +277,10 @@ public final class TestSuite {
 
         final long startMillis = System.currentTimeMillis();    // start timing!
 
-        // all cases in an array
-        final List<Case> allCases = cases;
-
         // 'typical' mode (testing).
         // we keep stats and may or may not have logging
         //
-        for (final Case currentCase : allCases) {
+        for (final Case currentCase : cases) {
             // world: setup
             world.setTurnState(currentCase.getCurrentTurnState());
             world.setTurnState(currentCase.getPreviousTurnState());
@@ -740,109 +737,107 @@ public final class TestSuite {
             // against the 'prestate' positions. This way we would have all the same
             // results that the adjudicator would normally generate.
             //
-            if (true) {
-                temp.clear();
-                orderResultList.stream().forEach(line -> {
-                    final ResultType ordResultType;
+            temp.clear();
+            orderResultList.stream().forEach(line -> {
+                final ResultType ordResultType;
 
-                    // success or failure??
-                    if (line.startsWith("success")) {
-                        ordResultType = ResultType.SUCCESS;
-                    } else if (line.startsWith("failure")) {
-                        ordResultType = ResultType.FAILURE;
-                    } else {
-                        LOGGER.debug("ERROR");
-                        LOGGER.debug("case: {}", name);
-                        LOGGER.debug("line: {}", line);
-                        LOGGER.debug(
-                                "PRESTATE_RESULTS: must prepend orders with \"SUCCESS:\" or \"FAILURE:\".");
-                        throw new RuntimeException();
-                    }
+                // success or failure??
+                if (line.startsWith("success")) {
+                    ordResultType = ResultType.SUCCESS;
+                } else if (line.startsWith("failure")) {
+                    ordResultType = ResultType.FAILURE;
+                } else {
+                    LOGGER.debug("ERROR");
+                    LOGGER.debug("case: {}", name);
+                    LOGGER.debug("line: {}", line);
+                    LOGGER.debug(
+                            "PRESTATE_RESULTS: must prepend orders with \"SUCCESS:\" or \"FAILURE:\".");
+                    throw new RuntimeException();
+                }
 
-                    // remove after first colon, and parse the order
-                    line = line.substring(line.indexOf(':') + 1);
-                    final Order order = parseOrder(line, previousTS, false);
+                // remove after first colon, and parse the order
+                line = line.substring(line.indexOf(':') + 1);
+                final Order order = parseOrder(line, previousTS, false);
 
-                    // was order a convoyed move? because then we have to add a
-                    // convoyed move result.
-                    //
-                    if (order instanceof Move) {
-                        final Move mv = (Move) order;
-                        if (mv.isConvoying()) {
-                            // NOTE: we cheat; path src/dest ok, middle is == src
-                            final Province[] path = new Province[3];
-                            path[0] = mv.getSource().getProvince();
-                            path[1] = path[0];
-                            path[2] = mv.getDest().getProvince();
-                            temp.add(new ConvoyPathResult(order, path));
-                        }
-                    }
-
-
-                    // create/add order result
-                    temp.add(new OrderResult(order, ordResultType,
-                            " (prestate)"));
-                });
-                results = temp.toArray(new OrderResult[temp.size()]);
-
-                // add results to previous turnstate
-                previousTS.setResultList(new ArrayList<>(temp));
-
-                // add positions/ownership/orders to current turnstate
+                // was order a convoyed move? because then we have to add a
+                // convoyed move result.
                 //
-                // add orders, first clearing any existing orders in the turnstate
-                currentTS.clearAllOrders();
-                for (final Order order : orders) {
-                    final List orderList = currentTS
-                            .getOrders(order.getPower());
-                    orderList.add(order);
-                    currentTS.setOrders(order.getPower(), orderList);
-                }
-
-                // get position
-                final Position position = currentTS.getPosition();
-
-                // ensure all powers are active
-                for (final Power power : world.getMap().getPowers()) {
-                    position.setEliminated(power, false);
-                }
-
-                // Add non-dislodged units
-                for (final Order aPreState : preState) {
-                    final Unit unit = new Unit(aPreState.getPower(),
-                            aPreState.getSourceUnitType());
-                    unit.setCoast(aPreState.getSource().getCoast());
-                    position.setUnit(aPreState.getSource().getProvince(), unit);
-                }
-
-                // Add dislodged units
-                for (final Order aPreDislodged : preDislodged) {
-                    final Unit unit = new Unit(aPreDislodged.getPower(),
-                            aPreDislodged.getSourceUnitType());
-                    unit.setCoast(aPreDislodged.getSource().getCoast());
-                    position.setDislodgedUnit(
-                            aPreDislodged.getSource().getProvince(), unit);
-                }
-
-                // Set supply center owners
-                // if we have ANY supply center owners, we erase the template
-                // if we do not have any, we assume the template is correct
-                // no need to validate units
-                if (!supplySCOwners.isEmpty()) {
-                    // first erase old info
-
-                    for (final Province province : position.getProvinces()) {
-                        if (position.hasSupplyCenterOwner(province)) {
-                            position.setSupplyCenterOwner(province, null);
-                        }
+                if (order instanceof Move) {
+                    final Move mv = (Move) order;
+                    if (mv.isConvoying()) {
+                        // NOTE: we cheat; path src/dest ok, middle is == src
+                        final Province[] path = new Province[3];
+                        path[0] = mv.getSource().getProvince();
+                        path[1] = path[0];
+                        path[2] = mv.getDest().getProvince();
+                        temp.add(new ConvoyPathResult(order, path));
                     }
+                }
 
-                    // add new info
-                    for (final Order supplySCOwner : supplySCOwners) {
-                        position.setSupplyCenterOwner(
-                                supplySCOwner.getSource().getProvince(),
-                                supplySCOwner.getPower());
+
+                // create/add order result
+                temp.add(new OrderResult(order, ordResultType,
+                        " (prestate)"));
+            });
+            results = temp.toArray(new OrderResult[temp.size()]);
+
+            // add results to previous turnstate
+            previousTS.setResultList(new ArrayList<>(temp));
+
+            // add positions/ownership/orders to current turnstate
+            //
+            // add orders, first clearing any existing orders in the turnstate
+            currentTS.clearAllOrders();
+            for (final Order order : orders) {
+                final List orderList = currentTS
+                        .getOrders(order.getPower());
+                orderList.add(order);
+                currentTS.setOrders(order.getPower(), orderList);
+            }
+
+            // get position
+            final Position position = currentTS.getPosition();
+
+            // ensure all powers are active
+            for (final Power power : world.getMap().getPowers()) {
+                position.setEliminated(power, false);
+            }
+
+            // Add non-dislodged units
+            for (final Order aPreState : preState) {
+                final Unit unit = new Unit(aPreState.getPower(),
+                        aPreState.getSourceUnitType());
+                unit.setCoast(aPreState.getSource().getCoast());
+                position.setUnit(aPreState.getSource().getProvince(), unit);
+            }
+
+            // Add dislodged units
+            for (final Order aPreDislodged : preDislodged) {
+                final Unit unit = new Unit(aPreDislodged.getPower(),
+                        aPreDislodged.getSourceUnitType());
+                unit.setCoast(aPreDislodged.getSource().getCoast());
+                position.setDislodgedUnit(
+                        aPreDislodged.getSource().getProvince(), unit);
+            }
+
+            // Set supply center owners
+            // if we have ANY supply center owners, we erase the template
+            // if we do not have any, we assume the template is correct
+            // no need to validate units
+            if (!supplySCOwners.isEmpty()) {
+                // first erase old info
+
+                for (final Province province : position.getProvinces()) {
+                    if (position.hasSupplyCenterOwner(province)) {
+                        position.setSupplyCenterOwner(province, null);
                     }
+                }
+
+                // add new info
+                for (final Order supplySCOwner : supplySCOwners) {
+                    position.setSupplyCenterOwner(
+                            supplySCOwner.getSource().getProvince(),
+                            supplySCOwner.getPower());
                 }
             }
         }// Case()
