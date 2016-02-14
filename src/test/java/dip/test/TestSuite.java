@@ -320,10 +320,9 @@ public final class TestSuite {
                 LOGGER.debug("{}{}", "=NEXT PHASE: ",
                         stdJudge.getNextTurnState().getPhase());
             }
-            final List resultList = stdJudge.getTurnState().getResultList();
-            final Iterator resultIter = resultList.iterator();
-            while (resultIter.hasNext()) {
-                final Result r = (Result) resultIter.next();
+            final List<Result> resultList = stdJudge.getTurnState()
+                    .getResultList();
+            for (final Result r : resultList) {
                 LOGGER.debug("{}{}", "  ", r);
             }
 
@@ -365,18 +364,12 @@ public final class TestSuite {
 
         LOGGER.debug("\nFailed Cases:");
         LOGGER.debug("=============");
-        Iterator<String> iter = failedCaseNames.iterator();
-        while (iter.hasNext()) {
-            LOGGER.debug("{}{}", "   ", iter.next());
-        }
+        failedCaseNames.forEach(name -> LOGGER.debug("{}{}", "   ", name));
         LOGGER.debug("   [total: {}]", failedCaseNames.size());
 
         LOGGER.debug("\nUnresolved Paradoxes:");
         LOGGER.debug("=====================");
-        iter = unRezParadoxes.iterator();
-        while (iter.hasNext()) {
-            LOGGER.debug("   {}", iter.next());
-        }
+        unRezParadoxes.forEach(paradox -> LOGGER.debug("   {}", paradox));
         LOGGER.debug("{}{}{}", "   [total: ",
                 Integer.toString(unRezParadoxes.size()), "]");
 
@@ -559,13 +552,13 @@ public final class TestSuite {
             LOGGER.debug("  CompareState: FAILED: unit positions follow.");
 
             // print adds
-            printSet(added, "+");
+            added.forEach(up -> LOGGER.debug("  " + "+" + " " + up));
 
             // print subtracts
-            printSet(missing, "-");
+            missing.forEach(up -> LOGGER.debug("  " + "-" + " " + up));
 
             // print units in correct position
-            printSet(intersection, "=");
+            intersection.forEach(up -> LOGGER.debug("  " + "=" + " " + up));
 
             return false;
         }
@@ -573,25 +566,6 @@ public final class TestSuite {
 
         return true;
     }// compareState()
-
-
-    /**
-     * Print all the UnitPos objects from a Set; prefixing with the given prefix
-     */
-    private void printSet(final Set set, final String prefix) {
-        final Iterator iter = set.iterator();
-        while (iter.hasNext()) {
-            final UnitPos up = (UnitPos) iter.next();
-
-            final StringBuffer sb = new StringBuffer(64);
-            sb.append("  ");    // spacer
-            sb.append(prefix);
-            sb.append(" ");
-            sb.append(up);
-
-            LOGGER.debug(sb.toString());
-        }
-    }// printSet()
 
 
     /**
