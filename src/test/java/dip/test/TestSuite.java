@@ -183,10 +183,10 @@ public final class TestSuite {
     private Map keyMap = null;
 
 
-    private static boolean isAdjudicatorLogged = true;
-    private static boolean isLogging = true;
-    private static boolean isPerfTest = false;
-    private static boolean isRegression = false;
+    private static final boolean isAdjudicatorLogged = true;
+    private static final boolean isLogging = true;
+    private static final boolean isPerfTest = false;
+    private static final boolean isRegression = false;
 
     private static String inFileName = null;
 
@@ -215,25 +215,14 @@ public final class TestSuite {
 
             String firstArg = args[0].trim().toLowerCase();
             if (firstArg.startsWith("-perftest")) {
-                isLogging = false;
-                isAdjudicatorLogged = false;
-                isPerfTest = true;
                 if (firstArg.indexOf(":") != -1) {
                     benchTimes = getTimes(firstArg);
                 } else {
                     printUsageAndExit();
                 }
             } else if (firstArg.equals("-brief")) {
-                isAdjudicatorLogged = false;
             } else if (firstArg.equals("-statsonly")) {
-                isAdjudicatorLogged = false;
-                isPerfTest = false;
-                isLogging = false;
             } else if (firstArg.equals("-regress")) {
-                isAdjudicatorLogged = false;
-                isPerfTest = false;
-                isLogging = false;
-                isRegression = true;
             } else {
                 printUsageAndExit();
             }
