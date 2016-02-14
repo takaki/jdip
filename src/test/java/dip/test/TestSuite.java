@@ -369,7 +369,7 @@ public final class TestSuite {
         final float score = (float) nPass / nCases * 100.0f;
 
         LOGGER.debug("");
-                LOGGER.debug("Failed Cases:");
+        LOGGER.debug("Failed Cases:");
         LOGGER.debug("=============");
         failedCaseNames.forEach(name -> LOGGER.debug("{}{}", "   ", name));
         LOGGER.debug("   [total: {}]", failedCaseNames.size());
@@ -492,61 +492,62 @@ public final class TestSuite {
 
         // create set of resolvedUnits
         //
-        Set resolvedUnits = new HashSet();
+        final Set<UnitPos> resolvedUnits1 = new HashSet<>();
 
-        for (final Province prov1 : pos.getUnitProvinces()) {
-            if (!resolvedUnits.add(new UnitPos(pos, prov1, false))) {
+        for (final Province prov : pos.getUnitProvinces()) {
+            if (!resolvedUnits1.add(new UnitPos(pos, prov, false))) {
                 throw new IllegalStateException(
                         "CompareState: Internal error (non dislodged)");
             }
         }
 
         for (final Province prov : pos.getDislodgedUnitProvinces()) {
-            if (!resolvedUnits.add(new UnitPos(pos, prov, true))) {
+            if (!resolvedUnits1.add(new UnitPos(pos, prov, true))) {
                 throw new IllegalStateException(
                         "CompareState: Internal error (dislodged)");
             }
         }
 
 
-        resolvedUnits = Collections
-                .unmodifiableSet(resolvedUnits);    // for safety
+        final Set<UnitPos> resolvedUnits = Collections
+                .unmodifiableSet(resolvedUnits1);    // for safety
 
 
         // create set of caseUnits
         //
-        Set caseUnits = new HashSet();
+        final Set<UnitPos> caseUnits1 = new HashSet<>();
 
         for (final Order dsOrd1 : c.getPostState()) {
-            if (!caseUnits.add(new UnitPos(dsOrd1, false))) {
+            if (!caseUnits1.add(new UnitPos(dsOrd1, false))) {
                 LOGGER.debug("ERROR: duplicate POSTSTATE position: {}", dsOrd1);
                 return false;
             }
         }
 
         for (final Order dsOrd : c.getPostDislodged()) {
-            if (!caseUnits.add(new UnitPos(dsOrd, true))) {
+            if (!caseUnits1.add(new UnitPos(dsOrd, true))) {
                 LOGGER.debug(
                         "ERROR: duplicate POSTSTATE_DISLODGED position: {}",
                         dsOrd);
                 return false;
             }
         }
-        caseUnits = Collections.unmodifiableSet(caseUnits);    // for safety
+        final Set<UnitPos> caseUnits = Collections
+                .unmodifiableSet(caseUnits1);    // for safety
 
         // compare sets.
         //
         // first, we must make a duplicate of one set.
         // these are the units that are in the correct position (intersection)
         //
-        final Set intersection = new HashSet(caseUnits);
+        final Set<UnitPos> intersection = new HashSet<>(caseUnits);
         intersection.retainAll(resolvedUnits);
 
         // now, create subtraction sets
-        final Set added = new HashSet(resolvedUnits);
+        final Set<UnitPos> added = new HashSet<>(resolvedUnits);
         added.removeAll(caseUnits);
 
-        final Set missing = new HashSet(caseUnits);
+        final Set<UnitPos> missing = new HashSet<>(caseUnits);
         missing.removeAll(resolvedUnits);
 
         // if subtraction sets have no units, we are done. Otherwise, we must print
