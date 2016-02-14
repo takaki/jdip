@@ -188,7 +188,7 @@ public final class TestSuite {
 
     private static float parseTime = -1;
 
-    private Map<String, LinkedList<String>> keyMap;
+    private Map<String, LinkedList<String>> keyMap = new HashMap<>(23);
 
 
     private static String inFileName;
@@ -776,8 +776,7 @@ public final class TestSuite {
 
 
                 // create/add order result
-                temp.add(new OrderResult(order, ordResultType,
-                        " (prestate)"));
+                temp.add(new OrderResult(order, ordResultType, " (prestate)"));
             });
             results = temp.toArray(new OrderResult[temp.size()]);
 
@@ -789,8 +788,7 @@ public final class TestSuite {
             // add orders, first clearing any existing orders in the turnstate
             currentTS.clearAllOrders();
             for (final Order order : orders) {
-                final List orderList = currentTS
-                        .getOrders(order.getPower());
+                final List orderList = currentTS.getOrders(order.getPower());
                 orderList.add(order);
                 currentTS.setOrders(order.getPower(), orderList);
             }
@@ -949,7 +947,7 @@ public final class TestSuite {
                 }
 
                 // only process non-null (after filtering)
-                if (line != null) {
+                if (!line.isEmpty()) {
                     if (currentKey == null) {
                         // this can occur if a key is missing.
                         LOGGER.debug("ERROR: missing a required key");
@@ -1058,22 +1056,12 @@ public final class TestSuite {
     // returns null if string is a comment line.
     private String filterLine(final String in) {
         // remove whitespace
-        final String out = in.trim();
-
         // find comment-character index, if it exists
-        final int ccIdx = out.indexOf('#');
-
         // if entire line is a comment, or empty, return COMMENT_LINE now
-        if (ccIdx == 0 || out.length() < 1) {
-            return null;
-        }
-
         // remove 'trailing' comments, if any
         // otherwise, it could interfere with order processing.
-        final String out2 = ccIdx > 0 ? out.substring(0, ccIdx) : out;
-
         // convert to lower case();
-        return out2.toLowerCase();
+        return in.trim().replaceAll("#.*", "").toLowerCase();
     }// filterLine
 
     // find first space this works, because the
@@ -1099,10 +1087,6 @@ public final class TestSuite {
 
 
     private void clearAndSetupKeyMap() {
-        if (keyMap == null) {
-            keyMap = new HashMap<>(23);
-        }
-
         keyMap.clear();
 
         for (final String aKEY_TYPES_WITH_LIST : KEY_TYPES_WITH_LIST) {
@@ -1116,7 +1100,7 @@ public final class TestSuite {
             true key type type
     */
     private String getKeyType(final String line) {
-        if (line == null) {
+        if (line != null && line.isEmpty()) {
             return null;
         }
 
