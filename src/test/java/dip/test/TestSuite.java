@@ -848,23 +848,23 @@ public final class TestSuite {
         }
 
         public List<Order> getPreState() {
-            return preState;
+            return Collections.unmodifiableList(preState);
         }
 
         public List<Order> getPostState() {
-            return postState;
+            return Collections.unmodifiableList(postState);
         }
 
         public List<Order> getPreDislodged() {
-            return preDislodged;
+            return Collections.unmodifiableList(preDislodged);
         }
 
         public List<Order> getPostDislodged() {
-            return postDislodged;
+            return Collections.unmodifiableList(postDislodged);
         }
 
         public List<Order> getSCOwners() {
-            return supplySCOwners;
+            return Collections.unmodifiableList(supplySCOwners);
         }
 
         public Phase getPhase() {
@@ -872,7 +872,7 @@ public final class TestSuite {
         }
 
         public List<Order> getOrders() {
-            return orders;
+            return Collections.unmodifiableList(orders);
         }
 
         public OrderResult[] getResults() {
@@ -933,13 +933,13 @@ public final class TestSuite {
 
         // setup reader
         try (BufferedReader br = new BufferedReader(new FileReader(caseFile))) {
-            String rawLine = br.readLine();
             String currentKey = null;
             int lineCount = 1;
 
             String caseName = null;
             boolean inCase = false;        // we are in a CASE
             String phaseName = null;
+            String rawLine = br.readLine();
             while (rawLine != null) {
                 final String line = filterLine(rawLine);
                 final String key = getKeyType(line);
@@ -1058,7 +1058,7 @@ public final class TestSuite {
     // returns null if string is a comment line.
     private String filterLine(final String in) {
         // remove whitespace
-        String out = in.trim();
+        final String out = in.trim();
 
         // find comment-character index, if it exists
         final int ccIdx = out.indexOf('#');
@@ -1070,14 +1070,10 @@ public final class TestSuite {
 
         // remove 'trailing' comments, if any
         // otherwise, it could interfere with order processing.
-        if (ccIdx > 0) {
-            out = out.substring(0, ccIdx);
-        }
+        final String out2 = ccIdx > 0 ? out.substring(0, ccIdx) : out;
 
         // convert to lower case();
-        out = out.toLowerCase();
-
-        return out;
+        return out2.toLowerCase();
     }// filterLine
 
     // find first space this works, because the
