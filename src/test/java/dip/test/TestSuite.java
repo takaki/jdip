@@ -302,7 +302,7 @@ public final class TestSuite {
                     "=ORDERS================================================================");
             printOrders(currentCase);
             nOrders += currentCase.getOrders().size();
-            
+
             // adjudicate
             LOGGER.debug(
                     "=ADJUDICATION==========================================================");
@@ -742,12 +742,10 @@ public final class TestSuite {
             // against the 'prestate' positions. This way we would have all the same
             // results that the adjudicator would normally generate.
             //
-            if (orderResultList != null) {
+            if (true) {
                 temp.clear();
-                Iterator<String> iter = orderResultList.iterator();
-                while (iter.hasNext()) {
-                    String line = iter.next();
-                    ResultType ordResultType;
+                orderResultList.stream().forEach(line -> {
+                    final ResultType ordResultType;
 
                     // success or failure??
                     if (line.startsWith("success")) {
@@ -786,7 +784,7 @@ public final class TestSuite {
                     // create/add order result
                     temp.add(new OrderResult(order, ordResultType,
                             " (prestate)"));
-                }
+                });
                 results = temp.toArray(new OrderResult[temp.size()]);
 
                 // add results to previous turnstate
