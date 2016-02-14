@@ -231,13 +231,6 @@ public final class TestSuite {
     private void initVariant() {
         try {
             // get default variant directory.
-            File defaultVariantSearchDir = null;
-            if (System.getProperty("user.dir") == null) {
-                defaultVariantSearchDir = new File(".", VARIANT_DIR);
-            } else {
-                defaultVariantSearchDir = new File(
-                        System.getProperty("user.dir"), VARIANT_DIR);
-            }
 
 
             // load the default variant (Standard)
@@ -281,9 +274,7 @@ public final class TestSuite {
         // 'typical' mode (testing).
         // we keep stats and may or may not have logging
         //
-        for (int ccn = 0; ccn < allCases.length; ccn++) {
-            Case currentCase = allCases[ccn];
-
+        for (Case currentCase : allCases) {
             // world: setup
             world.setTurnState(currentCase.getCurrentTurnState());
             world.setTurnState(currentCase.getPreviousTurnState());
@@ -430,8 +421,8 @@ public final class TestSuite {
             println("=PRESTATE_RESULTS======================================================");
             println("  From ", c.getPreviousTurnState().getPhase());
             OrderResult[] or = c.getResults();
-            for (int i = 0; i < or.length; i++) {
-                println("    ", or[i]);
+            for (OrderResult anOr : or) {
+                println("    ", anOr);
             }
         }
 
@@ -440,8 +431,8 @@ public final class TestSuite {
         if (c.getPreState().length > 0) {
             println("=PRE-STATE=============================================================");
             DefineState[] dsOrds = c.getPreState();
-            for (int i = 0; i < dsOrds.length; i++) {
-                println("   ", dsOrds[i]);
+            for (DefineState dsOrd : dsOrds) {
+                println("   ", dsOrd);
             }
         }
 
@@ -449,8 +440,8 @@ public final class TestSuite {
         if (c.getPreDislodged().length > 0) {
             println("=PRE-STATE DISLODGED===================================================");
             DefineState[] dsOrds = c.getPreDislodged();
-            for (int i = 0; i < dsOrds.length; i++) {
-                println("   ", dsOrds[i]);
+            for (DefineState dsOrd : dsOrds) {
+                println("   ", dsOrd);
             }
         }
     }// printState()
@@ -461,8 +452,8 @@ public final class TestSuite {
      */
     private void printOrders(Case currentCase) {
         Order[] orders = currentCase.getOrders();
-        for (int i = 0; i < orders.length; i++) {
-            println("  ", orders[i].toString());
+        for (Order order : orders) {
+            println("  ", order.toString());
         }
 
         if (orders.length == 0) {
@@ -503,16 +494,16 @@ public final class TestSuite {
         Set resolvedUnits = new HashSet();
 
         Province[] provs = pos.getUnitProvinces();
-        for (int i = 0; i < provs.length; i++) {
-            if (!resolvedUnits.add(new UnitPos(pos, provs[i], false))) {
+        for (Province prov1 : provs) {
+            if (!resolvedUnits.add(new UnitPos(pos, prov1, false))) {
                 throw new IllegalStateException(
                         "CompareState: Internal error (non dislodged)");
             }
         }
 
         provs = pos.getDislodgedUnitProvinces();
-        for (int i = 0; i < provs.length; i++) {
-            if (!resolvedUnits.add(new UnitPos(pos, provs[i], true))) {
+        for (Province prov : provs) {
+            if (!resolvedUnits.add(new UnitPos(pos, prov, true))) {
                 throw new IllegalStateException(
                         "CompareState: Internal error (dislodged)");
             }
@@ -528,17 +519,17 @@ public final class TestSuite {
         Set caseUnits = new HashSet();
 
         DefineState[] dsOrds = c.getPostState();
-        for (int i = 0; i < dsOrds.length; i++) {
-            if (!caseUnits.add(new UnitPos(dsOrds[i], false))) {
-                println("ERROR: duplicate POSTSTATE position: " + dsOrds[i]);
+        for (DefineState dsOrd1 : dsOrds) {
+            if (!caseUnits.add(new UnitPos(dsOrd1, false))) {
+                println("ERROR: duplicate POSTSTATE position: " + dsOrd1);
                 return false;
             }
         }
 
         dsOrds = c.getPostDislodged();
-        for (int i = 0; i < dsOrds.length; i++) {
-            if (!caseUnits.add(new UnitPos(dsOrds[i], true))) {
-                println("ERROR: duplicate POSTSTATE_DISLODGED position: " + dsOrds[i]);
+        for (DefineState dsOrd : dsOrds) {
+            if (!caseUnits.add(new UnitPos(dsOrd, true))) {
+                println("ERROR: duplicate POSTSTATE_DISLODGED position: " + dsOrd);
                 return false;
             }
         }
@@ -869,10 +860,10 @@ public final class TestSuite {
                 //
                 // add orders, first clearing any existing orders in the turnstate
                 currentTS.clearAllOrders();
-                for (int i = 0; i < orders.length; i++) {
-                    List orderList = currentTS.getOrders(orders[i].getPower());
-                    orderList.add(orders[i]);
-                    currentTS.setOrders(orders[i].getPower(), orderList);
+                for (Order order : orders) {
+                    List orderList = currentTS.getOrders(order.getPower());
+                    orderList.add(order);
+                    currentTS.setOrders(order.getPower(), orderList);
                 }
 
                 // get position
@@ -880,26 +871,25 @@ public final class TestSuite {
 
                 // ensure all powers are active
                 Power[] powers = world.getMap().getPowers();
-                for (int i = 0; i < powers.length; i++) {
-                    position.setEliminated(powers[i], false);
+                for (Power power : powers) {
+                    position.setEliminated(power, false);
                 }
 
                 // Add non-dislodged units
-                for (int i = 0; i < preState.length; i++) {
-                    Unit unit = new Unit(preState[i].getPower(),
-                            preState[i].getSourceUnitType());
-                    unit.setCoast(preState[i].getSource().getCoast());
-                    position.setUnit(preState[i].getSource().getProvince(),
-                            unit);
+                for (DefineState aPreState : preState) {
+                    Unit unit = new Unit(aPreState.getPower(),
+                            aPreState.getSourceUnitType());
+                    unit.setCoast(aPreState.getSource().getCoast());
+                    position.setUnit(aPreState.getSource().getProvince(), unit);
                 }
 
                 // Add dislodged units
-                for (int i = 0; i < preDislodged.length; i++) {
-                    Unit unit = new Unit(preDislodged[i].getPower(),
-                            preDislodged[i].getSourceUnitType());
-                    unit.setCoast(preDislodged[i].getSource().getCoast());
+                for (DefineState aPreDislodged : preDislodged) {
+                    Unit unit = new Unit(aPreDislodged.getPower(),
+                            aPreDislodged.getSourceUnitType());
+                    unit.setCoast(aPreDislodged.getSource().getCoast());
                     position.setDislodgedUnit(
-                            preDislodged[i].getSource().getProvince(), unit);
+                            aPreDislodged.getSource().getProvince(), unit);
                 }
 
                 // Set supply center owners
@@ -910,18 +900,17 @@ public final class TestSuite {
                     // first erase old info
                     final Province[] provinces = position.getProvinces();
 
-                    for (int i = 0; i < provinces.length; i++) {
-                        Province province = provinces[i];
+                    for (Province province : provinces) {
                         if (position.hasSupplyCenterOwner(province)) {
                             position.setSupplyCenterOwner(province, null);
                         }
                     }
 
                     // add new info
-                    for (int i = 0; i < supplySCOwners.length; i++) {
+                    for (DefineState supplySCOwner : supplySCOwners) {
                         position.setSupplyCenterOwner(
-                                supplySCOwners[i].getSource().getProvince(),
-                                supplySCOwners[i].getPower());
+                                supplySCOwner.getSource().getProvince(),
+                                supplySCOwner.getPower());
                     }
                 }
             }
@@ -1212,8 +1201,8 @@ public final class TestSuite {
 
         keyMap.clear();
 
-        for (int i = 0; i < KEY_TYPES_WITH_LIST.length; i++) {
-            keyMap.put(KEY_TYPES_WITH_LIST[i], new LinkedList());
+        for (String aKEY_TYPES_WITH_LIST : KEY_TYPES_WITH_LIST) {
+            keyMap.put(aKEY_TYPES_WITH_LIST, new LinkedList());
         }
     }// setupKeyMap()
 
@@ -1232,9 +1221,9 @@ public final class TestSuite {
         } else if (line.startsWith(END)) {
             return END;
         } else {
-            for (int i = 0; i < KEY_TYPES_OTHER.length; i++) {
-                if (line.startsWith(KEY_TYPES_OTHER[i])) {
-                    return KEY_TYPES_OTHER[i];
+            for (String aKEY_TYPES_OTHER : KEY_TYPES_OTHER) {
+                if (line.startsWith(aKEY_TYPES_OTHER)) {
+                    return aKEY_TYPES_OTHER;
                 }
             }
         }
