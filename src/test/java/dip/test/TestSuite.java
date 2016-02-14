@@ -201,7 +201,7 @@ public final class TestSuite {
     /**
      * Start the TestSuite
      */
-    public static void main(final String[] args) throws Exception {
+    public static void main(final String[] args)  {
         inFileName = "etc/test_data/datc_v2.4_06_remove6.e.4.txt";
 // {"etc/test_data/datc_v2.4_09.txt","etc/test_data/dipai.txt","etc/test_data/explicitConvoys.txt","etc/test_data/real.txt","etc/test_data/wing.txt"};
 
@@ -231,7 +231,7 @@ public final class TestSuite {
     }// TestSuite()
 
 
-    private void initVariant() throws Exception {
+    private void initVariant()  {
         try {
             // get default variant directory.
 
@@ -242,7 +242,7 @@ public final class TestSuite {
                     .getVariant(variantName, VariantManager.VERSION_NEWEST)
                     .orElse(null);
             if (variant == null) {
-                throw new Exception("Cannot find variant " + variantName);
+                throw new RuntimeException("Cannot find variant " + variantName);
             }
 
             // create the world
@@ -255,7 +255,7 @@ public final class TestSuite {
             world.setRuleOptions(RuleOptions.createFromVariant(variant));
         } catch (final Exception e) {
             LOGGER.debug("{}{}", "Init error: ", e);
-            throw new Exception(e);
+            throw new RuntimeException(e);
         }
     }// init()
 
@@ -669,7 +669,7 @@ public final class TestSuite {
                     final List<String> supplySCOwnersList,
                     final List<String> preDislodgedList,
                     final List<String> postDislodgedList,
-                    final List<String> orderResultList) throws Exception {
+                    final List<String> orderResultList)  {
             this.name = name;
             final List<Serializable> temp = new ArrayList<>(50);
             Iterator<String> iter = null;
@@ -682,7 +682,7 @@ public final class TestSuite {
                 if (phase == null) {
                     LOGGER.debug("ERROR: case {}", name);
                     LOGGER.debug("ERROR: cannot parse phase {}", phaseName);
-                    throw new Exception();
+                    throw new RuntimeException();
                 }
             }
 
@@ -796,7 +796,7 @@ public final class TestSuite {
                         LOGGER.debug("line: {}", line);
                         LOGGER.debug(
                                 "PRESTATE_RESULTS: must prepend orders with \"SUCCESS:\" or \"FAILURE:\".");
-                        throw new Exception();
+                        throw new RuntimeException();
                     }
 
                     // remove after first colon, and parse the order
@@ -935,7 +935,7 @@ public final class TestSuite {
         }
 
         private Order parseOrder(final String s, final TurnState ts,
-                                 final boolean isDefineState) throws Exception {
+                                 final boolean isDefineState) {
             try {
                 // no guessing (but not locked); we must ALWAYS specify the power.
                 Order o = of
@@ -965,7 +965,7 @@ public final class TestSuite {
                 LOGGER.debug("parseOrder() OrderException: {}", e);
                 LOGGER.debug("Case: {}", name);
                 LOGGER.debug("failure line: {}", s);
-                throw new Exception();
+                throw new RuntimeException(e);
             }
         }// parseOrder()
 
@@ -973,7 +973,7 @@ public final class TestSuite {
 
 
     // NEW case parser
-    private void parseCases(final File caseFile) throws Exception {
+    private void parseCases(final File caseFile)  {
         BufferedReader br = null;
 
         // per case data that is NOT in List format
@@ -987,7 +987,7 @@ public final class TestSuite {
         } catch (final IOException e) {
             LOGGER.debug("ERROR: I/O error opening case file \"{}\"", caseFile);
             LOGGER.debug("EXCEPTION: {}", e);
-            throw new Exception();
+            throw new RuntimeException(e);
         }
 
         try {
@@ -1009,7 +1009,7 @@ public final class TestSuite {
                         // this can occur if a key is missing.
                         LOGGER.debug("ERROR: missing a required key");
                         LOGGER.debug("Line {}: {}", lineCount, rawLine);
-                        throw new Exception();
+                        throw new RuntimeException();
                     } else if (currentKey.equals(VARIANT_ALL)) {
                         // make sure nothing is defined yet
                         if (variantName == null) {
@@ -1019,14 +1019,14 @@ public final class TestSuite {
                                     "ERROR: before cases are defined, the variant must");
                             LOGGER.debug(
                                     "       be set with the VARIANT_ALL flag.");
-                            throw new Exception();
+                            throw new RuntimeException();
                         }
 
                         // make sure we are not in a case!
                         if (inCase) {
                             LOGGER.debug(
                                     "ERROR: VARIANT_ALL cannot be used within a CASE.");
-                            throw new Exception();
+                            throw new RuntimeException();
                         }
 
                         // attempt to initialize the variant
@@ -1050,7 +1050,7 @@ public final class TestSuite {
                                     "ERROR: before cases are defined, the variant must");
                             LOGGER.debug(
                                     "       be set with the VARIANT_ALL flag.");
-                            throw new Exception();
+                            throw new RuntimeException();
                         }
                     } else if (currentKey.equals(END)) {
                         // end a case
@@ -1093,7 +1093,7 @@ public final class TestSuite {
                             LOGGER.debug(
                                     "ERROR: line not enclosed within a CASE.");
                             LOGGER.debug("Line {}: {}", lineCount, rawLine);
-                            throw new Exception();
+                            throw new RuntimeException();
                         }
                     }
                 }
@@ -1105,7 +1105,7 @@ public final class TestSuite {
             LOGGER.debug("{}{}{}", "ERROR: I/O error reading case file \"",
                     caseFile, "\"");
             LOGGER.debug("{}{}", "EXCEPTION: ", e);
-            throw new Exception();
+            throw new RuntimeException();
         } finally {
             try {
                 br.close();
