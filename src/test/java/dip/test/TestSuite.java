@@ -379,8 +379,8 @@ public final class TestSuite {
         while (iter.hasNext()) {
             LOGGER.debug("   " + iter.next());
         }
-        LOGGER.debug("{}{}{}",
-                "   [total: ", Integer.toString(unRezParadoxes.size()), "]");
+        LOGGER.debug("{}{}{}", "   [total: ",
+                Integer.toString(unRezParadoxes.size()), "]");
 
         // print to log
         LOGGER.debug("\nStatistics:");
@@ -417,7 +417,8 @@ public final class TestSuite {
             // print
             LOGGER.debug(
                     "=PRESTATE_RESULTS======================================================");
-            LOGGER.debug("{}{}", "  From ", c.getPreviousTurnState().getPhase());
+            LOGGER.debug("{}{}", "  From ",
+                    c.getPreviousTurnState().getPhase());
             final OrderResult[] or = c.getResults();
             for (final OrderResult anOr : or) {
                 LOGGER.debug("{}{}", "    ", anOr);
@@ -707,9 +708,8 @@ public final class TestSuite {
             if (phaseName != null) {
                 phase = Phase.parse(phaseName);
                 if (phase == null) {
-                    System.out.println("ERROR: case " + name);
-                    System.out
-                            .println("ERROR: cannot parse phase " + phaseName);
+                    LOGGER.debug("ERROR: case " + name);
+                    LOGGER.debug("ERROR: cannot parse phase " + phaseName);
                     System.exit(1);
                 }
             }
@@ -819,10 +819,10 @@ public final class TestSuite {
                     } else if (line.startsWith("failure")) {
                         ordResultType = ResultType.FAILURE;
                     } else {
-                        System.out.println("ERROR");
-                        System.out.println("case: " + name);
-                        System.out.println("line: " + line);
-                        System.out.println(
+                        LOGGER.debug("ERROR");
+                        LOGGER.debug("case: " + name);
+                        LOGGER.debug("line: " + line);
+                        LOGGER.debug(
                                 "PRESTATE_RESULTS: must prepend orders with \"SUCCESS:\" or \"FAILURE:\".");
                         System.exit(1);
                     }
@@ -989,10 +989,10 @@ public final class TestSuite {
 
                 return o;
             } catch (final OrderException e) {
-                System.out.println("ERROR");
-                System.out.println("parseOrder() OrderException: " + e);
-                System.out.println("Case: " + name);
-                System.out.println("failure line: " + s);
+                LOGGER.debug("ERROR");
+                LOGGER.debug("parseOrder() OrderException: " + e);
+                LOGGER.debug("Case: " + name);
+                LOGGER.debug("failure line: " + s);
                 System.exit(1);
             }
             return null;
@@ -1014,9 +1014,9 @@ public final class TestSuite {
         try {
             br = new BufferedReader(new FileReader(caseFile));
         } catch (final IOException e) {
-            System.out.println(
+            LOGGER.debug(
                     "ERROR: I/O error opening case file \"" + caseFile + "\"");
-            System.out.println("EXCEPTION: " + e);
+            LOGGER.debug("EXCEPTION: " + e);
             System.exit(1);
         }
 
@@ -1037,25 +1037,24 @@ public final class TestSuite {
                 if (line != null) {
                     if (currentKey == null) {
                         // this can occur if a key is missing.
-                        System.out.println("ERROR: missing a required key");
-                        System.out
-                                .println("Line " + lineCount + ": " + rawLine);
+                        LOGGER.debug("ERROR: missing a required key");
+                        LOGGER.debug("Line " + lineCount + ": " + rawLine);
                         System.exit(1);
                     } else if (currentKey.equals(VARIANT_ALL)) {
                         // make sure nothing is defined yet
                         if (variantName == null) {
                             variantName = getAfterKeyword(line);
                         } else {
-                            System.out.println(
+                            LOGGER.debug(
                                     "ERROR: before cases are defined, the variant must");
-                            System.out.println(
+                            LOGGER.debug(
                                     "       be set with the VARIANT_ALL flag.");
                             System.exit(1);
                         }
 
                         // make sure we are not in a case!
                         if (inCase) {
-                            System.out.println(
+                            LOGGER.debug(
                                     "ERROR: VARIANT_ALL cannot be used within a CASE.");
                             System.exit(1);
                         }
@@ -1077,9 +1076,9 @@ public final class TestSuite {
 
                         // make sure we have defined a variant!
                         if (variantName == null) {
-                            System.out.println(
+                            LOGGER.debug(
                                     "ERROR: before cases are defined, the variant must");
-                            System.out.println(
+                            LOGGER.debug(
                                     "       be set with the VARIANT_ALL flag.");
                             System.exit(1);
                         }
@@ -1121,10 +1120,9 @@ public final class TestSuite {
                                 list.add(line);
                             }
                         } else {
-                            System.out.println(
+                            LOGGER.debug(
                                     "ERROR: line not enclosed within a CASE.");
-                            System.out.println(
-                                    "Line " + lineCount + ": " + rawLine);
+                            LOGGER.debug("Line " + lineCount + ": " + rawLine);
                             System.exit(1);
                         }
                     }
