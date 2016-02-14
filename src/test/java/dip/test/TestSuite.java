@@ -492,48 +492,41 @@ public final class TestSuite {
 
         // create set of resolvedUnits
         //
-        final Set<UnitPos> resolvedUnits1 = new HashSet<>();
+        final Set<UnitPos> resolvedUnits = new HashSet<>();
 
         for (final Province prov : pos.getUnitProvinces()) {
-            if (!resolvedUnits1.add(new UnitPos(pos, prov, false))) {
+            if (!resolvedUnits.add(new UnitPos(pos, prov, false))) {
                 throw new IllegalStateException(
                         "CompareState: Internal error (non dislodged)");
             }
         }
 
         for (final Province prov : pos.getDislodgedUnitProvinces()) {
-            if (!resolvedUnits1.add(new UnitPos(pos, prov, true))) {
+            if (!resolvedUnits.add(new UnitPos(pos, prov, true))) {
                 throw new IllegalStateException(
                         "CompareState: Internal error (dislodged)");
             }
         }
 
-
-        final Set<UnitPos> resolvedUnits = Collections
-                .unmodifiableSet(resolvedUnits1);    // for safety
-
-
         // create set of caseUnits
         //
-        final Set<UnitPos> caseUnits1 = new HashSet<>();
+        final Set<UnitPos> caseUnits = new HashSet<>();
 
         for (final Order dsOrd1 : c.getPostState()) {
-            if (!caseUnits1.add(new UnitPos(dsOrd1, false))) {
+            if (!caseUnits.add(new UnitPos(dsOrd1, false))) {
                 LOGGER.debug("ERROR: duplicate POSTSTATE position: {}", dsOrd1);
                 return false;
             }
         }
 
         for (final Order dsOrd : c.getPostDislodged()) {
-            if (!caseUnits1.add(new UnitPos(dsOrd, true))) {
+            if (!caseUnits.add(new UnitPos(dsOrd, true))) {
                 LOGGER.debug(
                         "ERROR: duplicate POSTSTATE_DISLODGED position: {}",
                         dsOrd);
                 return false;
             }
         }
-        final Set<UnitPos> caseUnits = Collections
-                .unmodifiableSet(caseUnits1);    // for safety
 
         // compare sets.
         //
