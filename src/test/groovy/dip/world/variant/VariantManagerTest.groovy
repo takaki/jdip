@@ -104,6 +104,6 @@ class VariantManagerTest extends Specification {
 //        vm.getVariantPackageJarURL(variant) == new URL("jar:file:" + System.
 //                getProperty("user.dir") + "/src/test/resources/variants/testVariants.zip!/")
 
-
+        ! vm.getVariant("not exist variant", VariantManager.VERSION_NEWEST).isPresent()
     }
 }

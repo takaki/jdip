@@ -205,6 +205,7 @@ public final class TestSuite {
      * Start the TestSuite
      */
     public static void main(String args[]) {
+// {"etc/test_data/datc_v2.4_09.txt","etc/test_data/dipai.txt","etc/test_data/explicitConvoys.txt","etc/test_data/real.txt","etc/test_data/wing.txt"};
         if (args.length < 1 || args.length > 2) {
             printUsageAndExit();
         }
