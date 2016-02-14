@@ -188,7 +188,7 @@ public final class TestSuite {
 
     private static float parseTime = -1;
 
-    private Map<String, LinkedList<String>> keyMap = new HashMap<>(23);
+    private final Map<String, LinkedList<String>> keyMap = new HashMap<>(23);
 
 
     private static String inFileName;
@@ -568,7 +568,7 @@ public final class TestSuite {
      * is comparable, for determining if the end-state is
      * in fact correct.
      */
-    private class UnitPos {
+    private final class UnitPos {
         private final Unit unit;            // owner/type/coast
         private final Province province;        // position
         private final boolean isDislodged;    // dislodged?
@@ -617,6 +617,7 @@ public final class TestSuite {
         /**
          * Compare
          */
+        @Override
         public boolean equals(final Object obj) {
             if (obj instanceof UnitPos) {
                 final UnitPos up = (UnitPos) obj;
@@ -632,8 +633,9 @@ public final class TestSuite {
         /**
          * Force all hashes to be the same, so equals() is used
          */
+        @Override
         public int hashCode() {
-            return 0;    // very very bad! just an easy shortcut
+            return Objects.hash(unit, province, isDislodged);    // very very bad! just an easy shortcut
         }
     }// inner class UnitPos
 
@@ -644,10 +646,10 @@ public final class TestSuite {
     private final class Case {
         private final List<Order> preState;
         private final List<Order> postState;
-        private List<Order> preDislodged;
-        private List<Order> postDislodged;
-        private List<Order> supplySCOwners;    // all types are 'army'
-        private OrderResult[] results;
+        private final List<Order> preDislodged;
+        private final List<Order> postDislodged;
+        private final List<Order> supplySCOwners;    // all types are 'army'
+        private final OrderResult[] results;
 
         private final List<Order> orders;
         private final String name;
