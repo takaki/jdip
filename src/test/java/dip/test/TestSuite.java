@@ -370,13 +370,13 @@ public final class TestSuite {
         while (iter.hasNext()) {
             LOGGER.debug("{}{}", "   ", iter.next());
         }
-        LOGGER.debug("   [total: " + failedCaseNames.size() + "]");
+        LOGGER.debug("   [total: {}]", failedCaseNames.size());
 
         LOGGER.debug("\nUnresolved Paradoxes:");
         LOGGER.debug("=====================");
         iter = unRezParadoxes.iterator();
         while (iter.hasNext()) {
-            LOGGER.debug("   " + iter.next());
+            LOGGER.debug("   {}", iter.next());
         }
         LOGGER.debug("{}{}{}", "   [total: ",
                 Integer.toString(unRezParadoxes.size()), "]");
@@ -384,14 +384,15 @@ public final class TestSuite {
         // print to log
         LOGGER.debug("\nStatistics:");
         LOGGER.debug("===========");
-        LOGGER.debug("    Case parse time: " + parseTime + " seconds.");
+        LOGGER.debug("    Case parse time: {} seconds.", parseTime);
         LOGGER.debug(
-                "    " + nCases + " cases evaluated. " + nPass + " passed, " + nFail + " failed; " + score + "%  pass rate.");
+                "    {} cases evaluated. {} passed, {} failed; {}%  pass rate.",
+                nCases, nPass, nFail, score);
         LOGGER.debug(
                 "    Times [includes setup, adjudication, and post-adjudication comparision]");
-        LOGGER.debug(
-                "      " + nOrders + " orders processed in " + time + " ms; " + orderTime + " ms/order average");
-        LOGGER.debug("      Throughput: " + thruPut + " orders/second");
+        LOGGER.debug("      {} orders processed in {} ms; {} ms/order average",
+                nOrders, time, orderTime);
+        LOGGER.debug("      Throughput: {} orders/second", thruPut);
 
         // if in 'brief' mode, only print out summary statistics
 
@@ -521,7 +522,7 @@ public final class TestSuite {
         DefineState[] dsOrds = c.getPostState();
         for (final DefineState dsOrd1 : dsOrds) {
             if (!caseUnits.add(new UnitPos(dsOrd1, false))) {
-                LOGGER.debug("ERROR: duplicate POSTSTATE position: " + dsOrd1);
+                LOGGER.debug("ERROR: duplicate POSTSTATE position: {}", dsOrd1);
                 return false;
             }
         }
@@ -530,7 +531,8 @@ public final class TestSuite {
         for (final DefineState dsOrd : dsOrds) {
             if (!caseUnits.add(new UnitPos(dsOrd, true))) {
                 LOGGER.debug(
-                        "ERROR: duplicate POSTSTATE_DISLODGED position: " + dsOrd);
+                        "ERROR: duplicate POSTSTATE_DISLODGED position: {}",
+                        dsOrd);
                 return false;
             }
         }
@@ -706,8 +708,8 @@ public final class TestSuite {
             if (phaseName != null) {
                 phase = Phase.parse(phaseName);
                 if (phase == null) {
-                    LOGGER.debug("ERROR: case " + name);
-                    LOGGER.debug("ERROR: cannot parse phase " + phaseName);
+                    LOGGER.debug("ERROR: case {}", name);
+                    LOGGER.debug("ERROR: cannot parse phase {}", phaseName);
                     throw new Exception();
                 }
             }
@@ -818,8 +820,8 @@ public final class TestSuite {
                         ordResultType = ResultType.FAILURE;
                     } else {
                         LOGGER.debug("ERROR");
-                        LOGGER.debug("case: " + name);
-                        LOGGER.debug("line: " + line);
+                        LOGGER.debug("case: {}", name);
+                        LOGGER.debug("line: {}", line);
                         LOGGER.debug(
                                 "PRESTATE_RESULTS: must prepend orders with \"SUCCESS:\" or \"FAILURE:\".");
                         throw new Exception();
@@ -988,9 +990,9 @@ public final class TestSuite {
                 return o;
             } catch (final OrderException e) {
                 LOGGER.debug("ERROR");
-                LOGGER.debug("parseOrder() OrderException: " + e);
-                LOGGER.debug("Case: " + name);
-                LOGGER.debug("failure line: " + s);
+                LOGGER.debug("parseOrder() OrderException: {}", e);
+                LOGGER.debug("Case: {}", name);
+                LOGGER.debug("failure line: {}", s);
                 throw new Exception();
             }
         }// parseOrder()
@@ -1011,9 +1013,8 @@ public final class TestSuite {
         try {
             br = new BufferedReader(new FileReader(caseFile));
         } catch (final IOException e) {
-            LOGGER.debug(
-                    "ERROR: I/O error opening case file \"" + caseFile + "\"");
-            LOGGER.debug("EXCEPTION: " + e);
+            LOGGER.debug("ERROR: I/O error opening case file \"{}\"", caseFile);
+            LOGGER.debug("EXCEPTION: {}", e);
             throw new Exception();
         }
 
@@ -1035,7 +1036,7 @@ public final class TestSuite {
                     if (currentKey == null) {
                         // this can occur if a key is missing.
                         LOGGER.debug("ERROR: missing a required key");
-                        LOGGER.debug("Line " + lineCount + ": " + rawLine);
+                        LOGGER.debug("Line {}: {}", lineCount, rawLine);
                         throw new Exception();
                     } else if (currentKey.equals(VARIANT_ALL)) {
                         // make sure nothing is defined yet
@@ -1119,7 +1120,7 @@ public final class TestSuite {
                         } else {
                             LOGGER.debug(
                                     "ERROR: line not enclosed within a CASE.");
-                            LOGGER.debug("Line " + lineCount + ": " + rawLine);
+                            LOGGER.debug("Line {}: {}", lineCount, rawLine);
                             throw new Exception();
                         }
                     }
@@ -1140,7 +1141,7 @@ public final class TestSuite {
             }
         }
 
-        LOGGER.debug("  parsed " + cases.size() + " cases.");
+        LOGGER.debug("  parsed {} cases.", cases.size());
     }// parseCases()
 
 
