@@ -183,11 +183,6 @@ public final class TestSuite {
     private Map keyMap = null;
 
 
-    private static final boolean isAdjudicatorLogged = true;
-    private static final boolean isLogging = true;
-    private static final boolean isPerfTest = false;
-    private static final boolean isRegression = false;
-
     private static String inFileName = null;
 
     private List cases = new ArrayList(10);
@@ -195,7 +190,7 @@ public final class TestSuite {
     private TurnState templateTurnState;
     private StdAdjudicator stdJudge = null;
     private List failedCaseNames = new ArrayList(10);
-    private static int benchTimes = 1;
+    private static final int benchTimes = 1;
 
     // VARIANT_ALL name
     private static String variantName = null;
@@ -215,14 +210,12 @@ public final class TestSuite {
 
             String firstArg = args[0].trim().toLowerCase();
             if (firstArg.startsWith("-perftest")) {
-                if (firstArg.indexOf(":") != -1) {
-                    benchTimes = getTimes(firstArg);
-                } else {
+                if (firstArg.indexOf(":") == -1) {
                     printUsageAndExit();
+                } else {
                 }
-            } else if (firstArg.equals("-brief")) {
-            } else if (firstArg.equals("-statsonly")) {
-            } else if (firstArg.equals("-regress")) {
+            } else if (firstArg.equals("-brief") || firstArg
+                    .equals("-statsonly") || firstArg.equals("-regress")) {
             } else {
                 printUsageAndExit();
             }
@@ -231,9 +224,7 @@ public final class TestSuite {
         }
 
 
-        if (isAdjudicatorLogged) {
-            Log.setLogging(null);
-        }
+        Log.setLogging(null);
 
         TestSuite ts = new TestSuite();
 
@@ -350,148 +341,81 @@ public final class TestSuite {
         // all cases in an array
         final Case[] allCases = (Case[]) cases.toArray(new Case[cases.size()]);
 
-        if (isRegression) {
-            // no stats are kept in regression mode, because we're in an
-            // infinite loop.
-            //
-            int rCount = 0;
-            System.out.print("Running cases in an infinite loop");
+        // 'typical' mode (testing).
+        // we keep stats and may or may not have logging
+        //
+        for (int ccn = 0; ccn < allCases.length; ccn++) {
+            Case currentCase = allCases[ccn];
 
-            while (true) {
-                for (int ccn = 0; ccn < allCases.length; ccn++) {
-                    Case currentCase = allCases[ccn];
+            // world: setup
+            world.setTurnState(currentCase.getCurrentTurnState());
+            world.setTurnState(currentCase.getPreviousTurnState());
 
-                    // world: setup
-                    world.setTurnState(currentCase.getCurrentTurnState());
-                    world.setTurnState(currentCase.getPreviousTurnState());
+            // print case name
+            println("\n\n");
+            println("=CASE==================================================================");
+            println("  ", currentCase.getName());
 
-                    stdJudge = new StdAdjudicator(OrderFactory.getDefault(),
-                            currentCase.getCurrentTurnState());
-                    stdJudge.process();
+            // print pre-state
+            printState(currentCase);
 
-                    // cleanup: remove turnstates from world
-                    world.removeAllTurnStates();
+            // print orders
+            println("=ORDERS================================================================");
+            printOrders(currentCase);
+            nOrders += currentCase.getOrders().length;
 
-                    // cleanup: clear results in currentTurnSTate
-                    // this is absolutely essential!!
-                    currentCase.getCurrentTurnState().getResultList().clear();
+            // adjudicate
+            println("=ADJUDICATION==========================================================");
 
-                    // print a '.' every 1000 iterations
-                    rCount++;
-                    if (rCount == 1000) {
-                        System.out.print('.');
-                        rCount = 0;
-                    }
-                }
+            stdJudge = new StdAdjudicator(OrderFactory.getDefault(),
+                    currentCase.getCurrentTurnState());
+            stdJudge.process();
+
+            // print adjudication results, if not performance testing
+            // also print & check post conditions, if not performance testing
+            if (!true) {
+                println("  [adjudicator logging disabled]");
             }
-        } else if (isPerfTest) {
-            // performance mode. We need to track stats here,
-            // but there is no logging or output except stats.
-            //
-            for (int i = 0; i < benchTimes; i++) {
-                for (int ccn = 0; ccn < allCases.length; ccn++) {
-                    Case currentCase = allCases[ccn];
 
-                    // world: setup
-                    world.setTurnState(currentCase.getCurrentTurnState());
-                    world.setTurnState(currentCase.getPreviousTurnState());
-
-                    nOrders += currentCase.getOrders().length;
-
-                    // adjudicate
-                    // we don't check results when in performance mode.
-                    //
-                    stdJudge = new StdAdjudicator(OrderFactory.getDefault(),
-                            currentCase.getCurrentTurnState());
-                    stdJudge.process();
-
-                    nCases++;
-
-                    // cleanup: remove turnstates from world
-                    world.removeAllTurnStates();
-
-                    // cleanup: clear results in currentTurnSTate
-                    // this is absolutely essential!!
-                    currentCase.getCurrentTurnState().getResultList().clear();
-                }
+            // add unresolved paradoxes to list, so we know which cases they are
+            if (stdJudge.isUnresolvedParadox()) {
+                unRezParadoxes.add(currentCase.getName());
             }
-        } else {
-            // 'typical' mode (testing).
-            // we keep stats and may or may not have logging
-            //
-            for (int ccn = 0; ccn < allCases.length; ccn++) {
-                Case currentCase = allCases[ccn];
 
-                // world: setup
-                world.setTurnState(currentCase.getCurrentTurnState());
-                world.setTurnState(currentCase.getPreviousTurnState());
-
-                // print case name
-                println("\n\n");
-                println("=CASE==================================================================");
-                println("  ", currentCase.getName());
-
-                // print pre-state
-                printState(currentCase);
-
-                // print orders
-                println("=ORDERS================================================================");
-                printOrders(currentCase);
-                nOrders += currentCase.getOrders().length;
-
-                // adjudicate
-                println("=ADJUDICATION==========================================================");
-
-                stdJudge = new StdAdjudicator(OrderFactory.getDefault(),
-                        currentCase.getCurrentTurnState());
-                stdJudge.process();
-
-                // print adjudication results, if not performance testing
-                // also print & check post conditions, if not performance testing
-                if (!isAdjudicatorLogged) {
-                    println("  [adjudicator logging disabled]");
-                }
-
-                // add unresolved paradoxes to list, so we know which cases they are
-                if (stdJudge.isUnresolvedParadox()) {
-                    unRezParadoxes.add(currentCase.getName());
-                }
-
-                println("=ADJUDICATION RESULTS==================================================");
-                if (stdJudge.getNextTurnState() == null) {
-                    println("=NEXT PHASE: NONE. Game has been won.");
-                } else {
-                    println("=NEXT PHASE: ",
-                            stdJudge.getNextTurnState().getPhase());
-                }
-                List resultList = stdJudge.getTurnState().getResultList();
-                Iterator resultIter = resultList.iterator();
-                while (resultIter.hasNext() && isLogging) {
-                    Result r = (Result) resultIter.next();
-                    println("  ", r);
-                }
-
-                // check post conditions
-                println("=POST-STATE============================================================");
-
-                if (compareState(currentCase, stdJudge.getNextTurnState())) {
-                    nPass++;
-                } else {
-                    nFail++;
-                    failedCaseNames.add(currentCase.getName());
-                }
-
-                println("=======================================================================");
-
-                nCases++;
-
-                // cleanup: remove turnstates from world
-                world.removeAllTurnStates();
-
-                // cleanup: clear results in currentTurnSTate
-                // this is absolutely essential!!
-                currentCase.getCurrentTurnState().getResultList().clear();
+            println("=ADJUDICATION RESULTS==================================================");
+            if (stdJudge.getNextTurnState() == null) {
+                println("=NEXT PHASE: NONE. Game has been won.");
+            } else {
+                println("=NEXT PHASE: ",
+                        stdJudge.getNextTurnState().getPhase());
             }
+            List resultList = stdJudge.getTurnState().getResultList();
+            Iterator resultIter = resultList.iterator();
+            while (resultIter.hasNext() && true) {
+                Result r = (Result) resultIter.next();
+                println("  ", r);
+            }
+
+            // check post conditions
+            println("=POST-STATE============================================================");
+
+            if (compareState(currentCase, stdJudge.getNextTurnState())) {
+                nPass++;
+            } else {
+                nFail++;
+                failedCaseNames.add(currentCase.getName());
+            }
+
+            println("=======================================================================");
+
+            nCases++;
+
+            // cleanup: remove turnstates from world
+            world.removeAllTurnStates();
+
+            // cleanup: clear results in currentTurnSTate
+            // this is absolutely essential!!
+            currentCase.getCurrentTurnState().getResultList().clear();
         }
 
 
@@ -525,40 +449,25 @@ public final class TestSuite {
         println("\nStatistics:");
         println("===========");
         println("    Case parse time: " + parseTime + " seconds.");
-        if (isPerfTest) {
-            println("    " + nCases + " cases evaluated. Pass/Fail rate not available with -perftest option.");
-            println("    Adjudication Performance for " + benchTimes + " iterations:");
-        } else {
-            println("    " + nCases + " cases evaluated. " + nPass + " passed, " + nFail + " failed; " + score + "%  pass rate.");
-            println("    Times [includes setup, adjudication, and post-adjudication comparision]");
-        }
+        println("    " + nCases + " cases evaluated. " + nPass + " passed, " + nFail + " failed; " + score + "%  pass rate.");
+        println("    Times [includes setup, adjudication, and post-adjudication comparision]");
         println("      " + nOrders + " orders processed in " + time + " ms; " + orderTime + " ms/order average");
         println("      Throughput: " + thruPut + " orders/second");
 
         // if in 'brief' mode, only print out summary statistics
-        if (!isLogging) {
+        if (!true) {
             System.out.println("\nStatistics for \"" + inFileName + "\":");
             System.out
                     .println("    Case parse time: " + parseTime + " seconds.");
-            if (isPerfTest) {
-                System.out.println(
-                        "    " + nCases + " cases evaluated. Pass/Fail rate not available with -perftest option.");
-                System.out.println(
-                        "    Adjudication Performance for " + benchTimes + " iterations:");
-            } else {
-                System.out.println(
-                        "    " + nCases + " cases evaluated. " + nPass + " passed, " + nFail + " failed; " + score + "% pass rate.");
-                System.out.println(
-                        "    Times [includes setup, adjudication, and post-adjudication comparision]");
-            }
+            System.out.println(
+                    "    " + nCases + " cases evaluated. " + nPass + " passed, " + nFail + " failed; " + score + "% pass rate.");
+            System.out.println(
+                    "    Times [includes setup, adjudication, and post-adjudication comparision]");
             System.out.println(
                     "      " + nOrders + " orders processed in " + time + " ms; " + orderTime + " ms/order average");
             System.out
                     .println("      Throughput: " + thruPut + " orders/second");
 
-            if (isPerfTest) {
-                printPerfStatsBrief(benchTimes, nOrders, time, thruPut);
-            }
         }
 
         // exit
@@ -600,7 +509,7 @@ public final class TestSuite {
 
     // prints state settings...
     private void printState(Case c) {
-        if (!isLogging) {
+        if (!true) {
             return;
         }
 
@@ -611,7 +520,7 @@ public final class TestSuite {
         println("  ", turnState.getPhase());
 
         // if we have some results to display, for prior state, do that now.
-        if (isLogging && c.getResults().length > 0) {
+        if (true && c.getResults().length > 0) {
             // print
             println("=PRESTATE_RESULTS======================================================");
             println("  From ", c.getPreviousTurnState().getPhase());
@@ -646,15 +555,13 @@ public final class TestSuite {
      * Prints the orders in a case
      */
     private void printOrders(Case currentCase) {
-        if (isLogging) {
-            Order[] orders = currentCase.getOrders();
-            for (int i = 0; i < orders.length; i++) {
-                println("  ", orders[i].toString());
-            }
+        Order[] orders = currentCase.getOrders();
+        for (int i = 0; i < orders.length; i++) {
+            println("  ", orders[i].toString());
+        }
 
-            if (orders.length == 0) {
-                println("  [none]");
-            }
+        if (orders.length == 0) {
+            println("  [none]");
         }
     }// printOrders()
 
@@ -1447,60 +1354,48 @@ public final class TestSuite {
 	
 	*/
     private static final void println(String s1) {
-        if (isLogging) {
-            System.out.println(s1);
-        }
+        System.out.println(s1);
     }
 
     private static final void println(String s1, int i1) {
-        if (isLogging) {
-            StringBuffer sb = new StringBuffer(256);
-            sb.append(s1);
-            sb.append(i1);
-            System.out.println(sb.toString());
-        }
+        StringBuffer sb = new StringBuffer(256);
+        sb.append(s1);
+        sb.append(i1);
+        System.out.println(sb.toString());
     }
 
     private static final void println(String s1, int i1, String s2) {
-        if (isLogging) {
-            StringBuffer sb = new StringBuffer(256);
-            sb.append(s1);
-            sb.append(i1);
-            sb.append(s2);
-            System.out.println(sb.toString());
-        }
+        StringBuffer sb = new StringBuffer(256);
+        sb.append(s1);
+        sb.append(i1);
+        sb.append(s2);
+        System.out.println(sb.toString());
     }
 
     private static final void println(String s1, Object o2) {
-        if (isLogging) {
-            StringBuffer sb = new StringBuffer(256);
-            sb.append(s1);
-            sb.append(o2);
-            System.out.println(sb.toString());
-        }
+        StringBuffer sb = new StringBuffer(256);
+        sb.append(s1);
+        sb.append(o2);
+        System.out.println(sb.toString());
     }
 
 
     private static final void println(String s1, Object o2, Object o3) {
-        if (isLogging) {
-            StringBuffer sb = new StringBuffer(256);
-            sb.append(s1);
-            sb.append(o2);
-            sb.append(o3);
-            System.out.println(sb.toString());
-        }
+        StringBuffer sb = new StringBuffer(256);
+        sb.append(s1);
+        sb.append(o2);
+        sb.append(o3);
+        System.out.println(sb.toString());
     }
 
     private static final void println(String s1, Object o2, Object o3,
                                       Object o4) {
-        if (isLogging) {
-            StringBuffer sb = new StringBuffer(256);
-            sb.append(s1);
-            sb.append(o2);
-            sb.append(o3);
-            sb.append(o4);
-            System.out.println(sb.toString());
-        }
+        StringBuffer sb = new StringBuffer(256);
+        sb.append(s1);
+        sb.append(o2);
+        sb.append(o3);
+        sb.append(o4);
+        System.out.println(sb.toString());
     }
 
 }// class TestSuite
