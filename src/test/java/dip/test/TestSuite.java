@@ -201,7 +201,7 @@ public final class TestSuite {
     /**
      * Start the TestSuite
      */
-    public static void main(final String[] args)  {
+    public static void main(final String[] args) {
         inFileName = "etc/test_data/datc_v2.4_06_remove6.e.4.txt";
 // {"etc/test_data/datc_v2.4_09.txt","etc/test_data/dipai.txt","etc/test_data/explicitConvoys.txt","etc/test_data/real.txt","etc/test_data/wing.txt"};
 
@@ -231,7 +231,7 @@ public final class TestSuite {
     }// TestSuite()
 
 
-    private void initVariant()  {
+    private void initVariant() {
         try {
             // get default variant directory.
 
@@ -242,7 +242,8 @@ public final class TestSuite {
                     .getVariant(variantName, VariantManager.VERSION_NEWEST)
                     .orElse(null);
             if (variant == null) {
-                throw new RuntimeException("Cannot find variant " + variantName);
+                throw new RuntimeException(
+                        "Cannot find variant " + variantName);
             }
 
             // create the world
@@ -665,7 +666,7 @@ public final class TestSuite {
                     final List<String> supplySCOwnersList,
                     final List<String> preDislodgedList,
                     final List<String> postDislodgedList,
-                    final List<String> orderResultList)  {
+                    final List<String> orderResultList) {
             this.name = name;
             final List<Serializable> temp = new ArrayList<>(50);
             of = OrderParser.getInstance();
@@ -778,7 +779,7 @@ public final class TestSuite {
                 iter = orderResultList.iterator();
                 while (iter.hasNext()) {
                     String line = iter.next();
-                    ResultType ordResultType = null;
+                    ResultType ordResultType;
 
                     // success or failure??
                     if (line.startsWith("success")) {
@@ -967,21 +968,13 @@ public final class TestSuite {
 
 
     // NEW case parser
-    private void parseCases(final File caseFile)  {
-        BufferedReader br = null;
+    private void parseCases(final File caseFile) {
+
 
         // per case data that is NOT in List format
 
         // setup reader
-        try {
-            br = new BufferedReader(new FileReader(caseFile));
-        } catch (final IOException e) {
-            LOGGER.debug("ERROR: I/O error opening case file \"{}\"", caseFile);
-            LOGGER.debug("EXCEPTION: {}", e);
-            throw new RuntimeException(e);
-        }
-
-        try {
+        try (BufferedReader br = new BufferedReader(new FileReader(caseFile))) {
             String rawLine = br.readLine();
             String currentKey = null;
             int lineCount = 1;
@@ -1031,7 +1024,6 @@ public final class TestSuite {
                         // clear data
                         inCase = true;
                         clearAndSetupKeyMap();
-                        caseName = null;
                         phaseName = null;
                         currentKey = null;
 
@@ -1100,13 +1092,7 @@ public final class TestSuite {
                     caseFile, "\"");
             LOGGER.debug("{}{}", "EXCEPTION: ", e);
             throw new RuntimeException();
-        } finally {
-            try {
-                br.close();
-            } catch (final IOException ignored) {
-            }
         }
-
         LOGGER.debug("  parsed {} cases.", cases.size());
     }// parseCases()
 
@@ -1146,7 +1132,7 @@ public final class TestSuite {
             return null;
         }
 
-        int idx = 0;
+        int idx;
 
         if (idxSpace == -1 || idxTab == -1) {
             idx = idxSpace > idxTab ? idxSpace : idxTab;        // return greater
