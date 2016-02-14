@@ -210,9 +210,10 @@ public final class TestSuite {
 
         final TestSuite ts = new TestSuite();
 
-        println("TestSuite Results: (", new Date(), ")");
-        println("=======================================================================");
-        println("  test case file: ", inFileName);
+        LOGGER.debug("{}{}{}", "TestSuite Results: (", new Date(), ")");
+        LOGGER.debug(
+                "=======================================================================");
+        LOGGER.debug("{}{}", "  test case file: ", inFileName);
 
 
         final File file = new File(inFileName);
@@ -220,8 +221,8 @@ public final class TestSuite {
         final long startTime = System.currentTimeMillis();
         ts.parseCases(file);
         parseTime = (System.currentTimeMillis() - startTime) / 1000f;
-        println("  initialization complete.");
-        println("  variant: ", variantName);
+        LOGGER.debug("  initialization complete.");
+        LOGGER.debug("{}{}", "  variant: ", variantName);
 
         ts.evaluate();
     }// main()
@@ -254,7 +255,7 @@ public final class TestSuite {
             // by the GUI)
             world.setRuleOptions(RuleOptions.createFromVariant(variant));
         } catch (final Exception e) {
-            println("Init error: ", e);
+            LOGGER.debug("{}{}", "Init error: ", e);
             e.printStackTrace();
             System.exit(1);
         }
@@ -283,20 +284,23 @@ public final class TestSuite {
             world.setTurnState(currentCase.getPreviousTurnState());
 
             // print case name
-            println("\n\n");
-            println("=CASE==================================================================");
-            println("  ", currentCase.getName());
+            LOGGER.debug("\n\n");
+            LOGGER.debug(
+                    "=CASE==================================================================");
+            LOGGER.debug("{}{}", "  ", currentCase.getName());
 
             // print pre-state
             printState(currentCase);
 
             // print orders
-            println("=ORDERS================================================================");
+            LOGGER.debug(
+                    "=ORDERS================================================================");
             printOrders(currentCase);
             nOrders += currentCase.getOrders().length;
 
             // adjudicate
-            println("=ADJUDICATION==========================================================");
+            LOGGER.debug(
+                    "=ADJUDICATION==========================================================");
 
             stdJudge = new StdAdjudicator(OrderFactory.getDefault(),
                     currentCase.getCurrentTurnState());
@@ -310,22 +314,24 @@ public final class TestSuite {
                 unRezParadoxes.add(currentCase.getName());
             }
 
-            println("=ADJUDICATION RESULTS==================================================");
+            LOGGER.debug(
+                    "=ADJUDICATION RESULTS==================================================");
             if (stdJudge.getNextTurnState() == null) {
-                println("=NEXT PHASE: NONE. Game has been won.");
+                LOGGER.debug("=NEXT PHASE: NONE. Game has been won.");
             } else {
-                println("=NEXT PHASE: ",
+                LOGGER.debug("{}{}", "=NEXT PHASE: ",
                         stdJudge.getNextTurnState().getPhase());
             }
             final List resultList = stdJudge.getTurnState().getResultList();
             final Iterator resultIter = resultList.iterator();
             while (resultIter.hasNext()) {
                 final Result r = (Result) resultIter.next();
-                println("  ", r);
+                LOGGER.debug("{}{}", "  ", r);
             }
 
             // check post conditions
-            println("=POST-STATE============================================================");
+            LOGGER.debug(
+                    "=POST-STATE============================================================");
 
             if (compareState(currentCase, stdJudge.getNextTurnState())) {
                 nPass++;
@@ -334,7 +340,8 @@ public final class TestSuite {
                 failedCaseNames.add(currentCase.getName());
             }
 
-            println("=======================================================================");
+            LOGGER.debug(
+                    "=======================================================================");
 
             nCases++;
 
@@ -351,37 +358,41 @@ public final class TestSuite {
         //
         final long time = System
                 .currentTimeMillis() - startMillis;    // end timing!
-        println("End: ", new Date());
+        LOGGER.debug("{}{}", "End: ", new Date());
 
         // total time: includes setup/adjudication/comparison
         final float orderTime = (float) time / (float) nOrders;
         final float thruPut = 1000.0f / orderTime;
         final float score = (float) nPass / (float) nCases * 100.0f;
 
-        println("\nFailed Cases:");
-        println("=============");
+        LOGGER.debug("\nFailed Cases:");
+        LOGGER.debug("=============");
         Iterator<String> iter = failedCaseNames.iterator();
         while (iter.hasNext()) {
-            println("   ", iter.next());
+            LOGGER.debug("{}{}", "   ", iter.next());
         }
-        println("   [total: " + failedCaseNames.size() + "]");
+        LOGGER.debug("   [total: " + failedCaseNames.size() + "]");
 
-        println("\nUnresolved Paradoxes:");
-        println("=====================");
+        LOGGER.debug("\nUnresolved Paradoxes:");
+        LOGGER.debug("=====================");
         iter = unRezParadoxes.iterator();
         while (iter.hasNext()) {
-            println("   " + iter.next());
+            LOGGER.debug("   " + iter.next());
         }
-        println("   [total: ", unRezParadoxes.size(), "]");
+        LOGGER.debug("{}{}{}",
+                "   [total: ", Integer.toString(unRezParadoxes.size()), "]");
 
         // print to log
-        println("\nStatistics:");
-        println("===========");
-        println("    Case parse time: " + parseTime + " seconds.");
-        println("    " + nCases + " cases evaluated. " + nPass + " passed, " + nFail + " failed; " + score + "%  pass rate.");
-        println("    Times [includes setup, adjudication, and post-adjudication comparision]");
-        println("      " + nOrders + " orders processed in " + time + " ms; " + orderTime + " ms/order average");
-        println("      Throughput: " + thruPut + " orders/second");
+        LOGGER.debug("\nStatistics:");
+        LOGGER.debug("===========");
+        LOGGER.debug("    Case parse time: " + parseTime + " seconds.");
+        LOGGER.debug(
+                "    " + nCases + " cases evaluated. " + nPass + " passed, " + nFail + " failed; " + score + "%  pass rate.");
+        LOGGER.debug(
+                "    Times [includes setup, adjudication, and post-adjudication comparision]");
+        LOGGER.debug(
+                "      " + nOrders + " orders processed in " + time + " ms; " + orderTime + " ms/order average");
+        LOGGER.debug("      Throughput: " + thruPut + " orders/second");
 
         // if in 'brief' mode, only print out summary statistics
 
@@ -397,36 +408,40 @@ public final class TestSuite {
         final TurnState turnState = c.getCurrentTurnState();
         //Position position = turnState.getPosition();
 
-        println("=PHASE=================================================================");
-        println("  ", turnState.getPhase());
+        LOGGER.debug(
+                "=PHASE=================================================================");
+        LOGGER.debug("{}{}", "  ", turnState.getPhase());
 
         // if we have some results to display, for prior state, do that now.
         if (c.getResults().length > 0) {
             // print
-            println("=PRESTATE_RESULTS======================================================");
-            println("  From ", c.getPreviousTurnState().getPhase());
+            LOGGER.debug(
+                    "=PRESTATE_RESULTS======================================================");
+            LOGGER.debug("{}{}", "  From ", c.getPreviousTurnState().getPhase());
             final OrderResult[] or = c.getResults();
             for (final OrderResult anOr : or) {
-                println("    ", anOr);
+                LOGGER.debug("{}{}", "    ", anOr);
             }
         }
 
 
         // print non-dislodged units
         if (c.getPreState().length > 0) {
-            println("=PRE-STATE=============================================================");
+            LOGGER.debug(
+                    "=PRE-STATE=============================================================");
             final DefineState[] dsOrds = c.getPreState();
             for (final DefineState dsOrd : dsOrds) {
-                println("   ", dsOrd);
+                LOGGER.debug("{}{}", "   ", dsOrd);
             }
         }
 
         // print dislodged units
         if (c.getPreDislodged().length > 0) {
-            println("=PRE-STATE DISLODGED===================================================");
+            LOGGER.debug(
+                    "=PRE-STATE DISLODGED===================================================");
             final DefineState[] dsOrds = c.getPreDislodged();
             for (final DefineState dsOrd : dsOrds) {
-                println("   ", dsOrd);
+                LOGGER.debug("{}{}", "   ", dsOrd);
             }
         }
     }// printState()
@@ -438,11 +453,11 @@ public final class TestSuite {
     private void printOrders(final Case currentCase) {
         final Order[] orders = currentCase.getOrders();
         for (final Order order : orders) {
-            println("  ", order.toString());
+            LOGGER.debug("{}{}", "  ", order.toString());
         }
 
         if (orders.length == 0) {
-            println("  [none]");
+            LOGGER.debug("  [none]");
         }
     }// printOrders()
 
@@ -468,7 +483,8 @@ public final class TestSuite {
     private boolean compareState(final Case c, final TurnState resolvedTS) {
         // special case: check for a win.
         if (resolvedTS == null) {
-            println("The game has been won. No new TurnState object is created.");
+            LOGGER.debug(
+                    "The game has been won. No new TurnState object is created.");
             return true;
         }
 
@@ -506,7 +522,7 @@ public final class TestSuite {
         DefineState[] dsOrds = c.getPostState();
         for (final DefineState dsOrd1 : dsOrds) {
             if (!caseUnits.add(new UnitPos(dsOrd1, false))) {
-                println("ERROR: duplicate POSTSTATE position: " + dsOrd1);
+                LOGGER.debug("ERROR: duplicate POSTSTATE position: " + dsOrd1);
                 return false;
             }
         }
@@ -514,7 +530,8 @@ public final class TestSuite {
         dsOrds = c.getPostDislodged();
         for (final DefineState dsOrd : dsOrds) {
             if (!caseUnits.add(new UnitPos(dsOrd, true))) {
-                println("ERROR: duplicate POSTSTATE_DISLODGED position: " + dsOrd);
+                LOGGER.debug(
+                        "ERROR: duplicate POSTSTATE_DISLODGED position: " + dsOrd);
                 return false;
             }
         }
@@ -539,7 +556,7 @@ public final class TestSuite {
         // the differences.
         //
         if (!missing.isEmpty() || !added.isEmpty()) {
-            println("  CompareState: FAILED: unit positions follow.");
+            LOGGER.debug("  CompareState: FAILED: unit positions follow.");
 
             // print adds
             printSet(added, "+");
@@ -552,7 +569,7 @@ public final class TestSuite {
 
             return false;
         } else {
-            println("  CompareState: PASSED");
+            LOGGER.debug("  CompareState: PASSED");
         }
 
         return true;
@@ -573,7 +590,7 @@ public final class TestSuite {
             sb.append(" ");
             sb.append(up);
 
-            println(sb.toString());
+            LOGGER.debug(sb.toString());
         }
     }// printSet()
 
@@ -1117,8 +1134,9 @@ public final class TestSuite {
                 lineCount++;
             }// while()
         } catch (final IOException e) {
-            println("ERROR: I/O error reading case file \"", caseFile, "\"");
-            println("EXCEPTION: ", e);
+            LOGGER.debug("{}{}{}", "ERROR: I/O error reading case file \"",
+                    caseFile, "\"");
+            LOGGER.debug("{}{}", "EXCEPTION: ", e);
             System.exit(1);
         } finally {
             try {
@@ -1127,7 +1145,7 @@ public final class TestSuite {
             }
         }
 
-        println("  parsed " + cases.size() + " cases.");
+        LOGGER.debug("  parsed " + cases.size() + " cases.");
     }// parseCases()
 
 
@@ -1220,35 +1238,6 @@ public final class TestSuite {
         return keyMap.get(keyType);
     }// getListForKeyType()
 
-
-    // fast internal logging
-    // this allows just references to be passed. Although references are copied, this is a
-    // fast operation in java. If logging is turned off, no string concatenation need be
-    // performed.
-    /*
-        -perftest speed increased from 550 orders/second to about 700 orders/second. That's
-		a HUGE speedup (~33%); this is just on the DATC.txt test case set.
-	
-	
-	*/
-    private static final void println(final String s1) {
-        LOGGER.debug(s1);
-    }
-
-    private static final void println(final String s1, final int i1,
-                                      final String s2) {
-        LOGGER.debug("{}{}{}", s1, Integer.toString(i1), s2);
-    }
-
-    private static final void println(final String s1, final Object o2) {
-        LOGGER.debug("{}{}", s1, o2);
-    }
-
-
-    private static final void println(final String s1, final Object o2,
-                                      final Object o3) {
-        LOGGER.debug("{}{}{}", s1, o2, o3);
-    }
 
 }// class TestSuite
 
