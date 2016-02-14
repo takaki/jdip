@@ -27,7 +27,6 @@ import dip.order.*;
 import dip.order.result.ConvoyPathResult;
 import dip.order.result.OrderResult;
 import dip.order.result.OrderResult.ResultType;
-import dip.order.result.Result;
 import dip.process.StdAdjudicator;
 import dip.world.*;
 import dip.world.variant.VariantManager;
@@ -38,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.util.*;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 /**
@@ -301,8 +301,8 @@ public final class TestSuite {
             LOGGER.debug(
                     "=ORDERS================================================================");
             printOrders(currentCase);
-            nOrders += currentCase.getOrders().length;
-
+            nOrders += currentCase.getOrders().size();
+            
             // adjudicate
             LOGGER.debug(
                     "=ADJUDICATION==========================================================");
@@ -327,9 +327,7 @@ public final class TestSuite {
                 LOGGER.debug("{}{}", "=NEXT PHASE: ",
                         stdJudge.getNextTurnState().getPhase());
             }
-            final List<Result> resultList = stdJudge.getTurnState()
-                    .getResultList();
-            for (final Result r : resultList) {
+            for (final Object r : stdJudge.getTurnState().getResultList()) {
                 LOGGER.debug("{}{}", "  ", r);
             }
 
@@ -365,9 +363,9 @@ public final class TestSuite {
         LOGGER.debug("{}{}", "End: ", new Date());
 
         // total time: includes setup/adjudication/comparison
-        final float orderTime = (float) time / (float) nOrders;
+        final float orderTime = (float) time / nOrders;
         final float thruPut = 1000.0f / orderTime;
-        final float score = (float) nPass / (float) nCases * 100.0f;
+        final float score = (float) nPass / nCases * 100.0f;
 
         LOGGER.debug("\nFailed Cases:");
         LOGGER.debug("=============");
@@ -427,19 +425,19 @@ public final class TestSuite {
 
 
         // print non-dislodged units
-        if (c.getPreState().length > 0) {
+        if (!c.getPreState().isEmpty()) {
             LOGGER.debug(
                     "=PRE-STATE=============================================================");
-            for (final DefineState dsOrd : c.getPreState()) {
+            for (final Order dsOrd : c.getPreState()) {
                 LOGGER.debug("{}{}", "   ", dsOrd);
             }
         }
 
         // print dislodged units
-        if (c.getPreDislodged().length > 0) {
+        if (c.getPreDislodged().size() > 0) {
             LOGGER.debug(
                     "=PRE-STATE DISLODGED===================================================");
-            for (final DefineState dsOrd : c.getPreDislodged()) {
+            for (final Order dsOrd : c.getPreDislodged()) {
                 LOGGER.debug("{}{}", "   ", dsOrd);
             }
         }
@@ -454,7 +452,7 @@ public final class TestSuite {
             LOGGER.debug("{}{}", "  ", order);
         }
 
-        if (currentCase.getOrders().length == 0) {
+        if (currentCase.getOrders().size() == 0) {
             LOGGER.debug("  [none]");
         }
     }// printOrders()
@@ -515,14 +513,14 @@ public final class TestSuite {
         //
         Set caseUnits = new HashSet();
 
-        for (final DefineState dsOrd1 : c.getPostState()) {
+        for (final Order dsOrd1 : c.getPostState()) {
             if (!caseUnits.add(new UnitPos(dsOrd1, false))) {
                 LOGGER.debug("ERROR: duplicate POSTSTATE position: {}", dsOrd1);
                 return false;
             }
         }
 
-        for (final DefineState dsOrd : c.getPostDislodged()) {
+        for (final Order dsOrd : c.getPostDislodged()) {
             if (!caseUnits.add(new UnitPos(dsOrd, true))) {
                 LOGGER.debug(
                         "ERROR: duplicate POSTSTATE_DISLODGED position: {}",
@@ -583,7 +581,7 @@ public final class TestSuite {
         /**
          * Create a UnitPos
          */
-        public UnitPos(final DefineState ds, final boolean isDislodged) {
+        public UnitPos(final Order ds, final boolean isDislodged) {
             unit = new Unit(ds.getPower(), ds.getSourceUnitType());
             unit.setCoast(ds.getSource().getCoast());
             province = ds.getSource().getProvince();
@@ -649,14 +647,14 @@ public final class TestSuite {
      * Holds a Case
      */
     private final class Case {
-        private final DefineState[] preState;
-        private final DefineState[] postState;
-        private DefineState[] preDislodged;
-        private DefineState[] postDislodged;
-        private DefineState[] supplySCOwners;    // all types are 'army'
+        private final List<Order> preState;
+        private final List<Order> postState;
+        private List<Order> preDislodged;
+        private List<Order> postDislodged;
+        private List<Order> supplySCOwners;    // all types are 'army'
         private OrderResult[] results;
 
-        private final Order[] orders;
+        private final List<Order> orders;
         private final String name;
         private Phase phase;
         private final OrderParser of;
@@ -704,72 +702,37 @@ public final class TestSuite {
             previousTS.setWorld(world);
 
             // pre
-            temp.clear();
-            Iterator<String> iter = pre.iterator();
-            while (iter.hasNext()) {
-                final String line = iter.next();
-                final Order order = parseOrder(line, currentTS, true);
-                temp.add(order);
-            }
-            preState = temp.toArray(new DefineState[temp.size()]);
+            preState = pre.stream()
+                    .map(line -> parseOrder(line, currentTS, true))
+                    .collect(Collectors.toList());
 
 
             // ord
-            temp.clear();
-            iter = ord.iterator();
-            while (iter.hasNext()) {
-                final String line = iter.next();
-                final Order order = parseOrder(line, currentTS, false);
-                temp.add(order);
-            }
-            orders = temp.toArray(new Order[temp.size()]);
+            orders = ord.stream()
+                    .map(line -> parseOrder(line, currentTS, false))
+                    .collect(Collectors.toList());
 
 
             // post
-            temp.clear();
-            iter = post.iterator();
-            while (iter.hasNext()) {
-                final String line = iter.next();
-                final Order order = parseOrder(line, currentTS, true);
-                temp.add(order);
-            }
-            postState = temp.toArray(new DefineState[temp.size()]);
+            postState = post.stream()
+                    .map(line -> parseOrder(line, currentTS, true))
+                    .collect(Collectors.toList());
 
             // prestate dislodged
-            if (preDislodgedList != null) {
-                temp.clear();
-                iter = preDislodgedList.iterator();
-                while (iter.hasNext()) {
-                    final String line = iter.next();
-                    final Order order = parseOrder(line, currentTS, true);
-                    temp.add(order);
-                }
-                preDislodged = temp.toArray(new DefineState[temp.size()]);
-            }
+
+            preDislodged = preDislodgedList.stream()
+                    .map(line -> parseOrder(line, currentTS, true))
+                    .collect(Collectors.toList());
 
             // poststate dislodged
-            if (postDislodgedList != null) {
-                temp.clear();
-                iter = postDislodgedList.iterator();
-                while (iter.hasNext()) {
-                    final String line = iter.next();
-                    final Order order = parseOrder(line, currentTS, true);
-                    temp.add(order);
-                }
-                postDislodged = temp.toArray(new DefineState[temp.size()]);
-            }
+            postDislodged = postDislodgedList.stream()
+                    .map(line -> parseOrder(line, currentTS, true))
+                    .collect(Collectors.toList());
 
             // supply-center owners
-            if (supplySCOwnersList != null) {
-                temp.clear();
-                iter = supplySCOwnersList.iterator();
-                while (iter.hasNext()) {
-                    final String line = iter.next();
-                    final Order order = parseOrder(line, currentTS, true);
-                    temp.add(order);
-                }
-                supplySCOwners = temp.toArray(new DefineState[temp.size()]);
-            }
+            supplySCOwners = supplySCOwnersList.stream()
+                    .map(line -> parseOrder(line, currentTS, true))
+                    .collect(Collectors.toList());
 
 
             // OrderResults
@@ -781,7 +744,7 @@ public final class TestSuite {
             //
             if (orderResultList != null) {
                 temp.clear();
-                iter = orderResultList.iterator();
+                Iterator<String> iter = orderResultList.iterator();
                 while (iter.hasNext()) {
                     String line = iter.next();
                     ResultType ordResultType;
@@ -849,7 +812,7 @@ public final class TestSuite {
                 }
 
                 // Add non-dislodged units
-                for (final DefineState aPreState : preState) {
+                for (final Order aPreState : preState) {
                     final Unit unit = new Unit(aPreState.getPower(),
                             aPreState.getSourceUnitType());
                     unit.setCoast(aPreState.getSource().getCoast());
@@ -857,7 +820,7 @@ public final class TestSuite {
                 }
 
                 // Add dislodged units
-                for (final DefineState aPreDislodged : preDislodged) {
+                for (final Order aPreDislodged : preDislodged) {
                     final Unit unit = new Unit(aPreDislodged.getPower(),
                             aPreDislodged.getSourceUnitType());
                     unit.setCoast(aPreDislodged.getSource().getCoast());
@@ -869,7 +832,7 @@ public final class TestSuite {
                 // if we have ANY supply center owners, we erase the template
                 // if we do not have any, we assume the template is correct
                 // no need to validate units
-                if (supplySCOwners.length > 0) {
+                if (!supplySCOwners.isEmpty()) {
                     // first erase old info
 
                     for (final Province province : position.getProvinces()) {
@@ -879,7 +842,7 @@ public final class TestSuite {
                     }
 
                     // add new info
-                    for (final DefineState supplySCOwner : supplySCOwners) {
+                    for (final Order supplySCOwner : supplySCOwners) {
                         position.setSupplyCenterOwner(
                                 supplySCOwner.getSource().getProvince(),
                                 supplySCOwner.getPower());
@@ -893,23 +856,23 @@ public final class TestSuite {
             return name;
         }
 
-        public DefineState[] getPreState() {
+        public List<Order> getPreState() {
             return preState;
         }
 
-        public DefineState[] getPostState() {
+        public List<Order> getPostState() {
             return postState;
         }
 
-        public DefineState[] getPreDislodged() {
+        public List<Order> getPreDislodged() {
             return preDislodged;
         }
 
-        public DefineState[] getPostDislodged() {
+        public List<Order> getPostDislodged() {
             return postDislodged;
         }
 
-        public DefineState[] getSCOwners() {
+        public List<Order> getSCOwners() {
             return supplySCOwners;
         }
 
@@ -917,7 +880,7 @@ public final class TestSuite {
             return phase;
         }
 
-        public Order[] getOrders() {
+        public List<Order> getOrders() {
             return orders;
         }
 
