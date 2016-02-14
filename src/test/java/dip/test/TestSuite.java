@@ -390,6 +390,9 @@ public final class TestSuite {
         // if in 'brief' mode, only print out summary statistics
 
         // exit
+        if(nFail > 0 ) {
+            throw new RuntimeException("Did not pass tests.");
+        }
 
     }// evaluate()
 
