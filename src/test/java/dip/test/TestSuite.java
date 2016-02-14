@@ -181,18 +181,17 @@ public final class TestSuite {
 
 
     private static float parseTime = -1;
-    private static final String VARIANT_DIR = "variants";
 
     private Map<String, LinkedList<String>> keyMap;
 
 
     private static String inFileName;
 
-    private final List<Case> cases = new ArrayList<Case>(10);
+    private final List<Case> cases = new ArrayList<>(10);
     private World world;
     private TurnState templateTurnState;
     private StdAdjudicator stdJudge;
-    private final List<String> failedCaseNames = new ArrayList<String>(10);
+    private final List<String> failedCaseNames = new ArrayList<>(10);
     private static final int benchTimes = 1;
 
     // VARIANT_ALL name
@@ -202,7 +201,7 @@ public final class TestSuite {
     /**
      * Start the TestSuite
      */
-    public static void main(final String[] args) {
+    public static void main(final String[] args) throws Exception {
         inFileName = "etc/test_data/datc_v2.4_06_remove6.e.4.txt";
 // {"etc/test_data/datc_v2.4_09.txt","etc/test_data/dipai.txt","etc/test_data/explicitConvoys.txt","etc/test_data/real.txt","etc/test_data/wing.txt"};
 
@@ -232,7 +231,7 @@ public final class TestSuite {
     }// TestSuite()
 
 
-    private void initVariant() {
+    private void initVariant() throws Exception {
         try {
             // get default variant directory.
 
@@ -257,7 +256,7 @@ public final class TestSuite {
         } catch (final Exception e) {
             LOGGER.debug("{}{}", "Init error: ", e);
             e.printStackTrace();
-            System.exit(1);
+            throw new Exception(e);
         }
     }// init()
 
@@ -268,7 +267,7 @@ public final class TestSuite {
         int nFail = 0;
         int nCases = 0;
 
-        final List<String> unRezParadoxes = new LinkedList<String>();
+        final List<String> unRezParadoxes = new LinkedList<>();
 
         final long startMillis = System.currentTimeMillis();    // start timing!
 
@@ -397,7 +396,6 @@ public final class TestSuite {
         // if in 'brief' mode, only print out summary statistics
 
         // exit
-        System.exit(nFail);
 
     }// evaluate()
 
@@ -697,9 +695,9 @@ public final class TestSuite {
                     final List<String> supplySCOwnersList,
                     final List<String> preDislodgedList,
                     final List<String> postDislodgedList,
-                    final List<String> orderResultList) {
+                    final List<String> orderResultList) throws Exception {
             this.name = name;
-            final List<Serializable> temp = new ArrayList<Serializable>(50);
+            final List<Serializable> temp = new ArrayList<>(50);
             Iterator<String> iter = null;
             of = OrderParser.getInstance();
 
@@ -710,7 +708,7 @@ public final class TestSuite {
                 if (phase == null) {
                     LOGGER.debug("ERROR: case " + name);
                     LOGGER.debug("ERROR: cannot parse phase " + phaseName);
-                    System.exit(1);
+                    throw new Exception();
                 }
             }
 
@@ -824,7 +822,7 @@ public final class TestSuite {
                         LOGGER.debug("line: " + line);
                         LOGGER.debug(
                                 "PRESTATE_RESULTS: must prepend orders with \"SUCCESS:\" or \"FAILURE:\".");
-                        System.exit(1);
+                        throw new Exception();
                     }
 
                     // remove after first colon, and parse the order
@@ -854,7 +852,7 @@ public final class TestSuite {
                 results = temp.toArray(new OrderResult[temp.size()]);
 
                 // add results to previous turnstate
-                previousTS.setResultList(new ArrayList<Serializable>(temp));
+                previousTS.setResultList(new ArrayList<>(temp));
 
                 // add positions/ownership/orders to current turnstate
                 //
@@ -963,7 +961,7 @@ public final class TestSuite {
         }
 
         private Order parseOrder(final String s, final TurnState ts,
-                                 final boolean isDefineState) {
+                                 final boolean isDefineState) throws Exception {
             try {
                 // no guessing (but not locked); we must ALWAYS specify the power.
                 Order o = of
@@ -993,16 +991,15 @@ public final class TestSuite {
                 LOGGER.debug("parseOrder() OrderException: " + e);
                 LOGGER.debug("Case: " + name);
                 LOGGER.debug("failure line: " + s);
-                System.exit(1);
+                throw new Exception();
             }
-            return null;
         }// parseOrder()
 
     }// class Case
 
 
     // NEW case parser
-    private void parseCases(final File caseFile) {
+    private void parseCases(final File caseFile) throws Exception {
         BufferedReader br = null;
 
         // per case data that is NOT in List format
@@ -1017,7 +1014,7 @@ public final class TestSuite {
             LOGGER.debug(
                     "ERROR: I/O error opening case file \"" + caseFile + "\"");
             LOGGER.debug("EXCEPTION: " + e);
-            System.exit(1);
+            throw new Exception();
         }
 
         try {
@@ -1039,7 +1036,7 @@ public final class TestSuite {
                         // this can occur if a key is missing.
                         LOGGER.debug("ERROR: missing a required key");
                         LOGGER.debug("Line " + lineCount + ": " + rawLine);
-                        System.exit(1);
+                        throw new Exception();
                     } else if (currentKey.equals(VARIANT_ALL)) {
                         // make sure nothing is defined yet
                         if (variantName == null) {
@@ -1049,14 +1046,14 @@ public final class TestSuite {
                                     "ERROR: before cases are defined, the variant must");
                             LOGGER.debug(
                                     "       be set with the VARIANT_ALL flag.");
-                            System.exit(1);
+                            throw new Exception();
                         }
 
                         // make sure we are not in a case!
                         if (inCase) {
                             LOGGER.debug(
                                     "ERROR: VARIANT_ALL cannot be used within a CASE.");
-                            System.exit(1);
+                            throw new Exception();
                         }
 
                         // attempt to initialize the variant
@@ -1080,7 +1077,7 @@ public final class TestSuite {
                                     "ERROR: before cases are defined, the variant must");
                             LOGGER.debug(
                                     "       be set with the VARIANT_ALL flag.");
-                            System.exit(1);
+                            throw new Exception();
                         }
                     } else if (currentKey.equals(END)) {
                         // end a case
@@ -1123,7 +1120,7 @@ public final class TestSuite {
                             LOGGER.debug(
                                     "ERROR: line not enclosed within a CASE.");
                             LOGGER.debug("Line " + lineCount + ": " + rawLine);
-                            System.exit(1);
+                            throw new Exception();
                         }
                     }
                 }
@@ -1135,7 +1132,7 @@ public final class TestSuite {
             LOGGER.debug("{}{}{}", "ERROR: I/O error reading case file \"",
                     caseFile, "\"");
             LOGGER.debug("{}{}", "EXCEPTION: ", e);
-            System.exit(1);
+            throw new Exception();
         } finally {
             try {
                 br.close();
@@ -1196,13 +1193,13 @@ public final class TestSuite {
 
     private void clearAndSetupKeyMap() {
         if (keyMap == null) {
-            keyMap = new HashMap<String, LinkedList<String>>(23);
+            keyMap = new HashMap<>(23);
         }
 
         keyMap.clear();
 
         for (final String aKEY_TYPES_WITH_LIST : KEY_TYPES_WITH_LIST) {
-            keyMap.put(aKEY_TYPES_WITH_LIST, new LinkedList<String>());
+            keyMap.put(aKEY_TYPES_WITH_LIST, new LinkedList<>());
         }
     }// setupKeyMap()
 
