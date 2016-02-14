@@ -26,6 +26,7 @@ import dip.misc.Log;
 import dip.order.*;
 import dip.order.result.ConvoyPathResult;
 import dip.order.result.OrderResult;
+import dip.order.result.OrderResult.ResultType;
 import dip.order.result.Result;
 import dip.process.StdAdjudicator;
 import dip.world.*;
@@ -36,6 +37,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.*;
 import java.util.Map;
 
@@ -180,20 +182,20 @@ public final class TestSuite {
     private static float parseTime = -1;
     private static final String VARIANT_DIR = "variants";
 
-    private Map<String, LinkedList<String>> keyMap = null;
+    private Map<String, LinkedList<String>> keyMap;
 
 
-    private static String inFileName = null;
+    private static String inFileName;
 
-    private List<Case> cases = new ArrayList<Case>(10);
-    private World world = null;
+    private final List<Case> cases = new ArrayList<Case>(10);
+    private World world;
     private TurnState templateTurnState;
-    private StdAdjudicator stdJudge = null;
-    private List<String> failedCaseNames = new ArrayList<String>(10);
+    private StdAdjudicator stdJudge;
+    private final List<String> failedCaseNames = new ArrayList<String>(10);
     private static final int benchTimes = 1;
 
     // VARIANT_ALL name
-    private static String variantName = null;
+    private static String variantName;
 
 
     /**
@@ -269,7 +271,7 @@ public final class TestSuite {
         final long startMillis = System.currentTimeMillis();    // start timing!
 
         // all cases in an array
-        final Case[] allCases = (Case[]) cases.toArray(new Case[cases.size()]);
+        final Case[] allCases = cases.toArray(new Case[cases.size()]);
 
         // 'typical' mode (testing).
         // we keep stats and may or may not have logging
@@ -366,7 +368,7 @@ public final class TestSuite {
         println("=====================");
         iter = unRezParadoxes.iterator();
         while (iter.hasNext()) {
-            println("   " + (iter.next()));
+            println("   " + iter.next());
         }
         println("   [total: ", unRezParadoxes.size(), "]");
 
@@ -587,9 +589,9 @@ public final class TestSuite {
          * Create a UnitPos
          */
         public UnitPos(final DefineState ds, final boolean isDislodged) {
-            this.unit = new Unit(ds.getPower(), ds.getSourceUnitType());
+            unit = new Unit(ds.getPower(), ds.getSourceUnitType());
             unit.setCoast(ds.getSource().getCoast());
-            this.province = ds.getSource().getProvince();
+            province = ds.getSource().getProvince();
             this.isDislodged = isDislodged;
         }// UnitPos()
 
@@ -597,11 +599,11 @@ public final class TestSuite {
          * Create a UnitPos
          */
         public UnitPos(final Position pos, final Province prov, final boolean isDislodged) {
-            this.province = prov;
+            province = prov;
             this.isDislodged = isDislodged;
-            this.unit = (isDislodged) ? pos.getDislodgedUnit(prov) : pos
+            unit = isDislodged ? pos.getDislodgedUnit(prov) : pos
                     .getUnit(prov);
-            if (this.unit == null) {
+            if (unit == null) {
                 throw new IllegalArgumentException();
             }
         }// UnitPos()
@@ -652,19 +654,19 @@ public final class TestSuite {
      * Holds a Case
      */
     private final class Case {
-        private DefineState[] preState = null;
-        private DefineState[] postState = null;
-        private DefineState[] preDislodged = null;
-        private DefineState[] postDislodged = null;
-        private DefineState[] supplySCOwners = null;    // all types are 'army'
-        private OrderResult[] results = null;
+        private DefineState[] preState;
+        private DefineState[] postState;
+        private DefineState[] preDislodged;
+        private DefineState[] postDislodged;
+        private DefineState[] supplySCOwners;    // all types are 'army'
+        private OrderResult[] results;
 
-        private Order[] orders = null;
-        private String name;
-        private Phase phase = null;
-        private OrderParser of = null;
-        private TurnState currentTS = null;
-        private TurnState previousTS = null;
+        private Order[] orders;
+        private final String name;
+        private Phase phase;
+        private OrderParser of;
+        private TurnState currentTS;
+        private TurnState previousTS;
 
         // tsTemplate: template turnstate to create the current, and (if needed) previous
         // turnstates.
@@ -672,7 +674,7 @@ public final class TestSuite {
                     final List<String> post, final List<String> supplySCOwnersList, final List<String> preDislodgedList,
                     final List<String> postDislodgedList, final List<String> orderResultList) {
             this.name = name;
-            final List<java.io.Serializable> temp = new ArrayList<java.io.Serializable>(50);
+            final List<Serializable> temp = new ArrayList<Serializable>(50);
             Iterator<String> iter = null;
             of = OrderParser.getInstance();
 
@@ -689,7 +691,7 @@ public final class TestSuite {
             }
 
             // set phase to template phase, if no phase was assigned.
-            phase = (phaseName == null) ? templateTurnState.getPhase() : phase;
+            phase = phaseName == null ? templateTurnState.getPhase() : phase;
 
             // setup current turnstate from template
             // use phase, if appropriate.
@@ -712,7 +714,7 @@ public final class TestSuite {
                 final Order order = parseOrder(line, currentTS, true);
                 temp.add(order);
             }
-            preState = (DefineState[]) temp
+            preState = temp
                     .toArray(new DefineState[temp.size()]);
 
 
@@ -724,7 +726,7 @@ public final class TestSuite {
                 final Order order = parseOrder(line, currentTS, false);
                 temp.add(order);
             }
-            orders = (Order[]) temp.toArray(new Order[temp.size()]);
+            orders = temp.toArray(new Order[temp.size()]);
 
 
             // post
@@ -735,7 +737,7 @@ public final class TestSuite {
                 final Order order = parseOrder(line, currentTS, true);
                 temp.add(order);
             }
-            postState = (DefineState[]) temp
+            postState = temp
                     .toArray(new DefineState[temp.size()]);
 
             // prestate dislodged
@@ -747,7 +749,7 @@ public final class TestSuite {
                     final Order order = parseOrder(line, currentTS, true);
                     temp.add(order);
                 }
-                this.preDislodged = (DefineState[]) temp
+                preDislodged = temp
                         .toArray(new DefineState[temp.size()]);
             }
 
@@ -760,7 +762,7 @@ public final class TestSuite {
                     final Order order = parseOrder(line, currentTS, true);
                     temp.add(order);
                 }
-                this.postDislodged = (DefineState[]) temp
+                postDislodged = temp
                         .toArray(new DefineState[temp.size()]);
             }
 
@@ -773,7 +775,7 @@ public final class TestSuite {
                     final Order order = parseOrder(line, currentTS, true);
                     temp.add(order);
                 }
-                this.supplySCOwners = (DefineState[]) temp
+                supplySCOwners = temp
                         .toArray(new DefineState[temp.size()]);
             }
 
@@ -790,13 +792,13 @@ public final class TestSuite {
                 iter = orderResultList.iterator();
                 while (iter.hasNext()) {
                     String line = iter.next();
-                    OrderResult.ResultType ordResultType = null;
+                    ResultType ordResultType = null;
 
                     // success or failure??
                     if (line.startsWith("success")) {
-                        ordResultType = OrderResult.ResultType.SUCCESS;
+                        ordResultType = ResultType.SUCCESS;
                     } else if (line.startsWith("failure")) {
-                        ordResultType = OrderResult.ResultType.FAILURE;
+                        ordResultType = ResultType.FAILURE;
                     } else {
                         System.out.println("ERROR");
                         System.out.println("case: " + name);
@@ -830,11 +832,11 @@ public final class TestSuite {
                     temp.add(new OrderResult(order, ordResultType,
                             " (prestate)"));
                 }
-                this.results = (OrderResult[]) temp
+                results = temp
                         .toArray(new OrderResult[temp.size()]);
 
                 // add results to previous turnstate
-                previousTS.setResultList(new ArrayList<java.io.Serializable>(temp));
+                previousTS.setResultList(new ArrayList<Serializable>(temp));
 
                 // add positions/ownership/orders to current turnstate
                 //
@@ -1163,9 +1165,9 @@ public final class TestSuite {
         int idx = 0;
 
         if (idxSpace == -1 || idxTab == -1) {
-            idx = (idxSpace > idxTab) ? idxSpace : idxTab;        // return greater
+            idx = idxSpace > idxTab ? idxSpace : idxTab;        // return greater
         } else {
-            idx = (idxSpace < idxTab) ? idxSpace : idxTab;        // return lesser
+            idx = idxSpace < idxTab ? idxSpace : idxTab;        // return lesser
         }
 
         return in.substring(idx + 1);
@@ -1234,14 +1236,14 @@ public final class TestSuite {
         sb.append(s1);
         sb.append(i1);
         sb.append(s2);
-        System.out.println(sb.toString());
+        System.out.println(sb);
     }
 
     private static final void println(final String s1, final Object o2) {
         final StringBuffer sb = new StringBuffer(256);
         sb.append(s1);
         sb.append(o2);
-        System.out.println(sb.toString());
+        System.out.println(sb);
     }
 
 
@@ -1250,7 +1252,7 @@ public final class TestSuite {
         sb.append(s1);
         sb.append(o2);
         sb.append(o3);
-        System.out.println(sb.toString());
+        System.out.println(sb);
     }
 
 }// class TestSuite
