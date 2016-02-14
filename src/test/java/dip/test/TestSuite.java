@@ -200,29 +200,8 @@ public final class TestSuite {
      * Start the TestSuite
      */
     public static void main(String args[]) {
+        inFileName= "etc/test_data/datc_v2.4_06_remove6.e.4.txt";
 // {"etc/test_data/datc_v2.4_09.txt","etc/test_data/dipai.txt","etc/test_data/explicitConvoys.txt","etc/test_data/real.txt","etc/test_data/wing.txt"};
-        if (args.length < 1 || args.length > 2) {
-            printUsageAndExit();
-        }
-
-        if (args.length == 2) {
-            inFileName = args[1];
-
-            String firstArg = args[0].trim().toLowerCase();
-            if (firstArg.startsWith("-perftest")) {
-                if (firstArg.indexOf(":") == -1) {
-                    printUsageAndExit();
-                } else {
-                }
-            } else if (firstArg.equals("-brief") || firstArg
-                    .equals("-statsonly") || firstArg.equals("-regress")) {
-            } else {
-                printUsageAndExit();
-            }
-        } else {
-            inFileName = args[0];
-        }
-
 
         Log.setLogging(null);
 
@@ -243,48 +222,6 @@ public final class TestSuite {
 
         ts.evaluate();
     }// main()
-
-    private static void printUsageAndExit() {
-        System.out.println(
-                "USAGE: TestSuite [-statsonly | -perftest | -brief] <test-input-file>");
-        System.out.println("  All log output to stdout");
-        System.out.println(
-                "  -statsonly      disable all logging; only show statistics");
-        System.out.println(
-                "  -perftest:n     no logging or statistics; repeat all cases n times");
-        System.out.println(
-                "  -brief          disable internal adjudicator logging");
-        System.out.println(
-                "  -regress        run test cases in infinite loop; no logging or stats.");
-        System.out.println("");
-        System.out.println("  Examples:");
-        System.out.println("      java dip.misc.TestSuite datc.txt >out");
-        System.out
-                .println("      java dip.misc.TestSuite -brief datc.txt >out");
-        System.out.println(
-                "      java dip.misc.TestSuite -perftest:1000 case.txt >out");
-        System.exit(1);
-    }
-
-
-    private static int getTimes(String in) {
-        String s = in.substring(in.indexOf(':') + 1);
-        int n = -1;
-        try {
-            n = Integer.parseInt(s);
-        } catch (NumberFormatException e) {
-            System.err.println("ERROR: invalid argument: " + in);
-            printUsageAndExit();
-        }
-
-        if (n <= 0) {
-            System.err.println(
-                    "Benchmark repitition out of range; must be greater than 0");
-            printUsageAndExit();
-        }
-
-        return n;
-    }// getTimes()
 
 
     private TestSuite() {
@@ -473,38 +410,6 @@ public final class TestSuite {
         // exit
         System.exit(nFail);
     }// evaluate()
-
-    /**
-     * Briefly print performance stats for cut/paste
-     */
-    private void printPerfStatsBrief(int nIter, int nOrder, float timeTotal,
-                                     float thruput) {
-        StringBuffer sb = new StringBuffer();
-        sb.append("**\t");    // start line; asterisks
-
-        // file name only [no path]
-        File file = new File(inFileName);
-        sb.append(file.getName());
-        sb.append("\t");
-
-        // # of iterations
-        sb.append(nIter);
-        sb.append("\t");
-
-        // # of orders
-        sb.append(nOrder);
-        sb.append("\t");
-
-        // total time (ms)
-        sb.append(timeTotal);
-        sb.append("\t");
-
-        // thruput (orders / second)
-        sb.append(thruput);
-        sb.append("\t");
-
-        System.out.println(sb);
-    }
 
 
     // prints state settings...
@@ -1357,13 +1262,6 @@ public final class TestSuite {
         System.out.println(s1);
     }
 
-    private static final void println(String s1, int i1) {
-        StringBuffer sb = new StringBuffer(256);
-        sb.append(s1);
-        sb.append(i1);
-        System.out.println(sb.toString());
-    }
-
     private static final void println(String s1, int i1, String s2) {
         StringBuffer sb = new StringBuffer(256);
         sb.append(s1);
@@ -1385,16 +1283,6 @@ public final class TestSuite {
         sb.append(s1);
         sb.append(o2);
         sb.append(o3);
-        System.out.println(sb.toString());
-    }
-
-    private static final void println(String s1, Object o2, Object o3,
-                                      Object o4) {
-        StringBuffer sb = new StringBuffer(256);
-        sb.append(s1);
-        sb.append(o2);
-        sb.append(o3);
-        sb.append(o4);
         System.out.println(sb.toString());
     }
 
