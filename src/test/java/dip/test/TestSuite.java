@@ -199,22 +199,22 @@ public final class TestSuite {
     /**
      * Start the TestSuite
      */
-    public static void main(String args[]) {
+    public static void main(final String[] args) {
         inFileName= "etc/test_data/datc_v2.4_06_remove6.e.4.txt";
 // {"etc/test_data/datc_v2.4_09.txt","etc/test_data/dipai.txt","etc/test_data/explicitConvoys.txt","etc/test_data/real.txt","etc/test_data/wing.txt"};
 
         Log.setLogging(null);
 
-        TestSuite ts = new TestSuite();
+        final TestSuite ts = new TestSuite();
 
         println("TestSuite Results: (", new Date(), ")");
         println("=======================================================================");
         println("  test case file: ", inFileName);
 
 
-        File file = new File(inFileName);
+        final File file = new File(inFileName);
 
-        long startTime = System.currentTimeMillis();
+        final long startTime = System.currentTimeMillis();
         ts.parseCases(file);
         parseTime = (System.currentTimeMillis() - startTime) / 1000f;
         println("  initialization complete.");
@@ -235,7 +235,7 @@ public final class TestSuite {
 
             // load the default variant (Standard)
             // error if it cannot be found!!
-            Variant variant = new VariantManager()
+            final Variant variant = new VariantManager()
                     .getVariant(variantName, VariantManager.VERSION_NEWEST)
                     .orElse(null);
             if (variant == null) {
@@ -250,7 +250,7 @@ public final class TestSuite {
             // set the RuleOptions in the World (this is normally done
             // by the GUI)
             world.setRuleOptions(RuleOptions.createFromVariant(variant));
-        } catch (Exception e) {
+        } catch (final Exception e) {
             println("Init error: ", e);
             e.printStackTrace();
             System.exit(1);
@@ -264,9 +264,9 @@ public final class TestSuite {
         int nFail = 0;
         int nCases = 0;
 
-        List unRezParadoxes = new LinkedList();
+        final List unRezParadoxes = new LinkedList();
 
-        long startMillis = System.currentTimeMillis();    // start timing!
+        final long startMillis = System.currentTimeMillis();    // start timing!
 
         // all cases in an array
         final Case[] allCases = (Case[]) cases.toArray(new Case[cases.size()]);
@@ -274,7 +274,7 @@ public final class TestSuite {
         // 'typical' mode (testing).
         // we keep stats and may or may not have logging
         //
-        for (Case currentCase : allCases) {
+        for (final Case currentCase : allCases) {
             // world: setup
             world.setTurnState(currentCase.getCurrentTurnState());
             world.setTurnState(currentCase.getPreviousTurnState());
@@ -314,10 +314,10 @@ public final class TestSuite {
                 println("=NEXT PHASE: ",
                         stdJudge.getNextTurnState().getPhase());
             }
-            List resultList = stdJudge.getTurnState().getResultList();
-            Iterator resultIter = resultList.iterator();
+            final List resultList = stdJudge.getTurnState().getResultList();
+            final Iterator resultIter = resultList.iterator();
             while (resultIter.hasNext()) {
-                Result r = (Result) resultIter.next();
+                final Result r = (Result) resultIter.next();
                 println("  ", r);
             }
 
@@ -346,13 +346,13 @@ public final class TestSuite {
 
         // print stats
         //
-        long time = System.currentTimeMillis() - startMillis;    // end timing!
+        final long time = System.currentTimeMillis() - startMillis;    // end timing!
         println("End: ", new Date());
 
         // total time: includes setup/adjudication/comparison
-        float orderTime = (float) time / (float) nOrders;
-        float thruPut = 1000.0f / orderTime;
-        float score = (float) nPass / (float) nCases * 100.0f;
+        final float orderTime = (float) time / (float) nOrders;
+        final float thruPut = 1000.0f / orderTime;
+        final float score = (float) nPass / (float) nCases * 100.0f;
 
         println("\nFailed Cases:");
         println("=============");
@@ -387,9 +387,9 @@ public final class TestSuite {
 
 
     // prints state settings...
-    private void printState(Case c) {
+    private void printState(final Case c) {
 
-        TurnState turnState = c.getCurrentTurnState();
+        final TurnState turnState = c.getCurrentTurnState();
         //Position position = turnState.getPosition();
 
         println("=PHASE=================================================================");
@@ -400,8 +400,8 @@ public final class TestSuite {
             // print
             println("=PRESTATE_RESULTS======================================================");
             println("  From ", c.getPreviousTurnState().getPhase());
-            OrderResult[] or = c.getResults();
-            for (OrderResult anOr : or) {
+            final OrderResult[] or = c.getResults();
+            for (final OrderResult anOr : or) {
                 println("    ", anOr);
             }
         }
@@ -410,8 +410,8 @@ public final class TestSuite {
         // print non-dislodged units
         if (c.getPreState().length > 0) {
             println("=PRE-STATE=============================================================");
-            DefineState[] dsOrds = c.getPreState();
-            for (DefineState dsOrd : dsOrds) {
+            final DefineState[] dsOrds = c.getPreState();
+            for (final DefineState dsOrd : dsOrds) {
                 println("   ", dsOrd);
             }
         }
@@ -419,8 +419,8 @@ public final class TestSuite {
         // print dislodged units
         if (c.getPreDislodged().length > 0) {
             println("=PRE-STATE DISLODGED===================================================");
-            DefineState[] dsOrds = c.getPreDislodged();
-            for (DefineState dsOrd : dsOrds) {
+            final DefineState[] dsOrds = c.getPreDislodged();
+            for (final DefineState dsOrd : dsOrds) {
                 println("   ", dsOrd);
             }
         }
@@ -430,9 +430,9 @@ public final class TestSuite {
     /**
      * Prints the orders in a case
      */
-    private void printOrders(Case currentCase) {
-        Order[] orders = currentCase.getOrders();
-        for (Order order : orders) {
+    private void printOrders(final Case currentCase) {
+        final Order[] orders = currentCase.getOrders();
+        for (final Order order : orders) {
             println("  ", order.toString());
         }
 
@@ -460,7 +460,7 @@ public final class TestSuite {
      * Returns true if the states match (or game has been won);
      * otherwise, returns false.
      */
-    private boolean compareState(Case c, TurnState resolvedTS) {
+    private boolean compareState(final Case c, final TurnState resolvedTS) {
         // special case: check for a win.
         if (resolvedTS == null) {
             println("The game has been won. No new TurnState object is created.");
@@ -474,7 +474,7 @@ public final class TestSuite {
         Set resolvedUnits = new HashSet();
 
         Province[] provs = pos.getUnitProvinces();
-        for (Province prov1 : provs) {
+        for (final Province prov1 : provs) {
             if (!resolvedUnits.add(new UnitPos(pos, prov1, false))) {
                 throw new IllegalStateException(
                         "CompareState: Internal error (non dislodged)");
@@ -482,7 +482,7 @@ public final class TestSuite {
         }
 
         provs = pos.getDislodgedUnitProvinces();
-        for (Province prov : provs) {
+        for (final Province prov : provs) {
             if (!resolvedUnits.add(new UnitPos(pos, prov, true))) {
                 throw new IllegalStateException(
                         "CompareState: Internal error (dislodged)");
@@ -499,7 +499,7 @@ public final class TestSuite {
         Set caseUnits = new HashSet();
 
         DefineState[] dsOrds = c.getPostState();
-        for (DefineState dsOrd1 : dsOrds) {
+        for (final DefineState dsOrd1 : dsOrds) {
             if (!caseUnits.add(new UnitPos(dsOrd1, false))) {
                 println("ERROR: duplicate POSTSTATE position: " + dsOrd1);
                 return false;
@@ -507,7 +507,7 @@ public final class TestSuite {
         }
 
         dsOrds = c.getPostDislodged();
-        for (DefineState dsOrd : dsOrds) {
+        for (final DefineState dsOrd : dsOrds) {
             if (!caseUnits.add(new UnitPos(dsOrd, true))) {
                 println("ERROR: duplicate POSTSTATE_DISLODGED position: " + dsOrd);
                 return false;
@@ -520,14 +520,14 @@ public final class TestSuite {
         // first, we must make a duplicate of one set.
         // these are the units that are in the correct position (intersection)
         //
-        Set intersection = new HashSet(caseUnits);
+        final Set intersection = new HashSet(caseUnits);
         intersection.retainAll(resolvedUnits);
 
         // now, create subtraction sets
-        Set added = new HashSet(resolvedUnits);
+        final Set added = new HashSet(resolvedUnits);
         added.removeAll(caseUnits);
 
-        Set missing = new HashSet(caseUnits);
+        final Set missing = new HashSet(caseUnits);
         missing.removeAll(resolvedUnits);
 
         // if subtraction sets have no units, we are done. Otherwise, we must print
@@ -557,12 +557,12 @@ public final class TestSuite {
     /**
      * Print all the UnitPos objects from a Set; prefixing with the given prefix
      */
-    private void printSet(Set set, String prefix) {
-        Iterator iter = set.iterator();
+    private void printSet(final Set set, final String prefix) {
+        final Iterator iter = set.iterator();
         while (iter.hasNext()) {
-            UnitPos up = (UnitPos) iter.next();
+            final UnitPos up = (UnitPos) iter.next();
 
-            StringBuffer sb = new StringBuffer(64);
+            final StringBuffer sb = new StringBuffer(64);
             sb.append("  ");    // spacer
             sb.append(prefix);
             sb.append(" ");
@@ -586,7 +586,7 @@ public final class TestSuite {
         /**
          * Create a UnitPos
          */
-        public UnitPos(DefineState ds, boolean isDislodged) {
+        public UnitPos(final DefineState ds, final boolean isDislodged) {
             this.unit = new Unit(ds.getPower(), ds.getSourceUnitType());
             unit.setCoast(ds.getSource().getCoast());
             this.province = ds.getSource().getProvince();
@@ -596,7 +596,7 @@ public final class TestSuite {
         /**
          * Create a UnitPos
          */
-        public UnitPos(Position pos, Province prov, boolean isDislodged) {
+        public UnitPos(final Position pos, final Province prov, final boolean isDislodged) {
             this.province = prov;
             this.isDislodged = isDislodged;
             this.unit = (isDislodged) ? pos.getDislodgedUnit(prov) : pos
@@ -610,7 +610,7 @@ public final class TestSuite {
          * Print
          */
         public String toString() {
-            StringBuffer sb = new StringBuffer(32);
+            final StringBuffer sb = new StringBuffer(32);
             sb.append(unit.getPower().getName());
             sb.append(' ');
             sb.append(unit.getType().getShortName());
@@ -627,9 +627,9 @@ public final class TestSuite {
         /**
          * Compare
          */
-        public boolean equals(Object obj) {
+        public boolean equals(final Object obj) {
             if (obj instanceof UnitPos) {
-                UnitPos up = (UnitPos) obj;
+                final UnitPos up = (UnitPos) obj;
                 if (isDislodged == up.isDislodged && province == up.province && unit
                         .equals(up.unit)) {
                     return true;
@@ -668,11 +668,11 @@ public final class TestSuite {
 
         // tsTemplate: template turnstate to create the current, and (if needed) previous
         // turnstates.
-        public Case(String name, String phaseName, List pre, List ord,
-                    List post, List supplySCOwnersList, List preDislodgedList,
-                    List postDislodgedList, List orderResultList) {
+        public Case(final String name, final String phaseName, final List pre, final List ord,
+                    final List post, final List supplySCOwnersList, final List preDislodgedList,
+                    final List postDislodgedList, final List orderResultList) {
             this.name = name;
-            List temp = new ArrayList(50);
+            final List temp = new ArrayList(50);
             Iterator iter = null;
             of = OrderParser.getInstance();
 
@@ -708,8 +708,8 @@ public final class TestSuite {
             temp.clear();
             iter = pre.iterator();
             while (iter.hasNext()) {
-                String line = (String) iter.next();
-                Order order = parseOrder(line, currentTS, true);
+                final String line = (String) iter.next();
+                final Order order = parseOrder(line, currentTS, true);
                 temp.add(order);
             }
             preState = (DefineState[]) temp
@@ -720,8 +720,8 @@ public final class TestSuite {
             temp.clear();
             iter = ord.iterator();
             while (iter.hasNext()) {
-                String line = (String) iter.next();
-                Order order = parseOrder(line, currentTS, false);
+                final String line = (String) iter.next();
+                final Order order = parseOrder(line, currentTS, false);
                 temp.add(order);
             }
             orders = (Order[]) temp.toArray(new Order[temp.size()]);
@@ -731,8 +731,8 @@ public final class TestSuite {
             temp.clear();
             iter = post.iterator();
             while (iter.hasNext()) {
-                String line = (String) iter.next();
-                Order order = parseOrder(line, currentTS, true);
+                final String line = (String) iter.next();
+                final Order order = parseOrder(line, currentTS, true);
                 temp.add(order);
             }
             postState = (DefineState[]) temp
@@ -743,8 +743,8 @@ public final class TestSuite {
                 temp.clear();
                 iter = preDislodgedList.iterator();
                 while (iter.hasNext()) {
-                    String line = (String) iter.next();
-                    Order order = parseOrder(line, currentTS, true);
+                    final String line = (String) iter.next();
+                    final Order order = parseOrder(line, currentTS, true);
                     temp.add(order);
                 }
                 this.preDislodged = (DefineState[]) temp
@@ -756,8 +756,8 @@ public final class TestSuite {
                 temp.clear();
                 iter = postDislodgedList.iterator();
                 while (iter.hasNext()) {
-                    String line = (String) iter.next();
-                    Order order = parseOrder(line, currentTS, true);
+                    final String line = (String) iter.next();
+                    final Order order = parseOrder(line, currentTS, true);
                     temp.add(order);
                 }
                 this.postDislodged = (DefineState[]) temp
@@ -769,8 +769,8 @@ public final class TestSuite {
                 temp.clear();
                 iter = supplySCOwnersList.iterator();
                 while (iter.hasNext()) {
-                    String line = (String) iter.next();
-                    Order order = parseOrder(line, currentTS, true);
+                    final String line = (String) iter.next();
+                    final Order order = parseOrder(line, currentTS, true);
                     temp.add(order);
                 }
                 this.supplySCOwners = (DefineState[]) temp
@@ -808,16 +808,16 @@ public final class TestSuite {
 
                     // remove after first colon, and parse the order
                     line = line.substring(line.indexOf(':') + 1);
-                    Order order = parseOrder(line, previousTS, false);
+                    final Order order = parseOrder(line, previousTS, false);
 
                     // was order a convoyed move? because then we have to add a
                     // convoyed move result.
                     //
                     if (order instanceof Move) {
-                        Move mv = (Move) order;
+                        final Move mv = (Move) order;
                         if (mv.isConvoying()) {
                             // NOTE: we cheat; path src/dest ok, middle is == src
-                            Province[] path = new Province[3];
+                            final Province[] path = new Province[3];
                             path[0] = mv.getSource().getProvince();
                             path[1] = path[0];
                             path[2] = mv.getDest().getProvince();
@@ -840,32 +840,32 @@ public final class TestSuite {
                 //
                 // add orders, first clearing any existing orders in the turnstate
                 currentTS.clearAllOrders();
-                for (Order order : orders) {
-                    List orderList = currentTS.getOrders(order.getPower());
+                for (final Order order : orders) {
+                    final List orderList = currentTS.getOrders(order.getPower());
                     orderList.add(order);
                     currentTS.setOrders(order.getPower(), orderList);
                 }
 
                 // get position
-                Position position = currentTS.getPosition();
+                final Position position = currentTS.getPosition();
 
                 // ensure all powers are active
-                Power[] powers = world.getMap().getPowers();
-                for (Power power : powers) {
+                final Power[] powers = world.getMap().getPowers();
+                for (final Power power : powers) {
                     position.setEliminated(power, false);
                 }
 
                 // Add non-dislodged units
-                for (DefineState aPreState : preState) {
-                    Unit unit = new Unit(aPreState.getPower(),
+                for (final DefineState aPreState : preState) {
+                    final Unit unit = new Unit(aPreState.getPower(),
                             aPreState.getSourceUnitType());
                     unit.setCoast(aPreState.getSource().getCoast());
                     position.setUnit(aPreState.getSource().getProvince(), unit);
                 }
 
                 // Add dislodged units
-                for (DefineState aPreDislodged : preDislodged) {
-                    Unit unit = new Unit(aPreDislodged.getPower(),
+                for (final DefineState aPreDislodged : preDislodged) {
+                    final Unit unit = new Unit(aPreDislodged.getPower(),
                             aPreDislodged.getSourceUnitType());
                     unit.setCoast(aPreDislodged.getSource().getCoast());
                     position.setDislodgedUnit(
@@ -880,14 +880,14 @@ public final class TestSuite {
                     // first erase old info
                     final Province[] provinces = position.getProvinces();
 
-                    for (Province province : provinces) {
+                    for (final Province province : provinces) {
                         if (position.hasSupplyCenterOwner(province)) {
                             position.setSupplyCenterOwner(province, null);
                         }
                     }
 
                     // add new info
-                    for (DefineState supplySCOwner : supplySCOwners) {
+                    for (final DefineState supplySCOwner : supplySCOwners) {
                         position.setSupplyCenterOwner(
                                 supplySCOwner.getSource().getProvince(),
                                 supplySCOwner.getPower());
@@ -941,8 +941,8 @@ public final class TestSuite {
             return previousTS;
         }
 
-        private Order parseOrder(String s, TurnState ts,
-                                 boolean isDefineState) {
+        private Order parseOrder(final String s, final TurnState ts,
+                                 final boolean isDefineState) {
             try {
                 // no guessing (but not locked); we must ALWAYS specify the power.
                 Order o = of
@@ -953,7 +953,7 @@ public final class TestSuite {
                     if (o instanceof DefineState) {
                         // we just want to check if the DefineState order does not have
                         // an undefined coast for a fleet unit.
-                        Location newLoc = o.getSource()
+                        final Location newLoc = o.getSource()
                                 .getValidatedSetup(o.getSourceUnitType());
 
                         // create a new DefineState with a validated loc
@@ -967,7 +967,7 @@ public final class TestSuite {
                 }
 
                 return o;
-            } catch (OrderException e) {
+            } catch (final OrderException e) {
                 System.out.println("ERROR");
                 System.out.println("parseOrder() OrderException: " + e);
                 System.out.println("Case: " + name);
@@ -981,7 +981,7 @@ public final class TestSuite {
 
 
     // NEW case parser
-    private void parseCases(File caseFile) {
+    private void parseCases(final File caseFile) {
         BufferedReader br = null;
 
         // per case data that is NOT in List format
@@ -992,7 +992,7 @@ public final class TestSuite {
         // setup reader
         try {
             br = new BufferedReader(new FileReader(caseFile));
-        } catch (IOException e) {
+        } catch (final IOException e) {
             System.out.println(
                     "ERROR: I/O error opening case file \"" + caseFile + "\"");
             System.out.println("EXCEPTION: " + e);
@@ -1005,8 +1005,8 @@ public final class TestSuite {
             int lineCount = 1;
 
             while (rawLine != null) {
-                String line = filterLine(rawLine);
-                String key = getKeyType(line);
+                final String line = filterLine(rawLine);
+                final String key = getKeyType(line);
 
                 if (key != null) {
                     currentKey = key;
@@ -1067,7 +1067,7 @@ public final class TestSuite {
                         inCase = false;
 
                         // create the case
-                        Case aCase = new Case(caseName, phaseName,
+                        final Case aCase = new Case(caseName, phaseName,
                                 getListForKeyType(PRESTATE),        // prestate
                                 getListForKeyType(ORDERS),            // orders
                                 getListForKeyType(POSTSTATE),
@@ -1086,7 +1086,7 @@ public final class TestSuite {
                         if (inCase) {
                             if (currentKey.equals(POSTSTATE_SAME)) {
                                 // just copy prestate data
-                                List list = getListForKeyType(POSTSTATE);
+                                final List list = getListForKeyType(POSTSTATE);
                                 list.addAll(getListForKeyType(PRESTATE));
                             } else if (currentKey.equals(PRESTATE_SETPHASE)) {
                                 // phase appears after keyword
@@ -1094,7 +1094,7 @@ public final class TestSuite {
                             } else if (key == null) // important: we don't want to add key lines to the lists
                             {
                                 // we need to get a list.
-                                List list = getListForKeyType(currentKey);
+                                final List list = getListForKeyType(currentKey);
                                 list.add(line);
                             }
                         } else {
@@ -1110,14 +1110,14 @@ public final class TestSuite {
                 rawLine = br.readLine();
                 lineCount++;
             }// while()
-        } catch (IOException e) {
+        } catch (final IOException e) {
             println("ERROR: I/O error reading case file \"", caseFile, "\"");
             println("EXCEPTION: ", e);
             System.exit(1);
         } finally {
             try {
                 br.close();
-            } catch (IOException e2) {
+            } catch (final IOException e2) {
             }
         }
 
@@ -1126,12 +1126,12 @@ public final class TestSuite {
 
 
     // returns null if string is a comment line.
-    private String filterLine(String in) {
+    private String filterLine(final String in) {
         // remove whitespace
         String out = in.trim();
 
         // find comment-character index, if it exists
-        int ccIdx = out.indexOf('#');
+        final int ccIdx = out.indexOf('#');
 
         // if entire line is a comment, or empty, return COMMENT_LINE now
         if (ccIdx == 0 || out.length() < 1) {
@@ -1152,9 +1152,9 @@ public final class TestSuite {
 
     // find first space this works, because the
     // preceding whitespace before a keyword has already been trimmed
-    private String getAfterKeyword(String in) {
-        int idxSpace = in.indexOf(' ');
-        int idxTab = in.indexOf('\t');
+    private String getAfterKeyword(final String in) {
+        final int idxSpace = in.indexOf(' ');
+        final int idxTab = in.indexOf('\t');
 
         if (idxSpace == -1 && idxTab == -1) {
             return null;
@@ -1179,7 +1179,7 @@ public final class TestSuite {
 
         keyMap.clear();
 
-        for (String aKEY_TYPES_WITH_LIST : KEY_TYPES_WITH_LIST) {
+        for (final String aKEY_TYPES_WITH_LIST : KEY_TYPES_WITH_LIST) {
             keyMap.put(aKEY_TYPES_WITH_LIST, new LinkedList());
         }
     }// setupKeyMap()
@@ -1189,7 +1189,7 @@ public final class TestSuite {
         returns:
             true key type type
     */
-    private String getKeyType(String line) {
+    private String getKeyType(final String line) {
         if (line == null) {
             return null;
         }
@@ -1199,7 +1199,7 @@ public final class TestSuite {
         } else if (line.startsWith(END)) {
             return END;
         } else {
-            for (String aKEY_TYPES_OTHER : KEY_TYPES_OTHER) {
+            for (final String aKEY_TYPES_OTHER : KEY_TYPES_OTHER) {
                 if (line.startsWith(aKEY_TYPES_OTHER)) {
                     return aKEY_TYPES_OTHER;
                 }
@@ -1210,7 +1210,7 @@ public final class TestSuite {
     }// getKeyType()
 
 
-    private List getListForKeyType(String keyType) {
+    private List getListForKeyType(final String keyType) {
         return (List) keyMap.get(keyType);
     }// getListForKeyType()
 
@@ -1225,28 +1225,28 @@ public final class TestSuite {
 	
 	
 	*/
-    private static final void println(String s1) {
+    private static final void println(final String s1) {
         System.out.println(s1);
     }
 
-    private static final void println(String s1, int i1, String s2) {
-        StringBuffer sb = new StringBuffer(256);
+    private static final void println(final String s1, final int i1, final String s2) {
+        final StringBuffer sb = new StringBuffer(256);
         sb.append(s1);
         sb.append(i1);
         sb.append(s2);
         System.out.println(sb.toString());
     }
 
-    private static final void println(String s1, Object o2) {
-        StringBuffer sb = new StringBuffer(256);
+    private static final void println(final String s1, final Object o2) {
+        final StringBuffer sb = new StringBuffer(256);
         sb.append(s1);
         sb.append(o2);
         System.out.println(sb.toString());
     }
 
 
-    private static final void println(String s1, Object o2, Object o3) {
-        StringBuffer sb = new StringBuffer(256);
+    private static final void println(final String s1, final Object o2, final Object o3) {
+        final StringBuffer sb = new StringBuffer(256);
         sb.append(s1);
         sb.append(o2);
         sb.append(o3);
