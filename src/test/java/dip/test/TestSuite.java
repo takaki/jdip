@@ -255,7 +255,6 @@ public final class TestSuite {
             world.setRuleOptions(RuleOptions.createFromVariant(variant));
         } catch (final Exception e) {
             LOGGER.debug("{}{}", "Init error: ", e);
-            e.printStackTrace();
             throw new Exception(e);
         }
     }// init()
@@ -569,9 +568,8 @@ public final class TestSuite {
             printSet(intersection, "=");
 
             return false;
-        } else {
-            LOGGER.debug("  CompareState: PASSED");
         }
+        LOGGER.debug("  CompareState: PASSED");
 
         return true;
     }// compareState()
@@ -1216,13 +1214,13 @@ public final class TestSuite {
 
         if (line.startsWith(CASE)) {
             return CASE;
-        } else if (line.startsWith(END)) {
+        }
+        if (line.startsWith(END)) {
             return END;
-        } else {
-            for (final String aKEY_TYPES_OTHER : KEY_TYPES_OTHER) {
-                if (line.startsWith(aKEY_TYPES_OTHER)) {
-                    return aKEY_TYPES_OTHER;
-                }
+        }
+        for (final String aKEY_TYPES_OTHER : KEY_TYPES_OTHER) {
+            if (line.startsWith(aKEY_TYPES_OTHER)) {
+                return aKEY_TYPES_OTHER;
             }
         }
 
