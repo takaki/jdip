@@ -158,7 +158,7 @@ public class TurnState implements Serializable {
             throw new IllegalArgumentException("null result list");
         }
 
-        resultList = list;
+        resultList = new ArrayList<>(list);
     }// setResultList()
 
 

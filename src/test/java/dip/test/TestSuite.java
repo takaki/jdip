@@ -34,7 +34,10 @@ import dip.world.variant.data.Variant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 import java.util.Map;
 import java.util.function.Function;
@@ -413,7 +416,7 @@ public final class TestSuite {
         LOGGER.debug("{}{}", "  ", turnState.getPhase());
 
         // if we have some results to display, for prior state, do that now.
-        if (c.getResults().length > 0) {
+        if (!c.getResults().isEmpty()) {
             // print
             LOGGER.debug(
                     "=PRESTATE_RESULTS======================================================");
@@ -649,7 +652,7 @@ public final class TestSuite {
         private final List<Order> preDislodged;
         private final List<Order> postDislodged;
         private final List<Order> supplySCOwners;    // all types are 'army'
-        private final OrderResult[] results;
+        private final List<OrderResult> results;
 
         private final List<Order> orders;
         private final String name;
@@ -668,7 +671,7 @@ public final class TestSuite {
                     final List<String> postDislodgedList,
                     final List<String> orderResultList) {
             this.name = name;
-            final List<Serializable> temp = new ArrayList<>(50);
+            final List<OrderResult> temp = new ArrayList<>(50);
             of = OrderParser.getInstance();
 
 
@@ -780,10 +783,10 @@ public final class TestSuite {
                 // create/add order result
                 temp.add(new OrderResult(order, ordResultType, " (prestate)"));
             });
-            results = temp.toArray(new OrderResult[temp.size()]);
+            results = new ArrayList<>(temp);
 
             // add results to previous turnstate
-            previousTS.setResultList(new ArrayList<>(temp));
+            previousTS.setResultList(results);
 
             // add positions/ownership/orders to current turnstate
             //
@@ -875,8 +878,8 @@ public final class TestSuite {
             return Collections.unmodifiableList(orders);
         }
 
-        public OrderResult[] getResults() {
-            return results;
+        public List<OrderResult> getResults() {
+            return Collections.unmodifiableList(results);
         }
 
         public TurnState getCurrentTurnState() {
