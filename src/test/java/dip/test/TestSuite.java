@@ -326,9 +326,8 @@ public final class TestSuite {
                 LOGGER.debug("{}{}", "=NEXT PHASE: ",
                         stdJudge.getNextTurnState().getPhase());
             }
-            for (final Object r : stdJudge.getTurnState().getResultList()) {
-                LOGGER.debug("{}{}", "  ", r);
-            }
+            stdJudge.getTurnState().getResultList().stream()
+                    .forEach(r -> LOGGER.debug("{}{}", "  ", r));
 
             // check post conditions
             LOGGER.debug(
@@ -759,8 +758,8 @@ public final class TestSuite {
                 }
 
                 // remove after first colon, and parse the order
-                line = line.substring(line.indexOf(':') + 1);
-                final Order order = parseOrder(line, previousTS, false);
+                final String orderPart = line.split(":", 2)[1];
+                final Order order = parseOrder(orderPart, previousTS, false);
 
                 // was order a convoyed move? because then we have to add a
                 // convoyed move result.
