@@ -547,13 +547,13 @@ public final class TestSuite {
             LOGGER.debug("  CompareState: FAILED: unit positions follow.");
 
             // print adds
-            added.forEach(up -> LOGGER.debug("  " + "+" + " " + up));
+            added.forEach(up -> LOGGER.debug("  + {}", up));
 
             // print subtracts
-            missing.forEach(up -> LOGGER.debug("  " + "-" + " " + up));
+            missing.forEach(up -> LOGGER.debug("  - {}", up));
 
             // print units in correct position
-            intersection.forEach(up -> LOGGER.debug("  " + "=" + " " + up));
+            intersection.forEach(up -> LOGGER.debug("  = {}", up));
 
             return false;
         }
@@ -635,7 +635,7 @@ public final class TestSuite {
          */
         @Override
         public int hashCode() {
-            return Objects.hash(unit, province, isDislodged);    // very very bad! just an easy shortcut
+            return Objects.hash(unit, province, isDislodged);
         }
     }// inner class UnitPos
 
@@ -1056,7 +1056,7 @@ public final class TestSuite {
 
 
     // returns null if string is a comment line.
-    private String filterLine(final String in) {
+    private static String filterLine(final String in) {
         // remove whitespace
         // find comment-character index, if it exists
         // if entire line is a comment, or empty, return COMMENT_LINE now
@@ -1068,23 +1068,9 @@ public final class TestSuite {
 
     // find first space this works, because the
     // preceding whitespace before a keyword has already been trimmed
-    private String getAfterKeyword(final String in) {
-        final int idxSpace = in.indexOf(' ');
-        final int idxTab = in.indexOf('\t');
-
-        if (idxSpace == -1 && idxTab == -1) {
-            return null;
-        }
-
-        int idx;
-
-        if (idxSpace == -1 || idxTab == -1) {
-            idx = idxSpace > idxTab ? idxSpace : idxTab;        // return greater
-        } else {
-            idx = idxSpace < idxTab ? idxSpace : idxTab;        // return lesser
-        }
-
-        return in.substring(idx + 1);
+    private static String getAfterKeyword(final String in) {
+        final String[] tokens = in.split("[ \t]", 2);
+        return tokens.length < 2 ? null : tokens[1];
     }// getAfterKeyword()
 
 
