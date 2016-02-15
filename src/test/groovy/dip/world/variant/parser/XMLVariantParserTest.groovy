@@ -51,6 +51,7 @@ class XMLVariantParserTest extends Specification {
 
         std.getPowers().size() == 7
         std.getPowers()[0].getName() == "France"
+        std.getPowers()[0].isActive()
 
         std.getSupplyCenters().size() == 34
         std.getSupplyCenters()[0].getProvinceName() == "ank"

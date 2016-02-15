@@ -147,6 +147,11 @@ public class Unit implements Serializable, Cloneable {
                 "]");
     }// toString()
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, owner, coast);
+    }
+
 
     /**
      * A Type is the class of unit, for example, Army or Fleet.

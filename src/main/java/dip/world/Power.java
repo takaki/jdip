@@ -47,7 +47,7 @@ public class Power implements Comparable<Power>, Serializable {
     // immutable fields
     @XmlAttribute(required = true)
     private String name;
-    @XmlAttribute(name = "default", required = true)
+    @XmlAttribute(name = "active", required = true)
     private boolean active;
     @XmlAttribute(required = true)
     private String adjective;
