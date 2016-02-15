@@ -200,7 +200,6 @@ public final class TestSuite {
     private final Collection<Case> cases = new ArrayList<>(10);
     private World world;
     private TurnState templateTurnState;
-    private StdAdjudicator stdJudge;
     private final List<String> failedCaseNames = new ArrayList<>(10);
 
 
@@ -303,7 +302,8 @@ public final class TestSuite {
             LOGGER.debug(
                     "=ADJUDICATION==========================================================");
 
-            stdJudge = new StdAdjudicator(OrderFactory.getDefault(),
+            final StdAdjudicator stdJudge = new StdAdjudicator(
+                    OrderFactory.getDefault(),
                     currentCase.getCurrentTurnState());
             stdJudge.process();
 
@@ -848,14 +848,6 @@ public final class TestSuite {
             return Collections.unmodifiableList(postDislodged);
         }
 
-        public List<Order> getSCOwners() {
-            return Collections.unmodifiableList(supplySCOwners);
-        }
-
-        public Phase getPhase() {
-            return phase;
-        }
-
         public List<Order> getOrders() {
             return Collections.unmodifiableList(orders);
         }
@@ -923,12 +915,11 @@ public final class TestSuite {
             if (head == null) {
                 throw new IllegalArgumentException("Unexpected EOF");
             }
-            if (getKeyType(head.getValue()).get().equals(VARIANT_ALL)) {
-                initVariant(getAfterKeyword(head.getValue()));
-            } else {
+            if (!getKeyType(head.getValue()).get().equals(VARIANT_ALL)) {
                 throw new IllegalArgumentException(
                         "Before cases are defined, the variant must be set with the VARIANT_ALL flag.");
             }
+            initVariant(getAfterKeyword(head.getValue()));
             cases.addAll(parseCase(tokens));
 
         } catch (final IOException e) {
@@ -968,7 +959,6 @@ public final class TestSuite {
                             String.format("Key is not defined. [%d:%s]",
                                     head.getKey(), head.getValue()));
                 }
-
                 final String key = currentKey.get();
                 if (key.equals(END)) {
                     break;
@@ -981,8 +971,6 @@ public final class TestSuite {
                     final Deque<String> list = keyMap.get(key);
                     list.addAll(parseStatus(tokens));
                 }
-
-
             }
 
             final Case aCase = new Case(caseName, phaseName,
@@ -1013,11 +1001,11 @@ public final class TestSuite {
                 throw new IllegalArgumentException("Unexpected EOF");
             }
             if (getKeyType(head.getValue()).isPresent()) {
-                break;
+                return list;
             }
             list.add(tokens.remove().getValue());
         }
-        return list;
+
     }
 
 
