@@ -30,8 +30,6 @@ class VariantManagerTest extends Specification {
         def vs = vm.getVariants();
         then:
         vs.size() == 43
-        //        vs.each { v -> println "${v}" }
-        // def sl = VariantManager.getInstance().getVariant("Standard", new VersionNumber(1, 0)).get()
         when:
         def sl0 = vm.getVariant("Shift-Left", new VersionNumber(1, 0)).get()
         def sl1 = vm.getVariant("shiftleft", new VersionNumber(1, 0)).get()
@@ -87,11 +85,10 @@ class VariantManagerTest extends Specification {
         variant0.getMapGraphics()[0].getThumbnailURI() == new URI("simple_thumb.png")
 
         expect:
-        vm.getSymbolPackVersions("Simple") == [VersionNumber.parse('1.0')] as VersionNumber[]
+        vm.getSymbolPackVersions("Simple") == [VersionNumber.parse('1.0')]
         vm.hasVariantVersion("TEST_Borders", VersionNumber.parse('1.0'))
         vm.hasSymbolPackVersion("Simple", VersionNumber.parse('1.0'))
-        vm.getVariantVersions("TEST_Borders") == [VersionNumber.
-                                                                                    parse('1.0')] as VersionNumber[]
+        vm.getVariantVersions("TEST_Borders") == [VersionNumber.parse('1.0')]
         vm.getResource(variant, new URI("a")).orElse(null) == null
         vm.getResource(variant, new URI("jar:file:" + System.
                 getProperty("user.dir") + "/src/test/resources/variants/testVariants.zip!/")).
@@ -103,7 +100,6 @@ class VariantManagerTest extends Specification {
                 getProperty("user.dir") + "/src/test/resources/variants/simpleSimbols.zip!/")
 //        vm.getVariantPackageJarURL(variant) == new URL("jar:file:" + System.
 //                getProperty("user.dir") + "/src/test/resources/variants/testVariants.zip!/")
-
-        ! vm.getVariant("not exist variant", VariantManager.VERSION_NEWEST).isPresent()
+        !vm.getVariant("not exist variant", VariantManager.VERSION_NEWEST).isPresent()
     }
 }
