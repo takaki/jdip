@@ -49,12 +49,12 @@ public final class ProvinceData {
     private List<String> shortNames = new ArrayList<>();
     @XmlAttribute(name = "fullname", required = true)
     private String fullName;
+    @XmlAttribute(name = "borders")
+    private String borders = "";
     //    isConvoyableCoast (true|false) "false"
     @XmlAttribute(name = "isConvoyableCoast", required = true)
     private boolean isConvoyableCoast;
     //    borders IDREFS #IMPLIED
-
-    private List<String> borders = Collections.emptyList();
 
     @XmlElement(name = "UNIQUENAME")
     private List<UniqueName> uniqueNames = new ArrayList<>();
@@ -127,21 +127,11 @@ public final class ProvinceData {
     }
 
     /**
-     * Sets the Border ID names for this province (if any)
-     */
-    // TODO: right?
-    @XmlAttribute(name = "borders")
-    public void setBorders(final String borders) {
-        this.borders = borders.isEmpty() ? Collections
-                .emptyList() : new ArrayList<>(
-                Arrays.asList(borders.split("[, ]+")));
-    }// setBorders()
-
-    /**
      * Gets the Border ID names for this province (if any)
      */
     public List<String> getBorders() {
-        return Collections.unmodifiableList(borders);
+        return borders.isEmpty() ? Collections.emptyList() : new ArrayList<>(
+                Arrays.asList(borders.split("[, ]+")));
     }
 
 
@@ -155,7 +145,7 @@ public final class ProvinceData {
                 ",#adj_provinces=", Integer.toString(adj_provinces.size()),
                 ",#adj_types=", Integer.toString(adj_types.size()),
                 ",isConvoyableCoast=", Boolean.toString(isConvoyableCoast),
-                ",#borders=", Integer.toString(borders.size()), "]");
+                ",#borders=", Integer.toString(getBorders().size()), "]");
     }// toString()
 }// nested class ProvinceData	
 
