@@ -22,7 +22,6 @@ class CoastTest extends Specification {
 
     def "test static"() {
         expect:
-        Coast.getCoast(7) == Coast.EAST
         Coast.getProvinceName("spa-sc") == "spa"
 
     }

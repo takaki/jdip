@@ -40,10 +40,4 @@ class VictoryConditionsTest extends Specification {
         0  | 0      | 0      | phase
     }
 
-    def "getter"() {
-        expect:
-        vc.getSCsRequiredForVictory() == 10
-        vc.getYearsWithoutSCChange() == 20
-        vc.getMaxGameDurationYears() == 30
-    }
 }
