@@ -16,12 +16,11 @@
  *
  */
 
-package dip
+package dip.test
 
 import dip.order.Order
 import dip.order.OrderFactory
 import dip.process.StdAdjudicator
-import dip.test.TestSuite
 import dip.test.TestSuite.UnitPos
 import dip.world.Position
 import dip.world.Province
