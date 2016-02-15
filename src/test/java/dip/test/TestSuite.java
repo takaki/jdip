@@ -946,60 +946,60 @@ public final class TestSuite {
                 break;
             }
             final String line = head.getValue();
-            if (getKeyType(line).get().equals(CASE)) {
-                final String caseName = getAfterKeyword(line);
-                String phaseName = null;
-                final Map<String, LinkedList<String>> keyMap = KEY_TYPES_WITH_LIST
-                        .stream().collect(Collectors.toMap(Function.identity(),
-                                key -> new LinkedList<>()));
-                while (true) {
-                    final Pair<Integer, String> head1 = tokens.poll();
-                    if (head1 == null) {
-                        throw new IllegalArgumentException("Unexpected EOF");
-                    }
-                    final String line1 = head1.getValue();
-                    final Optional<String> currentKey = getKeyType(line1);
-                    if (currentKey.isPresent()) {
-                        final String key = currentKey.get();
-                        if (key.equals(END)) {
-                            break;
-                        } else if (key.equals(PRESTATE_SETPHASE)) {
-                            phaseName = getAfterKeyword(line1);
-                        } else if (key.equals(POSTSTATE_SAME)) {
-                            final List<String> list = keyMap.get(POSTSTATE);
-                            list.addAll(keyMap.get(PRESTATE));
-                        } else {
-                            final Deque<String> list = keyMap.get(key);
-                            list.addAll(parseStatus(tokens));
-                        }
-
-                    } else {
-                        throw new IllegalArgumentException(
-                                String.format("Key is not defined. [%d:%s]",
-                                        head.getKey(), head.getValue()));
-                    }
-                }
-
-                final Case aCase = new Case(caseName, phaseName,
-                        keyMap.get(PRESTATE),        // prestate
-                        keyMap.get(ORDERS),            // orders
-                        keyMap.get(POSTSTATE),
-                        // poststate
-                        keyMap.get(PRESTATE_SUPPLYCENTER_OWNERS),
-                        // pre-state: sc owners
-                        keyMap.get(PRESTATE_DISLODGED),
-                        // pre-dislodged
-                        keyMap.get(POSTSTATE_DISLODGED),
-                        // post-dislodged
-                        keyMap.get(PRESTATE_RESULTS)
-                        // results (of prior phase)
-                );
-                caseList.add(aCase);
-            } else {
+            if (!getKeyType(line).get().equals(CASE)) {
                 throw new IllegalArgumentException(
                         String.format("Not expected line [%d:%s]",
                                 head.getKey(), head.getValue()));
             }
+            final String caseName = getAfterKeyword(line);
+            String phaseName = null;
+            final Map<String, LinkedList<String>> keyMap = KEY_TYPES_WITH_LIST
+                    .stream().collect(Collectors.toMap(Function.identity(),
+                            key -> new LinkedList<>()));
+            while (true) {
+                final Pair<Integer, String> head1 = tokens.poll();
+                if (head1 == null) {
+                    throw new IllegalArgumentException("Unexpected EOF");
+                }
+                final String line1 = head1.getValue();
+                final Optional<String> currentKey = getKeyType(line1);
+                if (!currentKey.isPresent()) {
+                    throw new IllegalArgumentException(
+                            String.format("Key is not defined. [%d:%s]",
+                                    head.getKey(), head.getValue()));
+                }
+
+                final String key = currentKey.get();
+                if (key.equals(END)) {
+                    break;
+                } else if (key.equals(PRESTATE_SETPHASE)) {
+                    phaseName = getAfterKeyword(line1);
+                } else if (key.equals(POSTSTATE_SAME)) {
+                    final List<String> list = keyMap.get(POSTSTATE);
+                    list.addAll(keyMap.get(PRESTATE));
+                } else {
+                    final Deque<String> list = keyMap.get(key);
+                    list.addAll(parseStatus(tokens));
+                }
+
+
+            }
+
+            final Case aCase = new Case(caseName, phaseName,
+                    keyMap.get(PRESTATE),        // prestate
+                    keyMap.get(ORDERS),            // orders
+                    keyMap.get(POSTSTATE),
+                    // poststate
+                    keyMap.get(PRESTATE_SUPPLYCENTER_OWNERS),
+                    // pre-state: sc owners
+                    keyMap.get(PRESTATE_DISLODGED),
+                    // pre-dislodged
+                    keyMap.get(POSTSTATE_DISLODGED),
+                    // post-dislodged
+                    keyMap.get(PRESTATE_RESULTS)
+                    // results (of prior phase)
+            );
+            caseList.add(aCase);
         }
         return caseList;
     }
