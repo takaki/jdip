@@ -45,6 +45,8 @@ class VariantManagerTest extends Specification {
         def variant = vm.getVariant("TEST_Borders", VersionNumber.parse('1.0')).get()
         then:
         variant.getName() == "TEST_Borders"
+        variant.getProvinceData().get(11).getFullName() == "Bohemia"
+        variant.getProvinceData().get(11).getBorders() == ["seasonFromS", "seasonFromF"]
 
         when:
         def symbol = vm.getSymbolPack("Simple", VersionNumber.parse('1.0')).get()
