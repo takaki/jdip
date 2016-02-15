@@ -201,6 +201,7 @@ public final class TestSuite {
     private World world;
     private TurnState templateTurnState;
     private final List<String> failedCaseNames = new ArrayList<>(10);
+    private String variantName;
 
 
     /**
@@ -645,9 +646,8 @@ public final class TestSuite {
 
         // tsTemplate: template turnstate to create the current, and (if needed) previous
         // turnstates.
-        public Case(final String name, final String phaseName,
-                    final List<String> pre, final List<String> ord,
-                    final List<String> post,
+        public Case(TurnState templateTurnState, final String name, final String phaseName,
+                    final List<String> pre, final List<String> ord, final List<String> post,
                     final List<String> supplySCOwnersList,
                     final List<String> preDislodgedList,
                     final List<String> postDislodgedList,
@@ -917,7 +917,8 @@ public final class TestSuite {
                 throw new IllegalArgumentException(
                         "Before cases are defined, the variant must be set with the VARIANT_ALL flag.");
             }
-            initVariant(getAfterKeyword(head.getValue()));
+            variantName = getAfterKeyword(head.getValue());
+            initVariant(variantName);
             cases.addAll(parseCase(tokens));
         } catch (final IOException e) {
             throw new IllegalArgumentException(e);
@@ -970,7 +971,7 @@ public final class TestSuite {
                 }
             }
 
-            final Case aCase = new Case(caseName, phaseName,
+            final Case aCase = new Case(templateTurnState, caseName, phaseName,
                     keyMap.get(PRESTATE),        // prestate
                     keyMap.get(ORDERS),            // orders
                     keyMap.get(POSTSTATE),
