@@ -194,12 +194,10 @@ public final class TestSuite {
 
 
     // VARIANT_ALL name
-    private static String variantName;
     private static float parseTime = -1;
 
 
-    private final Map<String, LinkedList<String>> keyMap = new HashMap<>(23);
-    private final List<Case> cases = new ArrayList<>(10);
+    private final Collection<Case> cases = new ArrayList<>(10);
     private World world;
     private TurnState templateTurnState;
     private StdAdjudicator stdJudge;
@@ -225,10 +223,8 @@ public final class TestSuite {
 
         final long startTime = System.currentTimeMillis();
         // ts.parseCases(inFileName);
-        ts.llParse(inFileName);
+        ts.parseCaseFile(inFileName);
         parseTime = (System.currentTimeMillis() - startTime) / 1000.0f;
-        LOGGER.debug("  initialization complete.");
-        LOGGER.debug("  variant: {}", variantName);
 
         ts.evaluate();
     }// main()
@@ -238,7 +234,7 @@ public final class TestSuite {
     }// TestSuite()
 
 
-    private void initVariant() {
+    private void initVariant(final String variantName) {
         try {
             // get default variant directory.
 
@@ -261,6 +257,8 @@ public final class TestSuite {
             // set the RuleOptions in the World (this is normally done
             // by the GUI)
             world.setRuleOptions(RuleOptions.createFromVariant(variant));
+            LOGGER.debug("  initialization complete.");
+            LOGGER.debug("  variant: {}", variantName);
         } catch (final InvalidWorldException e) {
             throw new IllegalArgumentException("Init error", e);
         }
@@ -910,7 +908,7 @@ public final class TestSuite {
     }// class Case
 
 
-    private void llParse(final Path caseFile) {
+    private void parseCaseFile(final Path caseFile) {
         try (BufferedReader br = Files.newBufferedReader(caseFile)) {
             // zip!!!
             final List<String> lines = br.lines()
@@ -926,13 +924,12 @@ public final class TestSuite {
                 throw new IllegalArgumentException("Unexpected EOF");
             }
             if (getKeyType(head.getValue()).get().equals(VARIANT_ALL)) {
-                variantName = getAfterKeyword(head.getValue());
-                initVariant();
+                initVariant(getAfterKeyword(head.getValue()));
             } else {
                 throw new IllegalArgumentException(
                         "Before cases are defined, the variant must be set with the VARIANT_ALL flag.");
             }
-            cases.addAll(parseCases(tokens));
+            cases.addAll(parseCase(tokens));
 
         } catch (final IOException e) {
             throw new IllegalArgumentException(e);
@@ -940,10 +937,11 @@ public final class TestSuite {
 
     }
 
-    private List<Case> parseCases(final Queue<Pair<Integer, String>> tokens) {
+    private LinkedList<Case> parseCase(
+            final Queue<Pair<Integer, String>> tokens) {
         final Pair<Integer, String> head = tokens.poll();
         if (head == null) { // EOF
-            return Collections.emptyList();
+            return new LinkedList<>();
         }
         final String line = head.getValue();
         if (getKeyType(line).get().equals(CASE)) {
@@ -969,8 +967,7 @@ public final class TestSuite {
                         final List<String> list = keyMap.get(POSTSTATE);
                         list.addAll(keyMap.get(PRESTATE));
                     } else {
-                        // read orders
-                        final LinkedList<String> list = keyMap.get(key);
+                        final Deque<String> list = keyMap.get(key);
                         while (true) {
                             final Pair<Integer, String> head2 = tokens.peek();
                             if (head2 == null) {
@@ -1005,10 +1002,9 @@ public final class TestSuite {
                     keyMap.get(PRESTATE_RESULTS)
                     // results (of prior phase)
             );
-            final List<Case> cases = new LinkedList<>();
-            cases.add(aCase);
-            cases.addAll(parseCases(tokens));
-            return cases;
+            final LinkedList<Case> caseList = parseCase(tokens);
+            caseList.addFirst(aCase);
+            return caseList;
         } else {
             throw new IllegalArgumentException(
                     String.format("Not expected line [%d:%s]", head.getKey(),
