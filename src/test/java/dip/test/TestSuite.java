@@ -31,6 +31,7 @@ import dip.process.StdAdjudicator;
 import dip.world.*;
 import dip.world.variant.VariantManager;
 import dip.world.variant.data.Variant;
+import javafx.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +44,7 @@ import java.util.*;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 
 /**
@@ -222,7 +224,8 @@ public final class TestSuite {
         LOGGER.debug("  test case file: {}", inFileName);
 
         final long startTime = System.currentTimeMillis();
-        ts.parseCases(inFileName);
+        // ts.parseCases(inFileName);
+        ts.llParse(inFileName);
         parseTime = (System.currentTimeMillis() - startTime) / 1000.0f;
         LOGGER.debug("  initialization complete.");
         LOGGER.debug("  variant: {}", variantName);
@@ -907,130 +910,111 @@ public final class TestSuite {
     }// class Case
 
 
-    // NEW case parser
-    private void parseCases(final Path caseFile) {
-
-        // per case data that is NOT in List format
-
-        // setup reader
+    private void llParse(final Path caseFile) {
         try (BufferedReader br = Files.newBufferedReader(caseFile)) {
-            String currentKey = null;
-            int lineCount = 1;
+            // zip!!!
+            final List<String> lines = br.lines()
+                    .map(rawLine -> rawLine.trim().replaceAll("#.*", "")
+                            .toLowerCase()).collect(Collectors.toList());
+            final Queue<Pair<Integer, String>> tokens = new LinkedList<>(
+                    IntStream.range(0, lines.size())
+                            .mapToObj(i -> new Pair<>(i, lines.get(i)))
+                            .filter(p -> !p.getValue().isEmpty())
+                            .collect(Collectors.toList()));
+            final Pair<Integer, String> head = tokens.poll();
+            if (head == null) {
+                throw new IllegalArgumentException("Unexpected EOF");
+            }
+            if (getKeyType(head.getValue()).get().equals(VARIANT_ALL)) {
+                variantName = getAfterKeyword(head.getValue());
+                initVariant();
+            } else {
+                throw new IllegalArgumentException(
+                        "Before cases are defined, the variant must be set with the VARIANT_ALL flag.");
+            }
+            cases.addAll(parseCases(tokens));
 
-            String caseName = null;
-            boolean inCase = false;        // we are in a CASE
+        } catch (final IOException e) {
+            throw new IllegalArgumentException(e);
+        }
+
+    }
+
+    private List<Case> parseCases(final Queue<Pair<Integer, String>> tokens) {
+        final Pair<Integer, String> head = tokens.poll();
+        if (head == null) { // EOF
+            return Collections.emptyList();
+        }
+        final String line = head.getValue();
+        if (getKeyType(line).get().equals(CASE)) {
+            final String caseName = getAfterKeyword(line);
             String phaseName = null;
-            String rawLine = br.readLine();
-            while (rawLine != null) {
-                // remove whitespace
-                // find comment-character index, if it exists
-                // if entire line is a comment, or empty, return COMMENT_LINE now
-                // remove 'trailing' comments, if any
-                // otherwise, it could interfere with order processing.
-                // convert to lower case();
-                final String line = rawLine.trim().replaceAll("#.*", "")
-                        .toLowerCase();
-                final String key = getKeyType(line).orElse(null);
-                if (key != null) {
-                    currentKey = key;
+            final Map<String, LinkedList<String>> keyMap = KEY_TYPES_WITH_LIST
+                    .stream().collect(Collectors.toMap(Function.identity(),
+                            key -> new LinkedList<>()));
+            while (true) {
+                final Pair<Integer, String> head1 = tokens.poll();
+                if (head1 == null) {
+                    throw new IllegalArgumentException("Unexpected EOF");
                 }
-
-                // only process non-null (after filtering)
-                if (!line.isEmpty()) {
-                    if (currentKey == null) {
-                        // this can occur if a key is missing.
-                        throw new IllegalArgumentException(String.format(
-                                "Missing a required key. Line %d: %s",
-                                lineCount, rawLine));
-                    } else if (currentKey.equals(VARIANT_ALL)) {
-                        // make sure nothing is defined yet
-                        if (variantName == null) {
-                            variantName = getAfterKeyword(line);
-                        } else {
-                            throw new IllegalArgumentException(
-                                    "Before cases are defined, the variant must be set with the VARIANT_ALL flag.");
-                        }
-
-                        // make sure we are not in a case!
-                        if (inCase) {
-                            throw new IllegalArgumentException(
-                                    "VARIANT_ALL cannot be used within a CASE.");
-                        }
-
-                        // attempt to initialize the variant
-                        initVariant();
-                    } else if (currentKey.equals(CASE)) {
-                        // begin a case; case name appears after keyword
-                        //
-                        // clear data
-                        inCase = true;
-                        clearAndSetupKeyMap();
-                        phaseName = null;
-                        currentKey = null;
-
-                        // set case name
-                        caseName = getAfterKeyword(line);
-
-                        // make sure we have defined a variant!
-                        if (variantName == null) {
-                            throw new IllegalArgumentException(
-                                    "before cases are defined, the variant must be set with the VARIANT_ALL flag.");
-
-                        }
-                    } else if (currentKey.equals(END)) {
-                        // end a case
-                        inCase = false;
-
-                        // create the case
-                        final Case aCase = new Case(caseName, phaseName,
-                                getListForKeyType(PRESTATE),        // prestate
-                                getListForKeyType(ORDERS),            // orders
-                                getListForKeyType(POSTSTATE),
-                                // poststate
-                                getListForKeyType(PRESTATE_SUPPLYCENTER_OWNERS),
-                                // pre-state: sc owners
-                                getListForKeyType(PRESTATE_DISLODGED),
-                                // pre-dislodged
-                                getListForKeyType(POSTSTATE_DISLODGED),
-                                // post-dislodged
-                                getListForKeyType(PRESTATE_RESULTS)
-                                // results (of prior phase)
-                        );
-                        cases.add(aCase);
+                final String line1 = head1.getValue();
+                final Optional<String> currentKey = getKeyType(line1);
+                if (currentKey.isPresent()) {
+                    final String key = currentKey.get();
+                    if (key.equals(END)) {
+                        break;
+                    } else if (key.equals(PRESTATE_SETPHASE)) {
+                        phaseName = getAfterKeyword(line1);
+                    } else if (key.equals(POSTSTATE_SAME)) {
+                        final List<String> list = keyMap.get(POSTSTATE);
+                        list.addAll(keyMap.get(PRESTATE));
                     } else {
-                        if (inCase) {
-                            if (currentKey.equals(POSTSTATE_SAME)) {
-                                // just copy prestate data
-                                final List<String> list = getListForKeyType(
-                                        POSTSTATE);
-                                list.addAll(getListForKeyType(PRESTATE));
-                            } else if (currentKey.equals(PRESTATE_SETPHASE)) {
-                                // phase appears after keyword
-                                phaseName = getAfterKeyword(line);
-                            } else if (key == null) {// important: we don't want to add key lines to the lists
-                                // we need to get a list.
-                                final List<String> list = getListForKeyType(
-                                        currentKey);
-                                list.add(line);
+                        // read orders
+                        final LinkedList<String> list = keyMap.get(key);
+                        while (true) {
+                            final Pair<Integer, String> head2 = tokens.peek();
+                            if (head2 == null) {
+                                throw new IllegalArgumentException(
+                                        "Unexpected EOF");
                             }
-                        } else {
-                            throw new IllegalArgumentException(String.format(
-                                    "line not enclosed within a CASE.\n" + "Line %d: %s",
-                                    lineCount, rawLine));
+                            if (getKeyType(head2.getValue()).isPresent()) {
+                                break;
+                            }
+                            list.add(tokens.remove().getValue());
                         }
                     }
-                }
 
-                rawLine = br.readLine();
-                lineCount++;
-            }// while()
-        } catch (IOException e) {
+                } else {
+                    throw new IllegalArgumentException(
+                            String.format("Key is not defined. [%d:%s]",
+                                    head.getKey(), head.getValue()));
+                }
+            }
+
+            final Case aCase = new Case(caseName, phaseName,
+                    keyMap.get(PRESTATE),        // prestate
+                    keyMap.get(ORDERS),            // orders
+                    keyMap.get(POSTSTATE),
+                    // poststate
+                    keyMap.get(PRESTATE_SUPPLYCENTER_OWNERS),
+                    // pre-state: sc owners
+                    keyMap.get(PRESTATE_DISLODGED),
+                    // pre-dislodged
+                    keyMap.get(POSTSTATE_DISLODGED),
+                    // post-dislodged
+                    keyMap.get(PRESTATE_RESULTS)
+                    // results (of prior phase)
+            );
+            final List<Case> cases = new LinkedList<>();
+            cases.add(aCase);
+            cases.addAll(parseCases(tokens));
+            return cases;
+        } else {
             throw new IllegalArgumentException(
-                    String.format("I/O error reading case file [%s]", caseFile),
-                    e);
+                    String.format("Not expected line [%d:%s]", head.getKey(),
+                            head.getValue()));
         }
-        LOGGER.debug("  parsed {} cases.", cases.size());
-    }// parseCases()
+    }
 
 
     // find first space this works, because the
@@ -1039,13 +1023,6 @@ public final class TestSuite {
         final String[] tokens = in.split("[ \t]", 2);
         return tokens.length < 2 ? null : tokens[1];
     }// getAfterKeyword()
-
-
-    private void clearAndSetupKeyMap() {
-        keyMap.clear();
-        keyMap.putAll(KEY_TYPES_WITH_LIST.stream().collect(Collectors
-                .toMap(Function.identity(), key -> new LinkedList<>())));
-    }// setupKeyMap()
 
 
     /*
@@ -1064,11 +1041,6 @@ public final class TestSuite {
         }
         return KEY_TYPES_OTHER.stream().filter(line::startsWith).findFirst();
     }// getKeyType()
-
-
-    private List<String> getListForKeyType(final String keyType) {
-        return keyMap.get(keyType);
-    }// getListForKeyType()
 
 
 }// class TestSuite
