@@ -743,7 +743,7 @@ public final class TestSuite {
             // results that the adjudicator would normally generate.
             //
             temp.clear();
-            orderResultList.stream().forEach(line -> {
+            results = orderResultList.stream().flatMap(line -> {
                 final ResultType ordResultType;
 
                 // success or failure??
@@ -767,6 +767,7 @@ public final class TestSuite {
                 // was order a convoyed move? because then we have to add a
                 // convoyed move result.
                 //
+                Collection<OrderResult> rv = new ArrayList<>();
                 if (order instanceof Move) {
                     final Move mv = (Move) order;
                     if (mv.isConvoying()) {
@@ -775,15 +776,16 @@ public final class TestSuite {
                         path[0] = mv.getSource().getProvince();
                         path[1] = path[0];
                         path[2] = mv.getDest().getProvince();
-                        temp.add(new ConvoyPathResult(order, path));
+                        rv.add(new ConvoyPathResult(order, path));
                     }
                 }
 
-
                 // create/add order result
-                temp.add(new OrderResult(order, ordResultType, " (prestate)"));
-            });
-            results = new ArrayList<>(temp);
+                rv.add(new OrderResult(order, ordResultType,
+                        " (prestate)"));
+                return rv.stream();
+            }).collect(Collectors.toList());
+
 
             // add results to previous turnstate
             previousTS.setResultList(results);
