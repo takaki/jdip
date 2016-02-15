@@ -35,9 +35,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.Map;
 import java.util.function.Function;
@@ -221,7 +222,7 @@ public final class TestSuite {
         LOGGER.debug("  test case file: {}", inFileName);
 
 
-        final File file = new File(inFileName);
+        final Path file = Paths.get(inFileName);
 
         final long startTime = System.currentTimeMillis();
         ts.parseCases(file);
@@ -594,19 +595,12 @@ public final class TestSuite {
         /**
          * Print
          */
+        @Override
         public String toString() {
-            final StringBuffer sb = new StringBuffer(32);
-            sb.append(unit.getPower().getName());
-            sb.append(' ');
-            sb.append(unit.getType().getShortName());
-            sb.append(' ');
-            sb.append(province.getShortName());
-            sb.append('/');
-            sb.append(unit.getCoast().getAbbreviation());
-            if (isDislodged) {
-                sb.append(" [DISLODGED]");
-            }
-            return sb.toString();
+            return String.join("", unit.getPower().getName(), " ",
+                    unit.getType().getShortName(), " ", province.getShortName(),
+                    "/", unit.getCoast().getAbbreviation(),
+                    isDislodged ? " [DISLODGED]" : "");
         }// toString()
 
         /**
@@ -648,7 +642,7 @@ public final class TestSuite {
 
         private final List<Order> orders;
         private final String name;
-        private Phase phase;
+        private final Phase phase;
         private final OrderParser of;
         private final TurnState currentTS;
         private final TurnState previousTS;
@@ -663,9 +657,8 @@ public final class TestSuite {
                     final List<String> postDislodgedList,
                     final List<String> orderResultList) {
             this.name = name;
-            final List<OrderResult> temp = new ArrayList<>(50);
-            of = OrderParser.getInstance();
 
+            of = OrderParser.getInstance();
 
             // phase
             if (phaseName != null) {
@@ -675,10 +668,12 @@ public final class TestSuite {
                             String.format("case %s, cannot parse phase %s",
                                     name, phaseName));
                 }
+            } else {
+                phase = templateTurnState.getPhase();
             }
 
             // set phase to template phase, if no phase was assigned.
-            phase = phaseName == null ? templateTurnState.getPhase() : phase;
+
 
             // setup current turnstate from template
             // use phase, if appropriate.
@@ -734,7 +729,6 @@ public final class TestSuite {
             // against the 'prestate' positions. This way we would have all the same
             // results that the adjudicator would normally generate.
             //
-            temp.clear();
             results = orderResultList.stream().flatMap(line -> {
                 final ResultType ordResultType;
 
@@ -884,7 +878,7 @@ public final class TestSuite {
                                  final boolean isDefineState) {
             try {
                 // no guessing (but not locked); we must ALWAYS specify the power.
-                Order o = of
+                final Order o = of
                         .parse(OrderFactory.getDefault(), s, null, ts, false,
                                 false);
 
@@ -896,11 +890,11 @@ public final class TestSuite {
                                 .getValidatedSetup(o.getSourceUnitType());
 
                         // create a new DefineState with a validated loc
-                        o = OrderFactory.getDefault()
+                        return OrderFactory.getDefault()
                                 .createDefineState(o.getPower(), newLoc,
                                         o.getSourceUnitType());
                     } else {
-                        throw new OrderException(
+                        throw new IllegalArgumentException(
                                 "A DefineState order is required here.");
                     }
                 }
@@ -917,13 +911,12 @@ public final class TestSuite {
 
 
     // NEW case parser
-    private void parseCases(final File caseFile) {
-
+    private void parseCases(final Path caseFile) {
 
         // per case data that is NOT in List format
 
         // setup reader
-        try (BufferedReader br = new BufferedReader(new FileReader(caseFile))) {
+        try (BufferedReader br = Files.newBufferedReader(caseFile)) {
             String currentKey = null;
             int lineCount = 1;
 
