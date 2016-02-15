@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.util.*;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 
@@ -942,8 +943,7 @@ public final class TestSuite {
             String rawLine = br.readLine();
             while (rawLine != null) {
                 final String line = filterLine(rawLine);
-                final String key = getKeyType(line);
-
+                final String key = getKeyType(line).orElse(null);
                 if (key != null) {
                     currentKey = key;
                 }
@@ -1026,8 +1026,7 @@ public final class TestSuite {
                             } else if (currentKey.equals(PRESTATE_SETPHASE)) {
                                 // phase appears after keyword
                                 phaseName = getAfterKeyword(line);
-                            } else if (key == null) // important: we don't want to add key lines to the lists
-                            {
+                            } else if (key == null) {// important: we don't want to add key lines to the lists
                                 // we need to get a list.
                                 final List<String> list = getListForKeyType(
                                         currentKey);
@@ -1076,10 +1075,8 @@ public final class TestSuite {
 
     private void clearAndSetupKeyMap() {
         keyMap.clear();
-
-        for (final String aKEY_TYPES_WITH_LIST : KEY_TYPES_WITH_LIST) {
-            keyMap.put(aKEY_TYPES_WITH_LIST, new LinkedList<>());
-        }
+        keyMap.putAll(KEY_TYPES_WITH_LIST.stream().collect(Collectors
+                .toMap(Function.identity(), key -> new LinkedList<>())));
     }// setupKeyMap()
 
 
@@ -1087,24 +1084,17 @@ public final class TestSuite {
         returns:
             true key type type
     */
-    private String getKeyType(final String line) {
+    private Optional<String> getKeyType(final String line) {
         if (line != null && line.isEmpty()) {
-            return null;
+            return Optional.empty();
         }
-
         if (line.startsWith(CASE)) {
-            return CASE;
+            return Optional.of(CASE);
         }
         if (line.startsWith(END)) {
-            return END;
+            return Optional.of(END);
         }
-        for (final String aKEY_TYPES_OTHER : KEY_TYPES_OTHER) {
-            if (line.startsWith(aKEY_TYPES_OTHER)) {
-                return aKEY_TYPES_OTHER;
-            }
-        }
-
-        return null;
+        return KEY_TYPES_OTHER.stream().filter(line::startsWith).findFirst();
     }// getKeyType()
 
 
