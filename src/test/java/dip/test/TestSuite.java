@@ -190,22 +190,18 @@ public final class TestSuite {
                     PRESTATE);
 
 
+    // VARIANT_ALL name
+    private static String variantName;
     private static float parseTime = -1;
-
-    private final Map<String, LinkedList<String>> keyMap = new HashMap<>(23);
-
-
     private static String inFileName;
 
+
+    private final Map<String, LinkedList<String>> keyMap = new HashMap<>(23);
     private final List<Case> cases = new ArrayList<>(10);
     private World world;
     private TurnState templateTurnState;
     private StdAdjudicator stdJudge;
     private final List<String> failedCaseNames = new ArrayList<>(10);
-    private static final int benchTimes = 1;
-
-    // VARIANT_ALL name
-    private static String variantName;
 
 
     /**
@@ -219,10 +215,10 @@ public final class TestSuite {
 
         final TestSuite ts = new TestSuite();
 
-        LOGGER.debug("{}{}{}", "TestSuite Results: (", new Date(), ")");
+        LOGGER.debug("TestSuite Results: ({})", new Date());
         LOGGER.debug(
                 "=======================================================================");
-        LOGGER.debug("{}{}", "  test case file: ", inFileName);
+        LOGGER.debug("  test case file: {}", inFileName);
 
 
         final File file = new File(inFileName);
@@ -231,7 +227,7 @@ public final class TestSuite {
         ts.parseCases(file);
         parseTime = (System.currentTimeMillis() - startTime) / 1000f;
         LOGGER.debug("  initialization complete.");
-        LOGGER.debug("{}{}", "  variant: ", variantName);
+        LOGGER.debug("  variant: {}", variantName);
 
         ts.evaluate();
     }// main()
@@ -293,7 +289,7 @@ public final class TestSuite {
             LOGGER.debug("");
             LOGGER.debug(
                     "=CASE==================================================================");
-            LOGGER.debug("{}{}", "  ", currentCase.getName());
+            LOGGER.debug("  {}", currentCase.getName());
 
             // print pre-state
             printState(currentCase);
@@ -325,7 +321,7 @@ public final class TestSuite {
             if (stdJudge.getNextTurnState() == null) {
                 LOGGER.debug("=NEXT PHASE: NONE. Game has been won.");
             } else {
-                LOGGER.debug("{}{}", "=NEXT PHASE: ",
+                LOGGER.debug("=NEXT PHASE: {}",
                         stdJudge.getNextTurnState().getPhase());
             }
             stdJudge.getTurnState().getResultList().stream()
@@ -360,7 +356,7 @@ public final class TestSuite {
         //
         final long time = System
                 .currentTimeMillis() - startMillis;    // end timing!
-        LOGGER.debug("{}{}", "End: ", new Date());
+        LOGGER.debug("End: {}", new Date());
 
         // total time: includes setup/adjudication/comparison
         final float orderTime = (float) time / nOrders;
@@ -377,8 +373,7 @@ public final class TestSuite {
         LOGGER.debug("Unresolved Paradoxes:");
         LOGGER.debug("=====================");
         unRezParadoxes.forEach(paradox -> LOGGER.debug("   {}", paradox));
-        LOGGER.debug("{}{}{}", "   [total: ",
-                Integer.toString(unRezParadoxes.size()), "]");
+        LOGGER.debug("   [total: {}]", Integer.toString(unRezParadoxes.size()));
 
         // print to log
         LOGGER.debug("");
@@ -412,17 +407,16 @@ public final class TestSuite {
 
         LOGGER.debug(
                 "=PHASE=================================================================");
-        LOGGER.debug("{}{}", "  ", turnState.getPhase());
+        LOGGER.debug("  {}", turnState.getPhase());
 
         // if we have some results to display, for prior state, do that now.
         if (!c.getResults().isEmpty()) {
             // print
             LOGGER.debug(
                     "=PRESTATE_RESULTS======================================================");
-            LOGGER.debug("{}{}", "  From ",
-                    c.getPreviousTurnState().getPhase());
+            LOGGER.debug("  From {}", c.getPreviousTurnState().getPhase());
             for (final OrderResult anOr : c.getResults()) {
-                LOGGER.debug("{}{}", "    ", anOr);
+                LOGGER.debug("    {}", anOr);
             }
         }
 
@@ -452,7 +446,7 @@ public final class TestSuite {
      */
     private void printOrders(final Case currentCase) {
         for (final Order order : currentCase.getOrders()) {
-            LOGGER.debug("{}{}", "  ", order);
+            LOGGER.debug("  {}", order);
         }
 
         if (currentCase.getOrders().isEmpty()) {
@@ -513,17 +507,16 @@ public final class TestSuite {
 
         for (final Order dsOrd1 : c.getPostState()) {
             if (!caseUnits.add(new UnitPos(dsOrd1, false))) {
-                LOGGER.debug("ERROR: duplicate POSTSTATE position: {}", dsOrd1);
-                return false;
+                throw new IllegalStateException(
+                        String.format("duplicate POSTSTATE position: %s",
+                                dsOrd1));
             }
         }
 
         for (final Order dsOrd : c.getPostDislodged()) {
             if (!caseUnits.add(new UnitPos(dsOrd, true))) {
-                LOGGER.debug(
-                        "ERROR: duplicate POSTSTATE_DISLODGED position: {}",
-                        dsOrd);
-                return false;
+                throw new IllegalStateException(String.format(
+                        "duplicate POSTSTATE_DISLODGED position: %s", dsOrd));
             }
         }
 
@@ -678,9 +671,9 @@ public final class TestSuite {
             if (phaseName != null) {
                 phase = Phase.parse(phaseName);
                 if (phase == null) {
-                    throw new IllegalArgumentException(String.format(
-                            "ERROR: case %s, cannot parse phase %s", name,
-                            phaseName));
+                    throw new IllegalArgumentException(
+                            String.format("case %s, cannot parse phase %s",
+                                    name, phaseName));
                 }
             }
 
@@ -915,8 +908,8 @@ public final class TestSuite {
                 return o;
             } catch (final OrderException e) {
                 throw new IllegalArgumentException(
-                        String.format("ERROR: Case: %s, failure line: %s", name,
-                                s), e);
+                        String.format("Case: %s, failure line: %s", name, s),
+                        e);
             }
         }// parseOrder()
 
@@ -950,7 +943,7 @@ public final class TestSuite {
                     if (currentKey == null) {
                         // this can occur if a key is missing.
                         throw new IllegalArgumentException(String.format(
-                                "ERROR: missing a required key. Line %d: %s",
+                                "Missing a required key. Line %d: %s",
                                 lineCount, rawLine));
                     } else if (currentKey.equals(VARIANT_ALL)) {
                         // make sure nothing is defined yet
@@ -958,13 +951,13 @@ public final class TestSuite {
                             variantName = getAfterKeyword(line);
                         } else {
                             throw new IllegalArgumentException(
-                                    "ERROR: before cases are defined, the variant must be set with the VARIANT_ALL flag.");
+                                    "Before cases are defined, the variant must be set with the VARIANT_ALL flag.");
                         }
 
                         // make sure we are not in a case!
                         if (inCase) {
                             throw new IllegalArgumentException(
-                                    "ERROR: VARIANT_ALL cannot be used within a CASE.");
+                                    "VARIANT_ALL cannot be used within a CASE.");
                         }
 
                         // attempt to initialize the variant
@@ -984,7 +977,7 @@ public final class TestSuite {
                         // make sure we have defined a variant!
                         if (variantName == null) {
                             throw new IllegalArgumentException(
-                                    "ERROR: before cases are defined, the variant must be set with the VARIANT_ALL flag.");
+                                    "before cases are defined, the variant must be set with the VARIANT_ALL flag.");
 
                         }
                     } else if (currentKey.equals(END)) {
@@ -1025,7 +1018,7 @@ public final class TestSuite {
                             }
                         } else {
                             throw new IllegalArgumentException(String.format(
-                                    "ERROR: line not enclosed within a CASE.\n" + "Line %d: %s",
+                                    "line not enclosed within a CASE.\n" + "Line %d: %s",
                                     lineCount, rawLine));
                         }
                     }
@@ -1034,10 +1027,10 @@ public final class TestSuite {
                 rawLine = br.readLine();
                 lineCount++;
             }// while()
-        } catch (final IOException e) {
+        } catch (IOException e) {
             throw new IllegalArgumentException(
-                    String.format("ERROR: I/O error reading case file [%s]",
-                            caseFile), e);
+                    String.format("I/O error reading case file [%s]", caseFile),
+                    e);
         }
         LOGGER.debug("  parsed {} cases.", cases.size());
     }// parseCases()
