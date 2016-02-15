@@ -213,7 +213,6 @@ public final class TestSuite {
 
         Log.setLogging(null);
 
-        final TestSuite ts = new TestSuite();
 
         LOGGER.debug("TestSuite Results: ({})", new Date());
         LOGGER.debug(
@@ -221,15 +220,14 @@ public final class TestSuite {
         LOGGER.debug("  test case file: {}", inFileName);
 
         final long startTime = System.currentTimeMillis();
-        // ts.parseCases(inFileName);
-        ts.parseCaseFile(inFileName);
+        final TestSuite ts = new TestSuite(inFileName);
         parseTime = (System.currentTimeMillis() - startTime) / 1000.0f;
-
         ts.evaluate();
     }// main()
 
 
-    private TestSuite() {
+    private TestSuite(final Path inFileName) {
+        parseCaseFile(inFileName);
     }// TestSuite()
 
 
@@ -921,7 +919,6 @@ public final class TestSuite {
             }
             initVariant(getAfterKeyword(head.getValue()));
             cases.addAll(parseCase(tokens));
-
         } catch (final IOException e) {
             throw new IllegalArgumentException(e);
         }
@@ -992,7 +989,7 @@ public final class TestSuite {
         return caseList;
     }
 
-    private Collection<String> parseStatus(
+    private static Collection<String> parseStatus(
             final Queue<Pair<Integer, String>> tokens) {
         final List<String> list = new LinkedList<>();
         while (true) {
@@ -1021,7 +1018,7 @@ public final class TestSuite {
         returns:
             true key type type
     */
-    private Optional<String> getKeyType(final String line) {
+    private static Optional<String> getKeyType(final String line) {
         if (line != null && line.isEmpty()) {
             return Optional.empty();
         }
