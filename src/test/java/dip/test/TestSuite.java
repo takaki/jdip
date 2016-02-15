@@ -970,18 +970,7 @@ public final class TestSuite {
                             list.addAll(keyMap.get(PRESTATE));
                         } else {
                             final Deque<String> list = keyMap.get(key);
-                            while (true) {
-                                final Pair<Integer, String> head2 = tokens
-                                        .peek();
-                                if (head2 == null) {
-                                    throw new IllegalArgumentException(
-                                            "Unexpected EOF");
-                                }
-                                if (getKeyType(head2.getValue()).isPresent()) {
-                                    break;
-                                }
-                                list.add(tokens.remove().getValue());
-                            }
+                            list.addAll(parseStatus(tokens));
                         }
 
                     } else {
@@ -1013,6 +1002,22 @@ public final class TestSuite {
             }
         }
         return caseList;
+    }
+
+    private Collection<String> parseStatus(
+            final Queue<Pair<Integer, String>> tokens) {
+        final List<String> list = new LinkedList<>();
+        while (true) {
+            final Pair<Integer, String> head = tokens.peek();
+            if (head == null) {
+                throw new IllegalArgumentException("Unexpected EOF");
+            }
+            if (getKeyType(head.getValue()).isPresent()) {
+                break;
+            }
+            list.add(tokens.remove().getValue());
+        }
+        return list;
     }
 
 
