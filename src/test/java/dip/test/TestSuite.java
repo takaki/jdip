@@ -196,12 +196,9 @@ public final class TestSuite {
     // VARIANT_ALL name
     private static float parseTime = -1;
 
-
     private final Collection<Case> cases = new ArrayList<>(10);
     private World world;
     private TurnState templateTurnState;
-    private final List<String> failedCaseNames = new ArrayList<>(10);
-    private String variantName;
 
 
     /**
@@ -263,12 +260,16 @@ public final class TestSuite {
     }// init()
 
 
+    public Collection<Case> getCases() {
+        return Collections.unmodifiableCollection(cases);
+    }
+
     private void evaluate() {
         int nOrders = 0;
         int nPass = 0;
         int nFail = 0;
         int nCases = 0;
-
+        final List<String> failedCaseNames = new ArrayList<>(10);
         final List<String> unRezParadoxes = new LinkedList<>();
 
         final long startMillis = System.currentTimeMillis();    // start timing!
@@ -569,7 +570,7 @@ public final class TestSuite {
         /**
          * Create a UnitPos
          */
-        public UnitPos(final Order ds, final boolean isDislodged) {
+        UnitPos(final Order ds, final boolean isDislodged) {
             unit = new Unit(ds.getPower(), ds.getSourceUnitType());
             unit.setCoast(ds.getSource().getCoast());
             province = ds.getSource().getProvince();
@@ -579,8 +580,8 @@ public final class TestSuite {
         /**
          * Create a UnitPos
          */
-        public UnitPos(final Position pos, final Province prov,
-                       final boolean isDislodged) {
+        UnitPos(final Position pos, final Province prov,
+                final boolean isDislodged) {
             province = prov;
             this.isDislodged = isDislodged;
             unit = isDislodged ? pos.getDislodgedUnit(prov) : pos.getUnit(prov);
@@ -646,12 +647,13 @@ public final class TestSuite {
 
         // tsTemplate: template turnstate to create the current, and (if needed) previous
         // turnstates.
-        public Case(TurnState templateTurnState, final String name, final String phaseName,
-                    final List<String> pre, final List<String> ord, final List<String> post,
-                    final List<String> supplySCOwnersList,
-                    final List<String> preDislodgedList,
-                    final List<String> postDislodgedList,
-                    final List<String> orderResultList) {
+        Case(final TurnState turnState, final String name,
+             final String phaseName, final List<String> pre,
+             final List<String> ord, final List<String> post,
+             final List<String> supplySCOwnersList,
+             final List<String> preDislodgedList,
+             final List<String> postDislodgedList,
+             final List<String> orderResultList) {
             this.name = name;
 
             of = OrderParser.getInstance();
@@ -665,7 +667,7 @@ public final class TestSuite {
                                     name, phaseName));
                 }
             } else {
-                phase = templateTurnState.getPhase();
+                phase = turnState.getPhase();
             }
 
             // set phase to template phase, if no phase was assigned.
@@ -674,14 +676,12 @@ public final class TestSuite {
             // setup current turnstate from template
             // use phase, if appropriate.
             currentTS = new TurnState(phase);
-            currentTS.setPosition(
-                    templateTurnState.getPosition().cloneExceptUnits());
+            currentTS.setPosition(turnState.getPosition().cloneExceptUnits());
             currentTS.setWorld(world);
 
             // setup previous phase, in case we need it.
             previousTS = new TurnState(phase.getPrevious());
-            previousTS.setPosition(
-                    templateTurnState.getPosition().cloneExceptUnits());
+            previousTS.setPosition(turnState.getPosition().cloneExceptUnits());
             previousTS.setWorld(world);
 
             // pre
@@ -917,8 +917,7 @@ public final class TestSuite {
                 throw new IllegalArgumentException(
                         "Before cases are defined, the variant must be set with the VARIANT_ALL flag.");
             }
-            variantName = getAfterKeyword(head.getValue());
-            initVariant(variantName);
+            initVariant(getAfterKeyword(head.getValue()));
             cases.addAll(parseCase(tokens));
         } catch (final IOException e) {
             throw new IllegalArgumentException(e);
