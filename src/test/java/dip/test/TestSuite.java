@@ -22,7 +22,6 @@
 //
 package dip.test;
 
-import dip.misc.Log;
 import dip.order.*;
 import dip.order.result.ConvoyPathResult;
 import dip.order.result.OrderResult;
@@ -209,23 +208,21 @@ public final class TestSuite {
                 .get("etc/test_data/datc_v2.4_06_remove6.e.4.txt");
 // {"etc/test_data/datc_v2.4_09.txt","etc/test_data/dipai.txt","etc/test_data/explicitConvoys.txt","etc/test_data/real.txt","etc/test_data/wing.txt"};
 
-        Log.setLogging(null);
-
 
         LOGGER.debug("TestSuite Results: ({})", new Date());
         LOGGER.debug(
                 "=======================================================================");
         LOGGER.debug("  test case file: {}", inFileName);
 
-        final long startTime = System.currentTimeMillis();
         final TestSuite ts = new TestSuite(inFileName);
-        parseTime = (System.currentTimeMillis() - startTime) / 1000.0f;
         ts.evaluate();
     }// main()
 
 
     private TestSuite(final Path inFileName) {
+        final long startTime = System.currentTimeMillis();
         parseCaseFile(inFileName);
+        parseTime = (System.currentTimeMillis() - startTime) / 1000.0f;
     }// TestSuite()
 
 
@@ -264,7 +261,12 @@ public final class TestSuite {
         return Collections.unmodifiableCollection(cases);
     }
 
-    private void evaluate() {
+    public World getWorld() {
+        return world;
+    }
+
+
+    public void evaluate() {
         int nOrders = 0;
         int nPass = 0;
         int nFail = 0;
@@ -443,7 +445,7 @@ public final class TestSuite {
     /**
      * Prints the orders in a case
      */
-    private void printOrders(final Case currentCase) {
+    private static void printOrders(final Case currentCase) {
         for (final Order order : currentCase.getOrders()) {
             LOGGER.debug("  {}", order);
         }
@@ -472,7 +474,8 @@ public final class TestSuite {
      * Returns true if the states match (or game has been won);
      * otherwise, returns false.
      */
-    private boolean compareState(final Case c, final TurnState resolvedTS) {
+    private static boolean compareState(final Case c,
+                                        final TurnState resolvedTS) {
         // special case: check for a win.
         if (resolvedTS == null) {
             LOGGER.debug(
@@ -562,7 +565,7 @@ public final class TestSuite {
      * is comparable, for determining if the end-state is
      * in fact correct.
      */
-    private final class UnitPos {
+    public static final class UnitPos {
         private final Unit unit;            // owner/type/coast
         private final Province province;        // position
         private final boolean isDislodged;    // dislodged?
@@ -630,7 +633,7 @@ public final class TestSuite {
     /**
      * Holds a Case
      */
-    private final class Case {
+    public static final class Case {
         private final List<Order> preState;
         private final List<Order> postState;
         private final List<Order> preDislodged;
@@ -647,7 +650,7 @@ public final class TestSuite {
 
         // tsTemplate: template turnstate to create the current, and (if needed) previous
         // turnstates.
-        Case(final TurnState turnState, final String name,
+        Case(final World world, final TurnState turnState, final String name,
              final String phaseName, final List<String> pre,
              final List<String> ord, final List<String> post,
              final List<String> supplySCOwnersList,
@@ -657,7 +660,6 @@ public final class TestSuite {
             this.name = name;
 
             of = OrderParser.getInstance();
-
             // phase
             if (phaseName != null) {
                 phase = Phase.parse(phaseName);
@@ -970,8 +972,8 @@ public final class TestSuite {
                 }
             }
 
-            final Case aCase = new Case(templateTurnState, caseName, phaseName,
-                    keyMap.get(PRESTATE),        // prestate
+            final Case aCase = new Case(world, templateTurnState, caseName,
+                    phaseName, keyMap.get(PRESTATE),        // prestate
                     keyMap.get(ORDERS),            // orders
                     keyMap.get(POSTSTATE),
                     // poststate
