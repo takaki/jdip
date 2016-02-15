@@ -252,8 +252,8 @@ public final class TestSuite {
                     .getVariant(variantName, VariantManager.VERSION_NEWEST)
                     .orElse(null);
             if (variant == null) {
-                throw new RuntimeException(
-                        "Cannot find variant " + variantName);
+                throw new IllegalArgumentException(
+                        String.format("Cannot find variant %s", variantName));
             }
 
             // create the world
@@ -264,9 +264,8 @@ public final class TestSuite {
             // set the RuleOptions in the World (this is normally done
             // by the GUI)
             world.setRuleOptions(RuleOptions.createFromVariant(variant));
-        } catch (final Exception e) {
-            LOGGER.debug("{}{}", "Init error: ", e);
-            throw new RuntimeException(e);
+        } catch (final InvalidWorldException e) {
+            throw new IllegalArgumentException("Init error", e);
         }
     }// init()
 
@@ -679,9 +678,9 @@ public final class TestSuite {
             if (phaseName != null) {
                 phase = Phase.parse(phaseName);
                 if (phase == null) {
-                    LOGGER.debug("ERROR: case {}", name);
-                    LOGGER.debug("ERROR: cannot parse phase {}", phaseName);
-                    throw new RuntimeException();
+                    throw new IllegalArgumentException(String.format(
+                            "ERROR: case %s, cannot parse phase %s", name,
+                            phaseName));
                 }
             }
 
@@ -752,12 +751,9 @@ public final class TestSuite {
                 } else if (line.startsWith("failure")) {
                     ordResultType = ResultType.FAILURE;
                 } else {
-                    LOGGER.debug("ERROR");
-                    LOGGER.debug("case: {}", name);
-                    LOGGER.debug("line: {}", line);
-                    LOGGER.debug(
-                            "PRESTATE_RESULTS: must prepend orders with \"SUCCESS:\" or \"FAILURE:\".");
-                    throw new RuntimeException();
+                    throw new IllegalArgumentException(String.format(
+                            "PRESTATE_RESULTS: must prepend orders with \"SUCCESS:\" or \"FAILURE:\".: case: %s, line: %s",
+                            name, line));
                 }
 
                 // remove after first colon, and parse the order
@@ -781,8 +777,7 @@ public final class TestSuite {
                 }
 
                 // create/add order result
-                rv.add(new OrderResult(order, ordResultType,
-                        " (prestate)"));
+                rv.add(new OrderResult(order, ordResultType, " (prestate)"));
                 return rv.stream();
             }).collect(Collectors.toList());
 
@@ -919,11 +914,9 @@ public final class TestSuite {
 
                 return o;
             } catch (final OrderException e) {
-                LOGGER.debug("ERROR");
-                LOGGER.debug("parseOrder() OrderException: {}", e);
-                LOGGER.debug("Case: {}", name);
-                LOGGER.debug("failure line: {}", s);
-                throw new RuntimeException(e);
+                throw new IllegalArgumentException(
+                        String.format("ERROR: Case: %s, failure line: %s", name,
+                                s), e);
             }
         }// parseOrder()
 
@@ -956,26 +949,22 @@ public final class TestSuite {
                 if (!line.isEmpty()) {
                     if (currentKey == null) {
                         // this can occur if a key is missing.
-                        LOGGER.debug("ERROR: missing a required key");
-                        LOGGER.debug("Line {}: {}", lineCount, rawLine);
-                        throw new RuntimeException();
+                        throw new IllegalArgumentException(String.format(
+                                "ERROR: missing a required key. Line %d: %s",
+                                lineCount, rawLine));
                     } else if (currentKey.equals(VARIANT_ALL)) {
                         // make sure nothing is defined yet
                         if (variantName == null) {
                             variantName = getAfterKeyword(line);
                         } else {
-                            LOGGER.debug(
-                                    "ERROR: before cases are defined, the variant must");
-                            LOGGER.debug(
-                                    "       be set with the VARIANT_ALL flag.");
-                            throw new RuntimeException();
+                            throw new IllegalArgumentException(
+                                    "ERROR: before cases are defined, the variant must be set with the VARIANT_ALL flag.");
                         }
 
                         // make sure we are not in a case!
                         if (inCase) {
-                            LOGGER.debug(
+                            throw new IllegalArgumentException(
                                     "ERROR: VARIANT_ALL cannot be used within a CASE.");
-                            throw new RuntimeException();
                         }
 
                         // attempt to initialize the variant
@@ -994,11 +983,9 @@ public final class TestSuite {
 
                         // make sure we have defined a variant!
                         if (variantName == null) {
-                            LOGGER.debug(
-                                    "ERROR: before cases are defined, the variant must");
-                            LOGGER.debug(
-                                    "       be set with the VARIANT_ALL flag.");
-                            throw new RuntimeException();
+                            throw new IllegalArgumentException(
+                                    "ERROR: before cases are defined, the variant must be set with the VARIANT_ALL flag.");
+
                         }
                     } else if (currentKey.equals(END)) {
                         // end a case
@@ -1037,10 +1024,9 @@ public final class TestSuite {
                                 list.add(line);
                             }
                         } else {
-                            LOGGER.debug(
-                                    "ERROR: line not enclosed within a CASE.");
-                            LOGGER.debug("Line {}: {}", lineCount, rawLine);
-                            throw new RuntimeException();
+                            throw new IllegalArgumentException(String.format(
+                                    "ERROR: line not enclosed within a CASE.\n" + "Line %d: %s",
+                                    lineCount, rawLine));
                         }
                     }
                 }
@@ -1049,10 +1035,9 @@ public final class TestSuite {
                 lineCount++;
             }// while()
         } catch (final IOException e) {
-            LOGGER.debug("{}{}{}", "ERROR: I/O error reading case file \"",
-                    caseFile, "\"");
-            LOGGER.debug("{}{}", "EXCEPTION: ", e);
-            throw new RuntimeException();
+            throw new IllegalArgumentException(
+                    String.format("ERROR: I/O error reading case file [%s]",
+                            caseFile), e);
         }
         LOGGER.debug("  parsed {} cases.", cases.size());
     }// parseCases()
