@@ -20,7 +20,6 @@ package dip.world
 
 import dip.order.Move
 import dip.world.variant.VariantManager
-import dip.world.variant.data.Variant
 import spock.lang.Specification
 
 class WorldFactoryTest extends Specification {
@@ -28,13 +27,6 @@ class WorldFactoryTest extends Specification {
         expect:
         WorldFactory.getInstance() instanceof WorldFactory
         WorldFactory.getInstance() == WorldFactory.getInstance()
-    }
-
-    def "createWorld"() {
-        def variant = new Variant()
-        def world = WorldFactory.getInstance().createWorld(variant)
-//        expect:
-//        world.getMap() != null
     }
 
     def "check standard map"() {
