@@ -827,6 +827,11 @@ public final class TestSuite {
             }
         }// Case()
 
+        @Override
+        public String toString(){
+            return name;
+        }
+
 
         public String getName() {
             return name;
