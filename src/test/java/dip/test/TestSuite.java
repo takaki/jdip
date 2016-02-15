@@ -194,7 +194,6 @@ public final class TestSuite {
     // VARIANT_ALL name
     private static String variantName;
     private static float parseTime = -1;
-    private static String inFileName;
 
 
     private final Map<String, LinkedList<String>> keyMap = new HashMap<>(23);
@@ -209,7 +208,8 @@ public final class TestSuite {
      * Start the TestSuite
      */
     public static void main(final String[] args) {
-        inFileName = "etc/test_data/datc_v2.4_06_remove6.e.4.txt";
+        final Path inFileName = Paths
+                .get("etc/test_data/datc_v2.4_06_remove6.e.4.txt");
 // {"etc/test_data/datc_v2.4_09.txt","etc/test_data/dipai.txt","etc/test_data/explicitConvoys.txt","etc/test_data/real.txt","etc/test_data/wing.txt"};
 
         Log.setLogging(null);
@@ -221,12 +221,9 @@ public final class TestSuite {
                 "=======================================================================");
         LOGGER.debug("  test case file: {}", inFileName);
 
-
-        final Path file = Paths.get(inFileName);
-
         final long startTime = System.currentTimeMillis();
-        ts.parseCases(file);
-        parseTime = (System.currentTimeMillis() - startTime) / 1000f;
+        ts.parseCases(inFileName);
+        parseTime = (System.currentTimeMillis() - startTime) / 1000.0f;
         LOGGER.debug("  initialization complete.");
         LOGGER.debug("  variant: {}", variantName);
 
@@ -925,7 +922,14 @@ public final class TestSuite {
             String phaseName = null;
             String rawLine = br.readLine();
             while (rawLine != null) {
-                final String line = filterLine(rawLine);
+                // remove whitespace
+                // find comment-character index, if it exists
+                // if entire line is a comment, or empty, return COMMENT_LINE now
+                // remove 'trailing' comments, if any
+                // otherwise, it could interfere with order processing.
+                // convert to lower case();
+                final String line = rawLine.trim().replaceAll("#.*", "")
+                        .toLowerCase();
                 final String key = getKeyType(line).orElse(null);
                 if (key != null) {
                     currentKey = key;
@@ -1028,17 +1032,6 @@ public final class TestSuite {
         LOGGER.debug("  parsed {} cases.", cases.size());
     }// parseCases()
 
-
-    // returns null if string is a comment line.
-    private static String filterLine(final String in) {
-        // remove whitespace
-        // find comment-character index, if it exists
-        // if entire line is a comment, or empty, return COMMENT_LINE now
-        // remove 'trailing' comments, if any
-        // otherwise, it could interfere with order processing.
-        // convert to lower case();
-        return in.trim().replaceAll("#.*", "").toLowerCase();
-    }// filterLine
 
     // find first space this works, because the
     // preceding whitespace before a keyword has already been trimmed
