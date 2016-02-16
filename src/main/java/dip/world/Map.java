@@ -161,7 +161,7 @@ public class Map implements Serializable {
      */
     public Power getClosestPower(final String powerName) {
         // return 'null' if powerName is empty
-        if (powerName != null && powerName.isEmpty()) {
+        if (powerName == null || powerName.isEmpty()) {
             return null;
         }
 
@@ -212,7 +212,7 @@ public class Map implements Serializable {
      */
     public Power getPowerMatching(String powerName) {
         // return 'null' if powerName is empty
-        if (powerName != null && powerName.isEmpty()) {
+        if (powerName == null || powerName.isEmpty()) {
             return null;
         }
 
@@ -563,7 +563,7 @@ public class Map implements Serializable {
         // if we find a colon, we will ASSUME that the first token
         // is a power, and use getClosestPower(); otherwise, we will
         // just check against the lcPowerNames list.
-        if (input != null && input.isEmpty()) {
+        if (input == null || input.isEmpty()) {
             return null;
         }
 

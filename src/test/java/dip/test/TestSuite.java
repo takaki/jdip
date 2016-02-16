@@ -828,7 +828,7 @@ public final class TestSuite {
         }// Case()
 
         @Override
-        public String toString(){
+        public String toString() {
             return name;
         }
 
@@ -1026,7 +1026,7 @@ public final class TestSuite {
             true key type type
     */
     private static Optional<String> getKeyType(final String line) {
-        if (line != null && line.isEmpty()) {
+        if (line == null || line.isEmpty()) {
             return Optional.empty();
         }
         if (line.startsWith(CASE)) {

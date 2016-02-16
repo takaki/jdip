@@ -178,7 +178,7 @@ public class XMLVariantParser implements VariantParser {
         @SuppressWarnings("unused")
         void afterUnmarshal(final Unmarshaller unmarshaller,
                             final Object parent) {
-            if (title != null && title.isEmpty()) {
+            if (title == null || title.isEmpty()) {
                 throw new IllegalArgumentException(
                         String.format("map id=%s missing a title (name)", id));
             }
