@@ -22,6 +22,9 @@
 //
 package dip.world;
 
+import dip.world.Unit.Type;
+
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -44,27 +47,28 @@ import java.util.Map;
  * to assist in cloning rather than call super.clone(). This is done for
  * performance reasons.
  */
-public class Position implements java.io.Serializable, Cloneable {
+public final class Position implements Serializable, Cloneable {
     // size constants; these should be prime
     private static final int POWER_SIZE = 17;
 
     // instance variables
-    protected final Map powerMap = new HashMap(POWER_SIZE);
-    protected final ProvinceData[] provArray;
-    protected final dip.world.Map map;
-    private transient Province[] tmpProvArray = null;
+    private final Map<Power, PowerData> powerMap = new HashMap<Power, PowerData>(
+            POWER_SIZE);
+    private final ProvinceData[] provArray;
+    private final dip.world.Map map;
+    private transient Province[] tmpProvArray;
 
 
-    public Position(dip.world.Map map) {
+    public Position(final dip.world.Map map) {
         this.map = map;
-        this.provArray = new ProvinceData[map.getProvinces().length];
+        provArray = new ProvinceData[map.getProvinces().length];
     }// Position()
 
 
     /**
      * The Number of Provinces in this Position
      */
-    public final int size() {
+    public int size() {
         return provArray.length;
     }// size()
 
@@ -72,7 +76,7 @@ public class Position implements java.io.Serializable, Cloneable {
     /**
      * Convenience method: Returns an array of Provinces
      */
-    public final Province[] getProvinces() {
+    public Province[] getProvinces() {
         return map.getProvinces();
     }// getProvinces()
 
@@ -80,8 +84,8 @@ public class Position implements java.io.Serializable, Cloneable {
     /**
      * Returns true if this Power has been eliminated. False by default.
      */
-    public boolean isEliminated(Power power) {
-        PowerData pd = (PowerData) powerMap.get(power);
+    public boolean isEliminated(final Power power) {
+        final PowerData pd = powerMap.get(power);
         if (pd != null) {
             return pd.isEliminated();
         }
@@ -92,8 +96,8 @@ public class Position implements java.io.Serializable, Cloneable {
     /**
      * Set whether this Power has been eliminated.
      */
-    public void setEliminated(Power power, boolean value) {
-        PowerData pd = getPowerData(power);
+    public void setEliminated(final Power power, final boolean value) {
+        final PowerData pd = getPowerData(power);
         pd.setEliminated(value);
     }// setEliminated()
 
@@ -103,13 +107,12 @@ public class Position implements java.io.Serializable, Cloneable {
      * Power has any units (including dislodged units) or supply centers on the map
      */
     public void setEliminationStatus(final Power[] powers) {
-        HashMap pmap = new HashMap(19);
-        for (int i = 0; i < powers.length; i++) {
-            pmap.put(powers[i], null);
+        final HashMap<Power, Object> pmap = new HashMap<Power, Object>(19);
+        for (final Power power1 : powers) {
+            pmap.put(power1, null);
         }
 
-        for (int i = 0; i < provArray.length; i++) {
-            ProvinceData pd = provArray[i];
+        for (final ProvinceData pd : provArray) {
             Power power = null;
 
             if (pd != null) {
@@ -141,11 +144,11 @@ public class Position implements java.io.Serializable, Cloneable {
             }
         }
 
-        for (int i = 0; i < powers.length; i++) {
-            if (pmap.get(powers[i]) == null) {
-                setEliminated(powers[i], true);
+        for (final Power power : powers) {
+            if (pmap.get(power) == null) {
+                setEliminated(power, true);
             } else {
-                setEliminated(powers[i], false);
+                setEliminated(power, false);
             }
         }
     }// setEliminationStatus()
@@ -154,8 +157,9 @@ public class Position implements java.io.Serializable, Cloneable {
     /**
      * Set the owner of the supply center.
      */
-    public void setSupplyCenterOwner(Province province, Power power) {
-        ProvinceData pd = getProvinceData(province);
+    public void setSupplyCenterOwner(final Province province,
+                                     final Power power) {
+        final ProvinceData pd = getProvinceData(province);
         pd.setSCOwner(power);
     }// setSupplyCenterOwner()
 
@@ -163,8 +167,9 @@ public class Position implements java.io.Serializable, Cloneable {
     /**
      * Set the owner of a home supply center.
      */
-    public void setSupplyCenterHomePower(Province province, Power power) {
-        ProvinceData pd = getProvinceData(province);
+    public void setSupplyCenterHomePower(final Province province,
+                                         final Power power) {
+        final ProvinceData pd = getProvinceData(province);
         pd.setSCHomePower(power);
     }// setSupplyCenterHomePower()
 
@@ -172,8 +177,8 @@ public class Position implements java.io.Serializable, Cloneable {
     /**
      * Determine if this Province contains a supply center
      */
-    public boolean hasSupplyCenterOwner(Province province) {
-        ProvinceData pd = provArray[province.getIndex()];
+    public boolean hasSupplyCenterOwner(final Province province) {
+        final ProvinceData pd = provArray[province.getIndex()];
         if (pd != null) {
             return pd.isSCOwned();
         }
@@ -184,8 +189,8 @@ public class Position implements java.io.Serializable, Cloneable {
     /**
      * Determine if this Province contains a Home supply center
      */
-    public boolean isSupplyCenterAHome(Province province) {
-        ProvinceData pd = provArray[province.getIndex()];
+    public boolean isSupplyCenterAHome(final Province province) {
+        final ProvinceData pd = provArray[province.getIndex()];
         if (pd != null) {
             return pd.isSCAHome();
         }
@@ -196,8 +201,8 @@ public class Position implements java.io.Serializable, Cloneable {
     /**
      * Get the home power of the supply center; null if no supply center or home power
      */
-    public Power getSupplyCenterHomePower(Province province) {
-        ProvinceData pd = provArray[province.getIndex()];
+    public Power getSupplyCenterHomePower(final Province province) {
+        final ProvinceData pd = provArray[province.getIndex()];
         if (pd != null) {
             return pd.getSCHomePower();
         }
@@ -208,8 +213,8 @@ public class Position implements java.io.Serializable, Cloneable {
     /**
      * Get the owner of the supply center; null if no owner or no supply center.
      */
-    public Power getSupplyCenterOwner(Province province) {
-        ProvinceData pd = provArray[province.getIndex()];
+    public Power getSupplyCenterOwner(final Province province) {
+        final ProvinceData pd = provArray[province.getIndex()];
         if (pd != null) {
             return pd.getSCOwner();
         }
@@ -222,16 +227,16 @@ public class Position implements java.io.Serializable, Cloneable {
     /**
      * Set the unit contained in this province; null to eliminate an existing unit.
      */
-    public void setUnit(Province province, Unit unit) {
-        ProvinceData pd = getProvinceData(province);
+    public void setUnit(final Province province, final Unit unit) {
+        final ProvinceData pd = getProvinceData(province);
         pd.setUnit(unit);
     }// setUnit()
 
     /**
      * Determines if there is a unit present in this province.
      */
-    public boolean hasUnit(Province province) {
-        ProvinceData pd = provArray[province.getIndex()];
+    public boolean hasUnit(final Province province) {
+        final ProvinceData pd = provArray[province.getIndex()];
         if (pd != null) {
             return pd.hasUnit();
         }
@@ -241,8 +246,8 @@ public class Position implements java.io.Serializable, Cloneable {
     /**
      * Get the unit contained in this Province. Returns null if no unit exists.
      */
-    public Unit getUnit(Province province) {
-        ProvinceData pd = provArray[province.getIndex()];
+    public Unit getUnit(final Province province) {
+        final ProvinceData pd = provArray[province.getIndex()];
         if (pd != null) {
             return pd.getUnit();
         }
@@ -253,10 +258,10 @@ public class Position implements java.io.Serializable, Cloneable {
     /**
      * Test if the given type of unit is contained in this Province.
      */
-    public boolean hasUnit(Province province, Unit.Type unitType) {
-        Unit unit = getUnit(province);
+    public boolean hasUnit(final Province province, final Type unitType) {
+        final Unit unit = getUnit(province);
         if (unit != null) {
-            return (unit.getType().equals(unitType));
+            return unit.getType().equals(unitType);
         }
         return false;
     }// hasUnit()
@@ -264,10 +269,11 @@ public class Position implements java.io.Serializable, Cloneable {
     /**
      * Test if the given type of unit is contained in this Province.
      */
-    public boolean hasDislodgedUnit(Province province, Unit.Type unitType) {
-        Unit unit = getDislodgedUnit(province);
+    public boolean hasDislodgedUnit(final Province province,
+                                    final Type unitType) {
+        final Unit unit = getDislodgedUnit(province);
         if (unit != null) {
-            return (unit.getType().equals(unitType));
+            return unit.getType().equals(unitType);
         }
         return false;
     }// hasDislodgedUnit()
@@ -278,8 +284,8 @@ public class Position implements java.io.Serializable, Cloneable {
     /**
      * Set the dislodged unit contained in this province; null to eliminate an existing unit.
      */
-    public void setDislodgedUnit(Province province, Unit unit) {
-        ProvinceData pd = getProvinceData(province);
+    public void setDislodgedUnit(final Province province, final Unit unit) {
+        final ProvinceData pd = getProvinceData(province);
         pd.setDislodgedUnit(unit);
     }// setDislodgedUnit()
 
@@ -287,8 +293,8 @@ public class Position implements java.io.Serializable, Cloneable {
     /**
      * Get the dislodged unit in this Province. Returns null if no dislodged unit exists.
      */
-    public Unit getDislodgedUnit(Province province) {
-        ProvinceData pd = provArray[province.getIndex()];
+    public Unit getDislodgedUnit(final Province province) {
+        final ProvinceData pd = provArray[province.getIndex()];
         if (pd != null) {
             return pd.getDislodgedUnit();
         }
@@ -303,8 +309,8 @@ public class Position implements java.io.Serializable, Cloneable {
      * is not intended to be used for Supply Center ownership (which only
      * changes in the Fall season); use setSupplyCenterOwner() instead.
      */
-    public void setLastOccupier(Province province, Power power) {
-        ProvinceData pd = getProvinceData(province);
+    public void setLastOccupier(final Province province, final Power power) {
+        final ProvinceData pd = getProvinceData(province);
         pd.setLastOccupier(power);
     }// setLastOccupier()
 
@@ -314,8 +320,8 @@ public class Position implements java.io.Serializable, Cloneable {
      * is not intended to be used for Supply Center ownership (which only
      * changes in the Fall season); use getSupplyCenterOwner() instead.
      */
-    public Power getLastOccupier(Province province) {
-        ProvinceData pd = provArray[province.getIndex()];
+    public Power getLastOccupier(final Province province) {
+        final ProvinceData pd = provArray[province.getIndex()];
         if (pd != null) {
             return pd.getLastOccupier();
         }
@@ -326,8 +332,8 @@ public class Position implements java.io.Serializable, Cloneable {
     /**
      * Determines if there is a dislodged unit present in this province.
      */
-    public boolean hasDislodgedUnit(Province province) {
-        ProvinceData pd = provArray[province.getIndex()];
+    public boolean hasDislodgedUnit(final Province province) {
+        final ProvinceData pd = provArray[province.getIndex()];
         if (pd != null) {
             return pd.hasDislodgedUnit();
         }
@@ -343,14 +349,14 @@ public class Position implements java.io.Serializable, Cloneable {
 
         int arrSize = 0;
         for (int i = 0; i < provArray.length; i++) {
-            ProvinceData pd = provArray[i];
+            final ProvinceData pd = provArray[i];
             if (pd != null && pd.hasUnit()) {
                 tmpProvArray[arrSize] = map.reverseIndex(i);
                 arrSize++;
             }
         }
 
-        Province[] p = new Province[arrSize];
+        final Province[] p = new Province[arrSize];
         System.arraycopy(tmpProvArray, 0, p, 0, arrSize);
         return p;
     }// getUnitProvinces()
@@ -364,14 +370,14 @@ public class Position implements java.io.Serializable, Cloneable {
 
         int arrSize = 0;
         for (int i = 0; i < provArray.length; i++) {
-            ProvinceData pd = provArray[i];
+            final ProvinceData pd = provArray[i];
             if (pd != null && pd.hasDislodgedUnit()) {
                 tmpProvArray[arrSize] = map.reverseIndex(i);
                 arrSize++;
             }
         }
 
-        Province[] p = new Province[arrSize];
+        final Province[] p = new Province[arrSize];
         System.arraycopy(tmpProvArray, 0, p, 0, arrSize);
         return p;
     }// getDislodgedUnitProvinces()
@@ -383,7 +389,7 @@ public class Position implements java.io.Serializable, Cloneable {
     public int getUnitCount() {
         int count = 0;
         for (int i = 0; i < provArray.length; i++) {
-            ProvinceData pd = provArray[i];
+            final ProvinceData pd = provArray[i];
             if (pd != null && pd.hasUnit()) {
                 count++;
             }
@@ -399,7 +405,7 @@ public class Position implements java.io.Serializable, Cloneable {
     public int getDislodgedUnitCount() {
         int count = 0;
         for (int i = 0; i < provArray.length; i++) {
-            ProvinceData pd = provArray[i];
+            final ProvinceData pd = provArray[i];
             if (pd != null && pd.hasDislodgedUnit()) {
                 count++;
             }
@@ -417,14 +423,14 @@ public class Position implements java.io.Serializable, Cloneable {
 
         int arrSize = 0;
         for (int i = 0; i < provArray.length; i++) {
-            ProvinceData pd = provArray[i];
+            final ProvinceData pd = provArray[i];
             if (pd != null && pd.isSCAHome()) {
                 tmpProvArray[arrSize] = map.reverseIndex(i);
                 arrSize++;
             }
         }
 
-        Province[] p = new Province[arrSize];
+        final Province[] p = new Province[arrSize];
         System.arraycopy(tmpProvArray, 0, p, 0, arrSize);
         return p;
     }// getHomeSupplyCenters()
@@ -433,19 +439,19 @@ public class Position implements java.io.Serializable, Cloneable {
     /**
      * Returns an Array of the Home Supply Centers for a given power (whether or not they are owned by that power)
      */
-    public Province[] getHomeSupplyCenters(Power power) {
+    public Province[] getHomeSupplyCenters(final Power power) {
         makeTmpProvArray();
 
         int arrSize = 0;
         for (int i = 0; i < provArray.length; i++) {
-            ProvinceData pd = provArray[i];
+            final ProvinceData pd = provArray[i];
             if (pd != null && pd.getSCHomePower() == power) {
                 tmpProvArray[arrSize] = map.reverseIndex(i);
                 arrSize++;
             }
         }
 
-        Province[] p = new Province[arrSize];
+        final Province[] p = new Province[arrSize];
         System.arraycopy(tmpProvArray, 0, p, 0, arrSize);
         return p;
     }// getHomeSupplyCenters()
@@ -456,9 +462,9 @@ public class Position implements java.io.Serializable, Cloneable {
      * <p>
      * An owned home supply center need not have a unit present.
      */
-    public boolean hasAnOwnedHomeSC(Power power) {
+    public boolean hasAnOwnedHomeSC(final Power power) {
         for (int i = 0; i < provArray.length; i++) {
-            ProvinceData pd = provArray[i];
+            final ProvinceData pd = provArray[i];
             if (pd != null && pd.getSCHomePower() == power && pd
                     .getSCOwner() == power) {
                 return true;
@@ -472,19 +478,19 @@ public class Position implements java.io.Serializable, Cloneable {
     /**
      * Returns an Array of the owned Supply Centers for a given Power (whether or not they are home supply centers)
      */
-    public Province[] getOwnedSupplyCenters(Power power) {
+    public Province[] getOwnedSupplyCenters(final Power power) {
         makeTmpProvArray();
 
         int arrSize = 0;
         for (int i = 0; i < provArray.length; i++) {
-            ProvinceData pd = provArray[i];
+            final ProvinceData pd = provArray[i];
             if (pd != null && pd.getSCOwner() == power) {
                 tmpProvArray[arrSize] = map.reverseIndex(i);
                 arrSize++;
             }
         }
 
-        Province[] p = new Province[arrSize];
+        final Province[] p = new Province[arrSize];
         System.arraycopy(tmpProvArray, 0, p, 0, arrSize);
         return p;
     }// getOwnedSupplyCenters()
@@ -498,14 +504,14 @@ public class Position implements java.io.Serializable, Cloneable {
 
         int arrSize = 0;
         for (int i = 0; i < provArray.length; i++) {
-            ProvinceData pd = provArray[i];
+            final ProvinceData pd = provArray[i];
             if (pd != null && pd.isSCOwned()) {
                 tmpProvArray[arrSize] = map.reverseIndex(i);
                 arrSize++;
             }
         }
 
-        Province[] p = new Province[arrSize];
+        final Province[] p = new Province[arrSize];
         System.arraycopy(tmpProvArray, 0, p, 0, arrSize);
         return p;
     }// getOwnedSupplyCenters()
@@ -514,21 +520,22 @@ public class Position implements java.io.Serializable, Cloneable {
     /**
      * Deep clone of the contents of this Position.
      */
+    @Override
     public Object clone() {
-        Position pos = new Position(map);
+        final Position pos = new Position(map);
 
         for (int i = 0; i < provArray.length; i++) {
-            ProvinceData pd = provArray[i];
+            final ProvinceData pd = provArray[i];
 
             if (pd != null) {
                 pos.provArray[i] = pd.normClone();
             }
         }
 
-        Iterator iter = powerMap.keySet().iterator();
+        final Iterator<Power> iter = powerMap.keySet().iterator();
         while (iter.hasNext()) {
-            Power key = (Power) iter.next();
-            PowerData pd = (PowerData) powerMap.get(key);
+            final Power key = iter.next();
+            final PowerData pd = powerMap.get(key);
 
             pos.powerMap.put(key, pd.normClone());
         }
@@ -541,20 +548,20 @@ public class Position implements java.io.Serializable, Cloneable {
      * (e.g., SC ownership, Power Info, etc.)
      */
     public Position cloneExceptUnits() {
-        Position pos = new Position(map);
+        final Position pos = new Position(map);
 
         for (int i = 0; i < provArray.length; i++) {
-            ProvinceData pd = provArray[i];
+            final ProvinceData pd = provArray[i];
 
             if (pd != null) {
                 pos.provArray[i] = pd.cloneExceptUnits();
             }
         }
 
-        Iterator iter = powerMap.keySet().iterator();
+        final Iterator<Power> iter = powerMap.keySet().iterator();
         while (iter.hasNext()) {
-            Power key = (Power) iter.next();
-            PowerData pd = (PowerData) powerMap.get(key);
+            final Power key = iter.next();
+            final PowerData pd = powerMap.get(key);
 
             pos.powerMap.put(key, pd.normClone());
         }
@@ -567,19 +574,19 @@ public class Position implements java.io.Serializable, Cloneable {
      * Deep clone of everything <b>except</b> dislodged units.
      */
     public Position cloneExceptDislodged() {
-        Position pos = new Position(map);
+        final Position pos = new Position(map);
 
         for (int i = 0; i < provArray.length; i++) {
-            ProvinceData pd = provArray[i];
+            final ProvinceData pd = provArray[i];
             if (pd != null) {
                 pos.provArray[i] = pd.cloneExceptDislodged();
             }
         }
 
-        Iterator iter = powerMap.keySet().iterator();
+        final Iterator<Power> iter = powerMap.keySet().iterator();
         while (iter.hasNext()) {
-            Power key = (Power) iter.next();
-            PowerData pd = (PowerData) powerMap.get(key);
+            final Power key = iter.next();
+            final PowerData pd = powerMap.get(key);
 
             pos.powerMap.put(key, pd.normClone());
         }
@@ -592,14 +599,14 @@ public class Position implements java.io.Serializable, Cloneable {
      * Gets all the Provinces with non-dislodged
      * Units for a particular power.
      */
-    public Province[] getUnitProvinces(Power power) {
+    public Province[] getUnitProvinces(final Power power) {
         makeTmpProvArray();
 
         int arrSize = 0;
         for (int i = 0; i < provArray.length; i++) {
-            ProvinceData pd = provArray[i];
+            final ProvinceData pd = provArray[i];
             if (pd != null) {
-                Unit unit = pd.getUnit();
+                final Unit unit = pd.getUnit();
                 if (unit != null && unit.getPower() == power) {
                     tmpProvArray[arrSize] = map.reverseIndex(i);
                     arrSize++;
@@ -607,7 +614,7 @@ public class Position implements java.io.Serializable, Cloneable {
             }
         }
 
-        Province[] p = new Province[arrSize];
+        final Province[] p = new Province[arrSize];
         System.arraycopy(tmpProvArray, 0, p, 0, arrSize);
         return p;
     }// getUnitProvinces()
@@ -617,14 +624,14 @@ public class Position implements java.io.Serializable, Cloneable {
      * Gets all the Provinces with dislodged
      * Units for a particular power.
      */
-    public Province[] getDislodgedUnitProvinces(Power power) {
+    public Province[] getDislodgedUnitProvinces(final Power power) {
         makeTmpProvArray();
 
         int arrSize = 0;
         for (int i = 0; i < provArray.length; i++) {
-            ProvinceData pd = provArray[i];
+            final ProvinceData pd = provArray[i];
             if (pd != null) {
-                Unit unit = pd.getDislodgedUnit();
+                final Unit unit = pd.getDislodgedUnit();
                 if (unit != null && unit.getPower() == power) {
                     tmpProvArray[arrSize] = map.reverseIndex(i);
                     arrSize++;
@@ -632,7 +639,7 @@ public class Position implements java.io.Serializable, Cloneable {
             }
         }
 
-        Province[] p = new Province[arrSize];
+        final Province[] p = new Province[arrSize];
         System.arraycopy(tmpProvArray, 0, p, 0, arrSize);
         return p;
     }// getDislodgedUnitProvinces()
@@ -642,8 +649,8 @@ public class Position implements java.io.Serializable, Cloneable {
      * Call this method FIRST before any set(); thus if ProvinceData
      * does not exist, we will add one to the map.
      */
-    private ProvinceData getProvinceData(Province province) {
-        int idx = province.getIndex();
+    private ProvinceData getProvinceData(final Province province) {
+        final int idx = province.getIndex();
         ProvinceData pd = provArray[idx];
         if (pd == null) {
             pd = new ProvinceData();
@@ -656,8 +663,8 @@ public class Position implements java.io.Serializable, Cloneable {
     /**
      * Same type of functionality as getProvinceData() but for PowerData objects
      */
-    private PowerData getPowerData(Power power) {
-        PowerData pd = (PowerData) powerMap.get(power);
+    private PowerData getPowerData(final Power power) {
+        PowerData pd = powerMap.get(power);
         if (pd == null) {
             pd = new PowerData();
             powerMap.put(power, pd);
@@ -669,21 +676,21 @@ public class Position implements java.io.Serializable, Cloneable {
     /**
      * All mutable Province data is kept here
      */
-    private class ProvinceData implements java.io.Serializable {
+    private final class ProvinceData implements Serializable {
         // instance variables
-        private Unit unit = null;
-        private Unit dislodgedUnit = null;
-        private Power SCOwner = null;
-        private Power SCHomePower = null;
-        private Power lastOccupier = null;
+        private Unit unit;
+        private Unit dislodgedUnit;
+        private Power SCOwner;
+        private Power SCHomePower;
+        private Power lastOccupier;
 
         // unit set/get
         public boolean hasUnit() {
-            return (unit != null);
+            return unit != null;
         }
 
         public boolean hasDislodgedUnit() {
-            return (dislodgedUnit != null);
+            return dislodgedUnit != null;
         }
 
         public Unit getUnit() {
@@ -694,29 +701,29 @@ public class Position implements java.io.Serializable, Cloneable {
             return dislodgedUnit;
         }
 
-        public void setUnit(Unit u) {
+        public void setUnit(final Unit u) {
             unit = u;
         }
 
-        public void setDislodgedUnit(Unit u) {
+        public void setDislodgedUnit(final Unit u) {
             dislodgedUnit = u;
         }
 
 
         // SC set/get
         public boolean isSCAHome() {
-            return (SCHomePower != null);
+            return SCHomePower != null;
         }
 
         public boolean isSCOwned() {
-            return (SCOwner != null);
+            return SCOwner != null;
         }
 
-        public void setSCOwner(Power p) {
+        public void setSCOwner(final Power p) {
             SCOwner = p;
         }
 
-        public void setSCHomePower(Power p) {
+        public void setSCHomePower(final Power p) {
             SCHomePower = p;
         }
 
@@ -733,28 +740,28 @@ public class Position implements java.io.Serializable, Cloneable {
             return lastOccupier;
         }
 
-        public void setLastOccupier(Power p) {
+        public void setLastOccupier(final Power p) {
             lastOccupier = p;
         }
 
 
         // normal clone
         public ProvinceData normClone() {
-            ProvinceData pd = new ProvinceData();
+            final ProvinceData pd = new ProvinceData();
 
             // deep copy unit information
             if (unit != null) {
-                pd.unit = (Unit) unit.clone();
+                pd.unit = unit.clone();
             }
 
             if (dislodgedUnit != null) {
-                pd.dislodgedUnit = (Unit) dislodgedUnit.clone();
+                pd.dislodgedUnit = dislodgedUnit.clone();
             }
 
             // shallow copy Powers [Power is immutable]
-            pd.SCOwner = this.SCOwner;
-            pd.SCHomePower = this.SCHomePower;
-            pd.lastOccupier = this.lastOccupier;
+            pd.SCOwner = SCOwner;
+            pd.SCHomePower = SCHomePower;
+            pd.lastOccupier = lastOccupier;
 
             return pd;
         }// normClone()
@@ -771,12 +778,12 @@ public class Position implements java.io.Serializable, Cloneable {
             }
 
             // create a ProvinceData object
-            ProvinceData pd = new ProvinceData();
+            final ProvinceData pd = new ProvinceData();
 
             // shallow copy Power [Power is immutable]
-            pd.SCOwner = this.SCOwner;
-            pd.SCHomePower = this.SCHomePower;
-            pd.lastOccupier = this.lastOccupier;
+            pd.SCOwner = SCOwner;
+            pd.SCHomePower = SCHomePower;
+            pd.lastOccupier = lastOccupier;
 
             return pd;
         }// cloneExceptUnits()
@@ -792,16 +799,16 @@ public class Position implements java.io.Serializable, Cloneable {
             }
 
             // create a ProvinceData object
-            ProvinceData pd = new ProvinceData();
+            final ProvinceData pd = new ProvinceData();
 
             // shallow copy Power [Power is immutable]
-            pd.SCOwner = this.SCOwner;
-            pd.SCHomePower = this.SCHomePower;
-            pd.lastOccupier = this.lastOccupier;
+            pd.SCOwner = SCOwner;
+            pd.SCHomePower = SCHomePower;
+            pd.lastOccupier = lastOccupier;
 
             // deep copy unit
             if (unit != null) {
-                pd.unit = (Unit) unit.clone();
+                pd.unit = unit.clone();
             }
 
             return pd;
@@ -814,9 +821,9 @@ public class Position implements java.io.Serializable, Cloneable {
     /**
      * All mutable Power data is kept here
      */
-    private class PowerData implements java.io.Serializable {
+    private final class PowerData implements Serializable {
         // instance variables
-        private boolean isEliminated = false;
+        private boolean isEliminated;
 
 
         public PowerData() {
@@ -826,13 +833,13 @@ public class Position implements java.io.Serializable, Cloneable {
             return isEliminated;
         }
 
-        public void setEliminated(boolean value) {
+        public void setEliminated(final boolean value) {
             isEliminated = value;
         }
 
         public PowerData normClone() {
-            PowerData pd = new PowerData();
-            pd.isEliminated = this.isEliminated;
+            final PowerData pd = new PowerData();
+            pd.isEliminated = isEliminated;
             return pd;
         }// normClone()
     }// inner class PowerData
@@ -847,7 +854,7 @@ public class Position implements java.io.Serializable, Cloneable {
      * <p>
      * This method creates a sufficiently large array to hold temporary data.
      */
-    private final void makeTmpProvArray() {
+    private void makeTmpProvArray() {
         if (tmpProvArray == null) {
             tmpProvArray = new Province[provArray.length];
         }
