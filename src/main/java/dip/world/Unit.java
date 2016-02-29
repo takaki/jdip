@@ -266,11 +266,11 @@ public class Unit implements Serializable, Cloneable {
                 return ARMY;
             }
             if (Objects.equals(input, FLEET.shortName) || Objects
-                    .equals(input, ARMY.name)) {
+                    .equals(input, FLEET.name)) {
                 return FLEET;
             }
             if (Objects.equals(input, WING.shortName) || Objects
-                    .equals(input, ARMY.name)) {
+                    .equals(input, WING.name)) {
                 return WING;
             }
 
@@ -290,8 +290,8 @@ public class Unit implements Serializable, Cloneable {
                 default:
                     break;
             }
-
-            return null;
+            throw new IllegalArgumentException(
+                    String.format("Can not parse Unit Type: [%s]", input));
         }// parse()
 
     }// inner class Type

@@ -49,11 +49,17 @@ class UnitTest extends Specification {
         Unit.Type.parse("f") == Unit.Type.FLEET
         Unit.Type.parse("a") == Unit.Type.ARMY
         Unit.Type.parse("army") == Unit.Type.ARMY
-        Unit.Type.parse("army1") == null
         Unit.Type.parse("w") == Unit.Type.WING
         Unit.Type.parse("A") == Unit.Type.ARMY
         Unit.Type.parse("F") == Unit.Type.FLEET
         Unit.Type.parse("W") == Unit.Type.WING
+    }
+
+    def "Can't parse" () {
+        when:
+        Unit.Type.parse("army1")
+        then:
+        thrown(IllegalArgumentException)
     }
 
 

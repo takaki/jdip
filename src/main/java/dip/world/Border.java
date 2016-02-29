@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * A Border limits movement or support between 2 provinces.
@@ -303,18 +304,9 @@ public class Border implements Serializable {
     /**
      * Parses the unit types
      */
-    private List<Type> parseUnitTypes(
-            final String in) throws InvalidBorderException {
-        final List<Type> list = new ArrayList<>(10);
-        for (final String st : in.split("[, ]+")) {
-            final Type ut = Type.parse(st);
-            if (ut == null) {
-                throw new InvalidBorderException(
-                        Utils.getLocalString("Border.error.badunit", id, st));
-            }
-            list.add(ut);
-        }
-
+    private List<Type> parseUnitTypes(final String in) {
+        final List<Type> list = Arrays.stream(in.split("[, ]+"))
+                .map(Type::parse).collect(Collectors.toList());
         return list.isEmpty() ? null : list;
     }// parseUnitTypes()
 

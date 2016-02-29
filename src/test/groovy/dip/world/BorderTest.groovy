@@ -84,8 +84,25 @@ class BorderTest extends Specification {
         "splitter"  | "description" | "Army  " | [loc0] as Location[] | "dip.order.Move" | "1" | "Spring   Fall" | "Movement" | "1900|2000"
         "season"    | "description" | "Army  " | [loc0] as Location[] | "dip.order.Move" | "1" | "season"        | "Movement" | "1900,2000"
         "year"      | "description" | "Army  " | [loc0] as Location[] | "dip.order.Move" | "1" | "Spring   Fall" | "Movement" | "11900,2000"
-        "units"     | "description" | "Hoge  " | [loc0] as Location[] | "dip.order.Move" | "1" | "Spring   Fall" | "Movement" | "1900,2000"
         "orders"    | "description" | "Army  " | [loc0] as Location[] | "dip.order.Hoge" | "1" | "Spring   Fall" | "Movement" | "1900,2000"
         // "empty order" | "description" | "Army  " | [loc0] as Location[] | ""               | "1" | "Spring   Fall" | "Movement" | "1900,2000"
     }
+
+    @Unroll
+    def "illegal '#id' throw IllegalArgumentException"() {
+        def loc0 = new Location(new Province("Moscow", ["Mos"], 0, false), Coast.NONE)
+        when:
+        new Border(id, description, units, from, orders, bMM, season, phase, year)
+
+        then:
+        thrown(IllegalArgumentException)
+
+        where:
+        // "id" | "description" | "Army  " | [loc0] as Location[] | "dip.order.Move" | "1"              | "Spring   Fall" | "Movement" | "1900,2000"
+        id          | description   | units    | from                 | orders           | bMM | season          | phase      | year
+        "units"     | "description" | "Hoge  " | [loc0] as Location[] | "dip.order.Move" | "1" | "Spring   Fall" | "Movement" | "1900,2000"
+        // "empty order" | "description" | "Army  " | [loc0] as Location[] | ""               | "1" | "Spring   Fall" | "Movement" | "1900,2000"
+    }
+
+
 }

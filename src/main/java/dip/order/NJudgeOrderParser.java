@@ -26,9 +26,19 @@ import dip.order.result.DislodgedResult;
 import dip.order.result.OrderResult;
 import dip.order.result.Result;
 import dip.order.result.SubstitutedResult;
-import dip.world.*;
+import dip.world.Coast;
+import dip.world.Location;
+import dip.world.Phase;
+import dip.world.Power;
+import dip.world.Province;
+import dip.world.Unit;
+import dip.world.Unit.Type;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -653,15 +663,8 @@ public class NJudgeOrderParser {
      * Parse a Unit Type, throw an exception if not recognized.
      * Never returns null.
      */
-    private Unit.Type parseUnitType(final ParseContext pc,
-                                    final String input) throws OrderException {
-        final Unit.Type unitType = Unit.Type.parse(input);
-        if (unitType == null) {
-            throw new OrderException(
-                    "Unknown Unit Type: \"" + unitType + "\" in order: " + pc.orderText);
-        }
-
-        return unitType;
+    private Unit.Type parseUnitType(final ParseContext pc, final String input) {
+        return Type.parse(input);
     }// parseUnitType()
 
 
@@ -707,7 +710,7 @@ public class NJudgeOrderParser {
 
     private Orderable parseMove(ParseContext pc, OrderPrefix op,
                                 final String[] tokens) throws OrderException {
-		/*
+        /*
 		
 			3-StP: Army St Petersburg -> Moscow.  (*bounce*)
 			
