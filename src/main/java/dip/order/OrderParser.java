@@ -304,7 +304,7 @@ public class OrderParser {
         // get the 'power token' (or null).
         // this is so if a power name has odd characters in it (e.g., chaos map)
         // they do not undergo replacement.
-        String ptok = map.getFirstPowerToken(sb);
+        String ptok = map.getFirstPowerToken(sb).get();
         final int startIdx = (ptok == null) ? 0 : ptok.length();
 
         // string replacement

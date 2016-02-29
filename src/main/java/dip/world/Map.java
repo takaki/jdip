@@ -523,28 +523,27 @@ public final class Map implements Serializable {
      * xxx-yyy				// returns null (xxx doesn't match a power)
      * </code>
      */
-    public String getFirstPowerToken(final StringBuffer sb) {
+    public Optional<String> getFirstPowerToken(final StringBuffer sb) {
         assert lcPowerNames != null;
 
         // if we find a colon, we will ASSUME that the first token
         // is a power, and use getClosestPower(); otherwise, we will
         // just check against the lcPowerNames list.
         if (sb.length() == 0) {
-            return null;
+            return Optional.empty();
         }
 
         // find first white space (or ':')
         final String[] colonTokens = sb.toString().split(":", -1);
         if (colonTokens.length >= 2) {
-            return colonTokens[0].trim();
+            return Optional.of(colonTokens[0].trim());
         }
         final String[] spaceTokens = sb.toString().split("\\s", -1);
         if (spaceTokens.length >= 2) {
             return lcPowerNames.stream()
-                    .filter(spaceTokens[0].trim()::startsWith).findFirst()
-                    .orElse(null);
+                    .filter(spaceTokens[0].trim()::startsWith).findFirst();
         }
-        return null;
+        return Optional.empty();
     }// getFirstPowerToken()
 
 

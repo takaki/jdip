@@ -60,10 +60,10 @@ class WorldFactoryTest extends Specification {
         map.getFirstPower("Fra xxx-yyy") == Optional.empty()
         map.getFirstPower("xxx-yyy") == Optional.empty()
 
-        map.getFirstPowerToken(new StringBuffer("France: xxx-yyy")) == "France"
-        map.getFirstPowerToken(new StringBuffer("Fra: xxx-yyy")) == "Fra"
-        map.getFirstPowerToken(new StringBuffer("Fra xxx-yyy")) == null
-        map.getFirstPowerToken(new StringBuffer("xxx-yyy")) == null
+        map.getFirstPowerToken(new StringBuffer("France: xxx-yyy")).get() == "France"
+        map.getFirstPowerToken(new StringBuffer("Fra: xxx-yyy")).get() == "Fra"
+        map.getFirstPowerToken(new StringBuffer("Fra xxx-yyy")) == Optional.empty()
+        map.getFirstPowerToken(new StringBuffer("xxx-yyy")) == Optional.empty()
 
 
         map.getProvincesMatchingClosest("Moscow").size() == 1
