@@ -1198,7 +1198,7 @@ public class ClientFrame extends JFrame {
             // show results (if desired)
             if (GeneralPreferencePanel.getShowResolutionResults()) {
                 TurnState priorTS = getWorld()
-                        .getPreviousTurnState(newTurnState);
+                        .getPreviousTurnState(newTurnState).get();
                 ResultWriter.displayDialog(ClientFrame.this, priorTS, getOFO());
             }
 
@@ -1589,7 +1589,7 @@ public class ClientFrame extends JFrame {
             if (mapPanel != null) {
                 final TurnState ts = getTurnState();
                 ResultWriter.displayDialog(ClientFrame.this,
-                        world.getPreviousTurnState(ts), getOFO());
+                        world.getPreviousTurnState(ts).get(), getOFO());
             }
         }
 

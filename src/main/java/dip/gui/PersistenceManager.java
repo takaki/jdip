@@ -522,7 +522,7 @@ public class PersistenceManager {
                 if (GeneralPreferencePanel.getShowResolutionResults()) {
                     final TurnState priorTS = clientFrame.getWorld()
                             .getPreviousTurnState(
-                                    clientFrame.getWorld().getLastTurnState());
+                                    clientFrame.getWorld().getLastTurnState()).get();
                     ResultWriter.displayDialog(clientFrame, priorTS,
                             clientFrame.getOFO());
                 }

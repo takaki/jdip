@@ -25,17 +25,38 @@ package dip.judge.parser;
 import dip.judge.parser.TurnParser.Turn;
 import dip.misc.Log;
 import dip.misc.Utils;
-import dip.order.*;
+import dip.order.Build;
+import dip.order.Disband;
+import dip.order.Move;
 import dip.order.NJudgeOrderParser.NJudgeOrder;
+import dip.order.OrderException;
+import dip.order.OrderFactory;
+import dip.order.Orderable;
+import dip.order.Remove;
+import dip.order.ValidationOptions;
 import dip.order.result.DislodgedResult;
 import dip.order.result.OrderResult;
 import dip.order.result.Result;
 import dip.order.result.SubstitutedResult;
 import dip.process.Adjustment;
-import dip.world.*;
+import dip.world.Location;
+import dip.world.Phase;
+import dip.world.Position;
+import dip.world.Power;
+import dip.world.Province;
+import dip.world.RuleOptions;
+import dip.world.TurnState;
+import dip.world.Unit;
+import dip.world.VictoryConditions;
+import dip.world.World;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -324,7 +345,7 @@ final class JudgeImportHistory {
                     Phase phase_p = prevTurn.getPhase();
                     prevPhaseType = phase_p.getPhaseType();
                 }
-				/*
+                /*
 				 * Much the same as above, set the proper positionPlacement value depending
 				 * on the PhaseType and if the turn being processed is the final turn.
 				 * Set it back again when done. 
@@ -1030,10 +1051,10 @@ final class JudgeImportHistory {
         // Since this is the adjustment phase, check for supply center change. Required for VictoryConditions
         // Otherwise, problems can arise and the game will end after importing due to no SC change.
         if (!positionPlacement) {
-            TurnState previousTS = world.getPreviousTurnState(ts);
+            TurnState previousTS = world.getPreviousTurnState(ts).get();
             while (previousTS.getPhase()
                     .getPhaseType() != Phase.PhaseType.MOVEMENT) {
-                previousTS = world.getPreviousTurnState(previousTS);
+                previousTS = world.getPreviousTurnState(previousTS).get();
             }
             //System.out.println(previousTS.getPhase());
             Position oldPosition = previousTS.getPosition();
@@ -1075,7 +1096,8 @@ final class JudgeImportHistory {
      */
     private void copyPreviousPositions(TurnState current) {
         // get previous turnstate
-        TurnState previousTS = current.getWorld().getPreviousTurnState(current);
+        TurnState previousTS = current.getWorld().getPreviousTurnState(current)
+                .get();
         final boolean isCopyDislodged = (current.getPhase()
                 .getPhaseType() != Phase.PhaseType.ADJUSTMENT);
 
@@ -1131,7 +1153,7 @@ final class JudgeImportHistory {
 
         // get previous position information (or initial, if previous not available)
         final TurnState previousTS = current.getWorld()
-                .getPreviousTurnState(current);
+                .getPreviousTurnState(current).get();
         Position prevPos = (previousTS == null) ? oldPosition : previousTS
                 .getPosition();
 		
@@ -1173,7 +1195,8 @@ final class JudgeImportHistory {
      * Copies the Previous turnstate's lastOccupier information only
      */
     private void copyPreviousLastOccupierInfo(TurnState current) {
-        TurnState previousTS = current.getWorld().getPreviousTurnState(current);
+        TurnState previousTS = current.getWorld().getPreviousTurnState(current)
+                .get();
         Position newPos = current.getPosition();
         Position oldPos = (previousTS == null) ? oldPosition : previousTS
                 .getPosition();
@@ -1207,13 +1230,15 @@ final class JudgeImportHistory {
             copyPreviousSCInfo(ts);
         } else {
             for (int i = 0; i < ownerInfo.length; i++) {
-                Power power = map.getPowerMatching(ownerInfo[i].getPowerName()).orElse(null);
+                Power power = map.getPowerMatching(ownerInfo[i].getPowerName())
+                        .orElse(null);
                 if (power != null) {
                     Log.println("   SC Owned by Power: ", power);
                     String[] provNames = ownerInfo[i].getProvinces();
                     for (int pi = 0; pi < provNames.length; pi++) {
                         Province province = map
-                                .getProvinceMatching(provNames[pi]).orElse(null);
+                                .getProvinceMatching(provNames[pi])
+                                .orElse(null);
                         if (province == null) {
                             throw new IOException(
                                     "Unknown Province in SC Ownership block: " + provNames[pi]);
@@ -1260,8 +1285,9 @@ final class JudgeImportHistory {
                     for (int i = 0; i < dislodgedInfo.length; i++) {
                         // find the province for this dislodgedInfo source
                         // remember, we use map.parseLocation() to auto-normalize coasts (see Coast.normalize())
-                        Location location = map.parseLocation(
-                                dislodgedInfo[i].getSourceName()).orElse(null);
+                        Location location = map
+                                .parseLocation(dislodgedInfo[i].getSourceName())
+                                .orElse(null);
                         if (orderResult.getOrder().getSource()
                                 .isProvinceEqual(location)) {
                             retreatLocNames = dislodgedInfo[i]
@@ -1288,7 +1314,8 @@ final class JudgeImportHistory {
                             Location[] retreatLocations = new Location[retreatLocNames.length];
                             for (int i = 0; i < retreatLocNames.length; i++) {
                                 retreatLocations[i] = map
-                                        .parseLocation(retreatLocNames[i]).orElse(null);
+                                        .parseLocation(retreatLocNames[i])
+                                        .orElse(null);
                                 retreatLocations[i] = retreatLocations[i]
                                         .getValidated(orderResult.getOrder()
                                                 .getSourceUnitType());
