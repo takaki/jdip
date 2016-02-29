@@ -400,8 +400,9 @@ public class Phase implements Serializable, Comparable<Phase> {
                 case FALL:
                     return SPRING;
             }
+            throw new IllegalArgumentException(
+                    String.format("Unknown SeasonType: %s", this));
 
-            return null;
         }// getNext()
 
 
@@ -415,8 +416,8 @@ public class Phase implements Serializable, Comparable<Phase> {
                 case FALL:
                     return SPRING;
             }
-
-            return null;
+            throw new IllegalArgumentException(
+                    String.format("Unknown SeasonType: %s", this));
         }// getPrevious()
 
 
@@ -551,8 +552,8 @@ public class Phase implements Serializable, Comparable<Phase> {
                 case MOVEMENT:
                     return RETREAT;
             }
-
-            return null;
+            throw new IllegalArgumentException(
+                    String.format("Unknown PhaseType: %s", this));
         }// getNext()
 
 
@@ -568,8 +569,8 @@ public class Phase implements Serializable, Comparable<Phase> {
                 case MOVEMENT:
                     return ADJUSTMENT;
             }
-
-            return null;
+            throw new IllegalArgumentException(
+                    String.format("Unknown PhaseType: %s", this));
         }// getPrevious()
 
 
