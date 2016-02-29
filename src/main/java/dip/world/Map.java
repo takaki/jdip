@@ -27,7 +27,16 @@ import dip.order.OrderException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -37,7 +46,7 @@ import java.util.stream.IntStream;
  * A Map is a list of Provinces and Powers, and methods for obtaining and parsing
  * these Provinces and Powers.
  */
-public class Map implements Serializable {
+public final class Map implements Serializable {
 
     // internal constant arrays
     // all this data is serialized.
@@ -159,17 +168,17 @@ public class Map implements Serializable {
      * As few as a single character can be matched (if it's unique);
      * e.g., "E" for England.
      */
-    public Power getClosestPower(final String powerName) {
+    public Optional<Power> getClosestPower(final String powerName) {
         // return 'null' if powerName is empty
         if (powerName == null || powerName.isEmpty()) {
-            return null;
+            return Optional.empty();
         }
 
         // 1) check for an exact match.
         //
         final Power matchPower = getPower(powerName);
         if (matchPower != null) {
-            return matchPower;
+            return Optional.of(matchPower);
         }
 
         // make lowercase
@@ -179,7 +188,7 @@ public class Map implements Serializable {
         //
         final List<Power> list = findPartialPowerMatch(powerNameLower);
         if (list.size() == 1) {
-            return list.get(0);
+            return Optional.of(list.get(0));
         }
 
         // 3) perform a Levenshtein match against power names.
@@ -194,12 +203,12 @@ public class Map implements Serializable {
                     .filter(name -> Distance
                             .getLD(powerNameLower, name) == bestMatch)
                     .map(this::getPower).collect(Collectors.toSet());
-            return matchPowers.isEmpty() || matchPowers
-                    .size() > 1 ? null : matchPowers.iterator().next();
+            return matchPowers.isEmpty() || matchPowers.size() > 1 ? Optional
+                    .empty() : Optional.of(matchPowers.iterator().next());
         }
 
         // 4) nothing sufficiently close. Return null.
-        return null;
+        return Optional.empty();
     }// getClosestPower()
 
 
@@ -557,14 +566,14 @@ public class Map implements Serializable {
      * xxx-yyy				// returns null (xxx doesn't match a power)
      * </code>
      */
-    public Power getFirstPower(final String input) {
+    public Optional<Power> getFirstPower(final String input) {
         assert lcPowerNames != null;
 
         // if we find a colon, we will ASSUME that the first token
         // is a power, and use getClosestPower(); otherwise, we will
         // just check against the lcPowerNames list.
         if (input == null || input.isEmpty()) {
-            return null;
+            return Optional.empty();
         }
 
         final String[] colonTokens = input.split(":", -1);
@@ -575,9 +584,9 @@ public class Map implements Serializable {
         if (spaceTokens.length >= 2) {
             return lcPowerNames.stream()
                     .filter(spaceTokens[0].trim()::startsWith).findFirst()
-                    .map(this::getClosestPower).orElse(null);
+                    .flatMap(this::getClosestPower);
         }
-        return null;
+        return Optional.empty();
     }// getFirstPower()
 
 

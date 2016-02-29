@@ -344,12 +344,12 @@ public class OrderParser {
                         OrderFactory orderFactory, boolean locked,
                         boolean guessing) throws OrderException {
         // Objects common to ALL order types.
-        String srcName = null;
+        String srcName;
         String srcUnitTypeName = null;
-        Power power = defaultPower;
+        Power power;
 
         // current token for parsing
-        String token = null;
+        String token;
 
         StringTokenizer st = new StringTokenizer(ord, WHITESPACE, false);
 
@@ -357,7 +357,7 @@ public class OrderParser {
         // Power parsing
 
         // see if first token is a power; if so, parse it
-        power = map.getFirstPower(ord);
+        power = map.getFirstPower(ord).orElse(null);
         //Log.println("OP:parse(): first token a power? ", power);
 
         // eat up the token (we don't want to reparse it), but
@@ -412,7 +412,7 @@ public class OrderParser {
 
         // parse the order type -- if this is missing, we
         // have a 'defineState' order type
-        String orderType = null;
+        String orderType;
         if (st.hasMoreTokens()) {
             orderType = getToken(st, Utils.getLocalString(OF_NO_ORDER_TYPE));
         } else {

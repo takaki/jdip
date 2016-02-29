@@ -45,8 +45,8 @@ class WorldFactoryTest extends Specification {
         then:
         map.getProvinces().size() == 75
 
-        map.getClosestPower("England").toString() == "England"
-        map.getClosestPower("Engband").toString() == "England"
+        map.getClosestPower("England").get().toString() == "England"
+        map.getClosestPower("Engband").get().toString() == "England"
         map.getPowerMatching("Englang").getName() == "England"
         map.getPowerMatching("Engbang").getName() == "England"
 
@@ -55,10 +55,10 @@ class WorldFactoryTest extends Specification {
         map.getProvinceMatching("Xyz") == null
         map.getProvinceMatching("Xyzabc") == null
 
-        map.getFirstPower("France: xxx-yyy").getName() == "France"
-        map.getFirstPower("Fra: xxx-yyy").getName() == "France"
-        map.getFirstPower("Fra xxx-yyy") == null
-        map.getFirstPower("xxx-yyy") == null
+        map.getFirstPower("France: xxx-yyy").get().getName() == "France"
+        map.getFirstPower("Fra: xxx-yyy").get().getName() == "France"
+        map.getFirstPower("Fra xxx-yyy") == Optional.empty()
+        map.getFirstPower("xxx-yyy") == Optional.empty()
 
         map.getFirstPowerToken(new StringBuffer("France: xxx-yyy")) == "France"
         map.getFirstPowerToken(new StringBuffer("Fra: xxx-yyy")) == "Fra"

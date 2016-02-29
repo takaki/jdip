@@ -552,7 +552,7 @@ public class NJudgeOrderParser {
             }
 
             final String powerNameText = tok.substring(0, tok.length() - 1);
-            this.power = pc.map.getClosestPower(powerNameText);
+            this.power = pc.map.getClosestPower(powerNameText).orElse(null);
             if (this.power == null) {
                 throw new OrderException(
                         "Unknown Power: \"" + powerNameText + "\" in order: " + pc.orderText);
