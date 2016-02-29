@@ -29,6 +29,7 @@ import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 /**
@@ -250,7 +251,8 @@ public class Phase implements Serializable, Comparable<Phase> {
         if (in.length() == 6) {
             // parse season & phase
             final SeasonType seasonType = SeasonType.parse(in.substring(0, 1));
-            final YearType yearType = YearType.parse(in.substring(1, 5));
+            final YearType yearType = YearType.parse(in.substring(1, 5))
+                    .orElse(null);
             final PhaseType phaseType = PhaseType.parse(in.substring(5, 6));
 
             if (seasonType == null || yearType == null || phaseType == null) {
@@ -277,7 +279,8 @@ public class Phase implements Serializable, Comparable<Phase> {
                     .map(SeasonType::parse).filter(tmp -> tmp != null)
                     .findFirst().orElse(null);
             final YearType yearType = tokList.stream().map(YearType::parse)
-                    .filter(tmp -> tmp != null).findFirst().orElse(null);
+                    .filter(Optional::isPresent).findFirst()
+                    .orElse(Optional.empty()).orElse(null);
             final PhaseType phaseType = tokList.stream().map(PhaseType::parse)
                     .filter(tmp -> tmp != null).findFirst().orElse(null);
 
@@ -733,7 +736,7 @@ public class Phase implements Serializable, Comparable<Phase> {
          * Periods are NOT allowed in "BC"<br>
          * The modifier BC must be in lower case<br>
          */
-        public static YearType parse(final String input) {
+        public static Optional<YearType> parse(final String input) {
             String in = input;
             final int idx = in.indexOf("bc");
             boolean isBC = false;
@@ -746,17 +749,17 @@ public class Phase implements Serializable, Comparable<Phase> {
             try {
                 y = Integer.parseInt(in.trim());
             } catch (final NumberFormatException e) {
-                return null;
+                return Optional.empty();
             }
 
             if (y == 0) {
-                return null;
+                return Optional.empty();
             }
             if (y > 0 && isBC) {
                 y = -y;
             }
 
-            return new YearType(y);
+            return Optional.of(new YearType(y));
         }// parse()
 
     }// nested class YearType

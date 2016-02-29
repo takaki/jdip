@@ -140,11 +140,11 @@ class PhaseTest extends Specification {
 
     def "YearType#parse" () {
         expect:
-        Phase.YearType.parse("1900").getYear() == 1900
-        Phase.YearType.parse("100").getYear() == 100
-        Phase.YearType.parse("1000 BC") == null
-        Phase.YearType.parse("1000 bc").getYear() == -1000
-        Phase.YearType.parse("-1000").getYear() == -1000
+        Phase.YearType.parse("1900").get().getYear() == 1900
+        Phase.YearType.parse("100").get().getYear() == 100
+        Phase.YearType.parse("1000 BC") == Optional.empty()
+        Phase.YearType.parse("1000 bc").get().getYear() == -1000
+        Phase.YearType.parse("-1000").get().getYear() == -1000
     }
     def "YserType#toString" (){
         expect:
