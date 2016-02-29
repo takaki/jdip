@@ -1207,13 +1207,13 @@ final class JudgeImportHistory {
             copyPreviousSCInfo(ts);
         } else {
             for (int i = 0; i < ownerInfo.length; i++) {
-                Power power = map.getPowerMatching(ownerInfo[i].getPowerName());
+                Power power = map.getPowerMatching(ownerInfo[i].getPowerName()).orElse(null);
                 if (power != null) {
                     Log.println("   SC Owned by Power: ", power);
                     String[] provNames = ownerInfo[i].getProvinces();
                     for (int pi = 0; pi < provNames.length; pi++) {
                         Province province = map
-                                .getProvinceMatching(provNames[pi]);
+                                .getProvinceMatching(provNames[pi]).orElse(null);
                         if (province == null) {
                             throw new IOException(
                                     "Unknown Province in SC Ownership block: " + provNames[pi]);
@@ -1261,7 +1261,7 @@ final class JudgeImportHistory {
                         // find the province for this dislodgedInfo source
                         // remember, we use map.parseLocation() to auto-normalize coasts (see Coast.normalize())
                         Location location = map.parseLocation(
-                                dislodgedInfo[i].getSourceName());
+                                dislodgedInfo[i].getSourceName()).orElse(null);
                         if (orderResult.getOrder().getSource()
                                 .isProvinceEqual(location)) {
                             retreatLocNames = dislodgedInfo[i]
@@ -1288,7 +1288,7 @@ final class JudgeImportHistory {
                             Location[] retreatLocations = new Location[retreatLocNames.length];
                             for (int i = 0; i < retreatLocNames.length; i++) {
                                 retreatLocations[i] = map
-                                        .parseLocation(retreatLocNames[i]);
+                                        .parseLocation(retreatLocNames[i]).orElse(null);
                                 retreatLocations[i] = retreatLocations[i]
                                         .getValidated(orderResult.getOrder()
                                                 .getSourceUnitType());

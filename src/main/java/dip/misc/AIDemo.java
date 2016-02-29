@@ -164,8 +164,8 @@ public class AIDemo {
 
         // what about a Location? (A Location is a Province + a Coast)
         //
-        Location loc1 = map.parseLocation("spa/sc");    // South Coast of Spain
-        Location loc2 = map.parseLocation("spa/nc");    // North Coast of Spain
+        Location loc1 = map.parseLocation("spa/sc").orElse(null);    // South Coast of Spain
+        Location loc2 = map.parseLocation("spa/nc").orElse(null);    // North Coast of Spain
         System.out.println("\nLocation testing:");
         System.out.println(
                 "  " + loc1.toLongString() + " and " + loc2.toLongString());

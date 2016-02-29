@@ -648,7 +648,7 @@ public class NJudgeOrderParser {
         final String locationText = Coast
                 .normalize(Utils.replaceAll(text, replaceFrom, replaceTo));
 
-        final Location loc = pc.map.parseLocation(locationText);
+        final Location loc = pc.map.parseLocation(locationText).orElse(null);
 
         if (loc == null) {
             throw new OrderException(

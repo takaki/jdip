@@ -177,7 +177,7 @@ public class JudgeImport {
 
         dip.world.Map map = world.getMap();
         for (int i = 0; i < pPowerNames.length; i++) {
-            Power power = map.getPowerMatching(pPowerNames[i]);
+            Power power = map.getPowerMatching(pPowerNames[i]).orElse(null);
             if (power != null) {
                 PlayerMetadata pmd = world.getPlayerMetadata(power);
                 pmd.setEmailAddresses(new String[]{pPowerEmail[i]});
@@ -306,7 +306,7 @@ public class JudgeImport {
 
         // set SC ownership information
         for (int i = 0; i < ownerInfo.length; i++) {
-            Power power = map.getPowerMatching(ownerInfo[i].getPowerName());
+            Power power = map.getPowerMatching(ownerInfo[i].getPowerName()).orElse(null);
             if (power == null) {
                 throw new IOException(Utils.getLocalString(JI_UNKNOWN_POWER,
                         ownerInfo[i].getPowerName()));
@@ -314,7 +314,7 @@ public class JudgeImport {
 
             String[] ownedProvNames = ownerInfo[i].getProvinces();
             for (int j = 0; j < ownedProvNames.length; j++) {
-                Province province = map.getProvinceMatching(ownedProvNames[j]);
+                Province province = map.getProvinceMatching(ownedProvNames[j]).orElse(null);
                 if (province == null) {
                     throw new IOException(
                             Utils.getLocalString(JI_UNKNOWN_PROVINCE,
@@ -327,9 +327,9 @@ public class JudgeImport {
 
         // create units & positions on the map
         for (int i = 0; i < posInfo.length; i++) {
-            Power power = map.getPowerMatching(posInfo[i].getPowerName());
+            Power power = map.getPowerMatching(posInfo[i].getPowerName()).orElse(null);
             Unit.Type unitType = Unit.Type.parse(posInfo[i].getUnitName());
-            Location location = map.parseLocation(posInfo[i].getLocationName());
+            Location location = map.parseLocation(posInfo[i].getLocationName()).orElse(null);
 
             // check
             if (power == null || location == null || unitType

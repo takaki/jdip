@@ -47,13 +47,13 @@ class WorldFactoryTest extends Specification {
 
         map.getClosestPower("England").get().toString() == "England"
         map.getClosestPower("Engband").get().toString() == "England"
-        map.getPowerMatching("Englang").getName() == "England"
-        map.getPowerMatching("Engbang").getName() == "England"
+        map.getPowerMatching("Englang").get().getName() == "England"
+        map.getPowerMatching("Engbang").get().getName() == "England"
 
-        map.getProvinceMatching("Mosccc").getFullName() == "Moscow"
-        map.getProvinceMatching("Moscaw").getFullName() == "Moscow"
-        map.getProvinceMatching("Xyz") == null
-        map.getProvinceMatching("Xyzabc") == null
+        map.getProvinceMatching("Mosccc").get().getFullName() == "Moscow"
+        map.getProvinceMatching("Moscaw").get().getFullName() == "Moscow"
+        map.getProvinceMatching("Xyz") == Optional.empty()
+        map.getProvinceMatching("Xyzabc") == Optional.empty()
 
         map.getFirstPower("France: xxx-yyy").get().getName() == "France"
         map.getFirstPower("Fra: xxx-yyy").get().getName() == "France"
@@ -75,7 +75,7 @@ class WorldFactoryTest extends Specification {
         map.getProvincesMatchingClosest("abcdef").size() == 9
         map.getProvincesMatchingClosest("defghi").size() == 4
 
-        map.parseLocation("stp/nc").getCoast() == Coast.NORTH
+        map.parseLocation("stp/nc").get().getCoast() == Coast.NORTH
 
         def mossb = new StringBuffer("moscow")
         map.replaceProvinceNames(mossb)

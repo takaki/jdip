@@ -931,7 +931,7 @@ public class OrderParser {
     }// parseUnitType()
 
     private Power parsePower(Map map, String powerName) throws OrderException {
-        Power power = map.getPowerMatching(powerName);
+        Power power = map.getPowerMatching(powerName).orElse(null);
         if (power == null) {
             throw new OrderException(
                     Utils.getLocalString(OF_POWER_NOT_RECOGNIZED, powerName));

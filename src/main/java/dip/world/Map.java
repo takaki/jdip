@@ -219,16 +219,16 @@ public final class Map implements Serializable {
      * This will match the closest power but requires at least
      * 5 characters for a match.
      */
-    public Power getPowerMatching(String powerName) {
+    public Optional<Power> getPowerMatching(String powerName) {
         // return 'null' if powerName is empty
         if (powerName == null || powerName.isEmpty()) {
-            return null;
+            return Optional.empty();
         }
 
         // first, check for exact match.
         final Power bestMatchingPower = getPower(powerName);
         if (bestMatchingPower != null) {
-            return bestMatchingPower;
+            return Optional.of(bestMatchingPower);
         }
 
         final String powerNameLC = powerName.toLowerCase();
@@ -240,7 +240,7 @@ public final class Map implements Serializable {
         if (powerNameLC.length() >= 4) {
             final List<Power> list = findPartialPowerMatch(powerNameLC);
             if (list.size() == 1) {
-                return list.get(0);
+                return Optional.of(list.get(0));
             }
         }
 
@@ -255,12 +255,12 @@ public final class Map implements Serializable {
                     .filter(name -> bestMatch == Distance
                             .getLD(powerNameLC, name))
                     .collect(Collectors.toSet());
-            return collect.isEmpty() || collect.size() > 1 ? null : getPower(
-                    collect.iterator().next());
+            return collect.isEmpty() || collect.size() > 1 ? Optional
+                    .empty() : Optional.of(getPower(collect.iterator().next()));
         }
 
         // nothing is close
-        return null;
+        return Optional.empty();
     }// getPowerMatching()
 
 
@@ -292,22 +292,22 @@ public final class Map implements Serializable {
      * This method uses the Levenshtein distance algorithm
      * to determine closeness.
      */
-    public Province getProvinceMatching(final String input) {
+    public Optional<Province> getProvinceMatching(final String input) {
         // return 'null' if input is empty
         if (input == null || input.isEmpty()) {
-            return null;
+            return Optional.empty();
         }
 
         // first, try exact match.
         // (fastest, if it works)
         final Province province = getProvince(input);
         if (province != null) {
-            return province;
+            return Optional.of(province);
         }
 
         // we must be at least 3 chars
         if (input.length() < 3) {
-            return null;
+            return Optional.empty();
         }
 
         // input converted to lower case
@@ -319,7 +319,7 @@ public final class Map implements Serializable {
         //
         final List<Province> list = findPartialProvinceMatch(trimmed);
         if (list.size() == 1) {
-            return list.get(0);
+            return Optional.of(list.get(0));
         }
 
         // tie list. Use a Set so that we get no dupes
@@ -343,10 +343,10 @@ public final class Map implements Serializable {
         // if we have >1 unique ties, (or none at all) no match
         if (bestDist <= trimmed.length() / 2 && ties.size() == 1) {
             // there is but one
-            return ties.iterator().next();
+            return Optional.of(ties.iterator().next());
         }
 
-        return null;
+        return Optional.empty();
     }// getProvinceMatching
 
 
@@ -417,14 +417,14 @@ public final class Map implements Serializable {
      * information, if present, as per Coast.normalize() followed
      * by Coast.parse().
      */
-    public Location parseLocation(final String input) {
+    public Optional<Location> parseLocation(final String input) {
         try {
             final Coast coast = Coast.parse(Coast.normalize(input));
-            final Province province = getProvinceMatching(
+            final Optional<Province> province = getProvinceMatching(
                     Coast.getProvinceName(input));
-            return province != null ? new Location(province, coast) : null;
+            return province.map(p -> new Location(p, coast));
         } catch (final OrderException ignored) {
-            return null;
+            return Optional.empty();
         }
     }// parseLocation()
 

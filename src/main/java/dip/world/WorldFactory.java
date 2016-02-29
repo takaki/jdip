@@ -310,10 +310,10 @@ public class WorldFactory {
         for (int i = 0; i < initStates.size(); i++) {
             // a province and power is required, no matter what, unless
             // we are ONLY setting the supply center (which we do above)
-            Power power = map
-                    .getPowerMatching(initStates.get(i).getPowerName());
+            Power power = map.getPowerMatching(initStates.get(i).getPowerName())
+                    .orElse(null);
             Province province = map
-                    .getProvinceMatching(initStates.get(i).getProvinceName());
+                    .getProvinceMatching(initStates.get(i).getProvinceName()).orElse(null);
 
             // n/a if we use a validating parser
             if (power == null) {
