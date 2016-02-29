@@ -159,8 +159,8 @@ public class Border implements Serializable {
                   final String baseMoveModifier, final String season,
                   final String phase,
                   final String year) throws InvalidBorderException {
-        if (id == null || description == null || units == null || orders == null || season == null || phase == null || year == null) {
-            throw new IllegalArgumentException();
+        if (id == null || description == null || units == null || from == null || orders == null || season == null || phase == null || year == null) {
+            throw new IllegalArgumentException("null argument");
         }
 
         // set id. This is used by error messages, so must be set early.
@@ -183,7 +183,7 @@ public class Border implements Serializable {
         this.baseMoveModifier = parseBaseMoveModifier(baseMoveModifier);
 
         // fields we don't need to parse
-        this.from = from == null ? null : Arrays.asList(from);
+        this.from = Arrays.asList(from);
         this.description = description;
 
     }// Border()
@@ -406,16 +406,12 @@ public class Border implements Serializable {
         // check from
         int nResults = 0;
         int failResults = 0;
-        boolean fromMatched = false;
-
-        if (from != null) {
-            fromMatched = from.stream()
-                    .anyMatch(aFrom -> aFrom.equalsLoosely(fromLoc));
-        }
+        boolean fromMatched = from.stream()
+                .anyMatch(aFrom -> aFrom.equalsLoosely(fromLoc));
 
         // we only apply criteria if 'from' was not specified, or
         // from was specified, and it matches.
-        if (from == null || fromMatched) {
+        if (fromMatched) {
             // check unit type
             if (unitTypes != null) {
                 nResults++;

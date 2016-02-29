@@ -25,7 +25,11 @@ package dip.world;
 import dip.misc.Log;
 import dip.misc.Utils;
 import dip.order.OrderException;
-import dip.world.variant.data.*;
+import dip.world.variant.data.BorderData;
+import dip.world.variant.data.InitialState;
+import dip.world.variant.data.ProvinceData;
+import dip.world.variant.data.SupplyCenter;
+import dip.world.variant.data.Variant;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -464,11 +468,7 @@ public class WorldFactory {
             al.add(new Location(province, coast));
         }
 
-        if (al.isEmpty()) {
-            return null;
-        } else {
-            return (Location[]) al.toArray(new Location[al.size()]);
-        }
+        return (Location[]) al.toArray(new Location[al.size()]);
     }// makeBorderLocation()
 
 

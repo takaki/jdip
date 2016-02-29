@@ -49,13 +49,13 @@ class BorderTest extends Specification {
     }
 
     def "null from"() {
-        def border = new Border("id", "description", "Army", null, "dip.order.Move", "1", "Spring Fall", "Movement", "1900,2000")
+        def border = new Border("id", "description", "Army", [] as Location[], "dip.order.Move", "1", "Spring Fall", "Movement", "1900,2000")
         def phase = new Phase(Phase.SeasonType.SPRING, 1900, Phase.PhaseType.MOVEMENT)
         expect:
-        border.getBaseMoveModifier(loc0) == 1
+        border.getBaseMoveModifier(loc0) == 0
         border.canTransit(loc0, Unit.Type.FLEET, phase, Move.class)
-        !border.canTransit(loc1, Unit.Type.ARMY, phase, Move.class)
-        !border.canTransit(loc0, Unit.Type.ARMY, phase, Move.class)
+        border.canTransit(loc1, Unit.Type.ARMY, phase, Move.class)
+        border.canTransit(loc0, Unit.Type.ARMY, phase, Move.class)
     }
 
     def "throw Exception"() {
