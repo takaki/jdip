@@ -348,7 +348,7 @@ public class OrderStatsWriter {
                         // self support?
                         final Support sup = (Support) order;
                         final Unit supUnit = ts.getPosition()
-                                .getUnit(sup.getSupportedSrc().getProvince());
+                                .getUnit(sup.getSupportedSrc().getProvince()).orElse(null);
                         if (supUnit != null) {
                             if (sup.getPower().equals(supUnit.getPower())) {
                                 s.nSupportsSelf++;

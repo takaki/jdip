@@ -682,7 +682,7 @@ public class Move extends Order {
                               Power fleetPower) {
         if (path.length >= 3) {
             for (int i = 1; i < (path.length - 1); i++) {
-                Unit unit = pos.getUnit(path[i]);
+                Unit unit = pos.getUnit(path[i]).orElse(null);
                 if (unit.getPower().equals(fleetPower)) {
                     return path[i];
                 }
@@ -712,7 +712,7 @@ public class Move extends Order {
 
             for (int i = 1; i < (path.length - 1); i++) {
                 Province prov = path[i];
-                Unit unit = pos.getUnit(path[i]);
+                Unit unit = pos.getUnit(path[i]).orElse(null);
                 if (unit.getPower().equals(this.getPower())) {
                     final OrderState os = adj.findOrderStateBySrc(prov);
                     final Order order = os.getOrder();

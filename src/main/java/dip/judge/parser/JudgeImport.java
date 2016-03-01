@@ -298,7 +298,7 @@ public class JudgeImport {
         // reset home supply centers
         Province[] provinces = map.getProvinces();
         for (int i = 0; i < provinces.length; i++) {
-            Power power = oldPosition.getSupplyCenterHomePower(provinces[i]);
+            Power power = oldPosition.getSupplyCenterHomePower(provinces[i]).orElse(null);
             if (power != null) {
                 position.setSupplyCenterHomePower(provinces[i], power);
             }

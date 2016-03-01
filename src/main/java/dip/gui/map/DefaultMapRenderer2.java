@@ -927,13 +927,13 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
             return;
         }
 
-        Unit posUnit = position.getUnit(province);
+        Unit posUnit = position.getUnit(province).orElse(null);
         if (tracker.getUnit() != posUnit || force) {
             changeUnitInDOM(posUnit, tracker, province, false);
             tracker.setUnit(posUnit);
         }
 
-        posUnit = position.getDislodgedUnit(province);
+        posUnit = position.getDislodgedUnit(province).orElse(null);
         if (tracker.getDislodgedUnit() != posUnit || force) {
             changeUnitInDOM(posUnit, tracker, province, true);
             tracker.setDislodgedUnit(posUnit);
@@ -952,7 +952,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
                         .isLand()) {
                     setCSSIfChanged(provinceGroupElement,
                             tracker.getPowerCSSClass(
-                                    position.getLastOccupier(province)));
+                                    position.getLastOccupier(province).orElse(null)));
                 } else {
                     // use default province CSS styling, if not already
                     setCSSIfChanged(provinceGroupElement,
@@ -970,7 +970,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
                 } else {
                     if (province.hasSupplyCenter()) {
                         // get supply center owner
-                        Power power = position.getSupplyCenterOwner(province);
+                        Power power = position.getSupplyCenterOwner(province).orElse(null);
 
                         // note:
                         // if we are not showing province SC (supply center) hilites, then
@@ -1306,8 +1306,8 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      * Retreat phase.
      */
     private Unit getPhaseApropriateUnit(Province p) {
-        return (isDislodgedPhase) ? position.getDislodgedUnit(p) : position
-                .getUnit(p);
+        return (isDislodgedPhase) ? position.getDislodgedUnit(p).orElse(null) : position
+                .getUnit(p).orElse(null);
     }// getPhaseAppropriateUnit()
 
 

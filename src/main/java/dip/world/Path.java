@@ -224,7 +224,7 @@ public class Path extends Object {
                 return false;
             }
 
-            Unit unit = pos.getUnit(p);
+            Unit unit = pos.getUnit(p).orElse(null);
             if (unit == null || unit.getType() != Unit.Type.FLEET) {
                 return false;
             }
@@ -608,7 +608,7 @@ public class Path extends Object {
         // must have a fleet in the desired area
         public boolean evaluate(Location location) {
             Province province = location.getProvince();
-            Unit unit = position.getUnit(province);
+            Unit unit = position.getUnit(province).orElse(null);
 
             if (unit != null && (province.isSea() || province
                     .isConvoyableCoast())) {

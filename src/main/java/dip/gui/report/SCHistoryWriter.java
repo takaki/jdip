@@ -278,7 +278,7 @@ public class SCHistoryWriter {
             final Position pos = ts.getPosition();
 
             for (int scIdx = 0; scIdx < scProvs.length; scIdx++) {
-                Power p = pos.getSupplyCenterOwner(scProvs[scIdx]);
+                Power p = pos.getSupplyCenterOwner(scProvs[scIdx]).orElse(null);
                 array[scIdx + 1][i] = p;
             }
         }

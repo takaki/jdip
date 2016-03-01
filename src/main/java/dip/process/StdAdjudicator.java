@@ -369,7 +369,7 @@ public class StdAdjudicator implements Adjudicator {
         for (int i = 0; i < unitList.length; i++) {
             Province province = unitList[i];
             if (!osMap.containsKey(province)) {
-                Unit unit = position.getUnit(province);
+                Unit unit = position.getUnit(province).orElse(null);
                 Hold hold = orderFactory.createHold(unit.getPower(),
                         new Location(province, unit.getCoast()),
                         unit.getType());
@@ -647,7 +647,7 @@ public class StdAdjudicator implements Adjudicator {
             Province sourceProvince = os.getSourceProvince();
 
             // clone the old unit (from the old position)
-            Unit newUnit = (Unit) position.getUnit(sourceProvince).clone();
+            Unit newUnit = (Unit) position.getUnit(sourceProvince).orElse(null).clone();
 
             if (os.getDislodgedState() == Tristate.YES) {
                 // unit remains in same location / coast, but in dislodged area
@@ -729,7 +729,7 @@ public class StdAdjudicator implements Adjudicator {
             final Province[] provinces = nextPosition.getProvinces();
             for (int i = 0; i < provinces.length; i++) {
                 Province prov = provinces[i];
-                Unit unit = nextPosition.getDislodgedUnit(prov);
+                Unit unit = nextPosition.getDislodgedUnit(prov).orElse(null);
                 if (unit != null) {
                     if (rc.hasRetreats(new Location(prov, unit.getCoast()))) {
                         areAllDestroyed = false;
@@ -1090,7 +1090,7 @@ public class StdAdjudicator implements Adjudicator {
         for (int i = 0; i < dislodgedUnitProvs.length; i++) {
             Province province = dislodgedUnitProvs[i];
             if (!osMap.containsKey(province)) {
-                Unit unit = position.getDislodgedUnit(province);
+                Unit unit = position.getDislodgedUnit(province).orElse(null);
                 Disband disband = orderFactory.createDisband(unit.getPower(),
                         new Location(province, unit.getCoast()),
                         unit.getType());
@@ -1218,7 +1218,7 @@ public class StdAdjudicator implements Adjudicator {
             Province sourceProvince = os.getSourceProvince();
 
             // clone the old unit (from the old position)
-            Unit newUnit = (Unit) position.getDislodgedUnit(sourceProvince)
+            Unit newUnit = (Unit) position.getDislodgedUnit(sourceProvince).orElse(null)
                     .clone();
 
             if (order instanceof Retreat && os
@@ -1565,7 +1565,7 @@ public class StdAdjudicator implements Adjudicator {
             Province[] provinces = position.getProvinces();
             for (int provIdx = 0; provIdx < provinces.length; provIdx++) {
                 Province province = provinces[provIdx];
-                Unit unit = position.getUnit(province);
+                Unit unit = position.getUnit(province).orElse(null);
 
                 if (unit != null) {
                     OrderState os = findOrderStateBySrc(province);
@@ -1609,7 +1609,7 @@ public class StdAdjudicator implements Adjudicator {
                 Iterator tieIter = ties.iterator();
                 while (tieIter.hasNext() && !foundFleet) {
                     Province province = (Province) tieIter.next();
-                    Unit unit = position.getUnit(province);
+                    Unit unit = position.getUnit(province).orElse(null);
                     if (unit.getType().equals(Unit.Type.FLEET)) {
                         foundFleet = true;
                         createDisbandOrder(osList, province);
@@ -1628,7 +1628,7 @@ public class StdAdjudicator implements Adjudicator {
      * Creates a valid Disband order; adds to internal hashmap and given order list.
      */
     private void createDisbandOrder(List osList, Province province) {
-        Unit unit = position.getUnit(province);
+        Unit unit = position.getUnit(province).orElse(null);
         Remove remove = orderFactory.createRemove(unit.getPower(),
                 new Location(province, unit.getCoast()), unit.getType());
         OrderState os = new OrderState(remove);
@@ -1661,11 +1661,11 @@ public class StdAdjudicator implements Adjudicator {
             Province province = provinces[i];
 
             if (province != null && province.hasSupplyCenter()) {
-                Unit unit = nextPosition.getUnit(province);
+                Unit unit = nextPosition.getUnit(province).orElse(null);
                 if (unit != null) {
                     // nextPosition still contains old ownership information
                     Power oldOwner = nextPosition
-                            .getSupplyCenterOwner(province);
+                            .getSupplyCenterOwner(province).orElse(null);
                     Power newOwner = unit.getPower();
 
                     // change if ownership change, and not a wing unit

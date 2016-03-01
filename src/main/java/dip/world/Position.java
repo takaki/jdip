@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Stores all the mutable (state) information for a given TurnState.
@@ -204,24 +205,24 @@ public final class Position implements Serializable, Cloneable {
     /**
      * Get the home power of the supply center; null if no supply center or home power
      */
-    public Power getSupplyCenterHomePower(final Province province) {
+    public Optional<Power> getSupplyCenterHomePower(final Province province) {
         final ProvinceData pd = provArray.get(province.getIndex());
         if (pd != null) {
-            return pd.getSCHomePower();
+            return Optional.ofNullable(pd.getSCHomePower());
         }
-        return null;
+        return Optional.empty();
     }// getSupplyCenterHomePower()
 
 
     /**
      * Get the owner of the supply center; null if no owner or no supply center.
      */
-    public Power getSupplyCenterOwner(final Province province) {
+    public Optional<Power> getSupplyCenterOwner(final Province province) {
         final ProvinceData pd = provArray.get(province.getIndex());
         if (pd != null) {
-            return pd.getSCOwner();
+            return Optional.ofNullable(pd.getSCOwner());
         }
-        return null;
+        return Optional.empty();
     }// getSupplyCenterOwner()
 
 
@@ -249,12 +250,12 @@ public final class Position implements Serializable, Cloneable {
     /**
      * Get the unit contained in this Province. Returns null if no unit exists.
      */
-    public Unit getUnit(final Province province) {
+    public Optional<Unit> getUnit(final Province province) {
         final ProvinceData pd = provArray.get(province.getIndex());
         if (pd != null) {
-            return pd.getUnit();
+            return Optional.ofNullable(pd.getUnit());
         }
-        return null;
+        return Optional.empty();
     }// getUnit()
 
 
@@ -262,7 +263,7 @@ public final class Position implements Serializable, Cloneable {
      * Test if the given type of unit is contained in this Province.
      */
     public boolean hasUnit(final Province province, final Type unitType) {
-        final Unit unit = getUnit(province);
+        final Unit unit = getUnit(province).orElse(null);
         if (unit != null) {
             return unit.getType().equals(unitType);
         }
@@ -274,7 +275,7 @@ public final class Position implements Serializable, Cloneable {
      */
     public boolean hasDislodgedUnit(final Province province,
                                     final Type unitType) {
-        final Unit unit = getDislodgedUnit(province);
+        final Unit unit = getDislodgedUnit(province).orElse(null);
         if (unit != null) {
             return unit.getType().equals(unitType);
         }
@@ -296,12 +297,12 @@ public final class Position implements Serializable, Cloneable {
     /**
      * Get the dislodged unit in this Province. Returns null if no dislodged unit exists.
      */
-    public Unit getDislodgedUnit(final Province province) {
+    public Optional<Unit> getDislodgedUnit(final Province province) {
         final ProvinceData pd = provArray.get(province.getIndex());
         if (pd != null) {
-            return pd.getDislodgedUnit();
+            return Optional.ofNullable(pd.getDislodgedUnit());
         }
-        return null;
+        return Optional.empty();
     }// getDislodgedUnit()
 
 
@@ -323,12 +324,12 @@ public final class Position implements Serializable, Cloneable {
      * is not intended to be used for Supply Center ownership (which only
      * changes in the Fall season); use getSupplyCenterOwner() instead.
      */
-    public Power getLastOccupier(final Province province) {
+    public Optional<Power> getLastOccupier(final Province province) {
         final ProvinceData pd = provArray.get(province.getIndex());
         if (pd != null) {
-            return pd.getLastOccupier();
+            return Optional.ofNullable(pd.getLastOccupier());
         }
-        return null;
+        return Optional.empty();
     }// getLastOccupier()
 
 

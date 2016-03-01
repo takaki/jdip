@@ -110,7 +110,7 @@ public class StatusBarUtils {
             // province information
             //
             // Unit Information
-            Unit unit = position.getUnit(p);
+            Unit unit = position.getUnit(p).orElse(null);
             if (unit != null) {
                 sb.append(": ");
                 sb.append(unit.getPower().getAdjective());
@@ -120,7 +120,7 @@ public class StatusBarUtils {
             }
 
             // Dislodged Unit information
-            Unit disUnit = position.getDislodgedUnit(p);
+            Unit disUnit = position.getDislodgedUnit(p).orElse(null);
             if (disUnit != null) {
                 if (unit != null) {
                     sb.append(", ");
@@ -143,7 +143,7 @@ public class StatusBarUtils {
                     sb.append(": ");
                 }
 
-                Power owner = position.getSupplyCenterOwner(p);
+                Power owner = position.getSupplyCenterOwner(p).orElse(null);
                 if (owner == null) {
                     sb.append(Utils.getLocalString(SB_UNOWNED));
                 } else {

@@ -101,7 +101,7 @@ public class Retreat extends Move {
 
         // 1
         Position position = state.getPosition();
-        Unit unit = position.getDislodgedUnit(src.getProvince());
+        Unit unit = position.getDislodgedUnit(src.getProvince()).orElse(null);
         super.validate(valOpts, unit);
 
         if (valOpts.getOption(ValidationOptions.KEY_GLOBAL_PARSING)

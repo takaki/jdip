@@ -354,7 +354,7 @@ public class AIDemo {
      * Make a Location for a Unit
      */
     private Location makeLocation(Position pos, Province prov) {
-        return new Location(prov, pos.getUnit(prov).getCoast());
+        return new Location(prov, pos.getUnit(prov).orElse(null).getCoast());
     }// makeLocation()
 
 

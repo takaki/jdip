@@ -111,7 +111,7 @@ public class Disband extends Order {
 
         // step 1
         Position position = state.getPosition();
-        Unit unit = position.getDislodgedUnit(src.getProvince());
+        Unit unit = position.getDislodgedUnit(src.getProvince()).orElse(null);
         super.validate(valOpts, unit);
     }// validate()
 

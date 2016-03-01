@@ -294,7 +294,7 @@ public class Support extends Order {
             }
 
             // v.1: unit existence / matching
-            Unit supUnit = position.getUnit(supSrc.getProvince());
+            Unit supUnit = position.getUnit(supSrc.getProvince()).orElse(null);
             supUnitType = getValidatedUnitType(supSrc.getProvince(),
                     supUnitType, supUnit);
 

@@ -57,21 +57,21 @@ public class Adjustment {
             Province province = provinces[i];
 
             // tally units
-            Unit unit = position.getUnit(province);
+            Unit unit = position.getUnit(province).orElse(null);
             if (unit != null && unit.getPower() == power) {
                 ai.numUnits++;
             }
 
-            unit = position.getDislodgedUnit(province);
+            unit = position.getDislodgedUnit(province).orElse(null);
             if (unit != null && unit.getPower() == power) {
                 ai.numDislodgedUnits++;
             }
 
             // tally supply centers
-            if (power == position.getSupplyCenterOwner(province)) {
+            if (power == position.getSupplyCenterOwner(province).orElse(null)) {
                 ai.numSC++;
 
-                if (power == position.getSupplyCenterHomePower(province)) {
+                if (power == position.getSupplyCenterHomePower(province).orElse(null)) {
                     ai.numHSC++;
                 }
             }
@@ -110,19 +110,19 @@ public class Adjustment {
             boolean hasUnit = false;
 
             // tally units
-            Unit unit = position.getUnit(province);
+            Unit unit = position.getUnit(province).orElse(null);
             if (unit != null) {
                 adjMap.get(unit.getPower()).numUnits++;
                 hasUnit = true;
             }
 
-            unit = position.getDislodgedUnit(province);
+            unit = position.getDislodgedUnit(province).orElse(null);
             if (unit != null) {
                 adjMap.get(unit.getPower()).numDislodgedUnits++;
             }
 
             // tally supply centers
-            Power power = position.getSupplyCenterOwner(province);
+            Power power = position.getSupplyCenterOwner(province).orElse(null);
             if (power != null) {
                 adjMap.get(power).numSC++;
 
@@ -131,7 +131,7 @@ public class Adjustment {
                 }
 
 
-                power = position.getSupplyCenterHomePower(province);
+                power = position.getSupplyCenterHomePower(province).orElse(null);
                 if (power != null) {
                     adjMap.get(power).numHSC++;
 

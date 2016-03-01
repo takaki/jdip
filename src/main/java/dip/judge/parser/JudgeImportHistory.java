@@ -190,7 +190,7 @@ final class JudgeImportHistory {
         ArrayList hscList = new ArrayList(50);
         Province[] provinces = map.getProvinces();
         for (int i = 0; i < provinces.length; i++) {
-            Power power = oldPosition.getSupplyCenterHomePower(provinces[i]);
+            Power power = oldPosition.getSupplyCenterHomePower(provinces[i]).orElse(null);
             if (power != null) {
                 hscList.add(new HSCInfo(provinces[i], power));
             }
@@ -277,7 +277,7 @@ final class JudgeImportHistory {
         ArrayList hscList = new ArrayList(50);
         Province[] provinces = map.getProvinces();
         for (int i = 0; i < provinces.length; i++) {
-            Power power = oldPosition.getSupplyCenterHomePower(provinces[i]);
+            Power power = oldPosition.getSupplyCenterHomePower(provinces[i]).orElse(null);
             if (power != null) {
                 hscList.add(new HSCInfo(provinces[i], power));
             }
@@ -1063,11 +1063,11 @@ final class JudgeImportHistory {
             for (int i = 0; i < provinces.length; i++) {
                 Province province = provinces[i];
                 if (province != null && province.hasSupplyCenter()) {
-                    Unit unit = position.getUnit(province);
+                    Unit unit = position.getUnit(province).orElse(null);
                     if (unit != null) {
                         // nextPosition still contains old ownership information
                         Power oldOwner = oldPosition
-                                .getSupplyCenterOwner(province);
+                                .getSupplyCenterOwner(province).orElse(null);
                         Power newOwner = unit.getPower();
                         //System.out.println(oldOwner + " VS " + newOwner);
 
@@ -1116,7 +1116,7 @@ final class JudgeImportHistory {
         final Province[] provinces = map.getProvinces();
         for (int i = 0; i < provinces.length; i++) {
             final Province p = provinces[i];
-            Unit unit = oldPos.getUnit(p);
+            Unit unit = oldPos.getUnit(p).orElse(null);
             if (unit != null) {
                 Unit newUnit = (Unit) unit.clone();
                 newPos.setUnit(p, newUnit);
@@ -1124,7 +1124,7 @@ final class JudgeImportHistory {
                         unit.getPower());
             }
 
-            unit = oldPos.getDislodgedUnit(p);
+            unit = oldPos.getDislodgedUnit(p).orElse(null);
             if (isCopyDislodged && unit != null) {
                 Unit newUnit = (Unit) unit.clone();
                 newPos.setDislodgedUnit(p, newUnit);
@@ -1133,7 +1133,7 @@ final class JudgeImportHistory {
             }
 
             // clone any lastOccupied info as well.
-            newPos.setLastOccupier(p, oldPos.getLastOccupier(p));
+            newPos.setLastOccupier(p, oldPos.getLastOccupier(p).orElse(null));
         }
     }// copyPreviousPositions()
 
@@ -1176,13 +1176,13 @@ final class JudgeImportHistory {
         // copy!
         Province[] provinces = map.getProvinces();
         for (int i = 0; i < provinces.length; i++) {
-            Power power = prevPos.getSupplyCenterOwner(provinces[i]);
+            Power power = prevPos.getSupplyCenterOwner(provinces[i]).orElse(null);
             if (power != null) {
                 //System.out.println("  SC @ "+provinces[i]+", owned by "+power);
                 currentPos.setSupplyCenterOwner(provinces[i], power);
                 Log.println("  set SC: ", provinces[i], " owned by ", power);
             }
-            power = prevPos.getSupplyCenterHomePower(provinces[i]);
+            power = prevPos.getSupplyCenterHomePower(provinces[i]).orElse(null);
             if (power != null) {
                 currentPos.setSupplyCenterHomePower(provinces[i], power);
                 Log.println("  set HSC: ", provinces[i], " owned by ", power);
@@ -1206,7 +1206,7 @@ final class JudgeImportHistory {
             final Province p = provinces[i];
 
             // clone any lastOccupied info as well.
-            newPos.setLastOccupier(p, oldPos.getLastOccupier(p));
+            newPos.setLastOccupier(p, oldPos.getLastOccupier(p).orElse(null));
         }
     }// copyPreviousLastOccupierInfo()
 
@@ -1341,9 +1341,9 @@ final class JudgeImportHistory {
 								 * therefore get that one.
 								 */
                                 if (positionPlacement) {
-                                    unit = position.getDislodgedUnit(province);
+                                    unit = position.getDislodgedUnit(province).orElse(null);
                                 } else {
-                                    unit = position.getUnit(province);
+                                    unit = position.getUnit(province).orElse(null);
                                 }
 
                                 position.setDislodgedUnit(province, null);
@@ -1402,7 +1402,7 @@ final class JudgeImportHistory {
         for (int i = 0; i < oldPosition.getHomeSupplyCenters().length; i++) {
             pos.setSupplyCenterHomePower(oldPosition.getHomeSupplyCenters()[i],
                     oldPosition.getSupplyCenterHomePower(
-                            oldPosition.getHomeSupplyCenters()[i]));
+                            oldPosition.getHomeSupplyCenters()[i]).orElse(null));
         }
 
         // Copy previous phase positions

@@ -214,7 +214,7 @@ public class Convoy extends Order {
 
             // v.2: 	a) type-match unit type with current state, and unit must exist
             // 		b) unit type must be ARMY
-            Unit convoyUnit = position.getUnit(convoySrc.getProvince());
+            Unit convoyUnit = position.getUnit(convoySrc.getProvince()).orElse(null);
             convoyUnitType = getValidatedUnitType(convoySrc.getProvince(),
                     convoyUnitType, convoyUnit);
             if (!convoyUnitType.equals(Unit.Type.ARMY)) {

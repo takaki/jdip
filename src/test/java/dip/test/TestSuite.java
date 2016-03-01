@@ -587,7 +587,7 @@ public final class TestSuite {
                 final boolean isDislodged) {
             province = prov;
             this.isDislodged = isDislodged;
-            unit = isDislodged ? pos.getDislodgedUnit(prov) : pos.getUnit(prov);
+            unit = isDislodged ? pos.getDislodgedUnit(prov).orElse(null) : pos.getUnit(prov).orElse(null);
             if (unit == null) {
                 throw new IllegalArgumentException();
             }

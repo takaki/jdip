@@ -116,7 +116,7 @@ public class GUIBuild extends Build implements GUIOrder {
         Province province = location.getProvince();
 
         if (province.hasSupplyCenter()) {
-            Power SCOwner = position.getSupplyCenterOwner(province);
+            Power SCOwner = position.getSupplyCenterOwner(province).orElse(null);
 
             // general screening, applicable to all build options
             //
@@ -158,7 +158,7 @@ public class GUIBuild extends Build implements GUIOrder {
                 // in a non-home supply center.
                 //
                 if (SCOwner != position
-                        .getSupplyCenterHomePower(province) && !position
+                        .getSupplyCenterHomePower(province).orElse(null) && !position
                         .hasAnOwnedHomeSC(SCOwner)) {
                     sb.append(Utils.getLocalString(NOBUILD_NEED_ONE_OWNED_SC));
                     return false;    // failed
@@ -169,7 +169,7 @@ public class GUIBuild extends Build implements GUIOrder {
             } else {
                 // build only in owned HOME supply centers
                 //
-                if (SCOwner == position.getSupplyCenterHomePower(province)) {
+                if (SCOwner == position.getSupplyCenterHomePower(province).orElse(null)) {
                     // we (probably) can build here
                     return checkBuildUnit(stateInfo, province, location, sb);
                 }
@@ -208,7 +208,7 @@ public class GUIBuild extends Build implements GUIOrder {
 
             src = new Location(location.getProvince(), location.getCoast());
             power = stateInfo.getPosition()
-                    .getSupplyCenterOwner(location.getProvince());
+                    .getSupplyCenterOwner(location.getProvince()).orElse(null);
 
             // srcUnitType: already defined
             assert (srcUnitType != null);

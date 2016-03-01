@@ -104,7 +104,7 @@ public class GUIWaive extends Waive implements GUIOrder {
         Province province = location.getProvince();
 
         if (province.hasSupplyCenter()) {
-            Power SCOwner = position.getSupplyCenterOwner(province);
+            Power SCOwner = position.getSupplyCenterOwner(province).orElse(null);
 
             // general screening, applicable to all build options
             //
@@ -148,7 +148,7 @@ public class GUIWaive extends Waive implements GUIOrder {
                 // in a non-home supply center.
                 //
                 if (SCOwner != position
-                        .getSupplyCenterHomePower(province) && !position
+                        .getSupplyCenterHomePower(province).orElse(null) && !position
                         .hasAnOwnedHomeSC(SCOwner)) {
                     sb.append(Utils.getLocalString(NOWAIVE_NEED_ONE_OWNED_SC));
                     return false;    // failed
@@ -160,7 +160,7 @@ public class GUIWaive extends Waive implements GUIOrder {
             } else {
                 // build only in owned HOME supply centers
                 //
-                if (SCOwner == position.getSupplyCenterHomePower(province)) {
+                if (SCOwner == position.getSupplyCenterHomePower(province).orElse(null)) {
                     sb.append(Utils.getLocalString(GUIOrder.COMPLETE,
                             getFullName()));
                     return true;
@@ -200,7 +200,7 @@ public class GUIWaive extends Waive implements GUIOrder {
 
             src = new Location(location.getProvince(), location.getCoast());
             power = stateInfo.getPosition()
-                    .getSupplyCenterOwner(location.getProvince());
+                    .getSupplyCenterOwner(location.getProvince()).orElse(null);
 
             // srcUnitType: already defined
             assert (srcUnitType != null);

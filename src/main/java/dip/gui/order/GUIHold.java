@@ -94,7 +94,7 @@ public class GUIHold extends Hold implements GUIOrder {
 
         Position position = stateInfo.getPosition();
         Province province = location.getProvince();
-        Unit unit = position.getUnit(province);
+        Unit unit = position.getUnit(province).orElse(null);
 
         if (unit != null) {
             if (!stateInfo.canIssueOrder(unit.getPower())) {
@@ -137,7 +137,7 @@ public class GUIHold extends Hold implements GUIOrder {
                                StringBuffer sb) {
         if (testLocation(stateInfo, location, sb)) {
             currentLocNum++;
-            Unit unit = stateInfo.getPosition().getUnit(location.getProvince());
+            Unit unit = stateInfo.getPosition().getUnit(location.getProvince()).orElse(null);
             src = new Location(location.getProvince(), unit.getCoast());
             power = unit.getPower();
             srcUnitType = unit.getType();

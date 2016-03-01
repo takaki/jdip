@@ -478,7 +478,7 @@ public class OrderParser {
             // get power from unit, if possible
             Power supPower = null;
             if (position.hasUnit(supSrc.getProvince())) {
-                supPower = position.getUnit(supSrc.getProvince()).getPower();
+                supPower = position.getUnit(supSrc.getProvince()).orElse(null).getPower();
             }
 
             // support a MOVE [if specified]
@@ -534,7 +534,7 @@ public class OrderParser {
             // get power, from unit
             Power conPower = null;
             if (position.hasUnit(conSrc.getProvince())) {
-                conPower = position.getUnit(conSrc.getProvince()).getPower();
+                conPower = position.getUnit(conSrc.getProvince()).orElse(null).getPower();
             }
 
             // create order.
@@ -757,16 +757,16 @@ public class OrderParser {
             // if a unit exists, assume remove, and use that power; otherwise, assume a build.
             //
             if (position.hasUnit(province)) {
-                return position.getUnit(province).getPower();
+                return position.getUnit(province).orElse(null).getPower();
             } else {
                 assert (position.getSupplyCenterOwner(province) != null);
-                return position.getSupplyCenterOwner(province);
+                return position.getSupplyCenterOwner(province).orElse(null);
             }
         } else {
             // retreat / movement phases:
             Unit unit = (phase
                     .getPhaseType() == Phase.PhaseType.RETREAT) ? position
-                    .getDislodgedUnit(province) : position.getUnit(province);
+                    .getDislodgedUnit(province).orElse(null) : position.getUnit(province).orElse(null);
             if (unit != null) {
                 return unit.getPower();
             }

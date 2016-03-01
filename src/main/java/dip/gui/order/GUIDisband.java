@@ -92,7 +92,7 @@ public class GUIDisband extends Disband implements GUIOrder {
 
         Position position = stateInfo.getPosition();
         Province province = location.getProvince();
-        Unit unit = position.getDislodgedUnit(province);
+        Unit unit = position.getDislodgedUnit(province).orElse(null);
 
         if (unit != null) {
             if (!stateInfo.canIssueOrder(unit.getPower())) {
@@ -134,7 +134,7 @@ public class GUIDisband extends Disband implements GUIOrder {
             currentLocNum++;
 
             Unit unit = stateInfo.getPosition()
-                    .getDislodgedUnit(location.getProvince());
+                    .getDislodgedUnit(location.getProvince()).orElse(null);
             src = new Location(location.getProvince(), unit.getCoast());
             power = unit.getPower();
             srcUnitType = unit.getType();

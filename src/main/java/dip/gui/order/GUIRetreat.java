@@ -28,7 +28,11 @@ import dip.order.Orderable;
 import dip.order.Retreat;
 import dip.order.ValidationOptions;
 import dip.process.RetreatChecker;
-import dip.world.*;
+import dip.world.Location;
+import dip.world.Position;
+import dip.world.Power;
+import dip.world.Province;
+import dip.world.Unit;
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.util.SVGConstants;
 import org.w3c.dom.svg.SVGElement;
@@ -104,7 +108,7 @@ public class GUIRetreat extends Retreat implements GUIOrder {
             // set Retreat source; remember, we are using the *dislodged* unit.
             //
             // we require a dislodged unit present. We will check unit ownership too, if appropriate
-            Unit unit = position.getDislodgedUnit(province);
+            Unit unit = position.getDislodgedUnit(province).orElse(null);
             if (unit != null) {
                 if (!stateInfo.canIssueOrder(unit.getPower())) {
                     sb.append(Utils.getLocalString(GUIOrder.NOT_OWNER,
@@ -210,7 +214,7 @@ public class GUIRetreat extends Retreat implements GUIOrder {
         if (testLocation(stateInfo, location, sb)) {
             if (currentLocNum == 0) {
                 Unit unit = stateInfo.getPosition()
-                        .getDislodgedUnit(location.getProvince());
+                        .getDislodgedUnit(location.getProvince()).orElse(null);
                 src = new Location(location.getProvince(), unit.getCoast());
                 power = unit.getPower();
                 srcUnitType = unit.getType();
@@ -354,7 +358,7 @@ public class GUIRetreat extends Retreat implements GUIOrder {
         Position position = mapInfo.getTurnState().getPosition();
         if (position.hasUnit(dest.getProvince())) {
             Unit.Type destUnitType = position.getUnit(dest.getProvince())
-                    .getType();
+                    .orElse(null).getType();
             float r = mmd.getOrderRadius(MapMetadata.EL_RETREAT,
                     mapInfo.getSymbolName(destUnitType));
             newPtTo = GUIOrderUtils.getLineCircleIntersection(ptFrom.x + offset,

@@ -824,8 +824,8 @@ public final class TestSuite {
         public UnitPos(Position pos, Province prov, boolean isDislodged) {
             this.province = prov;
             this.isDislodged = isDislodged;
-            this.unit = (isDislodged) ? pos.getDislodgedUnit(prov) : pos
-                    .getUnit(prov);
+            this.unit = (isDislodged) ? pos.getDislodgedUnit(prov).orElse(null) : pos
+                    .getUnit(prov).orElse(null);
             if (this.unit == null) {
                 throw new IllegalArgumentException();
             }
