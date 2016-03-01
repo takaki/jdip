@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -183,10 +184,7 @@ public final class Position implements Serializable, Cloneable {
      */
     public boolean hasSupplyCenterOwner(final Province province) {
         final ProvinceData pd = provArray.get(province.getIndex());
-        if (pd != null) {
-            return pd.isSCOwned();
-        }
-        return false;
+        return pd != null && pd.isSCOwned();
     }// hasSupplyCenterOwner()
 
 
@@ -195,10 +193,7 @@ public final class Position implements Serializable, Cloneable {
      */
     public boolean isSupplyCenterAHome(final Province province) {
         final ProvinceData pd = provArray.get(province.getIndex());
-        if (pd != null) {
-            return pd.isSCAHome();
-        }
-        return false;
+        return pd != null && pd.isSCAHome();
     }// isSupplyCenterAHome()
 
 
@@ -241,10 +236,7 @@ public final class Position implements Serializable, Cloneable {
      */
     public boolean hasUnit(final Province province) {
         final ProvinceData pd = provArray.get(province.getIndex());
-        if (pd != null) {
-            return pd.hasUnit();
-        }
-        return false;
+        return pd != null && pd.hasUnit();
     }// hasUnit()
 
     /**
@@ -332,10 +324,7 @@ public final class Position implements Serializable, Cloneable {
      */
     public boolean hasDislodgedUnit(final Province province) {
         final ProvinceData pd = provArray.get(province.getIndex());
-        if (pd != null) {
-            return pd.hasDislodgedUnit();
-        }
-        return false;
+        return pd != null && pd.hasDislodgedUnit();
     }// hasDislodgedUnit()
 
 
@@ -386,8 +375,7 @@ public final class Position implements Serializable, Cloneable {
      */
     public int getUnitCount() {
         int count = 0;
-        for (int i = 0; i < provArray.size(); i++) {
-            final ProvinceData pd = provArray.get(i);
+        for (final ProvinceData pd : provArray) {
             if (pd != null && pd.hasUnit()) {
                 count++;
             }
@@ -402,8 +390,7 @@ public final class Position implements Serializable, Cloneable {
      */
     public int getDislodgedUnitCount() {
         int count = 0;
-        for (int i = 0; i < provArray.size(); i++) {
-            final ProvinceData pd = provArray.get(i);
+        for (final ProvinceData pd : provArray) {
             if (pd != null && pd.hasDislodgedUnit()) {
                 count++;
             }
@@ -461,8 +448,7 @@ public final class Position implements Serializable, Cloneable {
      * An owned home supply center need not have a unit present.
      */
     public boolean hasAnOwnedHomeSC(final Power power) {
-        for (int i = 0; i < provArray.size(); i++) {
-            final ProvinceData pd = provArray.get(i);
+        for (final ProvinceData pd : provArray) {
             if (pd != null && pd.getSCHomePower() == power && pd
                     .getSCOwner() == power) {
                 return true;
@@ -792,7 +778,9 @@ public final class Position implements Serializable, Cloneable {
         public ProvinceData cloneExceptDislodged() {
             // don't create an object if there is no ownership info.
             // this also compacts the Position map!
-            if (SCOwner == null && SCHomePower == null && unit == null && lastOccupier == null) {
+            if (Objects.isNull(SCOwner) && Objects
+                    .isNull(SCHomePower) && Objects.isNull(unit) && Objects
+                    .isNull(lastOccupier)) {
                 return null;
             }
 
@@ -805,7 +793,7 @@ public final class Position implements Serializable, Cloneable {
             pd.lastOccupier = lastOccupier;
 
             // deep copy unit
-            if (unit != null) {
+            if (Objects.nonNull(unit)) {
                 pd.unit = unit.clone();
             }
 
