@@ -368,7 +368,7 @@ public class AdjustmentParser {
         // there may be a "." on the end of some
         // which should be eliminated.
         //
-        final Power[] allPowers = map.getPowers();
+        final Power[] allPowers = map.getPowers().toArray(new Power[0]);
         for (int i = 0; i < allPowers.length; i++) {
             StringBuffer sb = (StringBuffer) pmap.get(allPowers[i]);
             if (sb != null) {

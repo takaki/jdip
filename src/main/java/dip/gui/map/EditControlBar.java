@@ -139,7 +139,7 @@ public class EditControlBar extends ViewControlBar {
         add(new JLabel(Utils.getLocalString(POWER_LABEL)));
         addSeparator(new Dimension(5, 0));
         powerBox = new JComboBox(
-                mapPanel.getClientFrame().getWorld().getMap().getPowers());
+                mapPanel.getClientFrame().getWorld().getMap().getPowers().toArray(new Power[0]));
         powerBox.insertItemAt(POWER_NONE, 0);
         powerBox.setEditable(false);
         powerBox.addItemListener(new ItemListener() {

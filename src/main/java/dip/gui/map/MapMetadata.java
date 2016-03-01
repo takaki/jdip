@@ -685,7 +685,7 @@ public class MapMetadata {
 
         // verify: make sure each province has at least one InfoEntry.
         // if we are supressing errors, fill in with empty data.
-        Province[] provinces = mp.getWorld().getMap().getProvinces();
+        Province[] provinces = mp.getWorld().getMap().getProvinces().toArray(new Province[0]);
         for (int i = 0; i < provinces.length; i++) {
             if (infoMap.get(provinces[i]) == null) {
                 if (supressPlacementErrors) {
@@ -911,7 +911,7 @@ public class MapMetadata {
         }
 
         // verify all powers have a color
-        Power[] powers = map.getPowers();
+        Power[] powers = map.getPowers().toArray(new Power[0]);
         for (int i = 0; i < powers.length; i++) {
             if (displayProps.get(powers[i]) == null) {
                 throw new MapException(

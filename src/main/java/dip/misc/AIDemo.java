@@ -136,7 +136,7 @@ public class AIDemo {
         // This is to illustrate some features of the dip.world.Map object.
         //
         WorldMap map = newWorld.getMap();
-        Power[] powers = map.getPowers();
+        Power[] powers = map.getPowers().toArray(new Power[0]);
         System.out.println("\nPowers in this game:");
         for (int i = 0; i < powers.length; i++) {
             System.out.println("  " + powers[i]);

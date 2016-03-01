@@ -233,8 +233,7 @@ public class WorldFactory {
 
         // Now that we know the variant, we know the powers, and can
         // create the Map.
-        final WorldMap map = new WorldMap(variant.getPowers().toArray(new Power[0]),
-                provinces.toArray(new Province[provinces.size()]));
+        final WorldMap map = new WorldMap(variant.getPowers(), provinces);
 
         // create the World object as well, now that we have the Map
         final World world = new World(map);

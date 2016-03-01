@@ -32,6 +32,7 @@ import dip.process.Adjustment;
 import dip.world.Phase;
 import dip.world.Position;
 import dip.world.Power;
+import dip.world.Province;
 import dip.world.TurnState;
 
 import javax.swing.*;
@@ -342,7 +343,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
 
         if (tc.getPower() == null) {
             // "all powers"
-            final Power[] powers = world.getMap().getPowers();
+            final Power[] powers = world.getMap().getPowers().toArray(new Power[0]);
             clientFrame.fireDisplayablePowersChanged(
                     clientFrame.getDisplayablePowers(), powers);
             clientFrame.fireOrderablePowersChanged(
@@ -388,7 +389,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
         // disable tabs for powers that don't require orders during
         // retreat or adjustment phases, if appropriate.
         final Position pos = turnState.getPosition();
-        final Power[] powers = world.getMap().getPowers();
+        final Power[] powers = world.getMap().getPowers().toArray(new Power[0]);
 
         Adjustment.AdjustmentInfoMap f2fAdjMap = Adjustment
                 .getAdjustmentInfo(turnState, world.getRuleOptions(), powers);
@@ -460,7 +461,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
      */
     private TabComponent selectNextRandomTab() {
         // find Power tabs that are not disabled
-        final Power[] powers = world.getMap().getPowers();
+        final Power[] powers = world.getMap().getPowers().toArray(new Power[0]);
         List tabSelectionOrderList = new ArrayList(powers.length);
 
         for (int i = 0; i < powers.length; i++) {
@@ -588,7 +589,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
         if (turnState != null) {
             // set enabled tabs (submitted == disabled)
             boolean aSubmit = false;
-            final Power[] powers = world.getMap().getPowers();
+            final Power[] powers = world.getMap().getPowers().toArray(new Power[0]);
             for (int i = 0; i < powers.length; i++) {
                 final Power power = powers[i];
                 boolean value = state.getSubmitted(power);
@@ -628,7 +629,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
             entryState.setCurrentPower(null);
         } else {
             entryState.setCurrentPower(null);
-            final Power[] powers = world.getMap().getPowers();
+            final Power[] powers = world.getMap().getPowers().toArray(new Power[0]);
 
             // set submitted
             for (int i = 0; i < powers.length; i++) {

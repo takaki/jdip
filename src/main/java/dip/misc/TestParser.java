@@ -630,7 +630,7 @@ public class TestParser {
 
         // clear positions in this world
         Position pos = turnState.getPosition();
-        Province[] provs = pos.getProvinces();
+        Province[] provs = pos.getProvinces().toArray(new Province[0]);
         for (int i = 0; i < provs.length; i++) {
             pos.setUnit(provs[i], null);
             pos.setDislodgedUnit(provs[i], null);

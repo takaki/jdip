@@ -143,7 +143,7 @@ public class OrderControlBar extends ViewControlBar {
         if (stateInfo.getTurnState().getPhase()
                 .getPhaseType() == Phase.PhaseType.ADJUSTMENT) {
             Power[] powers = stateInfo.getTurnState().getWorld().getMap()
-                    .getPowers();
+                    .getPowers().toArray(new Power[0]);
             Adjustment.AdjustmentInfoMap adjMap = Adjustment
                     .getAdjustmentInfo(stateInfo.getTurnState(),
                             stateInfo.getRuleOptions(), powers);

@@ -67,7 +67,7 @@ public final class Position implements Serializable, Cloneable {
     public Position(final WorldMap map) {
         this.map = map;
         provArray = new ArrayList<>(
-                Arrays.asList(new ProvinceData[map.getProvinces().length]));
+                Arrays.asList(new ProvinceData[map.getProvinces().size()]));
     }// Position()
 
 
@@ -82,7 +82,7 @@ public final class Position implements Serializable, Cloneable {
     /**
      * Convenience method: Returns an array of Provinces
      */
-    public Province[] getProvinces() {
+    public List<Province> getProvinces() {
         return map.getProvinces();
     }// getProvinces()
 
@@ -113,7 +113,7 @@ public final class Position implements Serializable, Cloneable {
      * Power has any units (including dislodged units) or supply centers on the map
      */
     public void setEliminationStatus(final Power[] powers) {
-        final HashMap<Power, Object> pmap = new HashMap<>(19);
+        final Map<Power, Object> pmap = new HashMap<>(19);
         for (final Power power1 : powers) {
             pmap.put(power1, null);
         }
@@ -149,13 +149,8 @@ public final class Position implements Serializable, Cloneable {
                 }
             }
         }
-
         for (final Power power : powers) {
-            if (pmap.get(power) == null) {
-                setEliminated(power, true);
-            } else {
-                setEliminated(power, false);
-            }
+            setEliminated(power, pmap.get(power) == null);
         }
     }// setEliminationStatus()
 
@@ -355,30 +350,18 @@ public final class Position implements Serializable, Cloneable {
     /**
      * Returns the number of provinces with non-dislodged units
      */
-    public int getUnitCount() {
-        int count = 0;
-        for (final ProvinceData pd : provArray) {
-            if (pd != null && pd.hasUnit()) {
-                count++;
-            }
-        }
-
-        return count;
+    public long getUnitCount() {
+        return provArray.stream().filter(pd -> pd != null && pd.hasUnit())
+                .count();
     }// getUnitCount()
 
 
     /**
      * Returns the number of provinces with dislodged units
      */
-    public int getDislodgedUnitCount() {
-        int count = 0;
-        for (final ProvinceData pd : provArray) {
-            if (pd != null && pd.hasDislodgedUnit()) {
-                count++;
-            }
-        }
-
-        return count;
+    public long getDislodgedUnitCount() {
+        return provArray.stream()
+                .filter(pd -> pd != null && pd.hasDislodgedUnit()).count();
     }// getDislodgedUnitCount()
 
 

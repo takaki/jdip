@@ -93,7 +93,7 @@ public class OrderStatsWriter {
      */
     private OrderStatsWriter(World w, OrderFormatOptions ofo) {
         world = w;
-        allPowers = w.getMap().getPowers();
+        allPowers = w.getMap().getPowers().toArray(new Power[0]);
         this.ofo = ofo;
 
         pctFmt.setMaximumFractionDigits(0);

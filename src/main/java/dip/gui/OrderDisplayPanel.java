@@ -886,7 +886,7 @@ public class OrderDisplayPanel extends JPanel {
                     .getPhaseType() == Phase.PhaseType.ADJUSTMENT) {
                 adjMap = Adjustment
                         .getAdjustmentInfo(turnState, world.getRuleOptions(),
-                                world.getMap().getPowers());
+                                world.getMap().getPowers().toArray(new Power[0]));
             } else {
                 adjMap = null;
             }
@@ -912,7 +912,7 @@ public class OrderDisplayPanel extends JPanel {
                 orderList.clearSelection();
             } else {
                 isEditable = false;
-                displayablePowers = world.getMap().getPowers();
+                displayablePowers = world.getMap().getPowers().toArray(new Power[0]);
                 orderablePowers = new Power[0];
                 orderList.setEnabled(false);
                 orderList.clearSelection();

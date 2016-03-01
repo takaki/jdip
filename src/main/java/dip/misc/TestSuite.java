@@ -1075,7 +1075,7 @@ public final class TestSuite {
                 Position position = currentTS.getPosition();
 
                 // ensure all powers are active
-                Power[] powers = world.getMap().getPowers();
+                Power[] powers = world.getMap().getPowers().toArray(new Power[0]);
                 for (int i = 0; i < powers.length; i++) {
                     position.setEliminated(powers[i], false);
                 }
@@ -1104,7 +1104,7 @@ public final class TestSuite {
                 // no need to validate units
                 if (supplySCOwners.length > 0) {
                     // first erase old info
-                    final Province[] provinces = position.getProvinces();
+                    final Province[] provinces = position.getProvinces().toArray(new Province[0]);
 
                     for (int i = 0; i < provinces.length; i++) {
                         Province province = provinces[i];

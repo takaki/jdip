@@ -51,7 +51,7 @@ public class Adjustment {
         AdjustmentInfo ai = new AdjustmentInfo(ruleOpts);
 
         Position position = turnState.getPosition();
-        final Province[] provinces = position.getProvinces();
+        final Province[] provinces = position.getProvinces().toArray(new Province[0]);
 
         for (int i = 0; i < provinces.length; i++) {
             Province province = provinces[i];
@@ -103,7 +103,7 @@ public class Adjustment {
 
         // Iterate for all Powers
         Position position = turnState.getPosition();
-        final Province[] provinces = position.getProvinces();
+        final Province[] provinces = position.getProvinces().toArray(new Province[0]);
 
         for (int i = 0; i < provinces.length; i++) {
             Province province = provinces[i];

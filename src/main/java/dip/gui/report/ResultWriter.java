@@ -111,7 +111,7 @@ public class ResultWriter {
     private ResultWriter(TurnState ts, OrderFormatOptions ofo) {
         turnState = ts;
         world = ts.getWorld();
-        allPowers = world.getMap().getPowers();
+        allPowers = world.getMap().getPowers().toArray(new Power[0]);
         position = ts.getPosition();
         this.ofo = ofo;
     }// ResultWriter()

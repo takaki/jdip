@@ -123,7 +123,7 @@ public class StateWriter {
     private StateWriter(ClientFrame cf, TurnState ts) {
         assert (cf != null);
         turnState = ts;
-        allPowers = ts.getWorld().getMap().getPowers();
+        allPowers = ts.getWorld().getMap().getPowers().toArray(new Power[0]);
         displayablePowers = (cf == null) ? allPowers : cf
                 .getDisplayablePowers();
         powerMap = getUnitsByPower();
@@ -495,7 +495,7 @@ public class StateWriter {
         }
 
         Position position = turnState.getPosition();
-        Province[] provinces = position.getProvinces();
+        Province[] provinces = position.getProvinces().toArray(new Province[0]);
         for (int i = 0; i < provinces.length; i++) {
             Province province = provinces[i];
 

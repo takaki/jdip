@@ -1423,7 +1423,7 @@ public class ClientFrame extends JFrame {
             } else {
                 // check and see if any powers were eliminated after edit
                 getTurnState().getPosition()
-                        .setEliminationStatus(world.getMap().getPowers());
+                        .setEliminationStatus(world.getMap().getPowers().toArray(new Power[0]));
                 fireChangeMode(oldEditMode);
             }
         }

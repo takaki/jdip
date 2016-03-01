@@ -71,23 +71,25 @@ public final class WorldMap implements Serializable {
     /**
      * Constructs a Map object.
      */
-    protected WorldMap(final Power[] powerArray,
-                       final Province[] provinceArray) {
+    protected WorldMap(final List<Power> powerArray,
+                       final List<Province> provinceArray) {
         // define constant arrays.
-        powers = Arrays.asList(powerArray);
-        provinces = Arrays.asList(provinceArray);
+        powers = new ArrayList<>(powerArray);
+        provinces = new ArrayList<>(provinceArray);
 
         // check provinceArray: index must be >= 0 and < provinceArray.length
-        final int len = provinceArray.length;
-        IntStream.range(0, provinceArray.length).forEach(i -> {
-            final int idx = provinceArray[i].getIndex();
+        final int len = provinceArray.size();
+        IntStream.range(0, provinceArray.size()).forEach(i -> {
+            final int idx = provinceArray.get(i).getIndex();
             if (idx < 0 || idx >= len) {
                 throw new IllegalArgumentException(
-                        "Province: " + provinceArray[i] + ": illegal Index: " + idx);
+                        String.format("Province: %s: illegal Index: %d",
+                                provinceArray.get(i), idx));
             }
             if (idx != i) {
-                throw new IllegalArgumentException(
-                        "Province: " + provinceArray[i] + ": out of order (index: " + idx + "; position: " + i + ")");
+                throw new IllegalArgumentException(String.format(
+                        "Province: %s: out of order (index: %d; position: %d)",
+                        provinceArray.get(i), idx, i));
             }
         });
 
@@ -138,8 +140,8 @@ public final class WorldMap implements Serializable {
     /**
      * Returns an Array of all Powers.
      */
-    public final Power[] getPowers() {
-        return powers.toArray(new Power[powers.size()]);
+    public List<Power> getPowers() {
+        return Collections.unmodifiableList(powers);
     }// getPowers()
 
 
@@ -268,8 +270,8 @@ public final class WorldMap implements Serializable {
     /**
      * Returns an Array of all Provinces.
      */
-    public final Province[] getProvinces() {
-        return provinces.toArray(new Province[provinces.size()]);
+    public List<Province> getProvinces() {
+        return Collections.unmodifiableList(provinces);
     }// getProvinces()
 
 
@@ -593,7 +595,7 @@ public final class WorldMap implements Serializable {
     /**
      * Given an index, returns the Province to which that index corresponds.
      */
-    public final Province reverseIndex(final int i) {
+    public Province reverseIndex(final int i) {
         return provinces.get(i);
     }// reverseIndex()
 

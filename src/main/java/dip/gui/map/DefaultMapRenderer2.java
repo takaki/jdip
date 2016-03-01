@@ -198,8 +198,8 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
 
         // init variables
         worldMap = mapPanel.getClientFrame().getWorld().getMap();
-        provinces = worldMap.getProvinces();
-        powers = mapPanel.getClientFrame().getWorld().getMap().getPowers();
+        provinces = worldMap.getProvinces().toArray(new Province[0]);
+        powers = mapPanel.getClientFrame().getWorld().getMap().getPowers().toArray(new Power[0]);
 
         // setup object maps
         trackerMap = new HashMap(113);
