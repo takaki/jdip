@@ -263,11 +263,8 @@ public final class Position implements Serializable, Cloneable {
      * Test if the given type of unit is contained in this Province.
      */
     public boolean hasUnit(final Province province, final Type unitType) {
-        final Unit unit = getUnit(province).orElse(null);
-        if (unit != null) {
-            return unit.getType().equals(unitType);
-        }
-        return false;
+        return getUnit(province).map(unit -> unit.getType() == unitType)
+                .orElse(false);
     }// hasUnit()
 
     /**
@@ -275,11 +272,8 @@ public final class Position implements Serializable, Cloneable {
      */
     public boolean hasDislodgedUnit(final Province province,
                                     final Type unitType) {
-        final Unit unit = getDislodgedUnit(province).orElse(null);
-        if (unit != null) {
-            return unit.getType().equals(unitType);
-        }
-        return false;
+        return getDislodgedUnit(province)
+                .map(unit -> unit.getType() == unitType).orElse(false);
     }// hasDislodgedUnit()
 
 

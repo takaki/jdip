@@ -198,11 +198,10 @@ public class Border implements Serializable {
         final List<SeasonType> list = new ArrayList<>();
         for (final String st : in.split("[, ]+")) {
             final String tok = st.trim();
-            final SeasonType season = SeasonType.parse(tok).orElse(null);
-            if (season == null) {
-                throw new InvalidBorderException(
-                        "Border " + id + ": season \"" + tok + "\" is not recognized.");
-            }
+            final SeasonType season = SeasonType.parse(tok).orElseThrow(
+                    () -> new InvalidBorderException(String.format(
+                            "Border %s: season \"%s\" is not recognized.", id,
+                            tok)));
             list.add(season);
         }
         return list.isEmpty() ? null : list;
@@ -217,7 +216,7 @@ public class Border implements Serializable {
         for (final String st : in.split("[, ]+")) {
             final String tok = st.trim();
             final PhaseType phase = PhaseType.parse(tok).orElse(null);
-            if (phase == null || PhaseType.ADJUSTMENT.equals(phase)) {
+            if (phase == null || PhaseType.ADJUSTMENT == phase) {
                 throw new InvalidBorderException(
                         "Border " + id + ": phase \"" + tok + "\" is not allowed or recognized.");
             }

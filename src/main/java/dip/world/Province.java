@@ -95,7 +95,7 @@ public class Province implements Serializable, Comparable<Province> {
          * Creates a new Adjacency object.
          */
         private Adjacency() {
-            adjLoc = new HashMap<Coast, Location[]>(7);
+            adjLoc = new HashMap<>(7);
         }// Adjacency()
 
         /**
