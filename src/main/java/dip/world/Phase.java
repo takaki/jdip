@@ -29,8 +29,10 @@ import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -316,10 +318,11 @@ public class Phase implements Serializable, Comparable<Phase> {
      * <p>
      * E.g.: Spring Move, or Spring Adjustment, etc.
      */
-    public static String[] getAllSeasonPhaseCombos() {
+    public static List<String> getAllSeasonPhaseCombos() {
         return IntStream.range(0, ORDER_SEASON.length).mapToObj(i -> String
                 .join(" ", ORDER_SEASON[i].toString(),
-                        ORDER_PHASE[i].toString())).toArray(String[]::new);
+                        ORDER_PHASE[i].toString()))
+                .collect(Collectors.toList());
     }// getAllSeasonPhaseCombos()
 
 

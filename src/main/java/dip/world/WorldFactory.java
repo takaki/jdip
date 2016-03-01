@@ -190,8 +190,8 @@ public class WorldFactory {
         try {
             final List<BorderData> borderDataArray = variant.getBorderData();
             for (final BorderData bd : borderDataArray) {
-                final List<Location> fromLocs = makeBorderLocations(bd.getFrom(),
-                        provNameMap);
+                final List<Location> fromLocs = makeBorderLocations(
+                        bd.getFrom(), provNameMap);
 
                 final Border border = new Border(bd.getID(),
                         bd.getDescription(), bd.getUnitTypes(), fromLocs,
@@ -226,7 +226,7 @@ public class WorldFactory {
             }
 
             if (!list.isEmpty()) {
-                province.setBorders(list.toArray(new Border[list.size()]));
+                province.setBorders(list);
             }
         }
 
@@ -366,7 +366,7 @@ public class WorldFactory {
      * a zero-length array.
      */
     private static List<Location> makeBorderLocations(final String in,
-                                                           final Map<String, Province> provNameMap) throws InvalidWorldException {
+                                                      final Map<String, Province> provNameMap) throws InvalidWorldException {
         final List<Location> al = new ArrayList<>(6);
 
         final StringTokenizer st = new StringTokenizer(in.trim(), ";, ");
@@ -414,8 +414,7 @@ public class WorldFactory {
      * do not even exist.
      */
     private static Location makeLocation(
-            final Map<String, Province> provNameMap,
-            final String name,
+            final Map<String, Province> provNameMap, final String name,
             final Coast theDefaultCoast) throws InvalidWorldException {
         Coast defaultCoast = theDefaultCoast;
 
@@ -448,9 +447,9 @@ public class WorldFactory {
 
 
     // verify all names are unique. (hasn't yet been added to the map)
-    private static boolean isUnique(
-            final Map<String, Province> provNameMap,
-            final String fullname, final Iterable<String> shortnames) {
+    private static boolean isUnique(final Map<String, Province> provNameMap,
+                                    final String fullname,
+                                    final Iterable<String> shortnames) {
         if (provNameMap.get(fullname.toLowerCase()) != null) {
             return false;
         }

@@ -221,8 +221,8 @@ public class Province implements Serializable, Comparable<Province> {
     /**
      * Sets the Border data for this province.
      */
-    protected void setBorders(final Border[] value) {
-        borders = Arrays.asList(value);
+    protected void setBorders(final List<Border> value) {
+        borders = new ArrayList<>(value);
     }// setBorders()
 
 
@@ -261,11 +261,11 @@ public class Province implements Serializable, Comparable<Province> {
      * array. All arrays will be zero-length or higher; a null array is never
      * returned.
      */
-    public Location[] getAllAdjacent() {
+    public List<Location> getAllAdjacent() {
         final List<Location> locList = Arrays.stream(Coast.ALL_COASTS)
                 .flatMap(coast -> adjacency.getLocations(coast).stream())
                 .distinct().collect(Collectors.toList());
-        return locList.toArray(new Location[locList.size()]);
+        return locList;
     }// getAllAdjacent()
 
 
@@ -405,14 +405,14 @@ public class Province implements Serializable, Comparable<Province> {
      * Return the coasts supported by this province.
      * If not multicoastal, returns an empty Coast array.
      */
-    public Coast[] getValidDirectionalCoasts() {
+    public List<Coast> getValidDirectionalCoasts() {
         if (adjacency.getLocations(Coast.SEA).isEmpty()) {
             final List<Coast> dir = Arrays.stream(Coast.ANY_DIRECTIONAL)
                     .filter(coast -> !adjacency.getLocations(coast).isEmpty())
                     .collect(Collectors.toList());
-            return dir.toArray(new Coast[dir.size()]);
+            return dir;
         }
-        return new Coast[0];
+        return Collections.emptyList();
     }// getValidCoasts()
 
 
