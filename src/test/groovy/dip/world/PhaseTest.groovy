@@ -128,13 +128,13 @@ class PhaseTest extends Specification {
         def retreat = Phase.PhaseType.RETREAT
         def adjustment = Phase.PhaseType.ADJUSTMENT
         expect:
-        Phase.PhaseType.parse("M") == movement
-        Phase.PhaseType.parse("A") == adjustment
-        Phase.PhaseType.parse("B") == adjustment
-        Phase.PhaseType.parse("R") == retreat
-        Phase.PhaseType.parse("adjustment_") == adjustment
-        Phase.PhaseType.parse("movement_") == movement
-        Phase.PhaseType.parse("retreat_") == retreat
+        Phase.PhaseType.parse("M").get() == movement
+        Phase.PhaseType.parse("A").get() == adjustment
+        Phase.PhaseType.parse("B").get() == adjustment
+        Phase.PhaseType.parse("R").get() == retreat
+        Phase.PhaseType.parse("adjustment_").get() == adjustment
+        Phase.PhaseType.parse("movement_").get() == movement
+        Phase.PhaseType.parse("retreat_").get() == retreat
 
     }
 

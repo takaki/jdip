@@ -254,7 +254,8 @@ public class Phase implements Serializable, Comparable<Phase> {
             final SeasonType seasonType = SeasonType.parse(in.substring(0, 1));
             final YearType yearType = YearType.parse(in.substring(1, 5))
                     .orElse(null);
-            final PhaseType phaseType = PhaseType.parse(in.substring(5, 6));
+            final PhaseType phaseType = PhaseType.parse(in.substring(5, 6))
+                    .orElse(null);
 
             if (seasonType == null || yearType == null || phaseType == null) {
                 return Optional.empty();
@@ -284,7 +285,8 @@ public class Phase implements Serializable, Comparable<Phase> {
                             type -> type.map(Stream::of).orElse(Stream.empty()))
                     .findFirst().orElse(null);
             final PhaseType phaseType = tokList.stream().map(PhaseType::parse)
-                    .filter(tmp -> tmp != null).findFirst().orElse(null);
+                    .flatMap(phase -> phase.map(Stream::of)
+                            .orElse(Stream.empty())).findFirst().orElse(null);
 
             if (yearType == null || seasonType == null || phaseType == null) {
                 return Optional.empty();
@@ -585,45 +587,45 @@ public class Phase implements Serializable, Comparable<Phase> {
          * <p>
          * Plurals are allowable on constants, but not in il8n versions.
          */
-        public static PhaseType parse(final String in) {
+        public static Optional<PhaseType> parse(final String in) {
             // short cases (1 letter); not i18n'd
             if (in.length() == 1) {
                 switch (in.toLowerCase()) {
                     case "m":
-                        return MOVEMENT;
+                        return Optional.of(MOVEMENT);
                     case "a":
                     case "b":
-                        return ADJUSTMENT;
+                        return Optional.of(ADJUSTMENT);
                     case "r":
-                        return RETREAT;
+                        return Optional.of(RETREAT);
                     default:
-                        return null;
+                        return Optional.empty();
                 }
             }
 
             // typical cases; use 'startsWith'
             if (in.startsWith(CONST_ADJUSTMENT)) {
-                return ADJUSTMENT;
+                return Optional.of(ADJUSTMENT);
             }
             if (in.startsWith(CONST_MOVEMENT)) {
-                return MOVEMENT;
+                return Optional.of(MOVEMENT);
             }
             if (in.startsWith(CONST_RETREAT)) {
-                return RETREAT;
+                return Optional.of(RETREAT);
             }
 
             // il8n cases
             if (in.equalsIgnoreCase(Utils.getLocalString(IL8N_ADJUSTMENT))) {
-                return ADJUSTMENT;
+                return Optional.of(ADJUSTMENT);
             }
             if (in.equalsIgnoreCase(Utils.getLocalString(IL8N_MOVEMENT))) {
-                return MOVEMENT;
+                return Optional.of(MOVEMENT);
             }
             if (in.equalsIgnoreCase(Utils.getLocalString(IL8N_RETREAT))) {
-                return RETREAT;
+                return Optional.of(RETREAT);
             }
 
-            return null;
+            return Optional.empty();
         }// parse()
 
     }// nested class PhaseType

@@ -216,7 +216,7 @@ public class Border implements Serializable {
         final List<PhaseType> list = new ArrayList<>();
         for (final String st : in.split("[, ]+")) {
             final String tok = st.trim();
-            final PhaseType phase = PhaseType.parse(tok);
+            final PhaseType phase = PhaseType.parse(tok).orElse(null);
             if (phase == null || PhaseType.ADJUSTMENT.equals(phase)) {
                 throw new InvalidBorderException(
                         "Border " + id + ": phase \"" + tok + "\" is not allowed or recognized.");
