@@ -42,6 +42,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedMap;
@@ -304,10 +305,7 @@ public class World implements Serializable {
      * Sets the Game metadata
      */
     public void setGameMetadata(final GameMetadata gmd) {
-        if (gmd == null) {
-            throw new IllegalArgumentException("null metadata");
-        }
-
+        Objects.requireNonNull(gmd);
         nonTurnData.put(KEY_WORLD_METADATA, gmd);
     }// setGameMetadata()
 
@@ -328,9 +326,8 @@ public class World implements Serializable {
      * Sets the metadata for a player, referenced by Power
      */
     public void setPlayerMetadata(final Power power, final PlayerMetadata pmd) {
-        if (power == null || pmd == null) {
-            throw new IllegalArgumentException("null power or metadata");
-        }
+        Objects.requireNonNull(power);
+        Objects.requireNonNull(pmd);
         nonTurnData.put(power, pmd);
     }// setPlayerMetadata()
 
@@ -338,9 +335,7 @@ public class World implements Serializable {
      * Gets the metadata for a power. Never returns null. Does not return a copy.
      */
     public PlayerMetadata getPlayerMetadata(final Power power) {
-        if (power == null) {
-            throw new IllegalArgumentException("null power");
-        }
+        Objects.requireNonNull(power);
 
         PlayerMetadata pmd = (PlayerMetadata) nonTurnData.get(power);
         if (pmd == null) {
@@ -371,9 +366,7 @@ public class World implements Serializable {
      * Sets the GameSetup object
      */
     public void setGameSetup(final GameSetup gs) {
-        if (gs == null) {
-            throw new IllegalArgumentException();
-        }
+        Objects.requireNonNull(gs);
         nonTurnData.put(KEY_GAME_SETUP, gs);
     }// setGameSetup()
 
@@ -419,9 +412,7 @@ public class World implements Serializable {
      * Convenience method: sets RuleOptions in VariantInfo object.
      */
     public void setRuleOptions(final RuleOptions ruleOpts) {
-        if (ruleOpts == null) {
-            throw new IllegalArgumentException();
-        }
+        Objects.requireNonNull(ruleOpts);
         getVariantInfo().setRuleOptions(ruleOpts);
     }// getRuleOptions()
 

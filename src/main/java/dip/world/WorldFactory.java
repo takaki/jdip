@@ -36,6 +36,7 @@ import dip.world.variant.data.Variant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.StringTokenizer;
 
 
@@ -85,9 +86,7 @@ public class WorldFactory {
      */
     public static World createWorld(
             final Variant variant) throws InvalidWorldException {
-        if (variant == null) {
-            throw new IllegalArgumentException();
-        }
+        Objects.requireNonNull(variant);
 
         Log.println("WorldFactory.createWorld(): " + variant.getName());
 

@@ -29,6 +29,7 @@ import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -77,9 +78,9 @@ public class Phase implements Serializable, Comparable<Phase> {
      */
     public Phase(final SeasonType seasonType, final YearType yearType,
                  final PhaseType phaseType) {
-        if (seasonType == null || yearType == null || phaseType == null) {
-            throw new IllegalArgumentException("invalid args");
-        }
+        Objects.requireNonNull(seasonType);
+        Objects.requireNonNull(yearType);
+        Objects.requireNonNull(phaseType);
 
         orderIdx = deriveOrderIdx(seasonType, phaseType);
         if (orderIdx == -1) {

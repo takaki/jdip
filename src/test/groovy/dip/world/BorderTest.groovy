@@ -62,7 +62,7 @@ class BorderTest extends Specification {
         when:
         def border = new Border(null, "description", "Army  ", [loc0] as Location[], "dip.order.Move", "1", "Spring   Fall", "Movement", "1900, 2000")
         then:
-        thrown(IllegalArgumentException)
+        thrown(NullPointerException)
     }
 
     @Unroll

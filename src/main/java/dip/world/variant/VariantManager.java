@@ -37,8 +37,14 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -224,9 +230,7 @@ public final class VariantManager {
     public synchronized Optional<SymbolPack> getSymbolPack(final MapGraphic mg,
                                                            final String symbolPackName,
                                                            final VersionNumber symbolPackVersion) {
-        if (mg == null) {
-            throw new IllegalArgumentException();
-        }
+        Objects.requireNonNull(mg);
 
         // safety:
         // if version is invalid (< 0.0f), convert to VERSION_NEWEST
@@ -308,9 +312,7 @@ public final class VariantManager {
      * null if the resource cannot be resolved. Threadsafe.
      */
     public Optional<URL> getResource(final Variant variant, final URI uri) {
-        if (variant == null) {
-            throw new IllegalArgumentException();
-        }
+        Objects.requireNonNull(variant);
         return getVRec(variant).flatMap(vRec -> getResource(vRec, uri));
     }// getResource()
 
@@ -322,9 +324,7 @@ public final class VariantManager {
      */
     public Optional<URL> getResource(final SymbolPack symbolPack,
                                      final URI uri) {
-        if (symbolPack == null) {
-            throw new IllegalArgumentException();
-        }
+        Objects.requireNonNull(symbolPack);
         return getSPRec(symbolPack).flatMap(spRec -> getResource(spRec, uri));
     }// getResource()
 
@@ -363,9 +363,8 @@ public final class VariantManager {
      */
     private synchronized Optional<URL> getResource(final MapRecObj mro,
                                                    final URI uri) {
-        if (mro == null || uri == null) {
-            throw new IllegalArgumentException("null MapRecObj or URI");
-        }
+        Objects.requireNonNull(mro);
+        Objects.requireNonNull(uri);
 
         // if URI has a defined scheme, convert to a URL (if possible) and return it.
         if (uri.getScheme() != null) {
@@ -387,9 +386,7 @@ public final class VariantManager {
 
     private URLClassLoader getClassLoader(final URL packageURL) {
         // WARNING: this method is not (itself) threadsafe
-        if (packageURL == null) {
-            throw new IllegalArgumentException();
-        }
+        Objects.requireNonNull(packageURL);
         return new URLClassLoader(new URL[]{packageURL});
     }// getClassLoader()
 

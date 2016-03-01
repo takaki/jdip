@@ -34,6 +34,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Establishes the conditions required to determine who wins a game, and contains
@@ -67,10 +68,7 @@ public class VictoryConditions implements Serializable {
             throw new IllegalArgumentException("arg: < 0; use 0 to disable");
         }
 
-        if (initialPhase == null) {
-            throw new IllegalArgumentException("args invalid");
-        }
-
+        Objects.requireNonNull(initialPhase);
 
         if (maxGameTimeYears == 0 && numSCForVictory == 0 && maxYearsNoSCChange == 0) {
             throw new IllegalArgumentException("no conditions set!");

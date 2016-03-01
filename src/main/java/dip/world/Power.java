@@ -29,6 +29,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A Power represents player in the game.
@@ -74,9 +75,8 @@ public class Power implements Comparable<Power>, Serializable {
      */
     public Power(final String[] names, final String adjective,
                  final boolean active) {
-        if (names == null || adjective == null) {
-            throw new IllegalArgumentException("null argument(s)");
-        }
+        Objects.requireNonNull(names);
+        Objects.requireNonNull(adjective);
 
         if (names.length == 0) {
             throw new IllegalArgumentException("no names");

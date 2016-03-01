@@ -159,9 +159,14 @@ public class Border implements Serializable {
                   final String baseMoveModifier, final String season,
                   final String phase,
                   final String year) throws InvalidBorderException {
-        if (id == null || description == null || units == null || from == null || orders == null || season == null || phase == null || year == null) {
-            throw new IllegalArgumentException("null argument");
-        }
+        Objects.requireNonNull(id);
+        Objects.requireNonNull(description);
+        Objects.requireNonNull(units);
+        Objects.requireNonNull(from);
+        Objects.requireNonNull(orders);
+        Objects.requireNonNull(season);
+        Objects.requireNonNull(phase);
+        Objects.requireNonNull(year);
 
         // set id. This is used by error messages, so must be set early.
         this.id = id;
@@ -241,9 +246,7 @@ public class Border implements Serializable {
      */
 
     private void parseYear(final String in) throws InvalidBorderException {
-        if (in == null) {
-            throw new IllegalArgumentException();
-        }
+        Objects.requireNonNull(in);
 
         yearMin = Integer.MIN_VALUE;
         yearMax = Integer.MAX_VALUE;

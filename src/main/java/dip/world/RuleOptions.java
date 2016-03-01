@@ -31,6 +31,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -134,11 +135,11 @@ public class RuleOptions implements Serializable {
         /**
          * Create an Option.
          */
-        public Option(String name, OptionValue defaultValue,
-                      OptionValue[] allowed) {
-            if (defaultValue == null || name == null || allowed == null) {
-                throw new IllegalArgumentException();
-            }
+        public Option(final String name, final OptionValue defaultValue,
+                      final OptionValue[] allowed) {
+            Objects.requireNonNull(defaultValue);
+            Objects.requireNonNull(name);
+            Objects.requireNonNull(allowed);
 
             this.name = name;
             this.defaultValue = defaultValue;
@@ -169,7 +170,7 @@ public class RuleOptions implements Serializable {
         /**
          * Checks if the given optionValue is allowed.
          */
-        public boolean isAllowed(OptionValue optionValue) {
+        public boolean isAllowed(final OptionValue optionValue) {
             for (int i = 0; i < allowed.length; i++) {
                 if (optionValue == allowed[i]) {
                     return true;
@@ -196,7 +197,7 @@ public class RuleOptions implements Serializable {
         /**
          * Checks if the given OptionValue is permitted; if so, returns true.
          */
-        public boolean checkValue(OptionValue value) {
+        public boolean checkValue(final OptionValue value) {
             for (int i = 0; i < allowed.length; i++) {
                 if (allowed[i].equals(value)) {
                     return true;
@@ -207,7 +208,7 @@ public class RuleOptions implements Serializable {
         }// checkValue()
 
 
-        public boolean equals(Object obj) {
+        public boolean equals(final Object obj) {
             return name.equals(((Option) obj).name);
         }// equals()
 
@@ -251,11 +252,8 @@ public class RuleOptions implements Serializable {
         /**
          * Create an OptionValue.
          */
-        public OptionValue(String name) {
-            if (name == null) {
-                throw new IllegalArgumentException();
-            }
-
+        public OptionValue(final String name) {
+            Objects.requireNonNull(name);
             this.name = name;
         }// OptionValue()
 
@@ -280,7 +278,7 @@ public class RuleOptions implements Serializable {
             return Utils.getLocalString(getName() + DESCRIPTION);
         }
 
-        public boolean equals(Object obj) {
+        public boolean equals(final Object obj) {
             return name.equals(((OptionValue) obj).name);
         }// equals()
 
@@ -324,10 +322,9 @@ public class RuleOptions implements Serializable {
      * Null Options or OptionValues are not permitted. If an invalid OptionValue
      * is given, an IllegalArgumentException is thrown.
      */
-    public void setOption(Option option, OptionValue value) {
-        if (option == null || value == null) {
-            throw new IllegalArgumentException("null Option or OptionValue");
-        }
+    public void setOption(final Option option, final OptionValue value) {
+        Objects.requireNonNull(option);
+        Objects.requireNonNull(value);
 
         if (!option.checkValue(value)) {
             throw new IllegalArgumentException(
@@ -344,12 +341,10 @@ public class RuleOptions implements Serializable {
      * <p>
      * A null Option is not permitted.
      */
-    public OptionValue getOptionValue(Option option) {
-        if (option == null) {
-            throw new IllegalArgumentException("null Option");
-        }
+    public OptionValue getOptionValue(final Option option) {
+        Objects.requireNonNull(option);
 
-        OptionValue value = (OptionValue) optionMap.get(option);
+        final OptionValue value = (OptionValue) optionMap.get(option);
         if (value == null) {
             return option.getDefault();
         }
@@ -370,15 +365,15 @@ public class RuleOptions implements Serializable {
      * For debugging only; print the rule options
      */
     public String toString() {
-        StringBuffer sb = new StringBuffer(256);
+        final StringBuffer sb = new StringBuffer(256);
         sb.append(this.getClass().getName());
         sb.append('\n');
 
-        Set set = getAllOptions();
-        Iterator iter = set.iterator();
+        final Set set = getAllOptions();
+        final Iterator iter = set.iterator();
         while (iter.hasNext()) {
-            Option opt = (Option) iter.next();
-            OptionValue ov = getOptionValue(opt);
+            final Option opt = (Option) iter.next();
+            final OptionValue ov = getOptionValue(opt);
             sb.append("  ");
             sb.append(opt);
             sb.append(" : ");
@@ -397,10 +392,10 @@ public class RuleOptions implements Serializable {
      * is invalid.
      */
     public static RuleOptions createFromVariant(
-            Variant variant) throws InvalidWorldException {
+            final Variant variant) throws InvalidWorldException {
         // create ruleoptions
         // set rule options
-        RuleOptions ruleOpts = new RuleOptions();
+        final RuleOptions ruleOpts = new RuleOptions();
 
         // set default rule options
         for (int i = 0; i < DEFAULT_RULE_OPTIONS.length; i++) {
@@ -409,10 +404,10 @@ public class RuleOptions implements Serializable {
         }
 
         // this class
-        Class clazz = ruleOpts.getClass();
+        final Class clazz = ruleOpts.getClass();
 
         // look up all name-value pairs via reflection.
-        List<Variant.NameValuePair> nvps = variant.getRuleOptionNVPs();
+        final List<Variant.NameValuePair> nvps = variant.getRuleOptionNVPs();
         for (int i = 0; i < nvps.size(); i++) {
             Option option = null;
             OptionValue optionValue = null;
@@ -424,7 +419,7 @@ public class RuleOptions implements Serializable {
 
                 field = clazz.getField(nvps.get(i).getValue());
                 optionValue = (OptionValue) field.get(null);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 throw new InvalidWorldException(
                         Utils.getLocalString(RO_BAD_NVP, nvps.get(i).getName(),
                                 nvps.get(i).getValue(), e.getMessage()));

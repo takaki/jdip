@@ -64,9 +64,8 @@ public class Location implements Cloneable {
      * Create a Location object
      */
     public Location(final Province province, final Coast coast) {
-        if (province == null || coast == null) {
-            throw new IllegalArgumentException("null parameter(s)");
-        }
+        Objects.requireNonNull(province);
+        Objects.requireNonNull(coast);
 
         this.province = province;
         this.coast = coast;

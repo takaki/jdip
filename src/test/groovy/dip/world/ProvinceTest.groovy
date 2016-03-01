@@ -55,12 +55,25 @@ class ProvinceTest extends Specification {
 
         where:
         fullname | shortnames | index
-        null     | ["mos"]    | 0
-        "Moscow" | null       | 0
         "Moscow" | ["mos"]    | -1
         "Moscow" | []         | 0
 
     }
+
+    def "null construct parameters throw exception"() {
+        when:
+        new Province(fullname, shortnames, index, false)
+
+        then:
+        thrown(NullPointerException)
+
+        where:
+        fullname | shortnames | index
+        null     | ["mos"]    | 0
+        "Moscow" | null       | 0
+
+    }
+
 
 //    def "canTransit"() {
 //        expect:

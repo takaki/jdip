@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -197,9 +198,8 @@ public class Province implements Serializable, Comparable<Province> {
      */
     public Province(final String fullName, final List<String> shortNames,
                     final int index, final boolean isConvoyableCoast) {
-        if (fullName == null || shortNames == null) {
-            throw new IllegalArgumentException("null full or short name(s)");
-        }
+        Objects.requireNonNull(fullName);
+        Objects.requireNonNull(shortNames);
 
         if (shortNames.size() < 1) {
             throw new IllegalArgumentException(

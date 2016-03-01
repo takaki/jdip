@@ -30,7 +30,7 @@ class LocationTest extends Specification {
         when:
         new Location(province, coast)
         then:
-        thrown(IllegalArgumentException)
+        thrown(NullPointerException)
         where:
         province                           | coast
         null                               | Coast.EAST

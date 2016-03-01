@@ -14,10 +14,19 @@ class PowerTest extends Specification {
         thrown(IllegalArgumentException)
         where:
         names          | adjective | isActive
-        null           | "adj"     | true
-        n0             | null      | true
         n0             | ""        | true
         [] as String[] | "a"       | true
+    }
+
+    def "constructor null check arguments"() {
+        when:
+        new Power(names, adjective, isActive)
+        then:
+        thrown(NullPointerException)
+        where:
+        names          | adjective | isActive
+        null           | "adj"     | true
+        n0             | null      | true
     }
 
     def "test methods"() {

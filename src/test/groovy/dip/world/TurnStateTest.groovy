@@ -27,37 +27,37 @@ class TurnStateTest extends Specification {
         when:
         new TurnState(null)
         then:
-        thrown(IllegalArgumentException)
+        thrown(NullPointerException)
 
         when:
         ts.setWorld(null)
         then:
-        thrown(IllegalArgumentException)
+        thrown(NullPointerException)
 
         when:
         ts.setPhase(null)
         then:
-        thrown(IllegalArgumentException)
+        thrown(NullPointerException)
 
         when:
         ts.setPosition(null)
         then:
-        thrown(IllegalArgumentException)
+        thrown(NullPointerException)
 
         when:
         ts.setResultList(null)
         then:
-        thrown(IllegalArgumentException)
+        thrown(NullPointerException)
 
         when:
         ts.setOrders(null, new ArrayList())
         then:
-        thrown(IllegalArgumentException)
+        thrown(NullPointerException)
 
         when:
         ts.setOrders(new Power(["a"] as String[], "adj", true), null)
         then:
-        thrown(IllegalArgumentException)
+        thrown(NullPointerException)
     }
 
     def "setter and getter" () {

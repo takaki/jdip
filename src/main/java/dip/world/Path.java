@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Determines Convoy paths between points on a Map, and also minimum distances
@@ -104,9 +105,7 @@ public class Path {
     public Tristate getConvoyRouteEvaluation(final Move move,
                                              final Location invalidLoc,
                                              final List actualPath) {
-        if (move == null) {
-            throw new IllegalArgumentException();
-        }
+        Objects.requireNonNull(move);
 
         final List explicitRoutes = move.getConvoyRoutes();
 
@@ -1046,9 +1045,7 @@ public class Path {
          * Create a TreeNode. Null parent is the root. Null Location not ok.
          */
         public TreeNode(final TreeNode parent, final Province prov) {
-            if (prov == null) {
-                throw new IllegalArgumentException();
-            }
+            Objects.requireNonNull(prov);
             this.parent = parent;
             this.prov = prov;
             kids = new ArrayList(4);    // ?? vs. linkedlist
@@ -1094,9 +1091,7 @@ public class Path {
          * Add a child
          */
         public void addChild(final TreeNode child) {
-            if (child == null) {
-                throw new IllegalArgumentException();
-            }
+            Objects.requireNonNull(child);
             kids.add(child);
         }// addChild()
 
@@ -1105,9 +1100,7 @@ public class Path {
          * to its lineage (all parents)..
          */
         public boolean addUniqueChild(final TreeNode child) {
-            if (child == null) {
-                throw new IllegalArgumentException();
-            }
+            Objects.requireNonNull(child);
             TreeNode mommy = getParent();
             while (mommy != null) {
                 if (child.getProvince().equals(mommy.getProvince())) {

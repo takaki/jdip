@@ -26,8 +26,12 @@ import dip.order.Orderable;
 import dip.order.result.OrderResult;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * A TurnState represents a snapshot of the game for the given Phase.
@@ -74,10 +78,7 @@ public class TurnState implements Serializable {
      * Creates a TurnState object.
      */
     public TurnState(Phase phase) {
-        if (phase == null) {
-            throw new IllegalArgumentException("null phase");
-        }
-
+        Objects.requireNonNull(phase);
         this.phase = phase;
         this.resultList = new ArrayList(80);
         this.orderMap = new HashMap(29);
@@ -88,10 +89,7 @@ public class TurnState implements Serializable {
      * A <code>null</code> World is not permitted.
      */
     public void setWorld(World world) {
-        if (world == null) {
-            throw new IllegalArgumentException();
-        }
-
+        Objects.requireNonNull(world);
         this.world = world;
     }// setWorld()
 
@@ -115,9 +113,7 @@ public class TurnState implements Serializable {
      * This should be used with the utmost care. Null Phases are not allowed.
      */
     public void setPhase(Phase phase) {
-        if (phase == null) {
-            throw new IllegalArgumentException("null phase");
-        }
+        Objects.requireNonNull(phase);
         this.phase = phase;
     }// setPhase()
 
@@ -134,10 +130,7 @@ public class TurnState implements Serializable {
      * Sets the Position data for this TurnState
      */
     public void setPosition(Position position) {
-        if (position == null) {
-            throw new IllegalArgumentException();
-        }
-
+        Objects.requireNonNull(position);
         this.position = position;
     }// setPosition()
 
@@ -154,10 +147,7 @@ public class TurnState implements Serializable {
      * Sets the Result list, erasing any previously existing result list.
      */
     public void setResultList(List list) {
-        if (list == null) {
-            throw new IllegalArgumentException("null result list");
-        }
-
+        Objects.requireNonNull(list);
         resultList = new ArrayList<>(list);
     }// setResultList()
 
@@ -218,9 +208,7 @@ public class TurnState implements Serializable {
      * in the TurnState.
      */
     public List getOrders(Power power) {
-        if (power == null) {
-            throw new IllegalArgumentException("null power");
-        }
+        Objects.requireNonNull(power);
 
         List orderList = (List) orderMap.get(power);
         if (orderList == null) {
@@ -235,9 +223,8 @@ public class TurnState implements Serializable {
      * Sets the orders for the given Power, deleting any existing orders for the power
      */
     public void setOrders(Power power, List list) {
-        if (power == null || list == null) {
-            throw new IllegalArgumentException("power or list null");
-        }
+        Objects.requireNonNull(power);
+        Objects.requireNonNull(list);
 
         orderMap.put(power, list);
     }// setOrders()
