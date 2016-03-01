@@ -115,7 +115,7 @@ public class Retreat extends Move {
             // validate Borders
             Border border = src.getProvince()
                     .getTransit(src, srcUnitType, state.getPhase(),
-                            this.getClass());
+                            this.getClass()).orElse(null);
             if (border != null) {
                 throw new OrderException(
                         Utils.getLocalString(ORD_VAL_BORDER, src.getProvince(),
@@ -130,7 +130,7 @@ public class Retreat extends Move {
             // check that we can transit into destination (check borders)
             border = dest.getProvince()
                     .getTransit(dest, srcUnitType, state.getPhase(),
-                            this.getClass());
+                            this.getClass()).orElse(null);
             if (border != null) {
                 throw new OrderException(
                         Utils.getLocalString(ORD_VAL_BORDER, src.getProvince(),

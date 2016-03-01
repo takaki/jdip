@@ -361,7 +361,7 @@ public class Move extends Order {
             // validate Borders
             Border border = src.getProvince()
                     .getTransit(src, srcUnitType, state.getPhase(),
-                            this.getClass());
+                            this.getClass()).orElse(null);
             if (border != null) {
                 throw new OrderException(
                         Utils.getLocalString(ORD_VAL_BORDER, src.getProvince(),
@@ -374,7 +374,7 @@ public class Move extends Order {
             // check that we can transit into destination (check borders)
             border = dest.getProvince()
                     .getTransit(src, srcUnitType, state.getPhase(),
-                            this.getClass());
+                            this.getClass()).orElse(null);
             if (border != null) {
                 throw new OrderException(
                         Utils.getLocalString(ORD_VAL_BORDER, src.getProvince(),

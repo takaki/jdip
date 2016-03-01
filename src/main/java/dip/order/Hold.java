@@ -113,7 +113,7 @@ public class Hold extends Order {
         // validate Borders
         Border border = src.getProvince()
                 .getTransit(src, srcUnitType, state.getPhase(),
-                        this.getClass());
+                        this.getClass()).orElse(null);
         if (border != null) {
             throw new OrderException(
                     Utils.getLocalString(ORD_VAL_BORDER, src.getProvince(),
