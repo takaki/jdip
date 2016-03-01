@@ -25,8 +25,11 @@ package dip.world;
 import dip.world.Unit.Type;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -52,16 +55,16 @@ public final class Position implements Serializable, Cloneable {
     private static final int POWER_SIZE = 17;
 
     // instance variables
-    private final Map<Power, PowerData> powerMap = new HashMap<Power, PowerData>(
-            POWER_SIZE);
-    private final ProvinceData[] provArray;
+    private final Map<Power, PowerData> powerMap = new HashMap<>(POWER_SIZE);
+    private final List<ProvinceData> provArray;
     private final dip.world.Map map;
     private transient Province[] tmpProvArray;
 
 
     public Position(final dip.world.Map map) {
         this.map = map;
-        provArray = new ProvinceData[map.getProvinces().length];
+        provArray = new ArrayList<>(
+                Arrays.asList(new ProvinceData[map.getProvinces().length]));
     }// Position()
 
 
@@ -69,7 +72,7 @@ public final class Position implements Serializable, Cloneable {
      * The Number of Provinces in this Position
      */
     public int size() {
-        return provArray.length;
+        return provArray.size();
     }// size()
 
 
@@ -107,7 +110,7 @@ public final class Position implements Serializable, Cloneable {
      * Power has any units (including dislodged units) or supply centers on the map
      */
     public void setEliminationStatus(final Power[] powers) {
-        final HashMap<Power, Object> pmap = new HashMap<Power, Object>(19);
+        final HashMap<Power, Object> pmap = new HashMap<>(19);
         for (final Power power1 : powers) {
             pmap.put(power1, null);
         }
@@ -178,7 +181,7 @@ public final class Position implements Serializable, Cloneable {
      * Determine if this Province contains a supply center
      */
     public boolean hasSupplyCenterOwner(final Province province) {
-        final ProvinceData pd = provArray[province.getIndex()];
+        final ProvinceData pd = provArray.get(province.getIndex());
         if (pd != null) {
             return pd.isSCOwned();
         }
@@ -190,7 +193,7 @@ public final class Position implements Serializable, Cloneable {
      * Determine if this Province contains a Home supply center
      */
     public boolean isSupplyCenterAHome(final Province province) {
-        final ProvinceData pd = provArray[province.getIndex()];
+        final ProvinceData pd = provArray.get(province.getIndex());
         if (pd != null) {
             return pd.isSCAHome();
         }
@@ -202,7 +205,7 @@ public final class Position implements Serializable, Cloneable {
      * Get the home power of the supply center; null if no supply center or home power
      */
     public Power getSupplyCenterHomePower(final Province province) {
-        final ProvinceData pd = provArray[province.getIndex()];
+        final ProvinceData pd = provArray.get(province.getIndex());
         if (pd != null) {
             return pd.getSCHomePower();
         }
@@ -214,7 +217,7 @@ public final class Position implements Serializable, Cloneable {
      * Get the owner of the supply center; null if no owner or no supply center.
      */
     public Power getSupplyCenterOwner(final Province province) {
-        final ProvinceData pd = provArray[province.getIndex()];
+        final ProvinceData pd = provArray.get(province.getIndex());
         if (pd != null) {
             return pd.getSCOwner();
         }
@@ -236,7 +239,7 @@ public final class Position implements Serializable, Cloneable {
      * Determines if there is a unit present in this province.
      */
     public boolean hasUnit(final Province province) {
-        final ProvinceData pd = provArray[province.getIndex()];
+        final ProvinceData pd = provArray.get(province.getIndex());
         if (pd != null) {
             return pd.hasUnit();
         }
@@ -247,7 +250,7 @@ public final class Position implements Serializable, Cloneable {
      * Get the unit contained in this Province. Returns null if no unit exists.
      */
     public Unit getUnit(final Province province) {
-        final ProvinceData pd = provArray[province.getIndex()];
+        final ProvinceData pd = provArray.get(province.getIndex());
         if (pd != null) {
             return pd.getUnit();
         }
@@ -294,7 +297,7 @@ public final class Position implements Serializable, Cloneable {
      * Get the dislodged unit in this Province. Returns null if no dislodged unit exists.
      */
     public Unit getDislodgedUnit(final Province province) {
-        final ProvinceData pd = provArray[province.getIndex()];
+        final ProvinceData pd = provArray.get(province.getIndex());
         if (pd != null) {
             return pd.getDislodgedUnit();
         }
@@ -321,7 +324,7 @@ public final class Position implements Serializable, Cloneable {
      * changes in the Fall season); use getSupplyCenterOwner() instead.
      */
     public Power getLastOccupier(final Province province) {
-        final ProvinceData pd = provArray[province.getIndex()];
+        final ProvinceData pd = provArray.get(province.getIndex());
         if (pd != null) {
             return pd.getLastOccupier();
         }
@@ -333,7 +336,7 @@ public final class Position implements Serializable, Cloneable {
      * Determines if there is a dislodged unit present in this province.
      */
     public boolean hasDislodgedUnit(final Province province) {
-        final ProvinceData pd = provArray[province.getIndex()];
+        final ProvinceData pd = provArray.get(province.getIndex());
         if (pd != null) {
             return pd.hasDislodgedUnit();
         }
@@ -348,8 +351,8 @@ public final class Position implements Serializable, Cloneable {
         makeTmpProvArray();
 
         int arrSize = 0;
-        for (int i = 0; i < provArray.length; i++) {
-            final ProvinceData pd = provArray[i];
+        for (int i = 0; i < provArray.size(); i++) {
+            final ProvinceData pd = provArray.get(i);
             if (pd != null && pd.hasUnit()) {
                 tmpProvArray[arrSize] = map.reverseIndex(i);
                 arrSize++;
@@ -369,8 +372,8 @@ public final class Position implements Serializable, Cloneable {
         makeTmpProvArray();
 
         int arrSize = 0;
-        for (int i = 0; i < provArray.length; i++) {
-            final ProvinceData pd = provArray[i];
+        for (int i = 0; i < provArray.size(); i++) {
+            final ProvinceData pd = provArray.get(i);
             if (pd != null && pd.hasDislodgedUnit()) {
                 tmpProvArray[arrSize] = map.reverseIndex(i);
                 arrSize++;
@@ -388,8 +391,8 @@ public final class Position implements Serializable, Cloneable {
      */
     public int getUnitCount() {
         int count = 0;
-        for (int i = 0; i < provArray.length; i++) {
-            final ProvinceData pd = provArray[i];
+        for (int i = 0; i < provArray.size(); i++) {
+            final ProvinceData pd = provArray.get(i);
             if (pd != null && pd.hasUnit()) {
                 count++;
             }
@@ -404,8 +407,8 @@ public final class Position implements Serializable, Cloneable {
      */
     public int getDislodgedUnitCount() {
         int count = 0;
-        for (int i = 0; i < provArray.length; i++) {
-            final ProvinceData pd = provArray[i];
+        for (int i = 0; i < provArray.size(); i++) {
+            final ProvinceData pd = provArray.get(i);
             if (pd != null && pd.hasDislodgedUnit()) {
                 count++;
             }
@@ -422,8 +425,8 @@ public final class Position implements Serializable, Cloneable {
         makeTmpProvArray();
 
         int arrSize = 0;
-        for (int i = 0; i < provArray.length; i++) {
-            final ProvinceData pd = provArray[i];
+        for (int i = 0; i < provArray.size(); i++) {
+            final ProvinceData pd = provArray.get(i);
             if (pd != null && pd.isSCAHome()) {
                 tmpProvArray[arrSize] = map.reverseIndex(i);
                 arrSize++;
@@ -443,8 +446,8 @@ public final class Position implements Serializable, Cloneable {
         makeTmpProvArray();
 
         int arrSize = 0;
-        for (int i = 0; i < provArray.length; i++) {
-            final ProvinceData pd = provArray[i];
+        for (int i = 0; i < provArray.size(); i++) {
+            final ProvinceData pd = provArray.get(i);
             if (pd != null && pd.getSCHomePower() == power) {
                 tmpProvArray[arrSize] = map.reverseIndex(i);
                 arrSize++;
@@ -463,8 +466,8 @@ public final class Position implements Serializable, Cloneable {
      * An owned home supply center need not have a unit present.
      */
     public boolean hasAnOwnedHomeSC(final Power power) {
-        for (int i = 0; i < provArray.length; i++) {
-            final ProvinceData pd = provArray[i];
+        for (int i = 0; i < provArray.size(); i++) {
+            final ProvinceData pd = provArray.get(i);
             if (pd != null && pd.getSCHomePower() == power && pd
                     .getSCOwner() == power) {
                 return true;
@@ -482,8 +485,8 @@ public final class Position implements Serializable, Cloneable {
         makeTmpProvArray();
 
         int arrSize = 0;
-        for (int i = 0; i < provArray.length; i++) {
-            final ProvinceData pd = provArray[i];
+        for (int i = 0; i < provArray.size(); i++) {
+            final ProvinceData pd = provArray.get(i);
             if (pd != null && pd.getSCOwner() == power) {
                 tmpProvArray[arrSize] = map.reverseIndex(i);
                 arrSize++;
@@ -503,8 +506,8 @@ public final class Position implements Serializable, Cloneable {
         makeTmpProvArray();
 
         int arrSize = 0;
-        for (int i = 0; i < provArray.length; i++) {
-            final ProvinceData pd = provArray[i];
+        for (int i = 0; i < provArray.size(); i++) {
+            final ProvinceData pd = provArray.get(i);
             if (pd != null && pd.isSCOwned()) {
                 tmpProvArray[arrSize] = map.reverseIndex(i);
                 arrSize++;
@@ -524,11 +527,11 @@ public final class Position implements Serializable, Cloneable {
     public Object clone() {
         final Position pos = new Position(map);
 
-        for (int i = 0; i < provArray.length; i++) {
-            final ProvinceData pd = provArray[i];
+        for (int i = 0; i < provArray.size(); i++) {
+            final ProvinceData pd = provArray.get(i);
 
             if (pd != null) {
-                pos.provArray[i] = pd.normClone();
+                pos.provArray.set(i, pd.normClone());
             }
         }
 
@@ -550,11 +553,11 @@ public final class Position implements Serializable, Cloneable {
     public Position cloneExceptUnits() {
         final Position pos = new Position(map);
 
-        for (int i = 0; i < provArray.length; i++) {
-            final ProvinceData pd = provArray[i];
+        for (int i = 0; i < provArray.size(); i++) {
+            final ProvinceData pd = provArray.get(i);
 
             if (pd != null) {
-                pos.provArray[i] = pd.cloneExceptUnits();
+                pos.provArray.set(i, pd.cloneExceptUnits());
             }
         }
 
@@ -576,10 +579,10 @@ public final class Position implements Serializable, Cloneable {
     public Position cloneExceptDislodged() {
         final Position pos = new Position(map);
 
-        for (int i = 0; i < provArray.length; i++) {
-            final ProvinceData pd = provArray[i];
+        for (int i = 0; i < provArray.size(); i++) {
+            final ProvinceData pd = provArray.get(i);
             if (pd != null) {
-                pos.provArray[i] = pd.cloneExceptDislodged();
+                pos.provArray.set(i, pd.cloneExceptDislodged());
             }
         }
 
@@ -603,8 +606,8 @@ public final class Position implements Serializable, Cloneable {
         makeTmpProvArray();
 
         int arrSize = 0;
-        for (int i = 0; i < provArray.length; i++) {
-            final ProvinceData pd = provArray[i];
+        for (int i = 0; i < provArray.size(); i++) {
+            final ProvinceData pd = provArray.get(i);
             if (pd != null) {
                 final Unit unit = pd.getUnit();
                 if (unit != null && unit.getPower() == power) {
@@ -628,8 +631,8 @@ public final class Position implements Serializable, Cloneable {
         makeTmpProvArray();
 
         int arrSize = 0;
-        for (int i = 0; i < provArray.length; i++) {
-            final ProvinceData pd = provArray[i];
+        for (int i = 0; i < provArray.size(); i++) {
+            final ProvinceData pd = provArray.get(i);
             if (pd != null) {
                 final Unit unit = pd.getDislodgedUnit();
                 if (unit != null && unit.getPower() == power) {
@@ -651,10 +654,10 @@ public final class Position implements Serializable, Cloneable {
      */
     private ProvinceData getProvinceData(final Province province) {
         final int idx = province.getIndex();
-        ProvinceData pd = provArray[idx];
+        ProvinceData pd = provArray.get(idx);
         if (pd == null) {
             pd = new ProvinceData();
-            provArray[idx] = pd;
+            provArray.set(idx, pd);
         }
 
         return pd;
@@ -856,7 +859,7 @@ public final class Position implements Serializable, Cloneable {
      */
     private void makeTmpProvArray() {
         if (tmpProvArray == null) {
-            tmpProvArray = new Province[provArray.length];
+            tmpProvArray = new Province[provArray.size()];
         }
     }// makeTmpProvArray()
 }// class Position
