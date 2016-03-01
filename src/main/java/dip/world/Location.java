@@ -29,6 +29,7 @@ import dip.world.Unit.Type;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 
 /**
@@ -287,16 +288,13 @@ public class Location implements Cloneable {
                                          final Location from) throws OrderException {
         // simple validate
         final Location newLoc = getValidated(unitType);
-        Coast newCoast = newLoc.coast;
 
         // DO NOT use internal 'coast' and 'province' variables past here
         //
         // extended validation, if coast is undefined.
+        final Coast newCoast = newLoc.coast;
         if (unitType == Type.FLEET && newCoast == Coast.UNDEFINED && newLoc.province
                 .isMultiCoastal()) {
-            int adjCoasts = 0;
-            Coast toCoast = null;
-
             // TODO: this can be optimized. If we find a coast, we should assign it
             // and if we find another coast,
             // then we should throw an exception
@@ -304,26 +302,23 @@ public class Location implements Cloneable {
             //
             final List<Location> locs = Arrays
                     .asList(from.province.getAdjacentLocations(from.coast));
-            for (Location loc : locs) {
-                if (Objects.equals(loc.province, newLoc.province)) {
-                    adjCoasts++;
-                    toCoast = loc.coast;
-                }
-            }
+            final List<Coast> coasts = locs.stream().filter(loc -> Objects
+                    .equals(loc.province, newLoc.province))
+                    .map(loc -> loc.coast).collect(Collectors.toList());
 
             // if we have 1 and only 1 coast, we can assign a coast; otherwise,
             // we must report an error.
-            if (adjCoasts == 1) {
-                newCoast = toCoast;
-            } else {
+            if (coasts.size() != 1) {
                 throw new OrderException(
                         Utils.getLocalString(LOC_VWM_MULTICOAST,
                                 newLoc.province.getFullName()));
             }
+            final Coast coast0 = coasts.get(0);
+            return coast0 == newLoc.coast ? newLoc : new Location(
+                    newLoc.province, coast0);
         }
 
-        return newCoast == newLoc.coast ? newLoc : new Location(newLoc.province,
-                newCoast);
+        return newLoc;
     }// getValidatedWithMove()
 
 
