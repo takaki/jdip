@@ -156,7 +156,7 @@ public class AIDemo {
         System.out.println("  prov full name: " + prov.getFullName());
         System.out.println("  prov abbreviation: " + prov.getShortName());
         System.out.println("  all TOUCHING provinces:");
-        Location[] touchLocs = prov.getAdjacentLocations(Coast.TOUCHING);
+        Location[] touchLocs = prov.getAdjacentLocations(Coast.TOUCHING).toArray(new Location[0]);
         for (int i = 0; i < touchLocs.length; i++) {
             System.out.println("    " + touchLocs[i].getProvince());
         }
@@ -174,7 +174,7 @@ public class AIDemo {
         System.out.println("  adjacent? " + loc1.isAdjacent(loc2));
         System.out.println("  adjacent Locations to " + loc1.toString() + ":");
         Location[] adjLocs = loc1.getProvince()
-                .getAdjacentLocations(loc1.getCoast());
+                .getAdjacentLocations(loc1.getCoast()).toArray(new Location[0]);
         for (int i = 0; i < adjLocs.length; i++) {
             System.out.println("    " + adjLocs[i]);
         }

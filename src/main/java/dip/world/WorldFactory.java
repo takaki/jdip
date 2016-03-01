@@ -118,7 +118,8 @@ public class WorldFactory {
 
             // add Province names (all) to our name->province map
             provNameMap.put(province.getFullName().toLowerCase(), province);
-            final String[] lcProvNames = province.getShortNames();
+            final String[] lcProvNames = province.getShortNames()
+                    .toArray(new String[0]);
             for (final String lcProvName : lcProvNames) {
                 provNameMap.put(lcProvName.toLowerCase(), province);
             }
@@ -168,9 +169,7 @@ public class WorldFactory {
                 }
 
                 // add data to adjacency table after unwrapping collection
-                final Location[] locations = locationList
-                        .toArray(new Location[locationList.size()]);
-                adjacency.setLocations(coast, locations);
+                adjacency.setLocations(coast, locationList);
             }
 
 

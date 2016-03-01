@@ -148,7 +148,7 @@ public class RetreatChecker {
         List retreatLocations = new ArrayList(8);
 
         Location[] adjacent = from.getProvince()
-                .getAdjacentLocations(from.getCoast());
+                .getAdjacentLocations(from.getCoast()).toArray(new Location[0]);
 
         for (int i = 0; i < adjacent.length; i++) {
             if (!position
@@ -168,7 +168,7 @@ public class RetreatChecker {
      */
     public boolean hasRetreats(Location from) {
         Location[] adjacent = from.getProvince()
-                .getAdjacentLocations(from.getCoast());
+                .getAdjacentLocations(from.getCoast()).toArray(new Location[0]);
 
         for (int i = 0; i < adjacent.length; i++) {
             if (!position

@@ -555,7 +555,7 @@ public class Path {
         final List<Location> adjLocs = new LinkedList<>();
         for (int i = 0; i < Coast.ALL_COASTS.length; i++) {
             final Location[] locations = current.getProvince()
-                    .getAdjacentLocations(Coast.ALL_COASTS[i]);
+                    .getAdjacentLocations(Coast.ALL_COASTS[i]).toArray(new Location[0]);
 
             for (final Location testLoc : locations) {
                 if (pathEvaluator.evaluate(testLoc)) {
@@ -832,7 +832,7 @@ public class Path {
 				*/
 
                 // NEW CODE: using Coast.TOUCHING
-                final Location[] locs = p.getAdjacentLocations(Coast.TOUCHING);
+                final Location[] locs = p.getAdjacentLocations(Coast.TOUCHING).toArray(new Location[0]);
                 for (final Location loc : locs) {
                     final Province ckp = loc.getProvince();
 
@@ -882,7 +882,7 @@ public class Path {
         }
 
         // quick check: dest: next to at least 1 sea/conv coastal province
-        final Location[] dLocs = dest.getAdjacentLocations(Coast.TOUCHING);
+        final Location[] dLocs = dest.getAdjacentLocations(Coast.TOUCHING).toArray(new Location[0]);
         boolean isOk = false;
         for (final Location dLoc : dLocs) {
             final Province p = dLoc.getProvince();
@@ -908,7 +908,7 @@ public class Path {
         while (queue.size() > 0) {
             final TreeNode node = queue.removeFirst();
             final Province prov = node.getProvince();
-            final Location[] locs = prov.getAdjacentLocations(Coast.TOUCHING);
+            final Location[] locs = prov.getAdjacentLocations(Coast.TOUCHING).toArray(new Location[0]);
             for (final Location loc : locs) {
                 final Province p = loc.getProvince();
                 if (p.equals(dest)) {

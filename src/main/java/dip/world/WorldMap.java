@@ -87,9 +87,8 @@ public final class WorldMap implements Serializable {
                                 provinceArray.get(i), idx));
             }
             if (idx != i) {
-                throw new IllegalArgumentException(String.format(
-                        "Province: %s: out of order (index: %d; position: %d)",
-                        provinceArray.get(i), idx, i));
+                throw new IllegalArgumentException("Province: " + provinceArray
+                        .get(i) + ": out of order (index: " + idx + "; position: " + i + ")");
             }
         });
 
@@ -124,14 +123,14 @@ public final class WorldMap implements Serializable {
                 .toMap(province -> province.getFullName().toLowerCase(),
                         Function.identity())));
         provinces.stream().forEach(province -> nameMap
-                .putAll(Arrays.stream(province.getShortNames()).collect(
+                .putAll(province.getShortNames().stream().collect(
                         Collectors.toMap(String::toLowerCase,
                                 lcShortName -> province))));
         // add to List
         names = new ArrayList<>(provinces.stream().map(Province::getFullName)
                 .map(String::toLowerCase).collect(Collectors.toList()));
         names.addAll(provinces.stream()
-                .flatMap(province -> Arrays.stream(province.getShortNames()))
+                .flatMap(province -> province.getShortNames().stream())
                 .map(String::toLowerCase).collect(Collectors.toList()));
 
     }// createMappings()

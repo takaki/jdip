@@ -28,7 +28,8 @@ import dip.world.Unit.Type;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -91,21 +92,21 @@ public class Province implements Serializable, Comparable<Province> {
      * Adjacency maintains the connectivity graph between provinces.
      */
     protected static class Adjacency implements Serializable {
-        private final HashMap<Coast, Location[]> adjLoc;
+        private final EnumMap<Coast, List<Location>> adjLoc;
 
         /**
          * Creates a new Adjacency object.
          */
         private Adjacency() {
-            adjLoc = new HashMap<>(7);
+            adjLoc = new EnumMap<>(Coast.class);
         }// Adjacency()
 
         /**
          * Sets which locations are adjacent to the specified coast.
          */
         protected void setLocations(final Coast coast,
-                                    final Location[] locations) {
-            adjLoc.put(coast, locations);
+                                    final List<Location> locations) {
+            adjLoc.put(coast, new ArrayList<>(locations));
         }// setLocations()
 
 
@@ -114,9 +115,9 @@ public class Province implements Serializable, Comparable<Province> {
          * <p>
          * If no locations are adjacent, a zero-length array is returned.
          */
-        protected Location[] getLocations(final Coast coast) {
-            final Location[] locations = adjLoc.get(coast);
-            return locations == null ? Location.EMPTY : locations;
+        protected List<Location> getLocations(final Coast coast) {
+            return Collections.unmodifiableList(
+                    adjLoc.getOrDefault(coast, Collections.emptyList()));
         }// getLocations()
 
 
@@ -127,12 +128,11 @@ public class Province implements Serializable, Comparable<Province> {
          */
         protected void createWingCoasts() {
             final List<Location> locList = Arrays.stream(Coast.ALL_COASTS)
-                    .flatMap(coast -> Arrays.stream(getLocations(coast)))
+                    .flatMap(coast -> getLocations(coast).stream())
                     .map(Location::getProvince).distinct()
                     .map(prov -> new Location(prov, Coast.WING))
                     .collect(Collectors.toList());
-            setLocations(Coast.WING,
-                    locList.toArray(new Location[locList.size()]));
+            setLocations(Coast.WING, locList);
         }// createWingCoasts()
 
 
@@ -263,7 +263,7 @@ public class Province implements Serializable, Comparable<Province> {
      */
     public Location[] getAllAdjacent() {
         final List<Location> locList = Arrays.stream(Coast.ALL_COASTS)
-                .flatMap(coast -> Arrays.stream(adjacency.getLocations(coast)))
+                .flatMap(coast -> adjacency.getLocations(coast).stream())
                 .distinct().collect(Collectors.toList());
         return locList.toArray(new Location[locList.size()]);
     }// getAllAdjacent()
@@ -273,7 +273,7 @@ public class Province implements Serializable, Comparable<Province> {
      * Gets the Locations adjacent to this province, given the
      * specified coast.
      */
-    public Location[] getAdjacentLocations(final Coast coast) {
+    public List<Location> getAdjacentLocations(final Coast coast) {
         return adjacency.getLocations(coast);
     }// getAdjacency()
 
@@ -296,8 +296,8 @@ public class Province implements Serializable, Comparable<Province> {
     /**
      * Gets all short names of the Province
      */
-    public final String[] getShortNames() {
-        return shortNames.toArray(new String[shortNames.size()]);
+    public final List<String> getShortNames() {
+        return Collections.unmodifiableList(shortNames);
     }
 
     /**
@@ -320,7 +320,7 @@ public class Province implements Serializable, Comparable<Province> {
      * This now uses the "Wing" ("Touching") Coast which is equivalent.
      */
     public boolean isTouching(final Province province) {
-        return Arrays.stream(adjacency.getLocations(Coast.TOUCHING))
+        return adjacency.getLocations(Coast.TOUCHING).stream()
                 .anyMatch(location -> location.isProvinceEqual(province));
     }// isTouching()
 
@@ -332,7 +332,7 @@ public class Province implements Serializable, Comparable<Province> {
      * coast is connected to the destination Province.
      */
     public boolean isAdjacent(final Coast sourceCoast, final Province dest) {
-        return Arrays.stream(adjacency.getLocations(sourceCoast))
+        return adjacency.getLocations(sourceCoast).stream()
                 .anyMatch(location -> location.getProvince().equals(dest));
     }// isAdjacent()
 
@@ -346,7 +346,7 @@ public class Province implements Serializable, Comparable<Province> {
      * This is a stricter version of isAdjacent(Coast, Province)
      */
     public boolean isAdjacent(final Coast sourceCoast, final Location dest) {
-        return Arrays.stream(adjacency.getLocations(sourceCoast))
+        return adjacency.getLocations(sourceCoast).stream()
                 .anyMatch(location -> location.equals(dest));
     }// isAdjacent()
 
@@ -356,7 +356,7 @@ public class Province implements Serializable, Comparable<Province> {
      */
     public boolean isLandLocked() {
         return !Arrays.stream(Coast.ANY_SEA)
-                .anyMatch(coast -> adjacency.getLocations(coast).length > 0);
+                .anyMatch(coast -> !adjacency.getLocations(coast).isEmpty());
     }// isLandLocked()
 
     // NOTE: this could be made more efficient
@@ -365,9 +365,9 @@ public class Province implements Serializable, Comparable<Province> {
      * Determines if this Province is coastal (including multi-coastal).
      */
     public boolean isCoastal() {
-        return adjacency.getLocations(Coast.LAND).length > 0 && Arrays
+        return !adjacency.getLocations(Coast.LAND).isEmpty() && Arrays
                 .stream(Coast.ANY_SEA)
-                .anyMatch(coast -> adjacency.getLocations(coast).length > 0);
+                .anyMatch(coast -> !adjacency.getLocations(coast).isEmpty());
 
     }// isCoastal()
 
@@ -376,7 +376,7 @@ public class Province implements Serializable, Comparable<Province> {
      * Determines if this Province is a Land province (landlocked OR coastal)
      */
     public boolean isLand() {
-        return adjacency.getLocations(Coast.LAND).length > 0;
+        return !adjacency.getLocations(Coast.LAND).isEmpty();
     }// isLand()
 
 
@@ -384,9 +384,9 @@ public class Province implements Serializable, Comparable<Province> {
      * Determines if this Province is a Sea province (no land, not coastal).
      */
     public boolean isSea() {
-        return adjacency.getLocations(Coast.LAND).length <= 0 && !Arrays
+        return adjacency.getLocations(Coast.LAND).size() <= 0 && !Arrays
                 .stream(Coast.ANY_DIRECTIONAL)
-                .anyMatch(coast -> adjacency.getLocations(coast).length > 0);
+                .anyMatch(coast -> !adjacency.getLocations(coast).isEmpty());
 
     }// isSea()
 
@@ -395,9 +395,9 @@ public class Province implements Serializable, Comparable<Province> {
      * Determines if this Province has multiple coasts (e.g., Spain).
      */
     public boolean isMultiCoastal() {
-        return adjacency.getLocations(Coast.SEA).length == 0 && Arrays
+        return adjacency.getLocations(Coast.SEA).isEmpty() && Arrays
                 .stream(Coast.ANY_DIRECTIONAL)
-                .anyMatch(coast -> adjacency.getLocations(coast).length > 0);
+                .anyMatch(coast -> !adjacency.getLocations(coast).isEmpty());
     }// isMultiCoastal()
 
 
@@ -406,9 +406,9 @@ public class Province implements Serializable, Comparable<Province> {
      * If not multicoastal, returns an empty Coast array.
      */
     public Coast[] getValidDirectionalCoasts() {
-        if (adjacency.getLocations(Coast.SEA).length == 0) {
+        if (adjacency.getLocations(Coast.SEA).isEmpty()) {
             final List<Coast> dir = Arrays.stream(Coast.ANY_DIRECTIONAL)
-                    .filter(coast -> adjacency.getLocations(coast).length > 0)
+                    .filter(coast -> !adjacency.getLocations(coast).isEmpty())
                     .collect(Collectors.toList());
             return dir.toArray(new Coast[dir.size()]);
         }
@@ -420,7 +420,7 @@ public class Province implements Serializable, Comparable<Province> {
      * Determines if specified coast is allowed for this Province
      */
     public boolean isCoastValid(final Coast coast) {
-        return adjacency.getLocations(coast).length != 0;
+        return !adjacency.getLocations(coast).isEmpty();
     }// isCoastValid()
 
 
