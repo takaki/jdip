@@ -25,7 +25,7 @@ import spock.lang.Unroll
 class BorderTest extends Specification {
     def loc0 = new Location(new Province("Moscow", ["Mos"], 0, false), Coast.NONE)
     def loc1 = new Location(new Province("Ukraine", ["Ukr"], 1, false), Coast.NONE)
-    def border = new Border("id", "description", "Army  ", [loc0] as Location[], "dip.order.Move", "1", "Spring   Fall", "Movement", "1900, 2000")
+    def border = new Border("id", "description", "Army  ", [loc0], "dip.order.Move", "1", "Spring   Fall", "Movement", "1900, 2000")
 
     def "test canTransit"() {
         def phase = new Phase(Phase.SeasonType.SPRING, 1900, Phase.PhaseType.MOVEMENT)
@@ -49,7 +49,7 @@ class BorderTest extends Specification {
     }
 
     def "null from"() {
-        def border = new Border("id", "description", "Army", [] as Location[], "dip.order.Move", "1", "Spring Fall", "Movement", "1900,2000")
+        def border = new Border("id", "description", "Army", [], "dip.order.Move", "1", "Spring Fall", "Movement", "1900,2000")
         def phase = new Phase(Phase.SeasonType.SPRING, 1900, Phase.PhaseType.MOVEMENT)
         expect:
         border.getBaseMoveModifier(loc0) == 0
@@ -60,7 +60,7 @@ class BorderTest extends Specification {
 
     def "throw Exception"() {
         when:
-        def border = new Border(null, "description", "Army  ", [loc0] as Location[], "dip.order.Move", "1", "Spring   Fall", "Movement", "1900, 2000")
+        def border = new Border(null, "description", "Army  ", [loc0], "dip.order.Move", "1", "Spring   Fall", "Movement", "1900, 2000")
         then:
         thrown(NullPointerException)
     }
@@ -76,15 +76,15 @@ class BorderTest extends Specification {
 
         where:
         // "id" | "description" | "Army  " | [loc0] as Location[] | "dip.order.Move" | "1"              | "Spring   Fall" | "Movement" | "1900,2000"
-        id          | description   | units    | from                 | orders           | bMM | season          | phase      | year
-        "phase"     | "description" | "Army  " | [loc0] as Location[] | "dip.order.Move" | "1" | "Spring   Fall" | "phase"    | "1900,2000"
-        "year"      | "description" | "Army  " | [loc0] as Location[] | "dip.order.Move" | "1" | "Spring   Fall" | "Movement" | "1900 1950 2000"
-        "odd year"  | "description" | "Army  " | [loc0] as Location[] | "dip.order.Move" | "1" | "Spring   Fall" | "Movement" | "odd  1900"
-        "even year" | "description" | "Army  " | [loc0] as Location[] | "dip.order.Move" | "1" | "Spring   Fall" | "Movement" | "even 1900"
-        "splitter"  | "description" | "Army  " | [loc0] as Location[] | "dip.order.Move" | "1" | "Spring   Fall" | "Movement" | "1900|2000"
-        "season"    | "description" | "Army  " | [loc0] as Location[] | "dip.order.Move" | "1" | "season"        | "Movement" | "1900,2000"
-        "year"      | "description" | "Army  " | [loc0] as Location[] | "dip.order.Move" | "1" | "Spring   Fall" | "Movement" | "11900,2000"
-        "orders"    | "description" | "Army  " | [loc0] as Location[] | "dip.order.Hoge" | "1" | "Spring   Fall" | "Movement" | "1900,2000"
+        id          | description   | units    | from   | orders           | bMM | season          | phase      | year
+        "phase"     | "description" | "Army  " | [loc0] | "dip.order.Move" | "1" | "Spring   Fall" | "phase"    | "1900,2000"
+        "year"      | "description" | "Army  " | [loc0] | "dip.order.Move" | "1" | "Spring   Fall" | "Movement" | "1900 1950 2000"
+        "odd year"  | "description" | "Army  " | [loc0] | "dip.order.Move" | "1" | "Spring   Fall" | "Movement" | "odd  1900"
+        "even year" | "description" | "Army  " | [loc0] | "dip.order.Move" | "1" | "Spring   Fall" | "Movement" | "even 1900"
+        "splitter"  | "description" | "Army  " | [loc0] | "dip.order.Move" | "1" | "Spring   Fall" | "Movement" | "1900|2000"
+        "season"    | "description" | "Army  " | [loc0] | "dip.order.Move" | "1" | "season"        | "Movement" | "1900,2000"
+        "year"      | "description" | "Army  " | [loc0] | "dip.order.Move" | "1" | "Spring   Fall" | "Movement" | "11900,2000"
+        "orders"    | "description" | "Army  " | [loc0] | "dip.order.Hoge" | "1" | "Spring   Fall" | "Movement" | "1900,2000"
         // "empty order" | "description" | "Army  " | [loc0] as Location[] | ""               | "1" | "Spring   Fall" | "Movement" | "1900,2000"
     }
 
@@ -99,8 +99,8 @@ class BorderTest extends Specification {
 
         where:
         // "id" | "description" | "Army  " | [loc0] as Location[] | "dip.order.Move" | "1"              | "Spring   Fall" | "Movement" | "1900,2000"
-        id          | description   | units    | from                 | orders           | bMM | season          | phase      | year
-        "units"     | "description" | "Hoge  " | [loc0] as Location[] | "dip.order.Move" | "1" | "Spring   Fall" | "Movement" | "1900,2000"
+        id      | description   | units    | from   | orders           | bMM | season          | phase      | year
+        "units" | "description" | "Hoge  " | [loc0] | "dip.order.Move" | "1" | "Spring   Fall" | "Movement" | "1900,2000"
         // "empty order" | "description" | "Army  " | [loc0] as Location[] | ""               | "1" | "Spring   Fall" | "Movement" | "1900,2000"
     }
 

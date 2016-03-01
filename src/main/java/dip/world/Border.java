@@ -155,7 +155,7 @@ public class Border implements Serializable {
      * @throws IllegalArgumentException if id, description, or prohibited is null
      */
     public Border(final String id, final String description, final String units,
-                  final Location[] from, final String orders,
+                  final List<Location> from, final String orders,
                   final String baseMoveModifier, final String season,
                   final String phase,
                   final String year) throws InvalidBorderException {
@@ -188,7 +188,7 @@ public class Border implements Serializable {
         this.baseMoveModifier = parseBaseMoveModifier(baseMoveModifier);
 
         // fields we don't need to parse
-        this.from = Arrays.asList(from);
+        this.from = new ArrayList<>(from);
         this.description = description;
 
     }// Border()

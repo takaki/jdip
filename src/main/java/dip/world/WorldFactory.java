@@ -36,6 +36,7 @@ import dip.world.variant.data.Variant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.StringTokenizer;
 
@@ -66,7 +67,7 @@ public class WorldFactory {
 
 
     // class variables
-    private static WorldFactory instance = new WorldFactory();
+    private static final WorldFactory instance = new WorldFactory();
 
 
     private WorldFactory() {
@@ -118,8 +119,7 @@ public class WorldFactory {
 
             // add Province names (all) to our name->province map
             provNameMap.put(province.getFullName().toLowerCase(), province);
-            final String[] lcProvNames = province.getShortNames()
-                    .toArray(new String[0]);
+            final List<String> lcProvNames = province.getShortNames();
             for (final String lcProvName : lcProvNames) {
                 provNameMap.put(lcProvName.toLowerCase(), province);
             }
@@ -186,11 +186,11 @@ public class WorldFactory {
 
         // Process BorderData. This requires the Provinces to be known and
         // successfully parsed. They are mapped to the ID name, stored in the borderMap.
-        final java.util.Map<String, Border> borderMap = new HashMap<>(11);
+        final Map<String, Border> borderMap = new HashMap<>(11);
         try {
             final List<BorderData> borderDataArray = variant.getBorderData();
             for (final BorderData bd : borderDataArray) {
-                final Location[] fromLocs = makeBorderLocations(bd.getFrom(),
+                final List<Location> fromLocs = makeBorderLocations(bd.getFrom(),
                         provNameMap);
 
                 final Border border = new Border(bd.getID(),
@@ -365,9 +365,9 @@ public class WorldFactory {
      * This will return null if there are no border locations, instead of
      * a zero-length array.
      */
-    private static Location[] makeBorderLocations(final String in,
-                                                  final java.util.Map<String, Province> provNameMap) throws InvalidWorldException {
-        final ArrayList<Location> al = new ArrayList<>(6);
+    private static List<Location> makeBorderLocations(final String in,
+                                                           final Map<String, Province> provNameMap) throws InvalidWorldException {
+        final List<Location> al = new ArrayList<>(6);
 
         final StringTokenizer st = new StringTokenizer(in.trim(), ";, ");
         while (st.hasMoreTokens()) {
@@ -384,7 +384,7 @@ public class WorldFactory {
             al.add(new Location(province, coast));
         }
 
-        return al.toArray(new Location[al.size()]);
+        return al;
     }// makeBorderLocation()
 
 
@@ -414,7 +414,7 @@ public class WorldFactory {
      * do not even exist.
      */
     private static Location makeLocation(
-            final java.util.Map<String, Province> provNameMap,
+            final Map<String, Province> provNameMap,
             final String name,
             final Coast theDefaultCoast) throws InvalidWorldException {
         Coast defaultCoast = theDefaultCoast;
@@ -449,7 +449,7 @@ public class WorldFactory {
 
     // verify all names are unique. (hasn't yet been added to the map)
     private static boolean isUnique(
-            final java.util.Map<String, Province> provNameMap,
+            final Map<String, Province> provNameMap,
             final String fullname, final Iterable<String> shortnames) {
         if (provNameMap.get(fullname.toLowerCase()) != null) {
             return false;
