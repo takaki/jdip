@@ -286,7 +286,7 @@ public class Support extends Order {
             // validate Borders
             Border border = src.getProvince()
                     .getTransit(src, srcUnitType, state.getPhase(),
-                            this.getClass());
+                            this.getClass()).orElse(null);
             if (border != null) {
                 throw new OrderException(
                         Utils.getLocalString(ORD_VAL_BORDER, src.getProvince(),
@@ -294,7 +294,7 @@ public class Support extends Order {
             }
 
             // v.1: unit existence / matching
-            Unit supUnit = position.getUnit(supSrc.getProvince());
+            Unit supUnit = position.getUnit(supSrc.getProvince()).orElse(null);
             supUnitType = getValidatedUnitType(supSrc.getProvince(),
                     supUnitType, supUnit);
 
@@ -317,7 +317,7 @@ public class Support extends Order {
             // validate Borders
             border = supSrc.getProvince()
                     .getTransit(supSrc, supUnitType, state.getPhase(),
-                            this.getClass());
+                            this.getClass()).orElse(null);
             if (border != null) {
                 throw new OrderException(
                         Utils.getLocalString(ORD_VAL_BORDER, src.getProvince(),
@@ -353,7 +353,7 @@ public class Support extends Order {
                 // destination border validation
                 border = supDest.getProvince()
                         .getTransit(supDest, supUnitType, state.getPhase(),
-                                this.getClass());
+                                this.getClass()).orElse(null);
                 if (border != null) {
                     throw new OrderException(
                             Utils.getLocalString(ORD_VAL_BORDER,

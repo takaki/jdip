@@ -69,11 +69,11 @@ class PhaseTest extends Specification {
 
     def "Phase#parse"() {
         expect:
-        Phase.parse("Spring, 1900(Movement)") == phase
-        Phase.parse("Spring, 1900[Movement)") == phase
-        Phase.parse("1900 Spring Movement") == phase
-        Phase.parse("Movement;1900 / Spring ") == phase
-        Phase.parse("Spring bc 1000 Movement") == new Phase(Phase.SeasonType.SPRING, -1000, Phase.PhaseType.MOVEMENT)
+        Phase.parse("Spring, 1900(Movement)").get() == phase
+        Phase.parse("Spring, 1900[Movement)").get() == phase
+        Phase.parse("1900 Spring Movement").get() == phase
+        Phase.parse("Movement;1900 / Spring ").get() == phase
+        Phase.parse("Spring bc 1000 Movement").get() == new Phase(Phase.SeasonType.SPRING, -1000, Phase.PhaseType.MOVEMENT)
     }
 
     def "test getAllSeasonPhaseCombos"() {
@@ -101,13 +101,13 @@ class PhaseTest extends Specification {
         def spring = Phase.SeasonType.SPRING
         def fall = Phase.SeasonType.FALL
         expect:
-        Phase.SeasonType.parse("s") == spring
-        Phase.SeasonType.parse("f") == fall
-        Phase.SeasonType.parse("w") == fall
-        Phase.SeasonType.parse("sPrIng") == spring
-        Phase.SeasonType.parse("summer") == spring
-        Phase.SeasonType.parse("faLL") == fall
-        Phase.SeasonType.parse("Winter") == fall
+        Phase.SeasonType.parse("s").get() == spring
+        Phase.SeasonType.parse("f").get() == fall
+        Phase.SeasonType.parse("w").get() == fall
+        Phase.SeasonType.parse("sPrIng").get() == spring
+        Phase.SeasonType.parse("summer").get() == spring
+        Phase.SeasonType.parse("faLL").get() == fall
+        Phase.SeasonType.parse("Winter").get() == fall
     }
 
     def "PhaseType"() {
@@ -128,23 +128,23 @@ class PhaseTest extends Specification {
         def retreat = Phase.PhaseType.RETREAT
         def adjustment = Phase.PhaseType.ADJUSTMENT
         expect:
-        Phase.PhaseType.parse("M") == movement
-        Phase.PhaseType.parse("A") == adjustment
-        Phase.PhaseType.parse("B") == adjustment
-        Phase.PhaseType.parse("R") == retreat
-        Phase.PhaseType.parse("adjustment_") == adjustment
-        Phase.PhaseType.parse("movement_") == movement
-        Phase.PhaseType.parse("retreat_") == retreat
+        Phase.PhaseType.parse("M").get() == movement
+        Phase.PhaseType.parse("A").get() == adjustment
+        Phase.PhaseType.parse("B").get() == adjustment
+        Phase.PhaseType.parse("R").get() == retreat
+        Phase.PhaseType.parse("adjustment_").get() == adjustment
+        Phase.PhaseType.parse("movement_").get() == movement
+        Phase.PhaseType.parse("retreat_").get() == retreat
 
     }
 
     def "YearType#parse" () {
         expect:
-        Phase.YearType.parse("1900").getYear() == 1900
-        Phase.YearType.parse("100").getYear() == 100
-        Phase.YearType.parse("1000 BC") == null
-        Phase.YearType.parse("1000 bc").getYear() == -1000
-        Phase.YearType.parse("-1000").getYear() == -1000
+        Phase.YearType.parse("1900").get().getYear() == 1900
+        Phase.YearType.parse("100").get().getYear() == 100
+        Phase.YearType.parse("1000 BC") == Optional.empty()
+        Phase.YearType.parse("1000 bc").get().getYear() == -1000
+        Phase.YearType.parse("-1000").get().getYear() == -1000
     }
     def "YserType#toString" (){
         expect:

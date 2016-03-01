@@ -125,7 +125,7 @@ public class AIDemo {
         // which contains Province and Power information, as well as TurnStates,
         // which hold turn and Position information.
         //
-        World newWorld = WorldFactory.getInstance().createWorld(variant);
+        World newWorld = WorldFactory.createWorld(variant);
         System.out.println("World created!");
 
         // Set the RuleOptions in the World. This sets the RuleOptions to their
@@ -164,8 +164,8 @@ public class AIDemo {
 
         // what about a Location? (A Location is a Province + a Coast)
         //
-        Location loc1 = map.parseLocation("spa/sc");    // South Coast of Spain
-        Location loc2 = map.parseLocation("spa/nc");    // North Coast of Spain
+        Location loc1 = map.parseLocation("spa/sc").orElse(null);    // South Coast of Spain
+        Location loc2 = map.parseLocation("spa/nc").orElse(null);    // North Coast of Spain
         System.out.println("\nLocation testing:");
         System.out.println(
                 "  " + loc1.toLongString() + " and " + loc2.toLongString());
@@ -354,7 +354,7 @@ public class AIDemo {
      * Make a Location for a Unit
      */
     private Location makeLocation(Position pos, Province prov) {
-        return new Location(prov, pos.getUnit(prov).getCoast());
+        return new Location(prov, pos.getUnit(prov).orElse(null).getCoast());
     }// makeLocation()
 
 

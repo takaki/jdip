@@ -25,19 +25,23 @@ package dip.world;
 import dip.misc.Utils;
 import dip.order.result.Result;
 import dip.process.Adjudicator;
-import dip.process.Adjustment;
+import dip.process.Adjustment.AdjustmentInfo;
+import dip.process.Adjustment.AdjustmentInfoMap;
 import dip.world.Phase.PhaseType;
 import dip.world.Phase.SeasonType;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Establishes the conditions required to determine who wins a game, and contains
  * methods to evaluate if these condtions are met during adjudication.
  * <p>
  */
-public class VictoryConditions implements java.io.Serializable {
+public class VictoryConditions implements Serializable {
     // il8n
     private static final String VC_MAX_GAME_TIME = "VC_MAX_GAME_TIME";
     private static final String VC_DRAW = "VC_DRAW";
@@ -51,21 +55,20 @@ public class VictoryConditions implements java.io.Serializable {
     protected final int initialYear;            // starting game year
 
     // transient variables
-    protected transient List evalResults = null;
+    protected transient List<Result> evalResults;
 
     /**
      * VictoryConditions constructor
      */
-    public VictoryConditions(int numSCForVictory, int maxYearsNoSCChange,
-                             int maxGameTimeYears, Phase initialPhase) {
+    public VictoryConditions(final int numSCForVictory,
+                             final int maxYearsNoSCChange,
+                             final int maxGameTimeYears,
+                             final Phase initialPhase) {
         if (maxGameTimeYears < 0 || numSCForVictory < 0 || maxYearsNoSCChange < 0) {
             throw new IllegalArgumentException("arg: < 0; use 0 to disable");
         }
 
-        if (initialPhase == null) {
-            throw new IllegalArgumentException("args invalid");
-        }
-
+        Objects.requireNonNull(initialPhase);
 
         if (maxGameTimeYears == 0 && numSCForVictory == 0 && maxYearsNoSCChange == 0) {
             throw new IllegalArgumentException("no conditions set!");
@@ -74,38 +77,16 @@ public class VictoryConditions implements java.io.Serializable {
         this.numSCForVictory = numSCForVictory;
         this.maxYearsNoSCChange = maxYearsNoSCChange;
         this.maxGameTimeYears = maxGameTimeYears;
-        this.initialYear = initialPhase.getYear();
+        initialYear = initialPhase.getYear();
     }// VictoryConditions()
-
-
-    /**
-     * Returns the number of Supply Centers required for victory.
-     */
-    public int getSCsRequiredForVictory() {
-        return numSCForVictory;
-    }
-
-    /**
-     * Returns number of Years without any Supply Center being captured for the game to end.
-     */
-    public int getYearsWithoutSCChange() {
-        return maxYearsNoSCChange;
-    }
-
-    /**
-     * Returns number maximum game duration, in years.
-     */
-    public int getMaxGameDurationYears() {
-        return maxGameTimeYears;
-    }
 
 
     /**
      * Returns the Result(s) of evaluate(). This will return an empty list if
      * evaluate() has not been called or returned false.
      */
-    public List getEvaluationResults() {
-        return evalResults;
+    public List<Result> getEvaluationResults() {
+        return Collections.unmodifiableList(evalResults);
     }// getEvaluationResults()
 
 
@@ -120,8 +101,8 @@ public class VictoryConditions implements java.io.Serializable {
      * @param adjMap      adjustment map (as returned by Adjustment.getAdjustmentInfo())
      * @param adjudicator an Adjudicator object
      */
-    public boolean evaluate(Adjudicator adjudicator,
-                            Adjustment.AdjustmentInfoMap adjMap) {
+    public boolean evaluate(final Adjudicator adjudicator,
+                            final AdjustmentInfoMap adjMap) {
         return evaluate(adjudicator.getTurnState(), adjMap);
     }// evaluate()
 
@@ -134,13 +115,13 @@ public class VictoryConditions implements java.io.Serializable {
      * @param adjMap    adjustment map (as returned by Adjustment.getAdjustmentInfo())
      * @param turnState the TurnState
      */
-    public boolean evaluate(TurnState turnState,
-                            Adjustment.AdjustmentInfoMap adjMap) {
-        Phase phase = turnState.getPhase();
+    public boolean evaluate(final TurnState turnState,
+                            final AdjustmentInfoMap adjMap) {
+        final Phase phase = turnState.getPhase();
         final int currentYear = phase.getYear();
 
         if (evalResults == null) {
-            evalResults = new ArrayList(5);
+            evalResults = new ArrayList<>(5);
         } else {
             evalResults.clear();
         }
@@ -148,7 +129,7 @@ public class VictoryConditions implements java.io.Serializable {
         // create an array of AdjustmentInfo, indexed the same as the array of Powers,
         // from the passed HashMap
         final Power[] powers = turnState.getWorld().getMap().getPowers();
-        final Adjustment.AdjustmentInfo[] adjInfo = new Adjustment.AdjustmentInfo[powers.length];
+        final AdjustmentInfo[] adjInfo = new AdjustmentInfo[powers.length];
         for (int i = 0; i < adjInfo.length; i++) {
             adjInfo[i] = adjMap.get(powers[i]);
         }
@@ -156,10 +137,9 @@ public class VictoryConditions implements java.io.Serializable {
 
         // check to see if we have exceeded the allocated time
         if (maxGameTimeYears > 0) {
-            if ((currentYear - initialYear + 1) >= maxGameTimeYears) {
+            if (currentYear - initialYear + 1 >= maxGameTimeYears) {
                 evalResults.add(new Result(null,
-                        Utils.getLocalString(VC_MAX_GAME_TIME,
-                                new Integer(maxGameTimeYears))));
+                        Utils.getLocalString(VC_MAX_GAME_TIME, maxGameTimeYears)));
                 evalResults.add(new Result(null, Utils.getLocalString(VC_DRAW,
                         getRemainingPowers(turnState, powers, adjInfo))));
                 return true;
@@ -173,9 +153,8 @@ public class VictoryConditions implements java.io.Serializable {
                 if (adjInfo[i].getSupplyCenterCount() >= numSCForVictory) {
                     evalResults.add(new Result(null,
                             Utils.getLocalString(VC_WIN_SINGLE, powers[i],
-                                    new Integer(
-                                            adjInfo[i].getSupplyCenterCount()),
-                                    new Integer(numSCForVictory))));
+                                    adjInfo[i].getSupplyCenterCount(),
+                                    numSCForVictory)));
                     return true;
                 }
             }
@@ -184,22 +163,22 @@ public class VictoryConditions implements java.io.Serializable {
 
         // check # of years w/o any supply centers captured
         // (if game exists for less than this #, do nothing).
-        if (maxYearsNoSCChange > 0 && (currentYear - initialYear) >= maxYearsNoSCChange && !turnState
+        if (maxYearsNoSCChange > 0 && currentYear - initialYear >= maxYearsNoSCChange && !turnState
                 .getSCOwnerChanged()) {
             // we first check the current turnstate. We do this because it may not yet have been
             // added to the World object (via setTurnState()). We assume it is a fall movement
             // or retreat phase as well.
             boolean overallSCChange = turnState.getSCOwnerChanged();
 
-            World world = turnState.getWorld();
-            for (int year = (currentYear - 1); year > (currentYear - maxYearsNoSCChange); year--) {
+            final World world = turnState.getWorld();
+            for (int year = currentYear - 1; year > currentYear - maxYearsNoSCChange; year--) {
                 overallSCChange |= getIfSCChangeOccured(world, year);
             }
 
             if (!overallSCChange) {
                 evalResults.add(new Result(null,
                         Utils.getLocalString(VC_MAX_NO_SC_CHANGE,
-                                new Integer(maxYearsNoSCChange))));
+                                maxYearsNoSCChange)));
                 evalResults.add(new Result(null, Utils.getLocalString(VC_DRAW,
                         getRemainingPowers(turnState, powers, adjInfo))));
                 return true;
@@ -219,12 +198,12 @@ public class VictoryConditions implements java.io.Serializable {
      * <p>
      * where supply-center-changes could occur. We actually will check both;
      */
-    private boolean getIfSCChangeOccured(World world, int year) {
+    private boolean getIfSCChangeOccured(final World world, final int year) {
         boolean value = false;
 
-        TurnState tsRetreat = world.getTurnState(
+        final TurnState tsRetreat = world.getTurnState(
                 new Phase(SeasonType.FALL, year, PhaseType.RETREAT));
-        TurnState tsAdjustment = world.getTurnState(
+        final TurnState tsAdjustment = world.getTurnState(
                 new Phase(SeasonType.FALL, year, PhaseType.ADJUSTMENT));
 
         if (tsRetreat != null) {
@@ -240,10 +219,11 @@ public class VictoryConditions implements java.io.Serializable {
 
 
     // creates a comma-seperated list of power names, if they are still in play
-    private String getRemainingPowers(TurnState turnState, Power[] powers,
-                                      Adjustment.AdjustmentInfo[] adjInfo) {
-        StringBuffer sb = new StringBuffer(128);
-        Position pos = turnState.getPosition();
+    private String getRemainingPowers(final TurnState turnState,
+                                      final Power[] powers,
+                                      final AdjustmentInfo[] adjInfo) {
+        final StringBuffer sb = new StringBuffer(128);
+        final Position pos = turnState.getPosition();
 
         for (int i = 0; i < powers.length; i++) {
             // check for power elimination [note: check might be redundant...]

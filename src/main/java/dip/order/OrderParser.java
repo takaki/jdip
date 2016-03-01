@@ -24,7 +24,16 @@ package dip.order;
 
 import dip.misc.Log;
 import dip.misc.Utils;
-import dip.world.*;
+import dip.world.Coast;
+import dip.world.Location;
+import dip.world.Map;
+import dip.world.Phase;
+import dip.world.Position;
+import dip.world.Power;
+import dip.world.Province;
+import dip.world.TurnState;
+import dip.world.Unit;
+import dip.world.Unit.Type;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -295,7 +304,7 @@ public class OrderParser {
         // get the 'power token' (or null).
         // this is so if a power name has odd characters in it (e.g., chaos map)
         // they do not undergo replacement.
-        String ptok = map.getFirstPowerToken(sb);
+        String ptok = map.getFirstPowerToken(sb).get();
         final int startIdx = (ptok == null) ? 0 : ptok.length();
 
         // string replacement
@@ -335,12 +344,12 @@ public class OrderParser {
                         OrderFactory orderFactory, boolean locked,
                         boolean guessing) throws OrderException {
         // Objects common to ALL order types.
-        String srcName = null;
+        String srcName;
         String srcUnitTypeName = null;
-        Power power = defaultPower;
+        Power power;
 
         // current token for parsing
-        String token = null;
+        String token;
 
         StringTokenizer st = new StringTokenizer(ord, WHITESPACE, false);
 
@@ -348,7 +357,7 @@ public class OrderParser {
         // Power parsing
 
         // see if first token is a power; if so, parse it
-        power = map.getFirstPower(ord);
+        power = map.getFirstPower(ord).orElse(null);
         //Log.println("OP:parse(): first token a power? ", power);
 
         // eat up the token (we don't want to reparse it), but
@@ -403,7 +412,7 @@ public class OrderParser {
 
         // parse the order type -- if this is missing, we
         // have a 'defineState' order type
-        String orderType = null;
+        String orderType;
         if (st.hasMoreTokens()) {
             orderType = getToken(st, Utils.getLocalString(OF_NO_ORDER_TYPE));
         } else {
@@ -469,7 +478,7 @@ public class OrderParser {
             // get power from unit, if possible
             Power supPower = null;
             if (position.hasUnit(supSrc.getProvince())) {
-                supPower = position.getUnit(supSrc.getProvince()).getPower();
+                supPower = position.getUnit(supSrc.getProvince()).orElse(null).getPower();
             }
 
             // support a MOVE [if specified]
@@ -525,7 +534,7 @@ public class OrderParser {
             // get power, from unit
             Power conPower = null;
             if (position.hasUnit(conSrc.getProvince())) {
-                conPower = position.getUnit(conSrc.getProvince()).getPower();
+                conPower = position.getUnit(conSrc.getProvince()).orElse(null).getPower();
             }
 
             // create order.
@@ -748,16 +757,16 @@ public class OrderParser {
             // if a unit exists, assume remove, and use that power; otherwise, assume a build.
             //
             if (position.hasUnit(province)) {
-                return position.getUnit(province).getPower();
+                return position.getUnit(province).orElse(null).getPower();
             } else {
                 assert (position.getSupplyCenterOwner(province) != null);
-                return position.getSupplyCenterOwner(province);
+                return position.getSupplyCenterOwner(province).orElse(null);
             }
         } else {
             // retreat / movement phases:
             Unit unit = (phase
                     .getPhaseType() == Phase.PhaseType.RETREAT) ? position
-                    .getDislodgedUnit(province) : position.getUnit(province);
+                    .getDislodgedUnit(province).orElse(null) : position.getUnit(province).orElse(null);
             if (unit != null) {
                 return unit.getPower();
             }
@@ -917,18 +926,12 @@ public class OrderParser {
     //	null -> UNDEFINED
     //	any other	-> null
     //
-    private Unit.Type parseUnitType(String unitName) throws OrderException {
-        Unit.Type unitType = Unit.Type.parse(unitName);
-        if (unitType == null) {
-            throw new OrderException(
-                    Utils.getLocalString(OF_UNIT_NOT_RECOGNIZED, unitName));
-        }
-
-        return unitType;
+    private Unit.Type parseUnitType(String unitName) {
+        return Type.parse(unitName);
     }// parseUnitType()
 
     private Power parsePower(Map map, String powerName) throws OrderException {
-        Power power = map.getPowerMatching(powerName);
+        Power power = map.getPowerMatching(powerName).orElse(null);
         if (power == null) {
             throw new OrderException(
                     Utils.getLocalString(OF_POWER_NOT_RECOGNIZED, powerName));

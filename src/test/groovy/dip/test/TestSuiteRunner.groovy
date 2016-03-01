@@ -31,6 +31,7 @@ import spock.lang.Unroll
 import java.nio.file.Paths
 
 class TestSuiteRunner extends Specification {
+    // {"etc/test_data/datc_v2.4_09.txt","etc/test_data/dipai.txt","etc/test_data/explicitConvoys.txt","etc/test_data/real.txt","etc/test_data/wing.txt"};
     static def ts = new TestSuite(Paths
             .get("etc/test_data/datc_v2.4_06_remove6.e.4.txt"))
     static def cases = ts.getCases()

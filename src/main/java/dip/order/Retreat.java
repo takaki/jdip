@@ -101,7 +101,7 @@ public class Retreat extends Move {
 
         // 1
         Position position = state.getPosition();
-        Unit unit = position.getDislodgedUnit(src.getProvince());
+        Unit unit = position.getDislodgedUnit(src.getProvince()).orElse(null);
         super.validate(valOpts, unit);
 
         if (valOpts.getOption(ValidationOptions.KEY_GLOBAL_PARSING)
@@ -115,7 +115,7 @@ public class Retreat extends Move {
             // validate Borders
             Border border = src.getProvince()
                     .getTransit(src, srcUnitType, state.getPhase(),
-                            this.getClass());
+                            this.getClass()).orElse(null);
             if (border != null) {
                 throw new OrderException(
                         Utils.getLocalString(ORD_VAL_BORDER, src.getProvince(),
@@ -130,7 +130,7 @@ public class Retreat extends Move {
             // check that we can transit into destination (check borders)
             border = dest.getProvince()
                     .getTransit(dest, srcUnitType, state.getPhase(),
-                            this.getClass());
+                            this.getClass()).orElse(null);
             if (border != null) {
                 throw new OrderException(
                         Utils.getLocalString(ORD_VAL_BORDER, src.getProvince(),

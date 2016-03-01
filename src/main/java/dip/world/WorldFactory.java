@@ -25,11 +25,18 @@ package dip.world;
 import dip.misc.Log;
 import dip.misc.Utils;
 import dip.order.OrderException;
-import dip.world.variant.data.*;
+import dip.world.Province.Adjacency;
+import dip.world.Unit.Type;
+import dip.world.variant.data.BorderData;
+import dip.world.variant.data.InitialState;
+import dip.world.variant.data.ProvinceData;
+import dip.world.variant.data.SupplyCenter;
+import dip.world.variant.data.Variant;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.StringTokenizer;
 
 
@@ -59,7 +66,7 @@ public class WorldFactory {
 
 
     // class variables
-    private static WorldFactory instance = null;
+    private static WorldFactory instance = new WorldFactory();
 
 
     private WorldFactory() {
@@ -69,11 +76,7 @@ public class WorldFactory {
     /**
      * Get an instance of the WorldFactory
      */
-    public synchronized static WorldFactory getInstance() {
-        if (instance == null) {
-            instance = new WorldFactory();
-        }
-
+    public static synchronized WorldFactory getInstance() {
         return instance;
     }// getInstance()
 
@@ -81,23 +84,22 @@ public class WorldFactory {
     /**
      * Generates a World given the supplied Variant information
      */
-    public World createWorld(Variant variant) throws InvalidWorldException {
-        if (variant == null) {
-            throw new IllegalArgumentException();
-        }
+    public static World createWorld(
+            final Variant variant) throws InvalidWorldException {
+        Objects.requireNonNull(variant);
 
         Log.println("WorldFactory.createWorld(): " + variant.getName());
 
-        List provinces = new ArrayList(100);
-        HashMap provNameMap = new HashMap();    // mapping of names->provinces
+        final List<Province> provinces = new ArrayList<>(100);
+        final HashMap<String, Province> provNameMap = new HashMap<>();    // mapping of names->provinces
 
         // gather all province data, and create provinces
-        List<ProvinceData> provinceDataArray = variant.getProvinceData();
+        final List<ProvinceData> provinceDataArray = variant.getProvinceData();
         for (int i = 0; i < provinceDataArray.size(); i++) {
-            ProvinceData provinceData = provinceDataArray.get(i);
+            final ProvinceData provinceData = provinceDataArray.get(i);
 
             // get short names
-            List<String> shortNames = provinceData.getShortNames();
+            final List<String> shortNames = provinceData.getShortNames();
 
             // verify uniqueness of names
             if (!isUnique(provNameMap, provinceData.getFullName(),
@@ -108,7 +110,7 @@ public class WorldFactory {
             }
 
             // create Province object
-            Province province = new Province(provinceData.getFullName(),
+            final Province province = new Province(provinceData.getFullName(),
                     shortNames, i, provinceData.getConvoyableCoast());
 
             // add Province data to list
@@ -116,22 +118,20 @@ public class WorldFactory {
 
             // add Province names (all) to our name->province map
             provNameMap.put(province.getFullName().toLowerCase(), province);
-            String[] lcProvNames = province.getShortNames();
-            for (int pnIdx = 0; pnIdx < lcProvNames.length; pnIdx++) {
-                provNameMap.put(lcProvNames[pnIdx].toLowerCase(), province);
+            final String[] lcProvNames = province.getShortNames();
+            for (final String lcProvName : lcProvNames) {
+                provNameMap.put(lcProvName.toLowerCase(), province);
             }
         }
 
         // gather all adjacency data
         // parse adjacency data for all provinces
         // keep a list of the locations parsed below
-        ArrayList locationList = new ArrayList(16);
-        for (int i = 0; i < provinceDataArray.size(); i++) {
-            ProvinceData provinceData = provinceDataArray.get(i);
-
-            List<String> adjProvinceTypes = provinceData
+        final ArrayList<Location> locationList = new ArrayList<>(16);
+        for (final ProvinceData provinceData : provinceDataArray) {
+            final List<String> adjProvinceTypes = provinceData
                     .getAdjacentProvinceTypes();
-            List<String> adjProvinceNames = provinceData
+            final List<String> adjProvinceNames = provinceData
                     .getAdjacentProvinceNames();
 
             if (adjProvinceTypes.size() != adjProvinceNames.size()) {
@@ -140,35 +140,35 @@ public class WorldFactory {
             }
 
             // get the Province to which this adjacency data refers
-            Province province = (Province) provNameMap
+            final Province province = provNameMap
                     .get(provinceData.getFullName().toLowerCase());
 
             // get the Adjacency data structure from the Province
-            Province.Adjacency adjacency = province.getAdjacency();
+            final Adjacency adjacency = province.getAdjacency();
 
             // parse adjacency data, then set it for this province
             for (int adjIdx = 0; adjIdx < adjProvinceTypes.size(); adjIdx++) {
                 // get the coast type.
-                Coast coast = Coast.parse(adjProvinceTypes.get(adjIdx));
+                final Coast coast = Coast.parse(adjProvinceTypes.get(adjIdx));
 
                 // clear the location list (we re-use it)
                 locationList.clear();
 
                 // parse provinces, making locations for each
                 // provinces must be seperated by " " or "," or ";" or ":"
-                String input = adjProvinceNames.get(adjIdx).trim()
+                final String input = adjProvinceNames.get(adjIdx).trim()
                         .toLowerCase();
-                StringTokenizer st = new StringTokenizer(input, " ,;:\t\n\r",
-                        false);
+                final StringTokenizer st = new StringTokenizer(input,
+                        " ,;:\t\n\r", false);
                 while (st.hasMoreTokens()) {
                     // makeLocation() will change the coast, as needed, and verify the province
-                    Location location = makeLocation(provNameMap,
+                    final Location location = makeLocation(provNameMap,
                             st.nextToken(), coast);
                     locationList.add(location);
                 }
 
                 // add data to adjacency table after unwrapping collection
-                Location[] locations = (Location[]) locationList
+                final Location[] locations = locationList
                         .toArray(new Location[locationList.size()]);
                 adjacency.setLocations(coast, locations);
             }
@@ -187,98 +187,87 @@ public class WorldFactory {
 
         // Process BorderData. This requires the Provinces to be known and
         // successfully parsed. They are mapped to the ID name, stored in the borderMap.
-        HashMap borderMap = new HashMap(11);
+        final java.util.Map<String, Border> borderMap = new HashMap<>(11);
         try {
-            List<BorderData> borderDataArray = variant.getBorderData();
-            for (int i = 0; i < borderDataArray.size(); i++) {
-                BorderData bd = borderDataArray.get(i);
-                Location fromLocs[] = makeBorderLocations(bd.getFrom(),
+            final List<BorderData> borderDataArray = variant.getBorderData();
+            for (final BorderData bd : borderDataArray) {
+                final Location[] fromLocs = makeBorderLocations(bd.getFrom(),
                         provNameMap);
 
-                Border border = new Border(bd.getID(), bd.getDescription(),
-                        bd.getUnitTypes(), fromLocs, bd.getOrderTypes(),
-                        bd.getBaseMoveModifier(), bd.getSeason(), bd.getPhase(),
-                        bd.getYear());
+                final Border border = new Border(bd.getID(),
+                        bd.getDescription(), bd.getUnitTypes(), fromLocs,
+                        bd.getOrderTypes(), bd.getBaseMoveModifier(),
+                        bd.getSeason(), bd.getPhase(), bd.getYear());
 
                 borderMap.put(bd.getID(), border);
             }
-        } catch (InvalidBorderException ibe) {
+        } catch (final InvalidBorderException ibe) {
             throw new InvalidWorldException(ibe.getMessage());
         }
 
         // set the Border data (if any) for each province.
-        {
-            ArrayList list = new ArrayList(10);
+        final ArrayList<Border> list = new ArrayList<>(10);
 
-            for (int i = 0; i < provinceDataArray.size(); i++) {
-                list.clear();
-                ProvinceData provinceData = provinceDataArray.get(i);
-                Province province = (Province) provNameMap
-                        .get(provinceData.getFullName().toLowerCase());
+        for (final ProvinceData aProvinceDataArray : provinceDataArray) {
+            list.clear();
+            final ProvinceData provinceData = aProvinceDataArray;
+            final Province province = provNameMap
+                    .get(provinceData.getFullName().toLowerCase());
 
-                List<String> borderNames = provinceData.getBorders();
-                for (int bIdx = 0; bIdx < borderNames.size(); bIdx++) {
-                    Border border = (Border) borderMap
-                            .get(borderNames.get(bIdx));
-                    if (border == null) {
-                        throw new InvalidWorldException(
-                                Utils.getLocalString(WF_BAD_BORDER_NAME,
-                                        province.getShortName(),
-                                        borderNames.get(bIdx)));
-                    }
-
-                    list.add(border);
+            final List<String> borderNames = provinceData.getBorders();
+            for (final String borderName : borderNames) {
+                final Border border = borderMap.get(borderName);
+                if (border == null) {
+                    throw new InvalidWorldException(
+                            Utils.getLocalString(WF_BAD_BORDER_NAME,
+                                    province.getShortName(), borderName));
                 }
 
-                if (!list.isEmpty()) {
-                    province.setBorders(
-                            (Border[]) list.toArray(new Border[list.size()]));
-                }
+                list.add(border);
+            }
+
+            if (!list.isEmpty()) {
+                province.setBorders(list.toArray(new Border[list.size()]));
             }
         }
 
         // Now that we know the variant, we know the powers, and can
         // create the Map.
-        dip.world.Map map = new dip.world.Map(
-                variant.getPowers().toArray(new Power[0]),
-                (Province[]) provinces.toArray(new Province[provinces.size()]));
+        final Map map = new Map(variant.getPowers().toArray(new Power[0]),
+                provinces.toArray(new Province[provinces.size()]));
 
         // create the World object as well, now that we have the Map
-        World world = new World(map);
+        final World world = new World(map);
 
         // set variables to null that we don't need (just a safety check)
-        locationList = null;
-        provinces = null;
-        provNameMap = null;
         borderMap.clear();
-        borderMap = null;
 
         // create initial turn state based on starting game time
-        Phase phase = variant.getStartingPhase();
+        final Phase phase = variant.getStartingPhase();
         if (phase == null) {
             throw new InvalidWorldException(
                     Utils.getLocalString(WF_BAD_STARTINGTIME));
         }
 
         // create the Position object, as we will need it for various game state
-        Position pos = new Position(map);
+        final Position pos = new Position(map);
 
         // define supply centers
-        List<SupplyCenter> supplyCenters = variant.getSupplyCenters();
-        for (int i = 0; i < supplyCenters.size(); i++) {
-            Province province = map
-                    .getProvince(supplyCenters.get(i).getProvinceName());
+        final List<SupplyCenter> supplyCenters = variant.getSupplyCenters();
+        for (final SupplyCenter supplyCenter : supplyCenters) {
+            final Province province = map
+                    .getProvince(supplyCenter.getProvinceName());
             if (province == null) {
                 throw new InvalidWorldException(
                         Utils.getLocalString(WF_BAD_SC_PROVINCE,
-                                supplyCenters.get(i).getProvinceName()));
+                                supplyCenter.getProvinceName()));
             }
 
             province.setSupplyCenter(true);
 
-            String hpName = supplyCenters.get(i).getHomePowerName();
+            final String hpName = supplyCenter.getHomePowerName();
             if (!"none".equalsIgnoreCase(hpName)) {
-                Power power = map.getPower(hpName);
+                final Power power = map.getPower(hpName);
                 if (power == null) {
                     throw new InvalidWorldException(
                             Utils.getLocalString(WF_BAD_SC_HOMEPOWER, hpName));
@@ -288,9 +277,9 @@ public class WorldFactory {
             }
 
             // define current owner of supply center, if any
-            String scOwner = supplyCenters.get(i).getOwnerName();
+            final String scOwner = supplyCenter.getOwnerName();
             if (!"none".equalsIgnoreCase(scOwner)) {
-                Power power = map.getPower(scOwner);
+                final Power power = map.getPower(scOwner);
                 if (power == null) {
                     throw new InvalidWorldException(
                             Utils.getLocalString(WF_BAD_SC_OWNER, scOwner));
@@ -302,34 +291,26 @@ public class WorldFactory {
 
 
         // set initial state [derived from INITIALSTATE elements in XML file]
-        List<InitialState> initStates = variant.getInitialStates();
-        for (int i = 0; i < initStates.size(); i++) {
+        final List<InitialState> initStates = variant.getInitialStates();
+        for (final InitialState initState : initStates) {
             // a province and power is required, no matter what, unless
             // we are ONLY setting the supply center (which we do above)
-            Power power = map
-                    .getPowerMatching(initStates.get(i).getPowerName());
-            Province province = map
-                    .getProvinceMatching(initStates.get(i).getProvinceName());
+            final Power power = map.getPowerMatching(initState.getPowerName())
+                    .orElseThrow(() -> new InvalidWorldException(
+                            Utils.getLocalString(WF_BAD_IS_POWER)));
 
-            // n/a if we use a validating parser
-            if (power == null) {
-                throw new InvalidWorldException(
-                        Utils.getLocalString(WF_BAD_IS_POWER));
-            }
+            final Province province = map
+                    .getProvinceMatching(initState.getProvinceName())
+                    .orElseThrow(() -> new InvalidWorldException(
+                            Utils.getLocalString(WF_BAD_IS_PROVINCE)));
 
-            // n/a if we use a validating parser
-            if (province == null) {
-                throw new InvalidWorldException(
-                        Utils.getLocalString(WF_BAD_IS_PROVINCE));
-            }
-
-            Unit.Type unitType = initStates.get(i).getUnitType();
+            final Type unitType = initState.getUnitType();
 
             if (unitType != null) {
                 // create unit in province, if location is valid
-                Coast coast = initStates.get(i).getCoast();
+                final Coast coast = initState.getCoast();
 
-                Unit unit = new Unit(power, unitType);
+                final Unit unit = new Unit(power, unitType);
                 Location location = new Location(province, coast);
                 try {
                     location = location.getValidatedSetup(unitType);
@@ -338,16 +319,16 @@ public class WorldFactory {
 
                     // set 'lastOccupier' for unit
                     pos.setLastOccupier(province, unit.getPower());
-                } catch (OrderException e) {
+                } catch (final OrderException e) {
                     throw new InvalidWorldException(
                             Utils.getLocalString(WF_BAD_IS_UNIT_LOC,
-                                    initStates.get(i).getProvinceName(),
+                                    initState.getProvinceName(),
                                     e.getMessage()));
                 }
             } else {
                 throw new InvalidWorldException(
                         Utils.getLocalString(WF_BAD_IS_UNIT,
-                                initStates.get(i).getProvinceName()));
+                                initState.getProvinceName()));
             }
         }
 
@@ -360,19 +341,53 @@ public class WorldFactory {
             throw new InvalidWorldException(Utils.getLocalString(WF_BAD_VC));
         }
 
-        VictoryConditions vc = new VictoryConditions(
+        final VictoryConditions vc = new VictoryConditions(
                 variant.getNumSCForVictory(), variant.getMaxYearsNoSCChange(),
                 variant.getMaxGameTimeYears(), phase);
         world.setVictoryConditions(vc);
 
         // set TurnState / Map / complete World creation.
-        TurnState turnState = new TurnState(phase);
+        final TurnState turnState = new TurnState(phase);
         turnState.setPosition(pos);
         turnState.setWorld(world);
         world.setTurnState(turnState);
 
         return world;
     }// makeWorld()
+
+
+    /**
+     * Makes a Border location. This uses the already-generated Provinces and Adjacency data,
+     * which help error checking. It also will create "undefined" coasts by default. If the
+     * coast does not exist for a Province (but is not Undefined) then this will create an
+     * Exception.
+     * <p>
+     * Input is a space and/or comma-seperated list.
+     * <p>
+     * This will return null if there are no border locations, instead of
+     * a zero-length array.
+     */
+    private static Location[] makeBorderLocations(final String in,
+                                                  final java.util.Map<String, Province> provNameMap) throws InvalidWorldException {
+        final ArrayList<Location> al = new ArrayList<>(6);
+
+        final StringTokenizer st = new StringTokenizer(in.trim(), ";, ");
+        while (st.hasMoreTokens()) {
+            final String tok = st.nextToken();
+
+            final Coast coast = Coast.parse(tok);
+            final Province province = provNameMap
+                    .get(Coast.getProvinceName(tok).toLowerCase());
+            if (province == null) {
+                throw new InvalidWorldException(
+                        Utils.getLocalString(WF_BAD_BORDER_LOCATION, tok));
+            }
+
+            al.add(new Location(province, coast));
+        }
+
+        return al.toArray(new Location[al.size()]);
+    }// makeBorderLocation()
 
 
     /**
@@ -400,29 +415,29 @@ public class WorldFactory {
      * bul/ec would then be linked to con/ec, bla/ec, rum/ec which
      * do not even exist.
      */
-    private Location makeLocation(HashMap provNameMap, String name,
-                                  Coast theDefaultCoast) throws InvalidWorldException {
+    private static Location makeLocation(
+            final java.util.Map<String, Province> provNameMap,
+            final String name,
+            final Coast theDefaultCoast) throws InvalidWorldException {
         Coast defaultCoast = theDefaultCoast;
 
-        if (defaultCoast.equals(Coast.UNDEFINED)) {
+        if (defaultCoast == Coast.UNDEFINED) {
             throw new InvalidWorldException(
                     Utils.getLocalString(WF_ADJ_BAD_TYPE, name));
-        } else if (defaultCoast.equals(Coast.NORTH) || defaultCoast
-                .equals(Coast.WEST) || defaultCoast
-                .equals(Coast.SOUTH) || defaultCoast.equals(Coast.EAST)) {
+        }
+        if (defaultCoast == Coast.NORTH || defaultCoast == Coast.WEST || defaultCoast == Coast.SOUTH || defaultCoast == Coast.EAST) {
             defaultCoast = Coast.SINGLE;
         }
 
         Coast coast = Coast.parse(name);
-        String provinceName = Coast.getProvinceName(name);
+        final String provinceName = Coast.getProvinceName(name);
 
-        if (coast.equals(Coast.UNDEFINED)) {
+        if (coast == Coast.UNDEFINED) {
             coast = defaultCoast;
         }
 
         // name lookup
-        Province province = (Province) provNameMap
-                .get(provinceName.toLowerCase());
+        final Province province = provNameMap.get(provinceName.toLowerCase());
         if (province == null) {
             throw new InvalidWorldException(
                     Utils.getLocalString(WF_ADJ_BAD_PROVINCE, name,
@@ -434,53 +449,16 @@ public class WorldFactory {
     }// makeLocation()
 
 
-    /**
-     * Makes a Border location. This uses the already-generated Provinces and Adjacency data,
-     * which help error checking. It also will create "undefined" coasts by default. If the
-     * coast does not exist for a Province (but is not Undefined) then this will create an
-     * Exception.
-     * <p>
-     * Input is a space and/or comma-seperated list.
-     * <p>
-     * This will return null if there are no border locations, instead of
-     * a zero-length array.
-     */
-    private Location[] makeBorderLocations(String in,
-                                           HashMap provNameMap) throws InvalidWorldException {
-        ArrayList al = new ArrayList(6);
-
-        StringTokenizer st = new StringTokenizer(in.trim(), ";, ");
-        while (st.hasMoreTokens()) {
-            String tok = st.nextToken();
-
-            Coast coast = Coast.parse(tok);
-            Province province = (Province) provNameMap
-                    .get(Coast.getProvinceName(tok).toLowerCase());
-            if (province == null) {
-                throw new InvalidWorldException(
-                        Utils.getLocalString(WF_BAD_BORDER_LOCATION, tok));
-            }
-
-            al.add(new Location(province, coast));
-        }
-
-        if (al.isEmpty()) {
-            return null;
-        } else {
-            return (Location[]) al.toArray(new Location[al.size()]);
-        }
-    }// makeBorderLocation()
-
-
     // verify all names are unique. (hasn't yet been added to the map)
-    private boolean isUnique(HashMap provNameMap, String fullname,
-                             List<String> shortnames) {
+    private static boolean isUnique(
+            final java.util.Map<String, Province> provNameMap,
+            final String fullname, final Iterable<String> shortnames) {
         if (provNameMap.get(fullname.toLowerCase()) != null) {
             return false;
         }
 
-        for (int i = 0; i < shortnames.size(); i++) {
-            if (provNameMap.get(shortnames.get(i).toLowerCase()) != null) {
+        for (final String shortname : shortnames) {
+            if (provNameMap.get(shortname.toLowerCase()) != null) {
                 return false;
             }
         }

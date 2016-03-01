@@ -118,7 +118,7 @@ public class TurnParser {
                     Matcher m = subjPhasePattern.matcher(nextLine);
                     Matcher m_o = subjPhasePatternOld.matcher(nextLine);
                     if (m.find()) {
-                        Phase phase = Phase.parse(m.group(0).trim());
+                        Phase phase = Phase.parse(m.group(0).trim()).orElse(null);
                         if (phase == null) {
                             throw new IOException(
                                     Utils.getLocalString(TP_BAD_PHASE,
@@ -127,7 +127,7 @@ public class TurnParser {
 
                         turn.setPhase(phase);
                     } else if (m_o.find()) {
-                        Phase phase = Phase.parse(m_o.group(0).trim());
+                        Phase phase = Phase.parse(m_o.group(0).trim()).orElse(null);
                         if (phase == null) {
                             throw new IOException(
                                     Utils.getLocalString(TP_BAD_PHASE,

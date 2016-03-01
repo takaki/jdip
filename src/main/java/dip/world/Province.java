@@ -30,6 +30,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -95,7 +97,7 @@ public class Province implements Serializable, Comparable<Province> {
          * Creates a new Adjacency object.
          */
         private Adjacency() {
-            adjLoc = new HashMap<Coast, Location[]>(7);
+            adjLoc = new HashMap<>(7);
         }// Adjacency()
 
         /**
@@ -196,9 +198,8 @@ public class Province implements Serializable, Comparable<Province> {
      */
     public Province(final String fullName, final List<String> shortNames,
                     final int index, final boolean isConvoyableCoast) {
-        if (fullName == null || shortNames == null) {
-            throw new IllegalArgumentException("null full or short name(s)");
-        }
+        Objects.requireNonNull(fullName);
+        Objects.requireNonNull(shortNames);
 
         if (shortNames.size() < 1) {
             throw new IllegalArgumentException(
@@ -437,7 +438,7 @@ public class Province implements Serializable, Comparable<Province> {
      */
     public boolean canTransit(final Location fromLoc, final Type unit,
                               final Phase phase, final Class orderClass) {
-        return getTransit(fromLoc, unit, phase, orderClass) == null;
+        return !getTransit(fromLoc, unit, phase, orderClass).isPresent();
     }// canTransit()
 
     /**
@@ -453,17 +454,18 @@ public class Province implements Serializable, Comparable<Province> {
      * Checks if unit can transit from a Location to this Province. Returns the first
      * failing Border order; returns null if Transit is successfull.
      */
-    public Border getTransit(final Location fromLoc, final Type unit,
-                             final Phase phase, final Class orderClass) {
+    public Optional<Border> getTransit(final Location fromLoc, final Type unit,
+                                       final Phase phase,
+                                       final Class orderClass) {
         return borders != null ? borders.stream().filter(border -> !border
-                .canTransit(fromLoc, unit, phase, orderClass)).findFirst()
-                .orElse(null) : null;
+                .canTransit(fromLoc, unit, phase, orderClass))
+                .findFirst() : Optional.empty();
     }// getTransit()
 
     /**
      * Convenient version of getTransit()
      */
-    public Border getTransit(final Phase phase, final Order order) {
+    public Optional<Border> getTransit(final Phase phase, final Order order) {
         return getTransit(order.getSource(), order.getSourceUnitType(), phase,
                 order.getClass());
     }// getTransit()

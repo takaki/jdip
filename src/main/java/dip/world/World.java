@@ -22,14 +22,31 @@
 //
 package dip.world;
 
+import JSX.ObjectReader;
+import JSX.ObjectWriter;
 import dip.gui.undo.UndoRedoManager;
 import dip.world.metadata.GameMetadata;
 import dip.world.metadata.PlayerMetadata;
 import dip.world.variant.data.VersionNumber;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -55,34 +72,25 @@ public class World implements Serializable {
     private static final String KEY_VARIANT_INFO = "_variant_info_";
 
     // instance variables
-    private SortedMap turnStates = null;            // turn data
-    private Map nonTurnData = null;            // non-turn data (misc data & per-player data)
+    private SortedMap turnStates;            // turn data
+    private Map nonTurnData;            // non-turn data (misc data & per-player data)
     private final dip.world.Map map;                        // the actual map (constant)
 
 
     /**
      * Reads a World object from a file.
      */
-    public static World open(File file) throws IOException {
-        JSX.ObjectReader in = null;
+    public static World open(final File file) throws IOException {
 
-        try {
-            GZIPInputStream gzi = new GZIPInputStream(
-                    new BufferedInputStream(new FileInputStream(file), 4096));
-            in = new JSX.ObjectReader(gzi);
-            World w = (World) in.readObject();
-            return (World) w;
-        } catch (IOException ioe) {
-            throw ioe;
-        } catch (Exception e) {
-            // rethrow all non-IOExceptions as IOExceptions
-            IOException ioe = new IOException(e.getMessage());
-            ioe.initCause(e);
-            throw ioe;
-        } finally {
-            if (in != null) {
-                in.close();
-            }
+        try (
+                final GZIPInputStream gzi = new GZIPInputStream(
+                        new BufferedInputStream(new FileInputStream(file),
+                                4096));
+                ObjectReader in = new ObjectReader(gzi);) {
+            final World w = (World) in.readObject();
+            return w;
+        } catch (ClassNotFoundException e) {
+            throw new IOException(e);
         }
     }// open()
 
@@ -90,27 +98,16 @@ public class World implements Serializable {
     /**
      * Saves a World object to a file.
      */
-    public static void save(File file, World world) throws IOException {
-        GZIPOutputStream gzos = null;
+    public static void save(final File file,
+                            final World world) throws IOException {
 
-        try {
-            gzos = new GZIPOutputStream(new FileOutputStream(file), 2048);
-            JSX.ObjectWriter out = new JSX.ObjectWriter(gzos);
+        try (GZIPOutputStream gzos = new GZIPOutputStream(
+                new FileOutputStream(file), 2048);
+             final ObjectWriter out = new ObjectWriter(gzos)) {
             out.setPrettyPrint(false);
             out.writeObject(world);
             out.close();
             gzos.finish(); // this is key. otherwise data is not written.
-        } catch (IOException ioe) {
-            throw ioe;
-        } catch (Exception e) {
-            // rethrow all non-IOExceptions as IOExceptions
-            IOException ioe = new IOException(e.getMessage());
-            ioe.initCause(e);
-            throw ioe;
-        } finally {
-            if (gzos != null) {
-                gzos.close();
-            }
         }
     }// save()
 
@@ -118,7 +115,7 @@ public class World implements Serializable {
     /**
      * Constructs a World object.
      */
-    protected World(dip.world.Map map) {
+    protected World(final dip.world.Map map) {
         this.map = map;
         turnStates = Collections.synchronizedSortedMap(
                 new TreeMap());    // synchronize on TreeMap
@@ -135,41 +132,9 @@ public class World implements Serializable {
 
 
     /**
-     * Sets any special per-power state information that is not associated with
-     * a particular TurnState. This may be set to null.
-     */
-    public void setPowerState(Power power, Object state) {
-        nonTurnData.put(power, state);
-    }// setPowerState()
-
-    /**
-     * Gets any special per-power state information that is not associated with
-     * a particular TurnState. This may return null.
-     */
-    public Object getPowerState(Power power) {
-        return nonTurnData.get(power);
-    }// getPowerState()
-
-
-    /**
-     * Set the Global state object. This may be set to null.
-     */
-    public void setGlobalState(Object state) {
-        nonTurnData.put(KEY_GLOBAL_DATA, state);
-    }// setGlobalState()
-
-    /**
-     * Get the Global state object. This may return null.
-     */
-    public Object getGlobalState() {
-        return nonTurnData.get(KEY_GLOBAL_DATA);
-    }// getGlobalState()
-
-
-    /**
      * Set the Victory Conditions
      */
-    public void setVictoryConditions(VictoryConditions value) {
+    public void setVictoryConditions(final VictoryConditions value) {
         nonTurnData.put(KEY_VICTORY_CONDITIONS, value);
     }// setVictoryConditions()
 
@@ -185,7 +150,7 @@ public class World implements Serializable {
      * Gets the first TurnState object
      */
     public TurnState getInitialTurnState() {
-        TurnState ts = (TurnState) turnStates.get(turnStates.firstKey());
+        final TurnState ts = (TurnState) turnStates.get(turnStates.firstKey());
         if (ts != null) {
             ts.setWorld(this);
         }
@@ -197,7 +162,7 @@ public class World implements Serializable {
      * Gets the most current (last in the list) TurnState.
      */
     public TurnState getLastTurnState() {
-        TurnState ts = (TurnState) turnStates.get(turnStates.lastKey());
+        final TurnState ts = (TurnState) turnStates.get(turnStates.lastKey());
         if (ts != null) {
             ts.setWorld(this);
         }
@@ -208,8 +173,8 @@ public class World implements Serializable {
     /**
      * Gets the TurnState associated with the specified Phase
      */
-    public TurnState getTurnState(Phase phase) {
-        TurnState ts = (TurnState) turnStates.get(phase);
+    public TurnState getTurnState(final Phase phase) {
+        final TurnState ts = (TurnState) turnStates.get(phase);
         if (ts != null) {
             ts.setWorld(this);
         }
@@ -224,16 +189,16 @@ public class World implements Serializable {
      * same phase generated by phase.getNext(). This will return null
      * iff we are at the last Phase.
      */
-    public TurnState getNextTurnState(TurnState state) {
-        Phase current = state.getPhase();
+    public Optional<TurnState> getNextTurnState(final TurnState state) {
+        final Phase current = state.getPhase();
         if (current == null) {
-            return null;
+            return Optional.empty();
         }
 
         Phase next = null;
-        Iterator iter = turnStates.keySet().iterator();
+        final Iterator iter = turnStates.keySet().iterator();
         while (iter.hasNext()) {
-            Phase phase = (Phase) iter.next();
+            final Phase phase = (Phase) iter.next();
             if (current.compareTo(phase) == 0) {
                 if (iter.hasNext()) {
                     next = (Phase) iter.next();
@@ -244,12 +209,12 @@ public class World implements Serializable {
         }
 
         if (next == null) {
-            return null;
+            return Optional.empty();
         }
 
-        TurnState ts = (TurnState) turnStates.get(next);
+        final TurnState ts = (TurnState) turnStates.get(next);
         ts.setWorld(this);
-        return ts;
+        return Optional.of(ts);
     }// getNextTurnState()
 
 
@@ -261,8 +226,8 @@ public class World implements Serializable {
      * (TurnStates are not cloned here).
      */
     public List getAllTurnStates() {
-        Collection values = turnStates.values();
-        ArrayList al = new ArrayList(values.size());
+        final Collection values = turnStates.values();
+        final ArrayList al = new ArrayList(values.size());
         al.addAll(values);
         return al;
     }// getAllTurnStates()
@@ -275,17 +240,17 @@ public class World implements Serializable {
      * same phase generated by phase.getPrevious(). This will return null
      * iff we are at the first (initial) Phase.
      */
-    public TurnState getPreviousTurnState(TurnState state) {
-        Phase current = state.getPhase();
+    public Optional<TurnState> getPreviousTurnState(final TurnState state) {
+        final Phase current = state.getPhase();
         if (current == null) {
-            return null;
+            return Optional.empty();
         }
 
 
         Phase previous = null;
-        Iterator iter = turnStates.keySet().iterator();
+        final Iterator iter = turnStates.keySet().iterator();
         while (iter.hasNext()) {
-            Phase phase = (Phase) iter.next();
+            final Phase phase = (Phase) iter.next();
             if (phase.compareTo(current) != 0) {
                 previous = phase;
             } else {
@@ -294,19 +259,19 @@ public class World implements Serializable {
         }
 
         if (previous == null) {
-            return null;
+            return Optional.empty();
         }
 
-        TurnState ts = (TurnState) turnStates.get(previous);
+        final TurnState ts = (TurnState) turnStates.get(previous);
         ts.setWorld(this);
-        return ts;
+        return Optional.of(ts);
     }// getPreviousTurnState()
 
 
     /**
      * If a TurnState with the given phase already exists, it is replaced.
      */
-    public void setTurnState(TurnState turnState) {
+    public void setTurnState(final TurnState turnState) {
         turnStates.put(turnState.getPhase(), turnState);
     }// setTurnState()
 
@@ -315,7 +280,7 @@ public class World implements Serializable {
      * Removes a turnstate from the world. This should
      * be used with caution!
      */
-    public void removeTurnState(TurnState turnState) {
+    public void removeTurnState(final TurnState turnState) {
         turnStates.remove(turnState.getPhase());
     }// removeTurnState()
 
@@ -339,11 +304,8 @@ public class World implements Serializable {
     /**
      * Sets the Game metadata
      */
-    public void setGameMetadata(GameMetadata gmd) {
-        if (gmd == null) {
-            throw new IllegalArgumentException("null metadata");
-        }
-
+    public void setGameMetadata(final GameMetadata gmd) {
+        Objects.requireNonNull(gmd);
         nonTurnData.put(KEY_WORLD_METADATA, gmd);
     }// setGameMetadata()
 
@@ -363,20 +325,17 @@ public class World implements Serializable {
     /**
      * Sets the metadata for a player, referenced by Power
      */
-    public void setPlayerMetadata(Power power, PlayerMetadata pmd) {
-        if (power == null || pmd == null) {
-            throw new IllegalArgumentException("null power or metadata");
-        }
+    public void setPlayerMetadata(final Power power, final PlayerMetadata pmd) {
+        Objects.requireNonNull(power);
+        Objects.requireNonNull(pmd);
         nonTurnData.put(power, pmd);
     }// setPlayerMetadata()
 
     /**
      * Gets the metadata for a power. Never returns null. Does not return a copy.
      */
-    public PlayerMetadata getPlayerMetadata(Power power) {
-        if (power == null) {
-            throw new IllegalArgumentException("null power");
-        }
+    public PlayerMetadata getPlayerMetadata(final Power power) {
+        Objects.requireNonNull(power);
 
         PlayerMetadata pmd = (PlayerMetadata) nonTurnData.get(power);
         if (pmd == null) {
@@ -390,7 +349,7 @@ public class World implements Serializable {
     /**
      * Sets the UndoRedo manager to be saved. This may be set to null.
      */
-    public void setUndoRedoManager(UndoRedoManager urm) {
+    public void setUndoRedoManager(final UndoRedoManager urm) {
         nonTurnData.put(KEY_UNDOREDOMANAGER, urm);
     }// setGlobalState()
 
@@ -406,10 +365,8 @@ public class World implements Serializable {
     /**
      * Sets the GameSetup object
      */
-    public void setGameSetup(GameSetup gs) {
-        if (gs == null) {
-            throw new IllegalArgumentException();
-        }
+    public void setGameSetup(final GameSetup gs) {
+        Objects.requireNonNull(gs);
         nonTurnData.put(KEY_GAME_SETUP, gs);
     }// setGameSetup()
 
@@ -439,7 +396,7 @@ public class World implements Serializable {
     /**
      * Set the Variant Info object.
      */
-    public synchronized void setVariantInfo(VariantInfo vi) {
+    public synchronized void setVariantInfo(final VariantInfo vi) {
         nonTurnData.put(KEY_VARIANT_INFO, vi);
     }// getVariantInfo()
 
@@ -454,10 +411,8 @@ public class World implements Serializable {
     /**
      * Convenience method: sets RuleOptions in VariantInfo object.
      */
-    public void setRuleOptions(RuleOptions ruleOpts) {
-        if (ruleOpts == null) {
-            throw new IllegalArgumentException();
-        }
+    public void setRuleOptions(final RuleOptions ruleOpts) {
+        Objects.requireNonNull(ruleOpts);
         getVariantInfo().setRuleOptions(ruleOpts);
     }// getRuleOptions()
 
@@ -466,13 +421,13 @@ public class World implements Serializable {
      * Variant Info is a class which holds information about
      * the variant, map, symbols, and symbol options.
      */
-    public static class VariantInfo {
+    public static final class VariantInfo {
         private String variantName;
         private String mapName;
         private String symbolsName;
         private VersionNumber variantVersion;
         private VersionNumber symbolsVersion;
-        private RuleOptions ruleOptions;
+        private RuleOptions ruleOptions = new RuleOptions();
 
         /**
          * Create a VariantInfo object
@@ -483,22 +438,22 @@ public class World implements Serializable {
         /**
          * Set the Variant name.
          */
-        public void setVariantName(String value) {
-            this.variantName = value;
+        public void setVariantName(final String value) {
+            variantName = value;
         }
 
         /**
          * Set the Map name.
          */
-        public void setMapName(String value) {
-            this.mapName = value;
+        public void setMapName(final String value) {
+            mapName = value;
         }
 
         /**
          * Set the Symbol pack name.
          */
-        public void setSymbolPackName(String value) {
-            this.symbolsName = value;
+        public void setSymbolPackName(final String value) {
+            symbolsName = value;
         }
 
         /**
@@ -506,9 +461,9 @@ public class World implements Serializable {
          *
          * @param value
          */
-        public void setVariantVersion(VersionNumber value) {
+        public void setVariantVersion(final VersionNumber value) {
             checkVersion(value);
-            this.variantVersion = value;
+            variantVersion = value;
         }
 
         /**
@@ -516,16 +471,16 @@ public class World implements Serializable {
          *
          * @param value
          */
-        public void setSymbolPackVersion(VersionNumber value) {
+        public void setSymbolPackVersion(final VersionNumber value) {
             checkVersion(value);
-            this.symbolsVersion = value;
+            symbolsVersion = value;
         }
 
         /**
          * <b>Replaces</b> the current RuleOptions with the given RuleOptions
          */
-        public void setRuleOptions(RuleOptions value) {
-            this.ruleOptions = value;
+        public void setRuleOptions(final RuleOptions value) {
+            ruleOptions = value;
         }
 
 
@@ -533,45 +488,41 @@ public class World implements Serializable {
          * Get the Variant name.
          */
         public String getVariantName() {
-            return this.variantName;
+            return variantName;
         }
 
         /**
          * Get the Map name.
          */
         public String getMapName() {
-            return this.mapName;
+            return mapName;
         }
 
         /**
          * Get the Symbol pack name.
          */
         public String getSymbolPackName() {
-            return this.symbolsName;
+            return symbolsName;
         }
 
         /**
          * Get the Variant version.
          */
         public VersionNumber getVariantVersion() {
-            return this.variantVersion;
+            return variantVersion;
         }
 
         /**
          * Get the Symbol pack version.
          */
         public VersionNumber getSymbolPackVersion() {
-            return this.symbolsVersion;
+            return symbolsVersion;
         }
 
         /**
          * Gets the RuleOptions
          */
         public RuleOptions getRuleOptions() {
-            if (ruleOptions == null) {
-                ruleOptions = new RuleOptions();
-            }
-
             return ruleOptions;
         }// getRuleOptions()
 
@@ -581,7 +532,7 @@ public class World implements Serializable {
          *
          * @param v
          */
-        private void checkVersion(VersionNumber v) {
+        private static void checkVersion(final VersionNumber v) {
             if (v.compareTo(new VersionNumber(0, 0)) <= 0) {
                 throw new IllegalArgumentException("version: " + v);
             }

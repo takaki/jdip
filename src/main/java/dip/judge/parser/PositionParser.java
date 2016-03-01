@@ -276,7 +276,7 @@ public class PositionParser {
         sb.append(year);
 
         try {
-            return Phase.parse(sb.toString());
+            return Phase.parse(sb.toString()).orElse(null);
         } catch (Exception e) {
             throw new IOException(
                     Utils.getLocalString(PP_UNKNOWN_PHASE, sb.toString()));

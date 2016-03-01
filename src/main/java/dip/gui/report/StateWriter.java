@@ -395,7 +395,7 @@ public class StateWriter {
                 // print unit information, for each unit.
                 // comma-separate.
                 for (int z = 0; z < dislodged.length - 1; z++) {
-                    Unit unit = position.getDislodgedUnit(dislodged[z]);
+                    Unit unit = position.getDislodgedUnit(dislodged[z]).orElse(null);
 
                     sb.append(' ');
                     sb.append(unit.getType().getFullName());
@@ -406,7 +406,7 @@ public class StateWriter {
 
                 // print last (no comma afterwards)
                 Unit unit = position
-                        .getDislodgedUnit(dislodged[dislodged.length - 1]);
+                        .getDislodgedUnit(dislodged[dislodged.length - 1]).orElse(null);
                 sb.append(' ');
                 sb.append(unit.getType().getFullName());
                 sb.append(' ');
@@ -500,7 +500,7 @@ public class StateWriter {
             Province province = provinces[i];
 
             if (position.hasUnit(province)) {
-                Unit unit = position.getUnit(province);
+                Unit unit = position.getUnit(province).orElse(null);
                 List uList = (List) pmap.get(unit.getPower());
                 StringBuffer sb = new StringBuffer(16);
                 sb.append(unit.getType().getShortName());
@@ -511,7 +511,7 @@ public class StateWriter {
 
             if (position.hasDislodgedUnit(province)) {
                 // dislodged units are underlined
-                Unit unit = position.getDislodgedUnit(province);
+                Unit unit = position.getDislodgedUnit(province).orElse(null);
                 List uList = (List) pmap.get(unit.getPower());
                 StringBuffer sb = new StringBuffer(16);
                 sb.append("<u>");

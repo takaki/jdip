@@ -174,7 +174,7 @@ public abstract class Order extends Object implements Orderable, java.io.Seriali
     public void validate(TurnState state, ValidationOptions valOpts,
                          RuleOptions ruleOpts) throws OrderException {
         Position position = state.getPosition();
-        Unit unit = position.getUnit(src.getProvince());
+        Unit unit = position.getUnit(src.getProvince()).orElse(null);
         validate(valOpts, unit);
     }// validate()
 

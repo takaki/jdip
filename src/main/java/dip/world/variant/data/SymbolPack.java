@@ -30,7 +30,13 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -150,10 +156,7 @@ public final class SymbolPack implements Comparable<SymbolPack> {
      * Set the CSS Style data
      */
     public void setCSSStyles(final List<CSSStyle> styles) {
-        if (styles == null) {
-            throw new IllegalArgumentException();
-        }
-
+        Objects.requireNonNull(styles);
         cssStyles = new ArrayList<>(styles);
     }// setCSSStyles()
 
@@ -198,9 +201,8 @@ public final class SymbolPack implements Comparable<SymbolPack> {
          * Create a CSS style
          */
         public CSSStyle(final String name, final String style) {
-            if (name == null || style == null) {
-                throw new IllegalArgumentException();
-            }
+            Objects.requireNonNull(name);
+            Objects.requireNonNull(style);
             pair = new Pair<>(name, style);
         }// CSSStyle()
 

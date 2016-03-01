@@ -203,7 +203,7 @@ public class BCSpinner extends JSpinner {
             } else if (newValue != null) {
                 // attempt String conversion (parsing)
                 // parse() will return null if year is invalid (includes '0')
-                yt = YearType.parse(newValue.toString().toLowerCase());
+                yt = YearType.parse(newValue.toString().toLowerCase()).orElse(null);
             }
 
             // if legal, use it

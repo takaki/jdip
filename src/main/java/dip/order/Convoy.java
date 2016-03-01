@@ -205,7 +205,7 @@ public class Convoy extends Order {
             // validate Borders
             Border border = src.getProvince()
                     .getTransit(src, srcUnitType, state.getPhase(),
-                            this.getClass());
+                            this.getClass()).orElse(null);
             if (border != null) {
                 throw new OrderException(
                         Utils.getLocalString(ORD_VAL_BORDER, src.getProvince(),
@@ -214,7 +214,7 @@ public class Convoy extends Order {
 
             // v.2: 	a) type-match unit type with current state, and unit must exist
             // 		b) unit type must be ARMY
-            Unit convoyUnit = position.getUnit(convoySrc.getProvince());
+            Unit convoyUnit = position.getUnit(convoySrc.getProvince()).orElse(null);
             convoyUnitType = getValidatedUnitType(convoySrc.getProvince(),
                     convoyUnitType, convoyUnit);
             if (!convoyUnitType.equals(Unit.Type.ARMY)) {
@@ -251,7 +251,7 @@ public class Convoy extends Order {
             // validate Borders
             border = convoySrc.getProvince()
                     .getTransit(convoySrc, convoyUnitType, state.getPhase(),
-                            this.getClass());
+                            this.getClass()).orElse(null);
             if (border != null) {
                 throw new OrderException(
                         Utils.getLocalString(ORD_VAL_BORDER, src.getProvince(),
@@ -260,7 +260,7 @@ public class Convoy extends Order {
 
             border = convoyDest.getProvince()
                     .getTransit(convoyDest, convoyUnitType, state.getPhase(),
-                            this.getClass());
+                            this.getClass()).orElse(null);
             if (border != null) {
                 throw new OrderException(
                         Utils.getLocalString(ORD_VAL_BORDER, src.getProvince(),

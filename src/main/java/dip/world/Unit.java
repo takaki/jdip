@@ -49,9 +49,7 @@ public class Unit implements Serializable, Cloneable {
      * Creates a new Unit
      */
     public Unit(final Power power, final Type unitType) {
-        if (power == null || unitType == null) {
-            throw new IllegalArgumentException("null arguments not permitted");
-        }
+        Objects.requireNonNull(power); Objects.requireNonNull(unitType);
 
         if (unitType == Type.UNDEFINED) {
             throw new IllegalArgumentException(
@@ -77,10 +75,7 @@ public class Unit implements Serializable, Cloneable {
      * Set the coast of a unit.
      */
     public void setCoast(final Coast coast) {
-        if (coast == null) {
-            throw new IllegalArgumentException("null coast");
-        }
-
+        Objects.requireNonNull(coast);
         this.coast = coast;
     }// setCoast()
 
@@ -266,11 +261,11 @@ public class Unit implements Serializable, Cloneable {
                 return ARMY;
             }
             if (Objects.equals(input, FLEET.shortName) || Objects
-                    .equals(input, ARMY.name)) {
+                    .equals(input, FLEET.name)) {
                 return FLEET;
             }
             if (Objects.equals(input, WING.shortName) || Objects
-                    .equals(input, ARMY.name)) {
+                    .equals(input, WING.name)) {
                 return WING;
             }
 
@@ -290,8 +285,8 @@ public class Unit implements Serializable, Cloneable {
                 default:
                     break;
             }
-
-            return null;
+            throw new IllegalArgumentException(
+                    String.format("Can not parse Unit Type: [%s]", input));
         }// parse()
 
     }// inner class Type

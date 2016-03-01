@@ -132,7 +132,7 @@ public class GUISupport extends Support implements GUIOrder {
         if (currentLocNum == 0) {
             // set Support origin (supporting unit)
             // we require a unit present. We will check unit ownership too, if appropriate
-            Unit unit = position.getUnit(province);
+            Unit unit = position.getUnit(province).orElse(null);
             if (unit != null) {
                 if (!stateInfo.canIssueOrder(unit.getPower())) {
                     sb.append(Utils.getLocalString(GUIOrder.NOT_OWNER,
@@ -182,7 +182,7 @@ public class GUISupport extends Support implements GUIOrder {
                 return false;
             } else if (position.hasUnit(province)) {
                 // check borders
-                Unit supUnit = position.getUnit(province);
+                Unit supUnit = position.getUnit(province).orElse(null);
                 if (!GUIOrderUtils.checkBorder(this,
                         new Location(province, supUnit.getCoast()),
                         supUnit.getType(), stateInfo.getPhase(), sb)) {
@@ -279,7 +279,7 @@ public class GUISupport extends Support implements GUIOrder {
         if (testLocation(stateInfo, location, sb)) {
             if (currentLocNum == 0) {
                 Unit unit = stateInfo.getPosition()
-                        .getUnit(location.getProvince());
+                        .getUnit(location.getProvince()).orElse(null);
                 src = new Location(location.getProvince(), unit.getCoast());
                 power = unit.getPower();
                 srcUnitType = unit.getType();
@@ -287,7 +287,7 @@ public class GUISupport extends Support implements GUIOrder {
                 return true;
             } else if (currentLocNum == 1) {
                 Unit unit = stateInfo.getPosition()
-                        .getUnit(location.getProvince());
+                        .getUnit(location.getProvince()).orElse(null);
                 supSrc = new Location(location.getProvince(), unit.getCoast());
                 supPower = unit.getPower();
                 supUnitType = unit.getType();
@@ -524,7 +524,7 @@ public class GUISupport extends Support implements GUIOrder {
         Point2D.Float newSupDest = null;
         if (position.hasUnit(supDest.getProvince())) {
             // since we're supporting a Move, we should use the Move radius
-            Unit.Type destUnitType = position.getUnit(supDest.getProvince())
+            Unit.Type destUnitType = position.getUnit(supDest.getProvince()).orElse(null)
                     .getType();
             float moveRadius = mmd.getOrderRadius(MapMetadata.EL_MOVE,
                     mapInfo.getSymbolName(destUnitType));

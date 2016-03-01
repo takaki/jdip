@@ -320,8 +320,8 @@ public class EditControlBar extends ViewControlBar {
                 if (hasUnit(loc.getProvince())) {
                     // get old unit
                     Unit oldUnit = (isDislodged()) ? position
-                            .getDislodgedUnit(province) : position
-                            .getUnit(province);
+                            .getDislodgedUnit(province).orElse(null) : position
+                            .getUnit(province).orElse(null);
 
                     // remove an army or fleet
                     removeUnit(province, isDislodged());
@@ -371,7 +371,7 @@ public class EditControlBar extends ViewControlBar {
             }
             if (currentAction == CLICK_TO_SET_SC) {
                 // change supply center ownership
-                Power oldPower = position.getSupplyCenterOwner(province);
+                Power oldPower = position.getSupplyCenterOwner(province).orElse(null);
                 changeSCOwner(province, currentPower);
                 undoManager.addEdit(
                         new UndoEditSCOwner(undoManager, position, province,

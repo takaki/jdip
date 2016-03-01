@@ -68,7 +68,7 @@ public class RetreatChecker {
     public RetreatChecker(TurnState current) {
         List results = null;
 
-        TurnState last = current.getWorld().getPreviousTurnState(current);
+        TurnState last = current.getWorld().getPreviousTurnState(current).get();
         if (last == null) {
             // if we are the very first TurnState, last==null is permissable,
             // but we must take special action to make it work

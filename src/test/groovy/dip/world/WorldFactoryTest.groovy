@@ -45,25 +45,25 @@ class WorldFactoryTest extends Specification {
         then:
         map.getProvinces().size() == 75
 
-        map.getClosestPower("England").toString() == "England"
-        map.getClosestPower("Engband").toString() == "England"
-        map.getPowerMatching("Englang").getName() == "England"
-        map.getPowerMatching("Engbang").getName() == "England"
+        map.getClosestPower("England").get().toString() == "England"
+        map.getClosestPower("Engband").get().toString() == "England"
+        map.getPowerMatching("Englang").get().getName() == "England"
+        map.getPowerMatching("Engbang").get().getName() == "England"
 
-        map.getProvinceMatching("Mosccc").getFullName() == "Moscow"
-        map.getProvinceMatching("Moscaw").getFullName() == "Moscow"
-        map.getProvinceMatching("Xyz") == null
-        map.getProvinceMatching("Xyzabc") == null
+        map.getProvinceMatching("Mosccc").get().getFullName() == "Moscow"
+        map.getProvinceMatching("Moscaw").get().getFullName() == "Moscow"
+        map.getProvinceMatching("Xyz") == Optional.empty()
+        map.getProvinceMatching("Xyzabc") == Optional.empty()
 
-        map.getFirstPower("France: xxx-yyy").getName() == "France"
-        map.getFirstPower("Fra: xxx-yyy").getName() == "France"
-        map.getFirstPower("Fra xxx-yyy") == null
-        map.getFirstPower("xxx-yyy") == null
+        map.getFirstPower("France: xxx-yyy").get().getName() == "France"
+        map.getFirstPower("Fra: xxx-yyy").get().getName() == "France"
+        map.getFirstPower("Fra xxx-yyy") == Optional.empty()
+        map.getFirstPower("xxx-yyy") == Optional.empty()
 
-        map.getFirstPowerToken(new StringBuffer("France: xxx-yyy")) == "France"
-        map.getFirstPowerToken(new StringBuffer("Fra: xxx-yyy")) == "Fra"
-        map.getFirstPowerToken(new StringBuffer("Fra xxx-yyy")) == null
-        map.getFirstPowerToken(new StringBuffer("xxx-yyy")) == null
+        map.getFirstPowerToken(new StringBuffer("France: xxx-yyy")).get() == "France"
+        map.getFirstPowerToken(new StringBuffer("Fra: xxx-yyy")).get() == "Fra"
+        map.getFirstPowerToken(new StringBuffer("Fra xxx-yyy")) == Optional.empty()
+        map.getFirstPowerToken(new StringBuffer("xxx-yyy")) == Optional.empty()
 
 
         map.getProvincesMatchingClosest("Moscow").size() == 1
@@ -75,7 +75,7 @@ class WorldFactoryTest extends Specification {
         map.getProvincesMatchingClosest("abcdef").size() == 9
         map.getProvincesMatchingClosest("defghi").size() == 4
 
-        map.parseLocation("stp/nc").getCoast() == Coast.NORTH
+        map.parseLocation("stp/nc").get().getCoast() == Coast.NORTH
 
         def mossb = new StringBuffer("moscow")
         map.replaceProvinceNames(mossb)
@@ -121,10 +121,10 @@ class WorldFactoryTest extends Specification {
         !stp.isCoastValid(Coast.EAST)
         mos.getBaseMoveModifier() == 0
 
-        mos.canTransit(new Location(stp, Coast.SOUTH), Unit.Type.ARMY, Phase.parse("S1900M"), Move.class)
-        mos.canTransit(new Location(stp, Coast.SOUTH), Unit.Type.FLEET, Phase.parse("S1900M"), Move.class)
+        mos.canTransit(new Location(stp, Coast.SOUTH), Unit.Type.ARMY, Phase.parse("S1900M").get(), Move.class)
+        mos.canTransit(new Location(stp, Coast.SOUTH), Unit.Type.FLEET, Phase.parse("S1900M").get(), Move.class)
 
-        stp.canTransit(new Location(mos, Coast.LAND), Unit.Type.ARMY, Phase.parse("S1900M"), Move.class)
-        stp.canTransit(new Location(mos, Coast.LAND), Unit.Type.FLEET, Phase.parse("S1900M"), Move.class)
+        stp.canTransit(new Location(mos, Coast.LAND), Unit.Type.ARMY, Phase.parse("S1900M").get(), Move.class)
+        stp.canTransit(new Location(mos, Coast.LAND), Unit.Type.FLEET, Phase.parse("S1900M").get(), Move.class)
     }
 }

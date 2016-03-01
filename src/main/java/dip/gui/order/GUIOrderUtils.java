@@ -68,7 +68,7 @@ final class GUIOrderUtils {
                                       StringBuffer sb) {
         Class baseClass = guiOrder.getClass().getSuperclass();
         Border border = location.getProvince()
-                .getTransit(location, unitType, phase, baseClass);
+                .getTransit(location, unitType, phase, baseClass).orElse(null);
         if (border != null) {
             sb.append(Utils.getLocalString(GUIOrder.BORDER_INVALID,
                     guiOrder.getFullName(), border.getDescription()));

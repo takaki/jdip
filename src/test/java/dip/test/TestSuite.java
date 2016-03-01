@@ -242,7 +242,7 @@ public final class TestSuite {
             }
 
             // create the world
-            world = WorldFactory.getInstance().createWorld(variant);
+            world = WorldFactory.createWorld(variant);
             templateTurnState = world.getLastTurnState();
             world.removeTurnState(templateTurnState);
 
@@ -587,7 +587,7 @@ public final class TestSuite {
                 final boolean isDislodged) {
             province = prov;
             this.isDislodged = isDislodged;
-            unit = isDislodged ? pos.getDislodgedUnit(prov) : pos.getUnit(prov);
+            unit = isDislodged ? pos.getDislodgedUnit(prov).orElse(null) : pos.getUnit(prov).orElse(null);
             if (unit == null) {
                 throw new IllegalArgumentException();
             }
@@ -662,7 +662,7 @@ public final class TestSuite {
             of = OrderParser.getInstance();
             // phase
             if (phaseName != null) {
-                phase = Phase.parse(phaseName);
+                phase = Phase.parse(phaseName).orElse(null);
                 if (phase == null) {
                     throw new IllegalArgumentException(
                             String.format("case %s, cannot parse phase %s",

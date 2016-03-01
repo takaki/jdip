@@ -36,8 +36,17 @@ class VictoryConditionsTest extends Specification {
         -1 | 0      | 0      | phase
         0  | -1     | 0      | phase
         0  | 0      | -1     | phase
-        0  | 0      | 0      | null
         0  | 0      | 0      | phase
+    }
+
+    def "constructor null check arguments"() {
+        when:
+        new VictoryConditions(sc, ncyear, gtyear, init)
+        then:
+        thrown(NullPointerException)
+        where:
+        sc | ncyear | gtyear | init
+        0  | 0      | 0      | null
     }
 
 }

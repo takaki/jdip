@@ -156,11 +156,11 @@ public class Build extends Order {
         // basic
         if (position.hasUnit(province)) {
             throw new OrderException(Utils.getLocalString(BUILD_EXISTINGUNIT));
-        } else if (power != position.getSupplyCenterOwner(province)) {
+        } else if (power != position.getSupplyCenterOwner(province).orElse(null)) {
             throw new OrderException(
                     Utils.getLocalString(BUILD_OWNED_SUPPLY, power));
         } else if (power != position
-                .getSupplyCenterHomePower(province) && ruleOpts.getOptionValue(
+                .getSupplyCenterHomePower(province).orElse(null) && ruleOpts.getOptionValue(
                 RuleOptions.OPTION_BUILDS) == RuleOptions.VALUE_BUILDS_HOME_ONLY) {
             throw new OrderException(Utils.getLocalString(BUILD_HOME_SUPPLY));
         }
@@ -182,7 +182,7 @@ public class Build extends Order {
         // validate Borders
         Border border = src.getProvince()
                 .getTransit(src, srcUnitType, state.getPhase(),
-                        this.getClass());
+                        this.getClass()).orElse(null);
         if (border != null) {
             throw new OrderException(
                     Utils.getLocalString(ORD_VAL_BORDER, src.getProvince(),

@@ -448,7 +448,7 @@ public class TestParser {
     private boolean valLocation(ORPair orp, Location theLoc, String tok,
                                 List failedCases) {
         // is tok a valid Power name? if not, error-exit
-        Location loc = map.parseLocation(tok);
+        Location loc = map.parseLocation(tok).orElse(null);
         if (loc == null) {
             System.out.println(
                     "ERROR: in result of order pair starting at line: " + orp
@@ -614,7 +614,7 @@ public class TestParser {
             }
 
             // create the world
-            world = WorldFactory.getInstance().createWorld(variant);
+            world = WorldFactory.createWorld(variant);
             turnState = world.getLastTurnState();
             map = world.getMap();
 

@@ -29,7 +29,10 @@ import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * A Phase object represents when a turn takes place, and contains the
@@ -75,9 +78,9 @@ public class Phase implements Serializable, Comparable<Phase> {
      */
     public Phase(final SeasonType seasonType, final YearType yearType,
                  final PhaseType phaseType) {
-        if (seasonType == null || yearType == null || phaseType == null) {
-            throw new IllegalArgumentException("invalid args");
-        }
+        Objects.requireNonNull(seasonType);
+        Objects.requireNonNull(yearType);
+        Objects.requireNonNull(phaseType);
 
         orderIdx = deriveOrderIdx(seasonType, phaseType);
         if (orderIdx == -1) {
@@ -244,19 +247,20 @@ public class Phase implements Serializable, Comparable<Phase> {
      * any Phase component cannot be parsed, a null value is returned. Note that this is very
      * forgiving, but it does not allow any non-word tokens between what we look for.
      */
-    public static Phase parse(final String in) {
+    public static Optional<Phase> parse(final String in) {
         // special case: 6 char token (commonly seen in Judge input)
         // 'bc' years aren't allowed in 6 char tokens.
         if (in.length() == 6) {
             // parse season & phase
-            final SeasonType seasonType = SeasonType.parse(in.substring(0, 1));
-            final YearType yearType = YearType.parse(in.substring(1, 5));
-            final PhaseType phaseType = PhaseType.parse(in.substring(5, 6));
-
-            if (seasonType == null || yearType == null || phaseType == null) {
-                return null;
-            }
-            return new Phase(seasonType, yearType, phaseType);
+            final Optional<SeasonType> seasonType = SeasonType
+                    .parse(in.substring(0, 1));
+            final Optional<YearType> yearType = YearType
+                    .parse(in.substring(1, 5));
+            final Optional<PhaseType> phaseType = PhaseType
+                    .parse(in.substring(5, 6));
+            return seasonType.flatMap(season -> yearType.flatMap(
+                    year -> phaseType.flatMap(phase -> Optional
+                            .of(new Phase(season, year, phase)))));
         } else {
             // case conversion
             final String lcIn = in.toLowerCase();
@@ -269,35 +273,39 @@ public class Phase implements Serializable, Comparable<Phase> {
 
             // not enough tokens (we need at least 3)
             if (tokList.size() < 3) {
-                return null;
+                return Optional.empty();
             }
 
             // parse until we run out of things to parse
-            final SeasonType seasonType = tokList.stream()
-                    .map(SeasonType::parse).filter(tmp -> tmp != null)
-                    .findFirst().orElse(null);
-            final YearType yearType = tokList.stream().map(YearType::parse)
-                    .filter(tmp -> tmp != null).findFirst().orElse(null);
-            final PhaseType phaseType = tokList.stream().map(PhaseType::parse)
-                    .filter(tmp -> tmp != null).findFirst().orElse(null);
+            final Optional<SeasonType> seasonType = tokList.stream()
+                    .map(SeasonType::parse).flatMap(
+                            season -> season.map(Stream::of)
+                                    .orElse(Stream.empty())).findFirst();
+            final Optional<YearType> yearType = tokList.stream()
+                    .map(YearType::parse).flatMap(
+                            year -> year.map(Stream::of).orElse(Stream.empty()))
+                    .findFirst();
+            final Optional<PhaseType> phaseType = tokList.stream()
+                    .map(PhaseType::parse).flatMap(
+                            phase -> phase.map(Stream::of)
+                                    .orElse(Stream.empty())).findFirst();
 
-            if (yearType == null || seasonType == null || phaseType == null) {
-                return null;
-            }
+            return seasonType.flatMap(season -> yearType
+                    .flatMap(year -> phaseType.flatMap(phase -> {
+                        // check season-phase validity
+                        if (!isValid(season, phase)) {
+                            return Optional.empty();
+                        }
+                        // 'bc' token may be 'loose'. If so, we need to find it, as the
+                        // YearType parser was fed only a single token (no whitespace)
+                        // e.g., "1083 BC" won't be parsed right, but "1083bc" will be.
+                        final YearType yt = (lcIn.contains("bc") || lcIn
+                                .contains("b.c.")) && year
+                                .getYear() > 0 ? new YearType(
+                                -year.getYear()) : year;
 
-            // check season-phase validity
-            if (!isValid(seasonType, phaseType)) {
-                return null;
-            }
-
-            // 'bc' token may be 'loose'. If so, we need to find it, as the
-            // YearType parser was fed only a single token (no whitespace)
-            // e.g., "1083 BC" won't be parsed right, but "1083bc" will be.
-            final YearType yt = (lcIn.contains("bc") || lcIn
-                    .contains("b.c.")) && yearType.getYear() > 0 ? new YearType(
-                    -yearType.getYear()) : yearType;
-
-            return new Phase(seasonType, yt, phaseType);
+                        return Optional.of(new Phase(season, yt, phase));
+                    })));
         }
 
     }// parse()
@@ -400,8 +408,9 @@ public class Phase implements Serializable, Comparable<Phase> {
                 case FALL:
                     return SPRING;
             }
+            throw new IllegalArgumentException(
+                    String.format("Unknown SeasonType: %s", this));
 
-            return null;
         }// getNext()
 
 
@@ -415,8 +424,8 @@ public class Phase implements Serializable, Comparable<Phase> {
                 case FALL:
                     return SPRING;
             }
-
-            return null;
+            throw new IllegalArgumentException(
+                    String.format("Unknown SeasonType: %s", this));
         }// getPrevious()
 
 
@@ -426,43 +435,43 @@ public class Phase implements Serializable, Comparable<Phase> {
          * <p>
          * Note: SUMMER and WINTER are converted to Spring and Fall, respectively.
          */
-        public static SeasonType parse(final String in) {
+        public static Optional<SeasonType> parse(final String in) {
             // short cases (1 letter); not i18n'd
             if (in.length() == 1) {
                 switch (in.toLowerCase()) {
                     case "s":
-                        return SPRING;
+                        return Optional.of(SPRING);
                     case "f":
                     case "w":
-                        return FALL;
+                        return Optional.of(FALL);
                     default:
-                        return null;
+                        return Optional.empty();
                 }
             }
 
             // typical cases
             switch (in.toUpperCase()) {
                 case CONST_SPRING:
-                    return SPRING;
+                    return Optional.of(SPRING);
                 case CONST_FALL:
-                    return FALL;
+                    return Optional.of(FALL);
                 case CONST_SUMMER:
-                    return SPRING;
+                    return Optional.of(SPRING);
                 case CONST_WINTER:
-                    return FALL;
+                    return Optional.of(FALL);
                 default:
                     break;
             }
 
             // il8n cases
             if (in.equalsIgnoreCase(Utils.getLocalString(IL8N_SPRING))) {
-                return SPRING;
+                return Optional.of(SPRING);
             }
             if (in.equalsIgnoreCase(Utils.getLocalString(IL8N_FALL))) {
-                return FALL;
+                return Optional.of(FALL);
             }
 
-            return null;
+            return Optional.empty();
         }// parse()
 
 
@@ -551,8 +560,8 @@ public class Phase implements Serializable, Comparable<Phase> {
                 case MOVEMENT:
                     return RETREAT;
             }
-
-            return null;
+            throw new IllegalArgumentException(
+                    String.format("Unknown PhaseType: %s", this));
         }// getNext()
 
 
@@ -568,8 +577,8 @@ public class Phase implements Serializable, Comparable<Phase> {
                 case MOVEMENT:
                     return ADJUSTMENT;
             }
-
-            return null;
+            throw new IllegalArgumentException(
+                    String.format("Unknown PhaseType: %s", this));
         }// getPrevious()
 
 
@@ -579,45 +588,45 @@ public class Phase implements Serializable, Comparable<Phase> {
          * <p>
          * Plurals are allowable on constants, but not in il8n versions.
          */
-        public static PhaseType parse(final String in) {
+        public static Optional<PhaseType> parse(final String in) {
             // short cases (1 letter); not i18n'd
             if (in.length() == 1) {
                 switch (in.toLowerCase()) {
                     case "m":
-                        return MOVEMENT;
+                        return Optional.of(MOVEMENT);
                     case "a":
                     case "b":
-                        return ADJUSTMENT;
+                        return Optional.of(ADJUSTMENT);
                     case "r":
-                        return RETREAT;
+                        return Optional.of(RETREAT);
                     default:
-                        return null;
+                        return Optional.empty();
                 }
             }
 
             // typical cases; use 'startsWith'
             if (in.startsWith(CONST_ADJUSTMENT)) {
-                return ADJUSTMENT;
+                return Optional.of(ADJUSTMENT);
             }
             if (in.startsWith(CONST_MOVEMENT)) {
-                return MOVEMENT;
+                return Optional.of(MOVEMENT);
             }
             if (in.startsWith(CONST_RETREAT)) {
-                return RETREAT;
+                return Optional.of(RETREAT);
             }
 
             // il8n cases
             if (in.equalsIgnoreCase(Utils.getLocalString(IL8N_ADJUSTMENT))) {
-                return ADJUSTMENT;
+                return Optional.of(ADJUSTMENT);
             }
             if (in.equalsIgnoreCase(Utils.getLocalString(IL8N_MOVEMENT))) {
-                return MOVEMENT;
+                return Optional.of(MOVEMENT);
             }
             if (in.equalsIgnoreCase(Utils.getLocalString(IL8N_RETREAT))) {
-                return RETREAT;
+                return Optional.of(RETREAT);
             }
 
-            return null;
+            return Optional.empty();
         }// parse()
 
     }// nested class PhaseType
@@ -732,7 +741,7 @@ public class Phase implements Serializable, Comparable<Phase> {
          * Periods are NOT allowed in "BC"<br>
          * The modifier BC must be in lower case<br>
          */
-        public static YearType parse(final String input) {
+        public static Optional<YearType> parse(final String input) {
             String in = input;
             final int idx = in.indexOf("bc");
             boolean isBC = false;
@@ -745,17 +754,17 @@ public class Phase implements Serializable, Comparable<Phase> {
             try {
                 y = Integer.parseInt(in.trim());
             } catch (final NumberFormatException e) {
-                return null;
+                return Optional.empty();
             }
 
             if (y == 0) {
-                return null;
+                return Optional.empty();
             }
             if (y > 0 && isBC) {
                 y = -y;
             }
 
-            return new YearType(y);
+            return Optional.of(new YearType(y));
         }// parse()
 
     }// nested class YearType

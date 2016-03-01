@@ -184,17 +184,6 @@ public enum Coast {
 
 
     /**
-     * Gets the Coast corresponding to an index; null if index is out of range.
-     */
-    public static Coast getCoast(final int idx) {
-        if (idx >= 0 && idx < IDX_ARRAY.length) {
-            return IDX_ARRAY[idx];
-        }
-
-        return null;
-    }// getCoast()
-
-    /**
      * Returns the full name of the coast
      */
     public String toString() {

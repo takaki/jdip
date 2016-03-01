@@ -162,7 +162,7 @@ public class GUIMoveExplicit extends Move implements GUIOrder {
         if (currentLocNum == 0) {
             // set Move source
             // we require a unit present. We will check unit ownership too, if appropriate
-            Unit unit = position.getUnit(province);
+            Unit unit = position.getUnit(province).orElse(null);
             if (unit != null) {
                 if (!stateInfo.canIssueOrder(unit.getPower())) {
                     sb.append(Utils.getLocalString(GUIOrder.NOT_OWNER,
@@ -358,7 +358,7 @@ public class GUIMoveExplicit extends Move implements GUIOrder {
         if (ltr.isValid) {
             if (currentLocNum == 0) {
                 Unit unit = stateInfo.getPosition()
-                        .getUnit(location.getProvince());
+                        .getUnit(location.getProvince()).orElse(null);
                 src = new Location(location.getProvince(), unit.getCoast());
                 power = unit.getPower();
                 srcUnitType = unit.getType();
@@ -597,7 +597,7 @@ public class GUIMoveExplicit extends Move implements GUIOrder {
         Point2D.Float newPtTo = ptTo;
         Position position = mapInfo.getTurnState().getPosition();
         if (position.hasUnit(dest.getProvince())) {
-            Unit.Type destUnitType = position.getUnit(dest.getProvince())
+            Unit.Type destUnitType = position.getUnit(dest.getProvince()).orElse(null)
                     .getType();
             float r = mmd.getOrderRadius(MapMetadata.EL_MOVE,
                     mapInfo.getSymbolName(destUnitType));
