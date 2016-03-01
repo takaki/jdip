@@ -83,7 +83,8 @@ public class WorldFactory {
     /**
      * Generates a World given the supplied Variant information
      */
-    public static World createWorld(final Variant variant) throws InvalidWorldException {
+    public static World createWorld(
+            final Variant variant) throws InvalidWorldException {
         if (variant == null) {
             throw new IllegalArgumentException();
         }
@@ -296,22 +297,13 @@ public class WorldFactory {
             // a province and power is required, no matter what, unless
             // we are ONLY setting the supply center (which we do above)
             final Power power = map.getPowerMatching(initState.getPowerName())
-                    .orElse(null);
+                    .orElseThrow(() -> new InvalidWorldException(
+                            Utils.getLocalString(WF_BAD_IS_POWER)));
+
             final Province province = map
                     .getProvinceMatching(initState.getProvinceName())
-                    .orElse(null);
-
-            // n/a if we use a validating parser
-            if (power == null) {
-                throw new InvalidWorldException(
-                        Utils.getLocalString(WF_BAD_IS_POWER));
-            }
-
-            // n/a if we use a validating parser
-            if (province == null) {
-                throw new InvalidWorldException(
-                        Utils.getLocalString(WF_BAD_IS_PROVINCE));
-            }
+                    .orElseThrow(() -> new InvalidWorldException(
+                            Utils.getLocalString(WF_BAD_IS_PROVINCE)));
 
             final Type unitType = initState.getUnitType();
 
@@ -363,6 +355,40 @@ public class WorldFactory {
 
         return world;
     }// makeWorld()
+
+
+    /**
+     * Makes a Border location. This uses the already-generated Provinces and Adjacency data,
+     * which help error checking. It also will create "undefined" coasts by default. If the
+     * coast does not exist for a Province (but is not Undefined) then this will create an
+     * Exception.
+     * <p>
+     * Input is a space and/or comma-seperated list.
+     * <p>
+     * This will return null if there are no border locations, instead of
+     * a zero-length array.
+     */
+    private static Location[] makeBorderLocations(final String in,
+                                                  final java.util.Map<String, Province> provNameMap) throws InvalidWorldException {
+        final ArrayList<Location> al = new ArrayList<>(6);
+
+        final StringTokenizer st = new StringTokenizer(in.trim(), ";, ");
+        while (st.hasMoreTokens()) {
+            final String tok = st.nextToken();
+
+            final Coast coast = Coast.parse(tok);
+            final Province province = provNameMap
+                    .get(Coast.getProvinceName(tok).toLowerCase());
+            if (province == null) {
+                throw new InvalidWorldException(
+                        Utils.getLocalString(WF_BAD_BORDER_LOCATION, tok));
+            }
+
+            al.add(new Location(province, coast));
+        }
+
+        return al.toArray(new Location[al.size()]);
+    }// makeBorderLocation()
 
 
     /**
@@ -422,40 +448,6 @@ public class WorldFactory {
         // create Location
         return new Location(province, coast);
     }// makeLocation()
-
-
-    /**
-     * Makes a Border location. This uses the already-generated Provinces and Adjacency data,
-     * which help error checking. It also will create "undefined" coasts by default. If the
-     * coast does not exist for a Province (but is not Undefined) then this will create an
-     * Exception.
-     * <p>
-     * Input is a space and/or comma-seperated list.
-     * <p>
-     * This will return null if there are no border locations, instead of
-     * a zero-length array.
-     */
-    private static Location[] makeBorderLocations(final String in,
-                                                  final java.util.Map<String, Province> provNameMap) throws InvalidWorldException {
-        final ArrayList<Location> al = new ArrayList<>(6);
-
-        final StringTokenizer st = new StringTokenizer(in.trim(), ";, ");
-        while (st.hasMoreTokens()) {
-            final String tok = st.nextToken();
-
-            final Coast coast = Coast.parse(tok);
-            final Province province = provNameMap
-                    .get(Coast.getProvinceName(tok).toLowerCase());
-            if (province == null) {
-                throw new InvalidWorldException(
-                        Utils.getLocalString(WF_BAD_BORDER_LOCATION, tok));
-            }
-
-            al.add(new Location(province, coast));
-        }
-
-        return al.toArray(new Location[al.size()]);
-    }// makeBorderLocation()
 
 
     // verify all names are unique. (hasn't yet been added to the map)
