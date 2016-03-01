@@ -258,41 +258,47 @@ public class Border implements Serializable {
             yearModifier = YEAR_NOT_SPECIFIED;
         } else {
             final String[] tokens = in.split("[, \t]+");
-            String value1 = null;
-            String value2 = null;
-
-            if (tokens.length > 0) {
-                value1 = tokens[0];
-            }
-
-            if (tokens.length > 1) {
-                value2 = tokens[1];
-            }
-
-            if (tokens.length > 2 || value1 == null) {
+            if (tokens.length > 2) {
                 throw new InvalidBorderException(
                         Utils.getLocalString("Border.error.badyear", id,
                                 "Too few / too many year tokens."));
             }
 
-            if (TOK_YEAR_ODD.equalsIgnoreCase(value1)) {
+            String value0 = null;
+            String value1 = null;
+
+            if (tokens.length > 0) {
+                value0 = tokens[0];
+            }
+
+            if (tokens.length > 1) {
+                value1 = tokens[1];
+            }
+
+            if (value0 == null) {
+                throw new InvalidBorderException(
+                        Utils.getLocalString("Border.error.badyear", id,
+                                "Too few / too many year tokens."));
+            }
+
+            if (TOK_YEAR_ODD.equalsIgnoreCase(value0)) {
                 yearModifier = YEAR_ODD;
-                if (value2 != null) {
+                if (value1 != null) {
                     throw new InvalidBorderException(
                             Utils.getLocalString("Border.error.badyear", id,
                                     "Cannot specify even/odd + year"));
                 }
-            } else if (TOK_YEAR_EVEN.equalsIgnoreCase(value1)) {
+            } else if (TOK_YEAR_EVEN.equalsIgnoreCase(value0)) {
                 yearModifier = YEAR_EVEN;
-                if (value2 != null) {
+                if (value1 != null) {
                     throw new InvalidBorderException(
                             Utils.getLocalString("Border.error.badyear", id,
                                     "Cannot specify even/odd + year"));
                 }
             } else {
                 try {
-                    yearMin = Integer.parseInt(value1);
-                    yearMax = Integer.parseInt(value2);
+                    yearMin = Integer.parseInt(value0);
+                    yearMax = Integer.parseInt(value1);
 
                     if (yearMin > yearMax) {
                         throw new NumberFormatException();
@@ -330,7 +336,7 @@ public class Border implements Serializable {
      */
     private List<Class<? extends Order>> parseClasses2Objs(final String in,
                                                            final String superClassName) throws InvalidBorderException {
-        Class<? extends Order> superClass = null;
+        Class<? extends Order> superClass;
         try {
             superClass = Class.forName(superClassName).asSubclass(Order.class);
         } catch (final ClassNotFoundException e) {
@@ -479,8 +485,7 @@ public class Border implements Serializable {
      */
     public int getBaseMoveModifier(final Location moveFrom) {
         // if not from the given location, no change in support.
-        return from == null ? baseMoveModifier : from.stream()
-                .filter(aFrom -> aFrom.equalsLoosely(moveFrom))
+        return from.stream().filter(aFrom -> aFrom.equalsLoosely(moveFrom))
                 .map(aFrom -> baseMoveModifier).findFirst().orElse(0);
     }// getBaseMoveModifier()
 
