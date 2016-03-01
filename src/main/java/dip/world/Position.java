@@ -118,10 +118,10 @@ public final class Position implements Serializable, Cloneable {
         }
 
         for (final ProvinceData pd : provArray) {
-            Power power = null;
 
             if (pd != null) {
                 Unit unit = pd.getUnit();
+                Power power;
                 if (unit != null)        // first check non-dislodged units
                 {
                     power = unit.getPower();

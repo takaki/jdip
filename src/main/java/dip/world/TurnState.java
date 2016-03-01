@@ -24,6 +24,7 @@ package dip.world;
 
 import dip.order.Orderable;
 import dip.order.result.OrderResult;
+import dip.order.result.OrderResult.ResultType;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 
 /**
@@ -56,15 +58,15 @@ import java.util.Objects;
  */
 public class TurnState implements Serializable {
     // instance variables (we serialize all of this)
-    private Phase phase = null;
-    private List resultList = null;                // order results, post-adjudication
-    private Map orderMap = null;                // Map of power=>orders
-    private boolean isSCOwnerChanged = false;        // 'true' if any supply centers changed ownership
-    private Position position = null;                // Position data (majority of game state)
-    private transient World world = null;                // makes it easier when we just pass a turnstate
-    private boolean isEnded = false;                // true if game over (won, draw, etc.)
-    private boolean isResolved = false;                // true if phase has been adjudicated
-    private transient HashMap resultMap = null;        // transient result map
+    private Phase phase;
+    private List resultList;                // order results, post-adjudication
+    private Map<Power, List> orderMap;                // Map of power=>orders
+    private boolean isSCOwnerChanged;        // 'true' if any supply centers changed ownership
+    private Position position;                // Position data (majority of game state)
+    private transient World world;                // makes it easier when we just pass a turnstate
+    private boolean isEnded;                // true if game over (won, draw, etc.)
+    private boolean isResolved;                // true if phase has been adjudicated
+    private transient Map<Orderable, Boolean> resultMap;        // transient result map
 
 
     /**
@@ -77,18 +79,18 @@ public class TurnState implements Serializable {
     /**
      * Creates a TurnState object.
      */
-    public TurnState(Phase phase) {
+    public TurnState(final Phase phase) {
         Objects.requireNonNull(phase);
         this.phase = phase;
-        this.resultList = new ArrayList(80);
-        this.orderMap = new HashMap(29);
+        resultList = new ArrayList(80);
+        orderMap = new HashMap<>(29);
     }// TurnState()
 
     /**
      * Set the World object associated with this TurnState.
      * A <code>null</code> World is not permitted.
      */
-    public void setWorld(World world) {
+    public void setWorld(final World world) {
         Objects.requireNonNull(world);
         this.world = world;
     }// setWorld()
@@ -112,7 +114,7 @@ public class TurnState implements Serializable {
     /**
      * This should be used with the utmost care. Null Phases are not allowed.
      */
-    public void setPhase(Phase phase) {
+    public void setPhase(final Phase phase) {
         Objects.requireNonNull(phase);
         this.phase = phase;
     }// setPhase()
@@ -129,7 +131,7 @@ public class TurnState implements Serializable {
     /**
      * Sets the Position data for this TurnState
      */
-    public void setPosition(Position position) {
+    public void setPosition(final Position position) {
         Objects.requireNonNull(position);
         this.position = position;
     }// setPosition()
@@ -146,7 +148,7 @@ public class TurnState implements Serializable {
     /**
      * Sets the Result list, erasing any previously existing result list.
      */
-    public void setResultList(List list) {
+    public void setResultList(final List list) {
         Objects.requireNonNull(list);
         resultList = new ArrayList<>(list);
     }// setResultList()
@@ -165,7 +167,7 @@ public class TurnState implements Serializable {
      * Sets the flag indicating if, after adjudication, any supply centers
      * have changed ownership.
      */
-    public void setSCOwnerChanged(boolean value) {
+    public void setSCOwnerChanged(final boolean value) {
         isSCOwnerChanged = value;
     }// setSCOwnerChanged()
 
@@ -175,15 +177,16 @@ public class TurnState implements Serializable {
      * <p>
      * Manipulations to this list will not be reflected in the TurnState object.
      */
-    public List getAllOrders() {
-        List list = new ArrayList(75);
+    public List<Object> getAllOrders() {
+        final List<Object> list = new ArrayList<>(75);
 
-        Iterator esIter = orderMap.entrySet().iterator();
+        final Iterator<Entry<Power, List>> esIter = orderMap.entrySet()
+                .iterator();
         while (esIter.hasNext()) {
-            Map.Entry mapEntry = (Map.Entry) esIter.next();
-            List orders = (List) mapEntry.getValue();
+            final Entry<Power, List> mapEntry = esIter.next();
+            final List orders = mapEntry.getValue();
 
-            Iterator ordIter = orders.iterator();
+            final Iterator ordIter = orders.iterator();
             while (ordIter.hasNext()) {
                 list.add(ordIter.next());
             }
@@ -207,10 +210,10 @@ public class TurnState implements Serializable {
      * Note that modifications to the returned order List will be reflected
      * in the TurnState.
      */
-    public List getOrders(Power power) {
+    public List getOrders(final Power power) {
         Objects.requireNonNull(power);
 
-        List orderList = (List) orderMap.get(power);
+        List orderList = orderMap.get(power);
         if (orderList == null) {
             orderList = new ArrayList(15);
             orderMap.put(power, orderList);
@@ -222,7 +225,7 @@ public class TurnState implements Serializable {
     /**
      * Sets the orders for the given Power, deleting any existing orders for the power
      */
-    public void setOrders(Power power, List list) {
+    public void setOrders(final Power power, final List list) {
         Objects.requireNonNull(power);
         Objects.requireNonNull(list);
 
@@ -232,7 +235,7 @@ public class TurnState implements Serializable {
     /**
      * Set if game has ended for any reason
      */
-    public void setEnded(boolean value) {
+    public void setEnded(final boolean value) {
         isEnded = value;
     }
 
@@ -246,7 +249,7 @@ public class TurnState implements Serializable {
     /**
      * Set if the turn has been adjudicated.
      */
-    public void setResolved(boolean value) {
+    public void setResolved(final boolean value) {
         isResolved = value;
     }
 
@@ -262,33 +265,29 @@ public class TurnState implements Serializable {
      * this only applies once the turnstate has been resolved. If
      * the TurnState is not resolved, this will always return true.
      */
-    public boolean isOrderSuccessful(Orderable o) {
+    public boolean isOrderSuccessful(final Orderable o) {
         if (!isResolved) {
             return true;
         }
 
         if (resultMap == null) {
-            resultMap = new HashMap(53);
-            Iterator iter = getResultList().iterator();
+            resultMap = new HashMap<>(53);
+            final Iterator iter = getResultList().iterator();
             while (iter.hasNext()) {
-                Object obj = iter.next();
+                final Object obj = iter.next();
                 if (obj instanceof OrderResult) {
-                    OrderResult ordRes = (OrderResult) obj;
+                    final OrderResult ordRes = (OrderResult) obj;
 
                     // we only map SUCCESSFULL orders.
-                    if (ordRes
-                            .getResultType() == OrderResult.ResultType.SUCCESS) {
+                    if (ordRes.getResultType() == ResultType.SUCCESS) {
                         resultMap.put(ordRes.getOrder(), Boolean.TRUE);
                     }
                 }
             }
         }
 
-        if (resultMap.get(o) == Boolean.TRUE) {
-            return true;
-        }
+        return resultMap.get(o) == Boolean.TRUE;
 
-        return false;
     }// isFailedOrder()
 
 }// class TurnState

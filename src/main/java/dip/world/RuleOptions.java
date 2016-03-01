@@ -409,8 +409,8 @@ public class RuleOptions implements Serializable {
         // look up all name-value pairs via reflection.
         final List<Variant.NameValuePair> nvps = variant.getRuleOptionNVPs();
         for (int i = 0; i < nvps.size(); i++) {
-            Option option = null;
-            OptionValue optionValue = null;
+            final Option option;
+            final OptionValue optionValue;
 
             // first, check the name
             try {
