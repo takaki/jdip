@@ -125,7 +125,7 @@ public class AIDemo {
         // which contains Province and Power information, as well as TurnStates,
         // which hold turn and Position information.
         //
-        World newWorld = WorldFactory.getInstance().createWorld(variant);
+        World newWorld = WorldFactory.createWorld(variant);
         System.out.println("World created!");
 
         // Set the RuleOptions in the World. This sets the RuleOptions to their

@@ -330,7 +330,7 @@ public final class TestSuite {
             }
 
             // create the world
-            world = WorldFactory.getInstance().createWorld(variant);
+            world = WorldFactory.createWorld(variant);
             templateTurnState = world.getLastTurnState();
             world.removeTurnState(templateTurnState);
 

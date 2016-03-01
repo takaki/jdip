@@ -614,7 +614,7 @@ public class TestParser {
             }
 
             // create the world
-            world = WorldFactory.getInstance().createWorld(variant);
+            world = WorldFactory.createWorld(variant);
             turnState = world.getLastTurnState();
             map = world.getMap();
 

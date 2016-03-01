@@ -131,7 +131,7 @@ public class JudgeImport {
 
         // create the world
         try {
-            world = WorldFactory.getInstance().createWorld(variant);
+            world = WorldFactory.createWorld(variant);
 
             // essential! create the default rules
             world.setRuleOptions(RuleOptions.createFromVariant(variant));
