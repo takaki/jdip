@@ -69,11 +69,11 @@ class PhaseTest extends Specification {
 
     def "Phase#parse"() {
         expect:
-        Phase.parse("Spring, 1900(Movement)") == phase
-        Phase.parse("Spring, 1900[Movement)") == phase
-        Phase.parse("1900 Spring Movement") == phase
-        Phase.parse("Movement;1900 / Spring ") == phase
-        Phase.parse("Spring bc 1000 Movement") == new Phase(Phase.SeasonType.SPRING, -1000, Phase.PhaseType.MOVEMENT)
+        Phase.parse("Spring, 1900(Movement)").get() == phase
+        Phase.parse("Spring, 1900[Movement)").get() == phase
+        Phase.parse("1900 Spring Movement").get() == phase
+        Phase.parse("Movement;1900 / Spring ").get() == phase
+        Phase.parse("Spring bc 1000 Movement").get() == new Phase(Phase.SeasonType.SPRING, -1000, Phase.PhaseType.MOVEMENT)
     }
 
     def "test getAllSeasonPhaseCombos"() {

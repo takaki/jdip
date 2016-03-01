@@ -121,10 +121,10 @@ class WorldFactoryTest extends Specification {
         !stp.isCoastValid(Coast.EAST)
         mos.getBaseMoveModifier() == 0
 
-        mos.canTransit(new Location(stp, Coast.SOUTH), Unit.Type.ARMY, Phase.parse("S1900M"), Move.class)
-        mos.canTransit(new Location(stp, Coast.SOUTH), Unit.Type.FLEET, Phase.parse("S1900M"), Move.class)
+        mos.canTransit(new Location(stp, Coast.SOUTH), Unit.Type.ARMY, Phase.parse("S1900M").get(), Move.class)
+        mos.canTransit(new Location(stp, Coast.SOUTH), Unit.Type.FLEET, Phase.parse("S1900M").get(), Move.class)
 
-        stp.canTransit(new Location(mos, Coast.LAND), Unit.Type.ARMY, Phase.parse("S1900M"), Move.class)
-        stp.canTransit(new Location(mos, Coast.LAND), Unit.Type.FLEET, Phase.parse("S1900M"), Move.class)
+        stp.canTransit(new Location(mos, Coast.LAND), Unit.Type.ARMY, Phase.parse("S1900M").get(), Move.class)
+        stp.canTransit(new Location(mos, Coast.LAND), Unit.Type.FLEET, Phase.parse("S1900M").get(), Move.class)
     }
 }

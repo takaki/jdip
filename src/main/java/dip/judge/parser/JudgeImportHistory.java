@@ -1385,7 +1385,7 @@ final class JudgeImportHistory {
             sb.append(m.group(2));
             sb.append(' ');
             sb.append(m.group(3));
-            phase = Phase.parse(sb.toString());
+            phase = Phase.parse(sb.toString()).orElse(null);
         }
 
         if (phase == null) {
@@ -1438,7 +1438,7 @@ final class JudgeImportHistory {
             sb.append(m.group(2));
             sb.append(' ');
             sb.append(m.group(3));
-            phase = Phase.parse(sb.toString());
+            phase = Phase.parse(sb.toString()).orElse(null);
         }
 
         if (phase == null) {

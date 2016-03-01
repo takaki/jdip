@@ -31,6 +31,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * A Phase object represents when a turn takes place, and contains the
@@ -245,7 +246,7 @@ public class Phase implements Serializable, Comparable<Phase> {
      * any Phase component cannot be parsed, a null value is returned. Note that this is very
      * forgiving, but it does not allow any non-word tokens between what we look for.
      */
-    public static Phase parse(final String in) {
+    public static Optional<Phase> parse(final String in) {
         // special case: 6 char token (commonly seen in Judge input)
         // 'bc' years aren't allowed in 6 char tokens.
         if (in.length() == 6) {
@@ -256,9 +257,9 @@ public class Phase implements Serializable, Comparable<Phase> {
             final PhaseType phaseType = PhaseType.parse(in.substring(5, 6));
 
             if (seasonType == null || yearType == null || phaseType == null) {
-                return null;
+                return Optional.empty();
             }
-            return new Phase(seasonType, yearType, phaseType);
+            return Optional.of(new Phase(seasonType, yearType, phaseType));
         } else {
             // case conversion
             final String lcIn = in.toLowerCase();
@@ -271,7 +272,7 @@ public class Phase implements Serializable, Comparable<Phase> {
 
             // not enough tokens (we need at least 3)
             if (tokList.size() < 3) {
-                return null;
+                return Optional.empty();
             }
 
             // parse until we run out of things to parse
@@ -279,18 +280,19 @@ public class Phase implements Serializable, Comparable<Phase> {
                     .map(SeasonType::parse).filter(tmp -> tmp != null)
                     .findFirst().orElse(null);
             final YearType yearType = tokList.stream().map(YearType::parse)
-                    .filter(Optional::isPresent).findFirst()
-                    .orElse(Optional.empty()).orElse(null);
+                    .flatMap(
+                            type -> type.map(Stream::of).orElse(Stream.empty()))
+                    .findFirst().orElse(null);
             final PhaseType phaseType = tokList.stream().map(PhaseType::parse)
                     .filter(tmp -> tmp != null).findFirst().orElse(null);
 
             if (yearType == null || seasonType == null || phaseType == null) {
-                return null;
+                return Optional.empty();
             }
 
             // check season-phase validity
             if (!isValid(seasonType, phaseType)) {
-                return null;
+                return Optional.empty();
             }
 
             // 'bc' token may be 'loose'. If so, we need to find it, as the
@@ -300,7 +302,7 @@ public class Phase implements Serializable, Comparable<Phase> {
                     .contains("b.c.")) && yearType.getYear() > 0 ? new YearType(
                     -yearType.getYear()) : yearType;
 
-            return new Phase(seasonType, yt, phaseType);
+            return Optional.of(new Phase(seasonType, yt, phaseType));
         }
 
     }// parse()

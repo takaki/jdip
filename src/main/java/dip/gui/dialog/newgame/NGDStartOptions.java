@@ -110,7 +110,7 @@ public class NGDStartOptions extends JPanel implements NewGameDialog.NGDTabPane 
         sb.append(phaseBox.getSelectedItem());
         sb.append(' ');
         sb.append(year.getValue());
-        current.setStartingPhase(Phase.parse(sb.toString()));
+        current.setStartingPhase(Phase.parse(sb.toString()).orElse(null));
 
         // set victory conditions
         current.setNumSCForVictory(getSpinnerValue(vcSC));

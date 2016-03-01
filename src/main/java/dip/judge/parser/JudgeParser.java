@@ -345,7 +345,7 @@ public class JudgeParser {
                     m_hr.lookingAt() ||
                     m_ha.lookingAt()) {
                 type = JP_TYPE_RESULTS;
-                phase = Phase.parse(line.substring(0, line.indexOf(".")));
+                phase = Phase.parse(line.substring(0, line.indexOf("."))).orElse(null);
                 break;
             }
             line = reader.readLine();
@@ -374,7 +374,7 @@ public class JudgeParser {
             }
             if (m_sp.lookingAt() && (type == JP_TYPE_GAMESTART)) {
                 phase = Phase.parse("Movement " + line
-                        .substring(0, line.indexOf(".")));
+                        .substring(0, line.indexOf("."))).orElse(null);
                 break;
             }
             line = reader.readLine();

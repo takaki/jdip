@@ -904,7 +904,7 @@ public final class TestSuite {
 
             // phase
             if (phaseName != null) {
-                phase = Phase.parse(phaseName);
+                phase = Phase.parse(phaseName).orElse(null);
                 if (phase == null) {
                     System.out.println("ERROR: case " + name);
                     System.out

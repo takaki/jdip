@@ -662,7 +662,7 @@ public final class TestSuite {
             of = OrderParser.getInstance();
             // phase
             if (phaseName != null) {
-                phase = Phase.parse(phaseName);
+                phase = Phase.parse(phaseName).orElse(null);
                 if (phase == null) {
                     throw new IllegalArgumentException(
                             String.format("case %s, cannot parse phase %s",

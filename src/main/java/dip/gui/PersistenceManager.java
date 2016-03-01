@@ -469,7 +469,7 @@ public class PersistenceManager {
             while ((ji.getResult() == JudgeImport.JI_RESULT_TRYREWIND) || (ji
                     .getResult() == JudgeImport.JI_RESULT_LOADOTHER)) {
                 String gameInfo = ji.getGameInfo();
-                Phase phase = Phase.parse(gameInfo);
+                Phase phase = Phase.parse(gameInfo).orElse(null);
 
                 if (ji.getResult() == JudgeImport.JI_RESULT_TRYREWIND) {
                     // we need to rewind the current game
