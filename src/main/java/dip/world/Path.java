@@ -620,21 +620,21 @@ public class Path {
         @Override
         public boolean evaluate(final Location location) {
             final Province province = location.getProvince();
-            final Unit unit = position.getUnit(province).orElse(null);
+            return position.getUnit(province).map(unit -> {
+                if (province.isSea() || province.isConvoyableCoast()) {
+                    if (unit.getType() == Type.FLEET) {
+                        final boolean result = evalFleet(province, unit);
 
-            if (unit != null && (province.isSea() || province
-                    .isConvoyableCoast())) {
-                if (unit.getType() == Type.FLEET) {
-                    final boolean result = evalFleet(province, unit);
+                        if (result) {
+                            foundConvoy = true;
+                        }
 
-                    if (result) {
-                        foundConvoy = true;
+                        return result;
                     }
-
-                    return result;
                 }
-            }
-            return false;
+                return false;
+            }).orElse(false);
+
         }// evaluate()
 
         // must be adjacent by PROVINCE (not coastal) to destination.
@@ -655,8 +655,8 @@ public class Path {
 
 
     private class LegalConvoyPathEvaluator extends AnyConvoyPathEvaluator {
-        private Location src;
-        private Location dest;
+        private final Location src;
+        private final Location dest;
 
 
         // set Src and Dest of path, so we can evaluate fleet orders
@@ -695,13 +695,13 @@ public class Path {
 
 
     private class SuperConvoyPathEvaluator extends AnyConvoyPathEvaluator {
-        private Location src;
-        private Location dest;
-        private Location invalid;
+        private final Location src;
+        private final Location dest;
+        private final Location invalid;
 
         private boolean isUncertain;    // if we found one or more uncertains.
         private boolean isFailure;        // if we found one or more failures/dislodged
-        private boolean noteUncertains;
+        private final boolean noteUncertains;
 
         // set Src and Dest of path, so we can evaluate fleet orders
         public SuperConvoyPathEvaluator(final Location src, final Location dest,

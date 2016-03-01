@@ -215,10 +215,14 @@ public class Border implements Serializable {
         final List<PhaseType> list = new ArrayList<>();
         for (final String st : in.split("[, ]+")) {
             final String tok = st.trim();
-            final PhaseType phase = PhaseType.parse(tok).orElse(null);
-            if (phase == null || PhaseType.ADJUSTMENT == phase) {
-                throw new InvalidBorderException(
-                        "Border " + id + ": phase \"" + tok + "\" is not allowed or recognized.");
+            final PhaseType phase = PhaseType.parse(tok).orElseThrow(
+                    () -> new InvalidBorderException(String.format(
+                            "Border %s: phase \"%s\" is not allowed or recognized.",
+                            id, tok)));
+            if (PhaseType.ADJUSTMENT == phase) {
+                throw new InvalidBorderException(String.format(
+                        "Border %s: phase \"%s\" is not allowed or recognized.",
+                        id, tok));
             }
 
             list.add(phase);
