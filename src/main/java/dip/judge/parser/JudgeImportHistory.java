@@ -725,7 +725,7 @@ final class JudgeImportHistory {
         procAdjustmentBlock(adjParser.getOwnership(), ts, position);
 
         // check for elimination
-        position.setEliminationStatus(map.getPowers().toArray(new Power[0]));
+        position.setEliminationStatus(map.getPowers());
 
         // set adjudicated flag
         ts.setResolved(true);
@@ -886,7 +886,7 @@ final class JudgeImportHistory {
 
         // check for elimination
         ts.getPosition()
-                .setEliminationStatus(map.getPowers().toArray(new Power[0]));
+                .setEliminationStatus(map.getPowers());
 
         // set adjudicated flag
         ts.setResolved(true);
@@ -1051,7 +1051,7 @@ final class JudgeImportHistory {
 
         // check for elimination
         ts.getPosition()
-                .setEliminationStatus(map.getPowers().toArray(new Power[0]));
+                .setEliminationStatus(map.getPowers());
 
         // set adjudicated flag
         ts.setResolved(true);
@@ -1429,7 +1429,7 @@ final class JudgeImportHistory {
 
         // check for elimination
         ts.getPosition()
-                .setEliminationStatus(map.getPowers().toArray(new Power[0]));
+                .setEliminationStatus(map.getPowers());
 
         // add to World
         world.setTurnState(ts);
@@ -1482,7 +1482,7 @@ final class JudgeImportHistory {
 
         // check for elimination
         ts.getPosition()
-                .setEliminationStatus(map.getPowers().toArray(new Power[0]));
+                .setEliminationStatus(map.getPowers());
 
         // add to World
         world.setTurnState(ts);

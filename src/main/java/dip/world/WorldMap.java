@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -110,7 +109,7 @@ public final class WorldMap implements Serializable {
                 .toMap(power -> power.getAdjective().toLowerCase(),
                         Function.identity())));
         powers.stream().forEach(power -> {
-            powerNameMap.putAll(Arrays.stream(power.getNames()).collect(
+            powerNameMap.putAll(power.getNames().stream().collect(
                     Collectors.toMap(String::toLowerCase, aTmp -> power)));
         });
         // create lcPowerNameList
@@ -607,7 +606,7 @@ public final class WorldMap implements Serializable {
      */
     private List<String> createLCPowerNameList() {
         final List<String> tmpNames = new ArrayList<>(powers.stream()
-                .flatMap(power -> Arrays.stream(power.getNames()))
+                .flatMap(power -> power.getNames().stream())
                 .map(String::toLowerCase).collect(Collectors.toList()));
         tmpNames.addAll(
                 powers.stream().map(power -> power.getAdjective().toLowerCase())

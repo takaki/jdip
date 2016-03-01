@@ -3,7 +3,7 @@ package dip.world
 import spock.lang.Specification
 
 class UnitTest extends Specification {
-    def power = new Power(["aaa", "000"] as String[], "adj", true)
+    def power = new Power(["aaa", "000"], "adj", true)
     def unit = new Unit(power, Unit.Type.ARMY)
 
     def "test setCoast"() {
@@ -16,8 +16,8 @@ class UnitTest extends Specification {
     }
 
     def "test equals"() {
-        def power0 = new Power(["aaa", "000"] as String[], "adj", true)
-        def power1 = new Power(["aaa0", "000"] as String[], "adj", true)
+        def power0 = new Power(["aaa", "000"], "adj", true)
+        def power1 = new Power(["aaa0", "000"], "adj", true)
         expect:
         power.equals(power)
         //power.equals(power0)
@@ -37,14 +37,14 @@ class UnitTest extends Specification {
         unit.toString() == "Unit:[type=A,power=aaa,coast=Undefined]"
     }
 
-    def "undefined throws exception" (){
+    def "undefined throws exception"() {
         when:
         new Unit(power, Unit.Type.parse(null))
         then:
         thrown(IllegalArgumentException)
     }
 
-    def "Unit.Type" (){
+    def "Unit.Type"() {
         expect:
         Unit.Type.parse("f") == Unit.Type.FLEET
         Unit.Type.parse("a") == Unit.Type.ARMY
@@ -55,7 +55,7 @@ class UnitTest extends Specification {
         Unit.Type.parse("W") == Unit.Type.WING
     }
 
-    def "Can't parse" () {
+    def "Can't parse"() {
         when:
         Unit.Type.parse("army1")
         then:

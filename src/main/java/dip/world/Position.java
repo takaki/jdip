@@ -112,7 +112,7 @@ public final class Position implements Serializable, Cloneable {
      * Scans the Position; sets/unsets elimination depending upon if a given
      * Power has any units (including dislodged units) or supply centers on the map
      */
-    public void setEliminationStatus(final Power[] powers) {
+    public void setEliminationStatus(final List<Power> powers) {
         final Map<Power, Object> pmap = new HashMap<>(19);
         for (final Power power1 : powers) {
             pmap.put(power1, null);

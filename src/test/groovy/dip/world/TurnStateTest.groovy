@@ -55,12 +55,12 @@ class TurnStateTest extends Specification {
         thrown(NullPointerException)
 
         when:
-        ts.setOrders(new Power(["a"] as String[], "adj", true), null)
+        ts.setOrders(new Power(["a"], "adj", true), null)
         then:
         thrown(NullPointerException)
     }
 
-    def "setter and getter" () {
+    def "setter and getter"() {
         def ts = new TurnState()
         def phase = new Phase(Phase.SeasonType.SPRING, 1900, Phase.PhaseType.MOVEMENT)
         ts.setPhase(phase)
