@@ -101,13 +101,13 @@ class PhaseTest extends Specification {
         def spring = Phase.SeasonType.SPRING
         def fall = Phase.SeasonType.FALL
         expect:
-        Phase.SeasonType.parse("s") == spring
-        Phase.SeasonType.parse("f") == fall
-        Phase.SeasonType.parse("w") == fall
-        Phase.SeasonType.parse("sPrIng") == spring
-        Phase.SeasonType.parse("summer") == spring
-        Phase.SeasonType.parse("faLL") == fall
-        Phase.SeasonType.parse("Winter") == fall
+        Phase.SeasonType.parse("s").get() == spring
+        Phase.SeasonType.parse("f").get() == fall
+        Phase.SeasonType.parse("w").get() == fall
+        Phase.SeasonType.parse("sPrIng").get() == spring
+        Phase.SeasonType.parse("summer").get() == spring
+        Phase.SeasonType.parse("faLL").get() == fall
+        Phase.SeasonType.parse("Winter").get() == fall
     }
 
     def "PhaseType"() {

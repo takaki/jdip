@@ -198,7 +198,7 @@ public class Border implements Serializable {
         final List<SeasonType> list = new ArrayList<>();
         for (final String st : in.split("[, ]+")) {
             final String tok = st.trim();
-            final SeasonType season = SeasonType.parse(tok);
+            final SeasonType season = SeasonType.parse(tok).orElse(null);
             if (season == null) {
                 throw new InvalidBorderException(
                         "Border " + id + ": season \"" + tok + "\" is not recognized.");

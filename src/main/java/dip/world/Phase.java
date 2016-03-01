@@ -251,7 +251,8 @@ public class Phase implements Serializable, Comparable<Phase> {
         // 'bc' years aren't allowed in 6 char tokens.
         if (in.length() == 6) {
             // parse season & phase
-            final SeasonType seasonType = SeasonType.parse(in.substring(0, 1));
+            final SeasonType seasonType = SeasonType.parse(in.substring(0, 1))
+                    .orElse(null);
             final YearType yearType = YearType.parse(in.substring(1, 5))
                     .orElse(null);
             final PhaseType phaseType = PhaseType.parse(in.substring(5, 6))
@@ -278,11 +279,13 @@ public class Phase implements Serializable, Comparable<Phase> {
 
             // parse until we run out of things to parse
             final SeasonType seasonType = tokList.stream()
-                    .map(SeasonType::parse).filter(tmp -> tmp != null)
-                    .findFirst().orElse(null);
+                    .map(SeasonType::parse).flatMap(
+                            season -> season.map(Stream::of)
+                                    .orElse(Stream.empty())).findFirst()
+                    .orElse(null);
             final YearType yearType = tokList.stream().map(YearType::parse)
                     .flatMap(
-                            type -> type.map(Stream::of).orElse(Stream.empty()))
+                            year -> year.map(Stream::of).orElse(Stream.empty()))
                     .findFirst().orElse(null);
             final PhaseType phaseType = tokList.stream().map(PhaseType::parse)
                     .flatMap(phase -> phase.map(Stream::of)
@@ -434,43 +437,43 @@ public class Phase implements Serializable, Comparable<Phase> {
          * <p>
          * Note: SUMMER and WINTER are converted to Spring and Fall, respectively.
          */
-        public static SeasonType parse(final String in) {
+        public static Optional<SeasonType> parse(final String in) {
             // short cases (1 letter); not i18n'd
             if (in.length() == 1) {
                 switch (in.toLowerCase()) {
                     case "s":
-                        return SPRING;
+                        return Optional.of(SPRING);
                     case "f":
                     case "w":
-                        return FALL;
+                        return Optional.of(FALL);
                     default:
-                        return null;
+                        return Optional.empty();
                 }
             }
 
             // typical cases
             switch (in.toUpperCase()) {
                 case CONST_SPRING:
-                    return SPRING;
+                    return Optional.of(SPRING);
                 case CONST_FALL:
-                    return FALL;
+                    return Optional.of(FALL);
                 case CONST_SUMMER:
-                    return SPRING;
+                    return Optional.of(SPRING);
                 case CONST_WINTER:
-                    return FALL;
+                    return Optional.of(FALL);
                 default:
                     break;
             }
 
             // il8n cases
             if (in.equalsIgnoreCase(Utils.getLocalString(IL8N_SPRING))) {
-                return SPRING;
+                return Optional.of(SPRING);
             }
             if (in.equalsIgnoreCase(Utils.getLocalString(IL8N_FALL))) {
-                return FALL;
+                return Optional.of(FALL);
             }
 
-            return null;
+            return Optional.empty();
         }// parse()
 
 
