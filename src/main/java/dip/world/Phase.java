@@ -251,17 +251,15 @@ public class Phase implements Serializable, Comparable<Phase> {
         // 'bc' years aren't allowed in 6 char tokens.
         if (in.length() == 6) {
             // parse season & phase
-            final SeasonType seasonType = SeasonType.parse(in.substring(0, 1))
-                    .orElse(null);
-            final YearType yearType = YearType.parse(in.substring(1, 5))
-                    .orElse(null);
-            final PhaseType phaseType = PhaseType.parse(in.substring(5, 6))
-                    .orElse(null);
-
-            if (seasonType == null || yearType == null || phaseType == null) {
-                return Optional.empty();
-            }
-            return Optional.of(new Phase(seasonType, yearType, phaseType));
+            final Optional<SeasonType> seasonType = SeasonType
+                    .parse(in.substring(0, 1));
+            final Optional<YearType> yearType = YearType
+                    .parse(in.substring(1, 5));
+            final Optional<PhaseType> phaseType = PhaseType
+                    .parse(in.substring(5, 6));
+            return seasonType.flatMap(season -> yearType.flatMap(
+                    year -> phaseType.flatMap(phase -> Optional
+                            .of(new Phase(season, year, phase)))));
         } else {
             // case conversion
             final String lcIn = in.toLowerCase();
@@ -278,36 +276,35 @@ public class Phase implements Serializable, Comparable<Phase> {
             }
 
             // parse until we run out of things to parse
-            final SeasonType seasonType = tokList.stream()
+            final Optional<SeasonType> seasonType = tokList.stream()
                     .map(SeasonType::parse).flatMap(
                             season -> season.map(Stream::of)
-                                    .orElse(Stream.empty())).findFirst()
-                    .orElse(null);
-            final YearType yearType = tokList.stream().map(YearType::parse)
-                    .flatMap(
+                                    .orElse(Stream.empty())).findFirst();
+            final Optional<YearType> yearType = tokList.stream()
+                    .map(YearType::parse).flatMap(
                             year -> year.map(Stream::of).orElse(Stream.empty()))
-                    .findFirst().orElse(null);
-            final PhaseType phaseType = tokList.stream().map(PhaseType::parse)
-                    .flatMap(phase -> phase.map(Stream::of)
-                            .orElse(Stream.empty())).findFirst().orElse(null);
+                    .findFirst();
+            final Optional<PhaseType> phaseType = tokList.stream()
+                    .map(PhaseType::parse).flatMap(
+                            phase -> phase.map(Stream::of)
+                                    .orElse(Stream.empty())).findFirst();
 
-            if (yearType == null || seasonType == null || phaseType == null) {
-                return Optional.empty();
-            }
+            return seasonType.flatMap(season -> yearType
+                    .flatMap(year -> phaseType.flatMap(phase -> {
+                        // check season-phase validity
+                        if (!isValid(season, phase)) {
+                            return Optional.empty();
+                        }
+                        // 'bc' token may be 'loose'. If so, we need to find it, as the
+                        // YearType parser was fed only a single token (no whitespace)
+                        // e.g., "1083 BC" won't be parsed right, but "1083bc" will be.
+                        final YearType yt = (lcIn.contains("bc") || lcIn
+                                .contains("b.c.")) && year
+                                .getYear() > 0 ? new YearType(
+                                -year.getYear()) : year;
 
-            // check season-phase validity
-            if (!isValid(seasonType, phaseType)) {
-                return Optional.empty();
-            }
-
-            // 'bc' token may be 'loose'. If so, we need to find it, as the
-            // YearType parser was fed only a single token (no whitespace)
-            // e.g., "1083 BC" won't be parsed right, but "1083bc" will be.
-            final YearType yt = (lcIn.contains("bc") || lcIn
-                    .contains("b.c.")) && yearType.getYear() > 0 ? new YearType(
-                    -yearType.getYear()) : yearType;
-
-            return Optional.of(new Phase(seasonType, yt, phaseType));
+                        return Optional.of(new Phase(season, yt, phase));
+                    })));
         }
 
     }// parse()
