@@ -209,7 +209,7 @@ public class Border implements Serializable {
                             tok)));
             list.add(season);
         }
-        return list.isEmpty() ? null : list;
+        return list;
     }// parseProhibitedSeasons()
 
     /**
@@ -233,7 +233,7 @@ public class Border implements Serializable {
             list.add(phase);
         }
 
-        return list.isEmpty() ? null : list;
+        return list;
     }// parseProhibitedPhases()
 
 
@@ -311,9 +311,8 @@ public class Border implements Serializable {
      * Parses the unit types
      */
     private List<Type> parseUnitTypes(final String in) {
-        final List<Type> list = Arrays.stream(in.split("[, ]+"))
-                .map(Type::parse).collect(Collectors.toList());
-        return list.isEmpty() ? null : list;
+        return Arrays.stream(in.split("[, ]+")).map(Type::parse)
+                .collect(Collectors.toList());
     }// parseUnitTypes()
 
 
@@ -322,9 +321,7 @@ public class Border implements Serializable {
      */
     private List<Class<? extends Order>> parseOrders(
             final String in) throws InvalidBorderException {
-        final List<Class<? extends Order>> classes = parseClasses2Objs(in,
-                "dip.order.Order");
-        return classes.isEmpty() ? null : classes;
+        return parseClasses2Objs(in, "dip.order.Order");
     }// parseOrders()
 
 
@@ -419,14 +416,14 @@ public class Border implements Serializable {
         // from was specified, and it matches.
         if (fromMatched) {
             // check unit type
-            if (unitTypes != null) {
+            if (!unitTypes.isEmpty()) {
                 nResults++;
                 failResults += unitTypes.stream()
                         .anyMatch(unitType -> unitType == unit) ? 1 : 0;
             }
 
             // check order
-            if (orderClasses != null) {
+            if (!orderClasses.isEmpty()) {
                 nResults++;
                 failResults += orderClasses.stream().anyMatch(
                         orderClass1 -> Objects
@@ -434,16 +431,16 @@ public class Border implements Serializable {
             }
 
             // check phase (season, phase, and year)
-            if (seasons != null) {
+            if (!seasons.isEmpty()) {
                 nResults++;
                 failResults += seasons.stream().anyMatch(
-                        season -> phase.getSeasonType().equals(season)) ? 1 : 0;
+                        season -> phase.getSeasonType() == season) ? 1 : 0;
             }
 
-            if (phases != null) {
+            if (!phases.isEmpty()) {
                 nResults++;
                 failResults += phases.stream().anyMatch(
-                        phase1 -> phase.getPhaseType().equals(phase1)) ? 1 : 0;
+                        phase1 -> phase.getPhaseType() == phase1) ? 1 : 0;
             }
 
             // we always check the year
