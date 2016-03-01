@@ -1086,7 +1086,7 @@ public class StdAdjudicator implements Adjudicator {
         // step 2:
         // ensure that each unit now has a corresponding OrderState. If a unit has no corresponding
         // OrderState, an OrderState with a Disband order is used.
-        Province[] dislodgedUnitProvs = position.getDislodgedUnitProvinces();
+        Province[] dislodgedUnitProvs = position.getDislodgedUnitProvinces().toArray(new Province[0]);
         for (int i = 0; i < dislodgedUnitProvs.length; i++) {
             Province province = dislodgedUnitProvs[i];
             if (!osMap.containsKey(province)) {

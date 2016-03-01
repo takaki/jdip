@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Stores all the mutable (state) information for a given TurnState.
@@ -352,21 +354,12 @@ public final class Position implements Serializable, Cloneable {
     /**
      * Returns an array of provinces with dislodged units
      */
-    public Province[] getDislodgedUnitProvinces() {
-        makeTmpProvArray();
-
-        int arrSize = 0;
-        for (int i = 0; i < provArray.size(); i++) {
+    public List<Province> getDislodgedUnitProvinces() {
+        return IntStream.range(0, provArray.size()).filter(i -> {
             final ProvinceData pd = provArray.get(i);
-            if (pd != null && pd.hasDislodgedUnit()) {
-                tmpProvArray[arrSize] = map.reverseIndex(i);
-                arrSize++;
-            }
-        }
+            return (pd != null && pd.hasDislodgedUnit());
+        }).mapToObj(i -> map.reverseIndex(i)).collect(Collectors.toList());
 
-        final Province[] p = new Province[arrSize];
-        System.arraycopy(tmpProvArray, 0, p, 0, arrSize);
-        return p;
     }// getDislodgedUnitProvinces()
 
 

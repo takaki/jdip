@@ -614,7 +614,7 @@ final class JudgeImportHistory {
 
             // clear all units (dislodged or not) from the board
             Province[] unitProv = position.getUnitProvinces();
-            Province[] dislProv = position.getDislodgedUnitProvinces();
+            Province[] dislProv = position.getDislodgedUnitProvinces().toArray(new Province[0]);
             for (int i = 0; i < unitProv.length; i++) {
                 position.setUnit(unitProv[i], null);
             }
@@ -804,7 +804,7 @@ final class JudgeImportHistory {
 
             // clear all dislodged units from board
             if (positionPlacement) {
-                Province[] dislProv = position.getDislodgedUnitProvinces();
+                Province[] dislProv = position.getDislodgedUnitProvinces().toArray(new Province[0]);
                 for (int i = 0; i < dislProv.length; i++) {
                     position.setDislodgedUnit(dislProv[i], null);
                 }

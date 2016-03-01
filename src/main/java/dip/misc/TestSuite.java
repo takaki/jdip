@@ -706,7 +706,7 @@ public final class TestSuite {
             }
         }
 
-        provs = pos.getDislodgedUnitProvinces();
+        provs = pos.getDislodgedUnitProvinces().toArray(new Province[0]);
         for (int i = 0; i < provs.length; i++) {
             if (!resolvedUnits.add(new UnitPos(pos, provs[i], true))) {
                 throw new IllegalStateException(
