@@ -33,6 +33,7 @@ import dip.world.Power;
 import dip.world.Province;
 import dip.world.Unit;
 import dip.world.Unit.Type;
+import dip.world.WorldMap;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -441,7 +442,7 @@ public class NJudgeOrderParser {
      * If phaseType is Phase.PhaseType.RETREAT, "Move" format orders will
      * be made into Retreat orders, and convoyed moves will be disallowed.
      */
-    public NJudgeOrder parse(final dip.world.Map map,
+    public NJudgeOrder parse(final WorldMap map,
                              final OrderFactory orderFactory,
                              final Phase.PhaseType phaseType,
                              final String line) throws OrderException {
@@ -1301,12 +1302,12 @@ public class NJudgeOrderParser {
      * Info needed by parsing methods
      */
     private class ParseContext {
-        public final dip.world.Map map;
+        public final WorldMap map;
         public final OrderFactory orderFactory;
         public final Phase.PhaseType phaseType;
         public final String orderText;
 
-        public ParseContext(dip.world.Map map, OrderFactory orderFactory,
+        public ParseContext(WorldMap map, OrderFactory orderFactory,
                             Phase.PhaseType phaseType, String orderText) {
             this.map = map;
             this.orderFactory = orderFactory;

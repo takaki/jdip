@@ -175,7 +175,7 @@ public class JudgeImport {
         String[] pPowerNames = jp.getPlayerPowerNames();
         String[] pPowerEmail = jp.getPlayerEmails();
 
-        dip.world.Map map = world.getMap();
+        WorldMap map = world.getMap();
         for (int i = 0; i < pPowerNames.length; i++) {
             Power power = map.getPowerMatching(pPowerNames[i]).orElse(null);
             if (power != null) {
@@ -293,7 +293,7 @@ public class JudgeImport {
         ts.setPosition(position);
 
         // get world map information
-        dip.world.Map map = world.getMap();
+        WorldMap map = world.getMap();
 
         // reset home supply centers
         Province[] provinces = map.getProvinces();

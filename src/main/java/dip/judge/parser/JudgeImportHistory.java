@@ -49,6 +49,7 @@ import dip.world.TurnState;
 import dip.world.Unit;
 import dip.world.VictoryConditions;
 import dip.world.World;
+import dip.world.WorldMap;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -91,7 +92,7 @@ final class JudgeImportHistory {
 
 
     // instance variables
-    private final dip.world.Map map;
+    private final WorldMap map;
     private final OrderFactory orderFactory;
     private final World world;
     private JudgeParser jp = null;

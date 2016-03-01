@@ -59,11 +59,11 @@ public final class Position implements Serializable, Cloneable {
     // instance variables
     private final Map<Power, PowerData> powerMap = new HashMap<>(POWER_SIZE);
     private final List<ProvinceData> provArray;
-    private final dip.world.Map map;
+    private final WorldMap map;
     private transient Province[] tmpProvArray;
 
 
-    public Position(final dip.world.Map map) {
+    public Position(final WorldMap map) {
         this.map = map;
         provArray = new ArrayList<>(
                 Arrays.asList(new ProvinceData[map.getProvinces().length]));

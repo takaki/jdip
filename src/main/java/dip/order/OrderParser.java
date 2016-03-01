@@ -26,7 +26,7 @@ import dip.misc.Log;
 import dip.misc.Utils;
 import dip.world.Coast;
 import dip.world.Location;
-import dip.world.Map;
+import dip.world.WorldMap;
 import dip.world.Phase;
 import dip.world.Position;
 import dip.world.Power;
@@ -255,7 +255,7 @@ public class OrderParser {
         }
 
         Position position = turnState.getPosition();
-        Map map = turnState.getWorld().getMap();
+        WorldMap map = turnState.getWorld().getMap();
         String preText = preprocess(text, map);
 
         Log.println("OP: Input:", text);
@@ -270,7 +270,7 @@ public class OrderParser {
      * The preprocessor normalizes the orders, converting various order entry
      * formats to a single order entry format that is more easily parsed.
      */
-    private String preprocess(String ord, Map map) throws OrderException {
+    private String preprocess(String ord, WorldMap map) throws OrderException {
         // create StringBuffer, after filtering the input string.
         // note that this step includes lower-case conversion.
         StringBuffer sb = filterInput(ord);
@@ -339,7 +339,7 @@ public class OrderParser {
     }// preprocess()
 
 
-    private Order parse(String ord, Position position, Map map,
+    private Order parse(String ord, Position position, WorldMap map,
                         Power defaultPower, TurnState turnState,
                         OrderFactory orderFactory, boolean locked,
                         boolean guessing) throws OrderException {
@@ -565,7 +565,7 @@ public class OrderParser {
      * <p>
      * This will return a Move or Retreat order, or throw an OrderException.
      */
-    private Order parseMoveOrder(Map map, TurnState turnState,
+    private Order parseMoveOrder(WorldMap map, TurnState turnState,
                                  Position position, OrderFactory orderFactory,
                                  StringTokenizer st, Power srcPower,
                                  Location srcLoc, Unit.Type srcUnitType,
@@ -651,7 +651,7 @@ public class OrderParser {
      * specified this way.
      */
     private Order parseCommandPrefixedOrders(OrderFactory orderFactory,
-                                             Position position, Map map,
+                                             Position position, WorldMap map,
                                              Power power, String orderType,
                                              StringTokenizer st,
                                              boolean guessing,
@@ -879,7 +879,7 @@ public class OrderParser {
      * <b>THIS ASSUMES COASTS HAVE ALREADY BEEN NORMALIZED WITH
      * Coast.normalize()</b>
      */
-    private Location parseLocation(Map map,
+    private Location parseLocation(WorldMap map,
                                    String locName) throws OrderException {
         // parse the coast
         Coast coast = Coast
@@ -930,7 +930,7 @@ public class OrderParser {
         return Type.parse(unitName);
     }// parseUnitType()
 
-    private Power parsePower(Map map, String powerName) throws OrderException {
+    private Power parsePower(WorldMap map, String powerName) throws OrderException {
         Power power = map.getPowerMatching(powerName).orElse(null);
         if (power == null) {
             throw new OrderException(

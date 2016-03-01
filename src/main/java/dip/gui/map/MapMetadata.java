@@ -26,6 +26,7 @@ import dip.misc.Log;
 import dip.world.Coast;
 import dip.world.Power;
 import dip.world.Province;
+import dip.world.WorldMap;
 import dip.world.variant.data.Symbol;
 import dip.world.variant.data.SymbolPack;
 import org.w3c.dom.Element;
@@ -889,7 +890,7 @@ public class MapMetadata {
         // POWERCOLOR(S)
         el = getElement(orderRoot, EL_POWERCOLORS);
         checkElement(EL_POWERCOLORS, el);
-        dip.world.Map map = mp.getWorld().getMap();
+        WorldMap map = mp.getWorld().getMap();
         nl = el.getChildNodes();
         for (int i = 0; i < nl.getLength(); i++) {
             Node node = nl.item(i);

@@ -22,7 +22,7 @@
 //
 package dip.judge.parser;
 
-import dip.world.Map;
+import dip.world.WorldMap;
 import dip.world.Power;
 
 import java.io.BufferedReader;
@@ -61,7 +61,7 @@ public class AdjustmentParser {
 
 
     // INSTANCE VARIABLES
-    private dip.world.Map map = null;
+    private WorldMap map = null;
 
     private List ownerList = null;
     private List adjustList = null;
@@ -132,7 +132,7 @@ public class AdjustmentParser {
     /**
      * Creates a AdjustmentParser object, which parses the given input for an Ownership and Adjustment info blocks
      */
-    public AdjustmentParser(Map map, String input) throws IOException {
+    public AdjustmentParser(WorldMap map, String input) throws IOException {
         if (map == null || input == null) {
             throw new IllegalArgumentException();
         }

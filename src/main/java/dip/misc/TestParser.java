@@ -66,7 +66,7 @@ public class TestParser {
     String variantName;
     World world = null;
     TurnState turnState = null;    // the first & only TurnState in the World object
-    dip.world.Map map = null;
+    WorldMap map = null;
     List cases = null;            // a List of ORPairs
     OrderParser op = null;
     boolean isLogging = false;    // OrderParser internal logging enabled

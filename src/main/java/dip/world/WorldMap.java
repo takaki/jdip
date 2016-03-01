@@ -35,6 +35,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -46,7 +47,7 @@ import java.util.stream.IntStream;
  * A Map is a list of Provinces and Powers, and methods for obtaining and parsing
  * these Provinces and Powers.
  */
-public final class Map implements Serializable {
+public final class WorldMap implements Serializable {
 
     // internal constant arrays
     // all this data is serialized.
@@ -57,21 +58,21 @@ public final class Map implements Serializable {
     // the above (serialized) data.
     //
     // Province-related
-    private transient java.util.Map<String, Province> nameMap;    // map of all (short & full) names to a province; names in lower case
+    private transient Map<String, Province> nameMap;    // map of all (short & full) names to a province; names in lower case
     private transient List<String> names;    // list of all province names [short & full]; names in lower case
 
     // Power-related
-    private transient java.util.Map<String, Power> powerNameMap;        // created by createMappings()
+    private transient Map<String, Power> powerNameMap;        // created by createMappings()
 
     // fields created on first-use (by a method)
     private transient List<String> lcPowerNames;        // lower case power names & adjectives
     private transient List<String> wsNames;            // list of all province names that contain whitespace, "-", or " "
 
-
     /**
      * Constructs a Map object.
      */
-    protected Map(final Power[] powerArray, final Province[] provinceArray) {
+    protected WorldMap(final Power[] powerArray,
+                       final Province[] provinceArray) {
         // define constant arrays.
         powers = Arrays.asList(powerArray);
         provinces = Arrays.asList(provinceArray);
@@ -618,44 +619,6 @@ public final class Map implements Serializable {
         return tmpNames;
     }// createLCPowerNameList()
 
-	
-	
-	
-	/*
-        Deprecated
-		
-		match string against another.
-		if src > dest, -1
-		higher number == closer!
-		not ideal for checking exact match.
-		we stop checking at the first letter that doesn't compare.
-		assumes: SRC is lower case
-		DEST lower case (now...)
-	
-	
-	
-	private int getCloseness(String src, String dest)
-	{
-		if(src.length() > dest.length())
-		{
-			return -1;
-		}
-				
-		int numCharsMatching = 0;
-		for(int i=0; i<src.length(); i++)
-		{
-			//if(src.charAt(i) != Character.toLowerCase(dest.charAt(i)))		// OLD
-			if(src.charAt(i) != dest.charAt(i))
-			{
-				break;
-			}
-			
-			numCharsMatching++;
-		}
-		
-		return numCharsMatching;
-	}// getCloseness()
-	*/
 
     /**
      * Performs a 'best partial match' with a province name (trimmed, all

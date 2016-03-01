@@ -74,7 +74,7 @@ public class World implements Serializable {
     // instance variables
     private SortedMap turnStates;            // turn data
     private Map nonTurnData;            // non-turn data (misc data & per-player data)
-    private final dip.world.Map map;                        // the actual map (constant)
+    private final WorldMap map;                        // the actual map (constant)
 
 
     /**
@@ -115,7 +115,7 @@ public class World implements Serializable {
     /**
      * Constructs a World object.
      */
-    protected World(final dip.world.Map map) {
+    protected World(final WorldMap map) {
         this.map = map;
         turnStates = Collections.synchronizedSortedMap(
                 new TreeMap());    // synchronize on TreeMap
@@ -126,7 +126,7 @@ public class World implements Serializable {
     /**
      * Returns the Map (dip.world.Map) associated with this World.
      */
-    public dip.world.Map getMap() {
+    public WorldMap getMap() {
         return map;
     }// getMap()
 

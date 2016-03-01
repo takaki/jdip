@@ -28,6 +28,7 @@ import dip.order.NJudgeOrderParser.NJudgeOrder;
 import dip.order.OrderException;
 import dip.order.OrderFactory;
 import dip.world.Phase.PhaseType;
+import dip.world.WorldMap;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -97,14 +98,14 @@ public class JudgeOrderParser {
     // instance variables
     private NJudgeOrder[] nJudgeOrders = null;
     private PhaseType phaseType = null;
-    private final dip.world.Map map;
+    private final WorldMap map;
     private final NJudgeOrderParser parser;
     private final OrderFactory orderFactory;
 
     /**
      * Create a JudgeOrderParser
      */
-    public JudgeOrderParser(final dip.world.Map map,
+    public JudgeOrderParser(final WorldMap map,
                             final OrderFactory orderFactory,
                             final String input) throws IOException, PatternSyntaxException {
         this.map = map;

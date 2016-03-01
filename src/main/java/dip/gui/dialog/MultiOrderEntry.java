@@ -27,7 +27,7 @@ import dip.gui.OrderDisplayPanel;
 import dip.misc.Log;
 import dip.misc.Utils;
 import dip.order.OrderException;
-import dip.world.Map;
+import dip.world.WorldMap;
 import dip.world.World;
 
 import javax.swing.*;
@@ -358,7 +358,7 @@ public class MultiOrderEntry {
      * b) Unit
      */
     private boolean isRecognized(String tok) {
-        Map map = world.getMap();
+        WorldMap map = world.getMap();
 
         // check against known powers
         if (map.getPower(tok) != null) {

@@ -172,7 +172,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
     private final HashMap[] powerOrderMap;
     private HashMap oldRenderSettings;        // old render settings
 
-    private final dip.world.Map worldMap;    // World Map reference
+    private final WorldMap worldMap;    // World Map reference
 
     private TurnState turnState = null;                    // current TurnState
     private final Province[] provinces;

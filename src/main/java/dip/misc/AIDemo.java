@@ -135,7 +135,7 @@ public class AIDemo {
 
         // This is to illustrate some features of the dip.world.Map object.
         //
-        Map map = newWorld.getMap();
+        WorldMap map = newWorld.getMap();
         Power[] powers = map.getPowers();
         System.out.println("\nPowers in this game:");
         for (int i = 0; i < powers.length; i++) {
@@ -212,7 +212,7 @@ public class AIDemo {
         Position pos = w.getLastTurnState().getPosition();
 
         // a Map reference, for convenience
-        final Map map = w.getMap();
+        final WorldMap map = w.getMap();
 
         // All Power and Province are immutable references. Thus they must
         // be obtained from the Map object.
@@ -259,7 +259,7 @@ public class AIDemo {
      * <p>
      * We return an Array of Lists (a somewhat unusual construct...)
      */
-    private List[] createOrders(Map map, Position pos) {
+    private List[] createOrders(WorldMap map, Position pos) {
         // get the OrderFactory. The default order factory is OrderFactory.getDefault().
         OrderFactory orderFactory = OrderFactory.getDefault();
 
