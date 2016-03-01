@@ -372,7 +372,7 @@ public class Path {
     public boolean isPossibleConvoyRoute(final Location src,
                                          final Location dest) {
         if (src.getProvince().isCoastal() && dest.getProvince().isCoastal()) {
-            final List path = new ArrayList(12);
+            final List<Location> path = new ArrayList<>(12);
             final PathEvaluator pe = new AnyConvoyPathEvaluator();
 
             return findPathBreadthFirst(src, dest, src, path, pe);
@@ -390,8 +390,9 @@ public class Path {
      * could convoy the desired army from src to dest, but may not
      * have convoy orders to do so.
      */
-    public List getConvoyRoute(final Location src, final Location dest) {
-        final List path = new ArrayList();
+    public List<Location> getConvoyRoute(final Location src,
+                                         final Location dest) {
+        final List<Location> path = new ArrayList<>();
 
         final PathEvaluator pe = new AnyConvoyPathEvaluator();
         findPathBreadthFirst(src, dest, src, path, pe);
@@ -409,7 +410,7 @@ public class Path {
      * </ol>
      */
     public boolean isLegalConvoyRoute(final Location src, final Location dest) {
-        final List path = new ArrayList(12);
+        final List<Location> path = new ArrayList<>(12);
         final PathEvaluator pe = new LegalConvoyPathEvaluator(src, dest);
         return findPathBreadthFirst(src, dest, src, path, pe);
     }// isLegalConvoyRoute()
@@ -423,8 +424,9 @@ public class Path {
      * <li>the evaluation state of the Convoy order must not be Tristate.FAILURE</li>
      * </ol>
      */
-    public List getLegalConvoyRoute(final Location src, final Location dest) {
-        final List path = new ArrayList(12);
+    public List<Location> getLegalConvoyRoute(final Location src,
+                                              final Location dest) {
+        final List<Location> path = new ArrayList<>(12);
         final PathEvaluator pe = new LegalConvoyPathEvaluator(src, dest);
         findPathBreadthFirst(src, dest, src, path, pe);
         return path;
@@ -488,7 +490,7 @@ public class Path {
                                              final Location dest,
                                              final Location invalid,
                                              final List validPath) {
-        final List path = new ArrayList(12);
+        final List<Location> path = new ArrayList<>(12);
         SuperConvoyPathEvaluator spe = null;
         boolean isPathFound = false;
 
@@ -536,7 +538,7 @@ public class Path {
     protected boolean findPathBreadthFirst(final Location src,
                                            final Location dest,
                                            final Location current,
-                                           final List path,
+                                           final List<Location> path,
                                            final PathEvaluator pathEvaluator) {
         // Step 1: add current location to path
         path.add(current);
@@ -550,7 +552,7 @@ public class Path {
 
         // Step 3: find all adjacent locations to the current location.
         // note that we ONLY add a location if it is ok'd by the PathEvaluator.
-        final List adjLocs = new LinkedList();
+        final List<Location> adjLocs = new LinkedList<>();
         for (int i = 0; i < Coast.ALL_COASTS.length; i++) {
             final Location[] locations = current.getProvince()
                     .getAdjacentLocations(Coast.ALL_COASTS[i]);
@@ -572,9 +574,9 @@ public class Path {
         // Step 5: We have one or more possible routes to check.
         // If we find that a route is invalid, we will remove it
         // from adjacency list.
-        final Iterator iter = adjLocs.iterator();
+        final Iterator<Location> iter = adjLocs.iterator();
         while (iter.hasNext()) {
-            final Location location = (Location) iter.next();
+            final Location location = iter.next();
 
             if (path.contains(location)) {
                 // if adjacent province already in the path, we are going
@@ -793,16 +795,14 @@ public class Path {
             return 0;
         }
 
-        int dist = 0;
-
-        final HashMap visited = new HashMap(119);
+        final java.util.Map<Province, Boolean> visited = new HashMap<>(119);
         visited.put(src, Boolean.TRUE);
 
-        ArrayList toCheck = new ArrayList(32);
-        ArrayList nextToCheck = new ArrayList(32);
-        ArrayList swapTmp = null;
+        ArrayList<Province> toCheck = new ArrayList<>(32);
+        ArrayList<Province> nextToCheck = new ArrayList<>(32);
         toCheck.add(src);
 
+        int dist = 0;
         while (true) {
             // inc dist
             dist++;
@@ -846,7 +846,7 @@ public class Path {
 
             // swap lists
             toCheck.clear();
-            swapTmp = toCheck;
+            final ArrayList<Province> swapTmp = toCheck;
             toCheck = nextToCheck;
             nextToCheck = swapTmp;
 
@@ -903,10 +903,10 @@ public class Path {
         // that are adjacent to the current node. A path cannot use the same
         // TreeNode more than once, so we use addUniqueChild() to ensure this.
         //
-        final LinkedList queue = new LinkedList();
+        final LinkedList<TreeNode> queue = new LinkedList<>();
         queue.addLast(root);
         while (queue.size() > 0) {
-            final TreeNode node = (TreeNode) queue.removeFirst();
+            final TreeNode node = queue.removeFirst();
             final Province prov = node.getProvince();
             final Location[] locs = prov.getAdjacentLocations(Coast.TOUCHING);
             for (final Location loc : locs) {
@@ -1039,7 +1039,7 @@ public class Path {
         private final TreeNode parent;
         private final Province prov;
         private final int depth;
-        private final List kids;
+        private final List<TreeNode> kids;
 
         /**
          * Create a TreeNode. Null parent is the root. Null Location not ok.
@@ -1048,7 +1048,7 @@ public class Path {
             Objects.requireNonNull(prov);
             this.parent = parent;
             this.prov = prov;
-            kids = new ArrayList(4);    // ?? vs. linkedlist
+            kids = new ArrayList<>(4);    // ?? vs. linkedlist
             depth = parent == null ? 0 : parent.getDepth() + 1;
         }// TreeNode()
 
@@ -1124,12 +1124,12 @@ public class Path {
             // first: do a BFS to find all leaf nodes (no kids).
             // we'll store these in a list, and then iterate back
             // up using getParent().
-            final LinkedList leafNodeList = new LinkedList();
-            final LinkedList queue = new LinkedList();
+            final LinkedList<TreeNode> leafNodeList = new LinkedList<>();
+            final LinkedList<TreeNode> queue = new LinkedList<>();
 
             queue.addLast(this);
             while (queue.size() > 0) {
-                final TreeNode n = (TreeNode) queue.removeFirst();
+                final TreeNode n = queue.removeFirst();
 
                 if (n.isLeaf()) {
                     leafNodeList.addLast(n);
@@ -1150,12 +1150,12 @@ public class Path {
          * Otherwise similar to getAllBranches()
          */
         public Province[][] getAllBranchesTo(final Province end) {
-            final LinkedList leafNodeList = new LinkedList();
-            final LinkedList queue = new LinkedList();
+            final LinkedList<TreeNode> leafNodeList = new LinkedList<>();
+            final LinkedList<TreeNode> queue = new LinkedList<>();
 
             queue.addLast(this);
-            while (queue.size() > 0) {
-                final TreeNode n = (TreeNode) queue.removeFirst();
+            while (!queue.isEmpty()) {
+                final TreeNode n = queue.removeFirst();
 
                 if (n.isLeaf() && n.getProvince().equals(end)) {
                     leafNodeList.addLast(n);
@@ -1173,13 +1173,13 @@ public class Path {
         /**
          * Creates a Province array from a List of endpoints.
          */
-        private Province[][] createProvinceArray(final List list) {
+        private Province[][] createProvinceArray(final List<TreeNode> list) {
             final Province[][] pathArray = new Province[list.size()][];
             int idx = 0;
-            final Iterator iter = list.iterator();
+            final Iterator<TreeNode> iter = list.iterator();
             while (iter.hasNext()) {
 
-                TreeNode n = (TreeNode) iter.next();
+                TreeNode n = iter.next();
                 final Province[] path = new Province[n
                         .getDepth() + 1];    // root is depth 0
                 for (int i = path.length - 1; i >= 0; i--) {
