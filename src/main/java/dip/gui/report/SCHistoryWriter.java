@@ -369,7 +369,7 @@ public class SCHistoryWriter {
         int sumOfSquares = 0;
         for (int i = 0; i < allPowers.length; i++) {
             Province[] ownedSC = ts.getPosition()
-                    .getOwnedSupplyCenters(allPowers[i]);
+                    .getOwnedSupplyCenters(allPowers[i]).toArray(new Province[0]);
             final int count = ownedSC.length;
 
             sumOfSquares += (count * count);

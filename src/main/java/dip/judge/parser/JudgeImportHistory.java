@@ -191,7 +191,8 @@ final class JudgeImportHistory {
         ArrayList hscList = new ArrayList(50);
         Province[] provinces = map.getProvinces();
         for (int i = 0; i < provinces.length; i++) {
-            Power power = oldPosition.getSupplyCenterHomePower(provinces[i]).orElse(null);
+            Power power = oldPosition.getSupplyCenterHomePower(provinces[i])
+                    .orElse(null);
             if (power != null) {
                 hscList.add(new HSCInfo(provinces[i], power));
             }
@@ -278,7 +279,8 @@ final class JudgeImportHistory {
         ArrayList hscList = new ArrayList(50);
         Province[] provinces = map.getProvinces();
         for (int i = 0; i < provinces.length; i++) {
-            Power power = oldPosition.getSupplyCenterHomePower(provinces[i]).orElse(null);
+            Power power = oldPosition.getSupplyCenterHomePower(provinces[i])
+                    .orElse(null);
             if (power != null) {
                 hscList.add(new HSCInfo(provinces[i], power));
             }
@@ -347,7 +349,7 @@ final class JudgeImportHistory {
                     prevPhaseType = phase_p.getPhaseType();
                 }
                 /*
-				 * Much the same as above, set the proper positionPlacement value depending
+                 * Much the same as above, set the proper positionPlacement value depending
 				 * on the PhaseType and if the turn being processed is the final turn.
 				 * Set it back again when done. 
 				 */
@@ -613,8 +615,10 @@ final class JudgeImportHistory {
             Log.println("JIH::procMove():ORDER PARSING COMPLETE");
 
             // clear all units (dislodged or not) from the board
-            Province[] unitProv = position.getUnitProvinces();
-            Province[] dislProv = position.getDislodgedUnitProvinces().toArray(new Province[0]);
+            Province[] unitProv = position.getUnitProvinces()
+                    .toArray(new Province[0]);
+            Province[] dislProv = position.getDislodgedUnitProvinces()
+                    .toArray(new Province[0]);
             for (int i = 0; i < unitProv.length; i++) {
                 position.setUnit(unitProv[i], null);
             }
@@ -804,7 +808,8 @@ final class JudgeImportHistory {
 
             // clear all dislodged units from board
             if (positionPlacement) {
-                Province[] dislProv = position.getDislodgedUnitProvinces().toArray(new Province[0]);
+                Province[] dislProv = position.getDislodgedUnitProvinces()
+                        .toArray(new Province[0]);
                 for (int i = 0; i < dislProv.length; i++) {
                     position.setDislodgedUnit(dislProv[i], null);
                 }
@@ -1177,7 +1182,8 @@ final class JudgeImportHistory {
         // copy!
         Province[] provinces = map.getProvinces();
         for (int i = 0; i < provinces.length; i++) {
-            Power power = prevPos.getSupplyCenterOwner(provinces[i]).orElse(null);
+            Power power = prevPos.getSupplyCenterOwner(provinces[i])
+                    .orElse(null);
             if (power != null) {
                 //System.out.println("  SC @ "+provinces[i]+", owned by "+power);
                 currentPos.setSupplyCenterOwner(provinces[i], power);
@@ -1342,9 +1348,11 @@ final class JudgeImportHistory {
 								 * therefore get that one.
 								 */
                                 if (positionPlacement) {
-                                    unit = position.getDislodgedUnit(province).orElse(null);
+                                    unit = position.getDislodgedUnit(province)
+                                            .orElse(null);
                                 } else {
-                                    unit = position.getUnit(province).orElse(null);
+                                    unit = position.getUnit(province)
+                                            .orElse(null);
                                 }
 
                                 position.setDislodgedUnit(province, null);
@@ -1400,10 +1408,12 @@ final class JudgeImportHistory {
 
         // set Home Supply centers in position
         Position pos = oldPosition;
-        for (int i = 0; i < oldPosition.getHomeSupplyCenters().length; i++) {
-            pos.setSupplyCenterHomePower(oldPosition.getHomeSupplyCenters()[i],
-                    oldPosition.getSupplyCenterHomePower(
-                            oldPosition.getHomeSupplyCenters()[i]).orElse(null));
+        for (int i = 0; i < oldPosition.getHomeSupplyCenters()
+                .toArray(new Province[0]).length; i++) {
+            pos.setSupplyCenterHomePower(oldPosition.getHomeSupplyCenters()
+                    .toArray(new Province[0])[i], oldPosition
+                    .getSupplyCenterHomePower(oldPosition.getHomeSupplyCenters()
+                            .toArray(new Province[0])[i]).orElse(null));
         }
 
         // Copy previous phase positions

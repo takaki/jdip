@@ -365,7 +365,7 @@ public class StdAdjudicator implements Adjudicator {
         // step 2:
         // ensure that each unit has a corresponding OrderState. If a unit has no corresponding
         // OrderState, an OrderState with a Hold order is used.
-        Province[] unitList = position.getUnitProvinces();
+        Province[] unitList = position.getUnitProvinces().toArray(new Province[0]);
         for (int i = 0; i < unitList.length; i++) {
             Province province = unitList[i];
             if (!osMap.containsKey(province)) {
@@ -1551,9 +1551,9 @@ public class StdAdjudicator implements Adjudicator {
         RuleOptions.OptionValue buildOpt = ruleOpts
                 .getOptionValue(RuleOptions.OPTION_BUILDS);
         if (buildOpt == RuleOptions.VALUE_BUILDS_HOME_ONLY) {
-            homeSupplyCenters = position.getHomeSupplyCenters(power);
+            homeSupplyCenters = position.getHomeSupplyCenters(power).toArray(new Province[0]);
         } else {
-            homeSupplyCenters = position.getOwnedSupplyCenters(power);
+            homeSupplyCenters = position.getOwnedSupplyCenters(power).toArray(new Province[0]);
         }
 
         assert (homeSupplyCenters != null);

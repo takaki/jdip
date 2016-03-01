@@ -698,7 +698,7 @@ public final class TestSuite {
         //
         Set resolvedUnits = new HashSet();
 
-        Province[] provs = pos.getUnitProvinces();
+        Province[] provs = pos.getUnitProvinces().toArray(new Province[0]);
         for (int i = 0; i < provs.length; i++) {
             if (!resolvedUnits.add(new UnitPos(pos, provs[i], false))) {
                 throw new IllegalStateException(

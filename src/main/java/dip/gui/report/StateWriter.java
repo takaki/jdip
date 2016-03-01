@@ -333,7 +333,7 @@ public class StateWriter {
         // we're going to do this the slow, but simple way
         for (int i = 0; i < allPowers.length; i++) {
             // create a sorted list of owned supply centers for this power.
-            Province[] ownedSCs = position.getOwnedSupplyCenters(allPowers[i]);
+            Province[] ownedSCs = position.getOwnedSupplyCenters(allPowers[i]).toArray(new Province[0]);
             Arrays.sort(ownedSCs);
 
             // print the power name
@@ -382,7 +382,7 @@ public class StateWriter {
 
         for (int i = 0; i < allPowers.length; i++) {
             Province[] dislodged = position
-                    .getDislodgedUnitProvinces(allPowers[i]);
+                    .getDislodgedUnitProvinces(allPowers[i]).toArray(new Province[0]);
             if (dislodged.length > 0) {
                 anyDislodged = true;
 
