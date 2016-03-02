@@ -51,9 +51,13 @@ public class Phase implements Serializable, Comparable<Phase> {
     // ordering: (for a given year)
     //		spring movement, spring retreat, fall movement, fall retreat, fall adjustment
     // both these constants correspond, and must have equal sizes
-    private static final SeasonType[] ORDER_SEASON = {SeasonType.SPRING, SeasonType.SPRING, SeasonType.FALL, SeasonType.FALL, SeasonType.FALL};
+    private static final List<SeasonType> ORDER_SEASON = Arrays
+            .asList(SeasonType.SPRING, SeasonType.SPRING, SeasonType.FALL,
+                    SeasonType.FALL, SeasonType.FALL);
 
-    private static final PhaseType[] ORDER_PHASE = {PhaseType.MOVEMENT, PhaseType.RETREAT, PhaseType.MOVEMENT, PhaseType.RETREAT, PhaseType.ADJUSTMENT};
+    private static final List<PhaseType> ORDER_PHASE = Arrays
+            .asList(PhaseType.MOVEMENT, PhaseType.RETREAT, PhaseType.MOVEMENT,
+                    PhaseType.RETREAT, PhaseType.ADJUSTMENT);
 
     // formatter to always 4-digit format a year
     private static final DecimalFormat YEAR_FORMAT = new DecimalFormat("0000");
@@ -101,8 +105,8 @@ public class Phase implements Serializable, Comparable<Phase> {
     protected Phase(final YearType yt, final int idx) {
         orderIdx = idx;
         yearType = yt;
-        phaseType = ORDER_PHASE[idx];
-        seasonType = ORDER_SEASON[idx];
+        phaseType = ORDER_PHASE.get(idx);
+        seasonType = ORDER_SEASON.get(idx);
     }// Phase()
 
 
@@ -196,7 +200,7 @@ public class Phase implements Serializable, Comparable<Phase> {
     public Phase getNext() {
         // advance the phase index by one, UNLESS we are over; then
         // advance the year and reset.
-        final int idx = (orderIdx + 1) % ORDER_SEASON.length;
+        final int idx = (orderIdx + 1) % ORDER_SEASON.size();
         final YearType yt = idx == 0 ? yearType.getNext() : yearType;
 
         return new Phase(yt, idx);
@@ -209,7 +213,7 @@ public class Phase implements Serializable, Comparable<Phase> {
     public Phase getPrevious() {
         final int idx = orderIdx - 1;
         return new Phase(idx < 0 ? yearType.getPrevious() : yearType,
-                Math.floorMod(idx, ORDER_SEASON.length));
+                Math.floorMod(idx, ORDER_SEASON.size()));
     }// getPrevious()
 
 
@@ -217,8 +221,8 @@ public class Phase implements Serializable, Comparable<Phase> {
      * given season/phase, derive the order index. If we cannot, our index is -1.
      */
     private int deriveOrderIdx(final SeasonType st, final PhaseType pt) {
-        return IntStream.range(0, ORDER_SEASON.length)
-                .filter(i -> ORDER_SEASON[i] == st && ORDER_PHASE[i] == pt)
+        return IntStream.range(0, ORDER_SEASON.size())
+                .filter(i -> ORDER_SEASON.get(i) == st && ORDER_PHASE.get(i) == pt)
                 .findFirst().orElse(-1);
 
     }// deriveOrderIdx()
@@ -229,8 +233,8 @@ public class Phase implements Serializable, Comparable<Phase> {
      * SeasonType combinations are valid.
      */
     public static boolean isValid(final SeasonType st, final PhaseType pt) {
-        return IntStream.range(0, ORDER_SEASON.length)
-                .anyMatch(i -> ORDER_SEASON[i] == st && ORDER_PHASE[i] == pt);
+        return IntStream.range(0, ORDER_SEASON.size())
+                .anyMatch(i -> ORDER_SEASON.get(i) == st && ORDER_PHASE.get(i) == pt);
     }// isValid()
 
 
@@ -319,9 +323,9 @@ public class Phase implements Serializable, Comparable<Phase> {
      * E.g.: Spring Move, or Spring Adjustment, etc.
      */
     public static List<String> getAllSeasonPhaseCombos() {
-        return IntStream.range(0, ORDER_SEASON.length).mapToObj(i -> String
-                .join(" ", ORDER_SEASON[i].toString(),
-                        ORDER_PHASE[i].toString()))
+        return IntStream.range(0, ORDER_SEASON.size()).mapToObj(i -> String
+                .join(" ", ORDER_SEASON.get(i).toString(),
+                        ORDER_PHASE.get(i).toString()))
                 .collect(Collectors.toList());
     }// getAllSeasonPhaseCombos()
 

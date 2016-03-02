@@ -119,7 +119,8 @@ public enum Coast {
     public static final Coast SEA = SINGLE;
 
     // index-to-coast array
-    private static final Coast[] IDX_ARRAY = {UNDEFINED, WING, NONE, SINGLE, NORTH, SOUTH, WEST, EAST};
+    private static final List<Coast> IDX_ARRAY = Arrays
+            .asList(UNDEFINED, WING, NONE, SINGLE, NORTH, SOUTH, WEST, EAST);
 
 
     /**
@@ -133,7 +134,8 @@ public enum Coast {
      * Array of the 6 main coast types (NONE, SINGLE, NORTH, SOUTH, WEST, EAST)
      * <b>Warning: this should not be mutated.</b>
      */
-    public static final Set<Coast> ALL_COASTS = EnumSet.of(NONE, SINGLE, NORTH, SOUTH, WEST, EAST);
+    public static final Set<Coast> ALL_COASTS = EnumSet
+            .of(NONE, SINGLE, NORTH, SOUTH, WEST, EAST);
     /**
      * Array of sea coasts (SINGLE, NORTH, SOUTH, WEST, EAST)
      * <b>Warning: this should not be mutated.</b>
@@ -157,6 +159,7 @@ public enum Coast {
      * Constructs a Coast
      */
     Coast(final String name, final String abbreviation, final int index) {
+
         if (index < 0) {
             throw new IllegalArgumentException();
         }

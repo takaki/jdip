@@ -39,10 +39,6 @@ import java.util.stream.Collectors;
  * information.
  */
 public class Location implements Cloneable {
-    /**
-     * Constant defining an empty array of Location() objects
-     */
-    public static final Location[] EMPTY = new Location[0];
 
     // il8n text strings
     private static final String LOC_VWM_MULTICOAST = "LOC_VWM_MULTICOAST";

@@ -65,7 +65,9 @@ public final class RuleOptions implements Serializable {
 
 
     // array of default options, that are always set for every variant.
-    private static final Option[] DEFAULT_RULE_OPTIONS = {Option.OPTION_BUILDS, Option.OPTION_WINGS, Option.OPTION_CONVOYED_MOVES};
+    private static final List<Option> DEFAULT_RULE_OPTIONS = Arrays
+            .asList(Option.OPTION_BUILDS, Option.OPTION_WINGS,
+                    Option.OPTION_CONVOYED_MOVES);
 
     // instance variables
     private final Map<Option, OptionValue> optionMap;
