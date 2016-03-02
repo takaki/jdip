@@ -1334,14 +1334,14 @@ public class StdAdjudicator implements Adjudicator {
         valOpts.setOption(ValidationOptions.KEY_GLOBAL_PARSING,
                 ValidationOptions.VALUE_GLOBAL_PARSING_STRICT);
 
-        final ArrayList<OrderState> osList = new ArrayList<>(32);
+        final List<OrderState> osList = new ArrayList<>(32);
 
         for (final Power power : powers) {
             final AdjustmentInfo ai = adjustmentMap.get(power);
             int orderCount = 0;
             final int adjAmount = ai.getAdjustmentAmount();
 
-            final List orders = turnState.getOrders(power);
+            final List<Orderable> orders = turnState.getOrders(power);
             for (final Object order1 : orders) {
                 final Order order = (Order) order1;
 
