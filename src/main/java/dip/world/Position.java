@@ -25,10 +25,9 @@ package dip.world;
 import dip.world.Unit.Type;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -66,8 +65,10 @@ public final class Position implements Serializable, Cloneable {
 
     public Position(final WorldMap map) {
         this.map = map;
-        provArray = new ArrayList<>(
-                Arrays.asList(new ProvinceData[map.getProvinces().size()]));
+        provArray = IntStream.range(0, map.getProvinces().size())
+                .mapToObj(i -> new ProvinceData()).collect(Collectors.toList());
+//        provArray = new ArrayList<>(
+//                Arrays.asList(new ProvinceData[map.getProvinces().size()]));
     }// Position()
 
 
@@ -113,45 +114,22 @@ public final class Position implements Serializable, Cloneable {
      * Power has any units (including dislodged units) or supply centers on the map
      */
     public void setEliminationStatus(final List<Power> powers) {
-        final Map<Power, Object> pmap = new HashMap<>(19);
-        for (final Power power1 : powers) {
-            pmap.put(power1, null);
-        }
 
-        for (final ProvinceData pd : provArray) {
-
-            if (pd != null) {
-                Unit unit = pd.getUnit();
-                Power power;
-                if (unit != null)        // first check non-dislodged units
-                {
-                    power = unit.getPower();
-                    if (pmap.get(power) == null) {
-                        pmap.put(power, new Object());
-                    }
-                }
-
-                // then see if there's a dislodged unit
-                unit = pd.getDislodgedUnit();
-                if (unit != null) {
-                    power = unit.getPower();
-                    if (pmap.get(power) == null) {
-                        pmap.put(power, new Object());
-                    }
-                }
-
-                // finally, see if we own a supply center
-                power = pd.getSCOwner();
-                if (power != null) {
-                    if (pmap.get(power) == null) {
-                        pmap.put(power, new Object());
-                    }
-                }
-            }
-        }
-        for (final Power power : powers) {
-            setEliminated(power, pmap.get(power) == null);
-        }
+        final List<ProvinceData> pds = provArray.stream()
+                .filter(Objects::nonNull).collect(Collectors.toList());
+        // first check non-dislodged units
+        final Collection<Power> livingPowers = new HashSet<>(
+                pds.stream().map(ProvinceData::getUnit).filter(Objects::nonNull)
+                        .map(Unit::getPower).collect(Collectors.toList()));
+        // then see if there's a dislodged unit
+        livingPowers.addAll(pds.stream().map(ProvinceData::getDislodgedUnit)
+                .filter(Objects::nonNull).map(Unit::getPower)
+                .collect(Collectors.toList()));
+        // finally, see if we own a supply center
+        livingPowers.addAll(pds.stream().map(ProvinceData::getSCOwner)
+                .collect(Collectors.toList()));
+        powers.stream().forEach(
+                power -> setEliminated(power, !livingPowers.contains(power)));
     }// setEliminationStatus()
 
 
@@ -462,13 +440,10 @@ public final class Position implements Serializable, Cloneable {
             }
         }
 
-        final Iterator<Power> iter = powerMap.keySet().iterator();
-        while (iter.hasNext()) {
-            final Power key = iter.next();
+        powerMap.keySet().stream().forEach(key -> {
             final PowerData pd = powerMap.get(key);
-
             pos.powerMap.put(key, pd.normClone());
-        }
+        });
 
         return pos;
     }// cloneExceptUnits()
@@ -486,14 +461,10 @@ public final class Position implements Serializable, Cloneable {
                 pos.provArray.set(i, pd.cloneExceptDislodged());
             }
         }
-
-        final Iterator<Power> iter = powerMap.keySet().iterator();
-        while (iter.hasNext()) {
-            final Power key = iter.next();
+        powerMap.keySet().stream().forEach(key -> {
             final PowerData pd = powerMap.get(key);
-
             pos.powerMap.put(key, pd.normClone());
-        }
+        });
 
         return pos;
     }// cloneExceptDislodged()
@@ -648,7 +619,8 @@ public final class Position implements Serializable, Cloneable {
         public ProvinceData cloneExceptUnits() {
             // don't create an object if there is no ownership info.
             // this also compacts the Position map!
-            if (SCOwner == null && SCHomePower == null && lastOccupier == null) {
+            if (Objects.isNull(SCOwner) && Objects
+                    .isNull(SCHomePower) && Objects.isNull(lastOccupier)) {
                 return null;
             }
 
