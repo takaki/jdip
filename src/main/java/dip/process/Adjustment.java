@@ -63,21 +63,22 @@ public final class Adjustment {
 
         for (final Province province : provinces) {
             // tally units
-            position.getUnit(province).filter(u -> u.getPower() == power)
+            position.getUnit(province)
+                    .filter(u -> Objects.equals(u.getPower(), power))
                     .ifPresent(u -> ai.numUnits++);
 
             position.getDislodgedUnit(province)
-                    .filter(unit -> unit.getPower() == power)
+                    .filter(unit -> Objects.equals(unit.getPower(), power))
                     .ifPresent(unit -> ai.numDislodgedUnits++);
 
             // tally supply centers
-            position.getSupplyCenterOwner(province).filter(p -> p == power)
-                    .ifPresent(p0 -> {
-                        ai.numSC++;
-                        position.getSupplyCenterHomePower(province)
-                                .filter(p -> p == power)
-                                .ifPresent(p -> ai.numHSC++);
-                    });
+            position.getSupplyCenterOwner(province)
+                    .filter(p -> Objects.equals(p, power)).ifPresent(p0 -> {
+                ai.numSC++;
+                position.getSupplyCenterHomePower(province)
+                        .filter(p -> Objects.equals(p, power))
+                        .ifPresent(p -> ai.numHSC++);
+            });
         }
 
         return ai;
