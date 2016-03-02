@@ -775,8 +775,7 @@ public class StdAdjudicator implements Adjudicator {
                     resultList);
             boolean areAllDestroyed = true;
 
-            final Province[] provinces = nextPosition.getProvinces()
-                    .toArray(new Province[0]);
+            final List<Province> provinces = nextPosition.getProvinces();
             for (final Province prov : provinces) {
                 final Unit unit = nextPosition.getDislodgedUnit(prov)
                         .orElse(null);
@@ -1128,8 +1127,8 @@ public class StdAdjudicator implements Adjudicator {
         // step 2:
         // ensure that each unit now has a corresponding OrderState. If a unit has no corresponding
         // OrderState, an OrderState with a Disband order is used.
-        final Province[] dislodgedUnitProvs = position
-                .getDislodgedUnitProvinces().toArray(new Province[0]);
+        final List<Province> dislodgedUnitProvs = position
+                .getDislodgedUnitProvinces();
         for (final Province province : dislodgedUnitProvs) {
             if (!osMap.containsKey(province)) {
                 final Unit unit = position.getDislodgedUnit(province)
@@ -1712,8 +1711,7 @@ public class StdAdjudicator implements Adjudicator {
             boolean canSkipAdjustment = true;
             final Object[] args = new Object[1];
 
-            final Power[] powers = world.getMap().getPowers()
-                    .toArray(new Power[0]);
+            final List<Power> powers = world.getMap().getPowers();
             for (final Power power : powers) {
                 final AdjustmentInfo ai = Adjustment
                         .getAdjustmentInfo(nextTurnState, ruleOpts, power);
