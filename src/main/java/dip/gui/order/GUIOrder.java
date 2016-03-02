@@ -384,7 +384,7 @@ public interface GUIOrder extends Orderable {
          */
         public Power[] getDisplayablePowers() {
             if (isReviewMode()) {
-                return ts.getWorld().getMap().getPowers();
+                return ts.getWorld().getMap().getPowers().toArray(new Power[0]);
             }
 
             return null;

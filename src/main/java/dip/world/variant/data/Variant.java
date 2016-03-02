@@ -390,17 +390,17 @@ public final class Variant implements Cloneable, Comparable<Variant> {
     /**
      * Changes the active/inactive state of a power. The number of values <b>must</b> equal the number of powers.
      */
-    public void setActiveState(final boolean[] values) {
-        if (values.length != powers.size()) {
+    public void setActiveState(final List<Boolean> values) {
+        if (values.size() != powers.size()) {
             throw new IllegalArgumentException();
         }
 
         for (int i = 0; i < powers.size(); i++) {
-            if (powers.get(i).isActive() != values[i]) {
+            if (powers.get(i).isActive() != values.get(i)) {
                 // Powers are constant; we must create a new one.
                 final Power old = powers.get(i);
                 powers.set(i, new Power(old.getNames(), old.getAdjective(),
-                        values[i]));
+                        values.get(i)));
             }
         }
     }// setActiveState()

@@ -143,7 +143,7 @@ public class OrderControlBar extends ViewControlBar {
         if (stateInfo.getTurnState().getPhase()
                 .getPhaseType() == Phase.PhaseType.ADJUSTMENT) {
             Power[] powers = stateInfo.getTurnState().getWorld().getMap()
-                    .getPowers();
+                    .getPowers().toArray(new Power[0]);
             Adjustment.AdjustmentInfoMap adjMap = Adjustment
                     .getAdjustmentInfo(stateInfo.getTurnState(),
                             stateInfo.getRuleOptions(), powers);
@@ -152,8 +152,8 @@ public class OrderControlBar extends ViewControlBar {
         }
 
         RuleOptions ro = mapPanel.getWorld().getRuleOptions();
-        useExplicitGUIMove = RuleOptions.VALUE_PATHS_EXPLICIT
-                .equals(ro.getOptionValue(RuleOptions.OPTION_CONVOYED_MOVES));
+        useExplicitGUIMove = RuleOptions.OptionValue.VALUE_PATHS_EXPLICIT
+                .equals(ro.getOptionValue(RuleOptions.Option.OPTION_CONVOYED_MOVES));
 
         makeLayout();
     }
@@ -595,7 +595,7 @@ public class OrderControlBar extends ViewControlBar {
             RuleOptions ro = mapPanel.getWorld().getRuleOptions();
 
             if (ro.getOptionValue(
-                    RuleOptions.OPTION_WINGS) != RuleOptions.VALUE_WINGS_ENABLED) {
+                    RuleOptions.Option.OPTION_WINGS) != RuleOptions.OptionValue.VALUE_WINGS_ENABLED) {
                 text = new String[GROUP_ADJUSTMENT_TEXT.length - 1];
                 cmd = new String[GROUP_ADJUSTMENT_CMD.length - 1];
                 charMap = new int[GROUP_ADJUSTMENT_CHARCODES.length - 1];

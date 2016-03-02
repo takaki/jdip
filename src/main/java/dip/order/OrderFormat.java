@@ -22,7 +22,11 @@
 package dip.order;
 
 import dip.misc.Log;
-import dip.world.*;
+import dip.world.Coast;
+import dip.world.Location;
+import dip.world.Power;
+import dip.world.Province;
+import dip.world.Unit;
 
 import java.util.Collections;
 import java.util.StringTokenizer;
@@ -715,8 +719,8 @@ public class OrderFormat {
         Province prov3 = new Province("Golf of Bothnia",
                 Collections.singletonList("gob"), 0, false);
 
-        Power power1 = new Power(new String[]{"Russia"}, "Russian", true);
-        Power power2 = new Power(new String[]{"German"}, "German", true);
+        Power power1 = new Power(Collections.singletonList("Russia"), "Russian", true);
+        Power power2 = new Power(Collections.singletonList("German"), "German", true);
 
         Location src = new Location(prov1, Coast.SEA);
         Location supSrc = new Location(prov2, Coast.SOUTH);

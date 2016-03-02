@@ -99,7 +99,7 @@ public class SCHistoryWriter {
      */
     private SCHistoryWriter(ClientFrame cf, World w, boolean inColor) {
         this.world = w;
-        this.allPowers = w.getMap().getPowers();
+        this.allPowers = w.getMap().getPowers().toArray(new Power[0]);
 
         if (inColor && cf.getMapPanel() != null) {
             this.mmd = cf.getMapPanel().getMapMetadata();
@@ -109,7 +109,7 @@ public class SCHistoryWriter {
 
         // find all provinces w/supply centers
         List scList = new ArrayList();
-        final Province[] provs = w.getMap().getProvinces();
+        final Province[] provs = w.getMap().getProvinces().toArray(new Province[0]);
         for (int i = 0; i < provs.length; i++) {
             if (provs[i].hasSupplyCenter()) {
                 scList.add(provs[i]);
@@ -369,7 +369,7 @@ public class SCHistoryWriter {
         int sumOfSquares = 0;
         for (int i = 0; i < allPowers.length; i++) {
             Province[] ownedSC = ts.getPosition()
-                    .getOwnedSupplyCenters(allPowers[i]);
+                    .getOwnedSupplyCenters(allPowers[i]).toArray(new Province[0]);
             final int count = ownedSC.length;
 
             sumOfSquares += (count * count);

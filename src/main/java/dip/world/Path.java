@@ -552,50 +552,19 @@ public class Path {
 
         // Step 3: find all adjacent locations to the current location.
         // note that we ONLY add a location if it is ok'd by the PathEvaluator.
-        final List<Location> adjLocs = new LinkedList<>();
-        for (int i = 0; i < Coast.ALL_COASTS.length; i++) {
-            final Location[] locations = current.getProvince()
-                    .getAdjacentLocations(Coast.ALL_COASTS[i]);
-
-            for (final Location testLoc : locations) {
-                if (pathEvaluator.evaluate(testLoc)) {
-                    adjLocs.add(testLoc);
-                }
-            }
-        }
-
         // Step 4: If there are no locations in our adjacency list,
         // then, we do not have a path
-        if (adjLocs.isEmpty()) {
-            return false;
-        }
-
-
         // Step 5: We have one or more possible routes to check.
         // If we find that a route is invalid, we will remove it
         // from adjacency list.
-        final Iterator<Location> iter = adjLocs.iterator();
-        while (iter.hasNext()) {
-            final Location location = iter.next();
-
-            if (path.contains(location)) {
-                // if adjacent province already in the path, we are going
-                // in circles (or at least backwards)! remove it.
-                iter.remove();
-            } else {
-                // we haven't yet visited this Location. We will recusively
-                // evaluate this position, and remove this location from the
-                // list iff we return 'false'.
-                if (!findPathBreadthFirst(src, dest, location, path,
-                        pathEvaluator)) {
-                    iter.remove();
-                }
-            }
-        }
-
         // Step 6: If there are ANY paths left in the adjacency list, we have
         // at least one path that may be valid.
-        return !adjLocs.isEmpty();
+        return Coast.ALL_COASTS.stream().flatMap(
+                coast -> current.getProvince().getAdjacentLocations(coast)
+                        .stream().filter(pathEvaluator::evaluate))
+                .filter(location -> !path.contains(location))
+                .filter(location -> findPathBreadthFirst(src, dest, location,
+                        path, pathEvaluator)).count() > 0;
     }// findPathBreadthFirst()
 
 
@@ -663,7 +632,7 @@ public class Path {
         // set Src and Dest of path, so we can evaluate fleet orders
         public LegalConvoyPathEvaluator(final Location src,
                                         final Location dest) {
-            if (adjudicator == null) {
+            if (Objects.isNull(adjudicator)) {
                 throw new IllegalStateException("null adjudicator in path");
             }
 
@@ -708,7 +677,7 @@ public class Path {
         public SuperConvoyPathEvaluator(final Location src, final Location dest,
                                         final Location invalid,
                                         final boolean noteUncertains) {
-            if (adjudicator == null) {
+            if (Objects.isNull(adjudicator)) {
                 throw new IllegalStateException("null adjudicator in path");
             }
 
@@ -832,7 +801,8 @@ public class Path {
 				*/
 
                 // NEW CODE: using Coast.TOUCHING
-                final Location[] locs = p.getAdjacentLocations(Coast.TOUCHING);
+                final List<Location> locs = p
+                        .getAdjacentLocations(Coast.TOUCHING);
                 for (final Location loc : locs) {
                     final Province ckp = loc.getProvince();
 
@@ -882,7 +852,7 @@ public class Path {
         }
 
         // quick check: dest: next to at least 1 sea/conv coastal province
-        final Location[] dLocs = dest.getAdjacentLocations(Coast.TOUCHING);
+        final List<Location> dLocs = dest.getAdjacentLocations(Coast.TOUCHING);
         boolean isOk = false;
         for (final Location dLoc : dLocs) {
             final Province p = dLoc.getProvince();
@@ -908,7 +878,8 @@ public class Path {
         while (queue.size() > 0) {
             final TreeNode node = queue.removeFirst();
             final Province prov = node.getProvince();
-            final Location[] locs = prov.getAdjacentLocations(Coast.TOUCHING);
+            final List<Location> locs = prov
+                    .getAdjacentLocations(Coast.TOUCHING);
             for (final Location loc : locs) {
                 final Province p = loc.getProvince();
                 if (p.equals(dest)) {

@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -71,23 +70,24 @@ public final class WorldMap implements Serializable {
     /**
      * Constructs a Map object.
      */
-    protected WorldMap(final Power[] powerArray,
-                       final Province[] provinceArray) {
+    protected WorldMap(final List<Power> powerArray,
+                       final List<Province> provinceArray) {
         // define constant arrays.
-        powers = Arrays.asList(powerArray);
-        provinces = Arrays.asList(provinceArray);
+        powers = new ArrayList<>(powerArray);
+        provinces = new ArrayList<>(provinceArray);
 
         // check provinceArray: index must be >= 0 and < provinceArray.length
-        final int len = provinceArray.length;
-        IntStream.range(0, provinceArray.length).forEach(i -> {
-            final int idx = provinceArray[i].getIndex();
+        final int len = provinceArray.size();
+        IntStream.range(0, provinceArray.size()).forEach(i -> {
+            final int idx = provinceArray.get(i).getIndex();
             if (idx < 0 || idx >= len) {
                 throw new IllegalArgumentException(
-                        "Province: " + provinceArray[i] + ": illegal Index: " + idx);
+                        String.format("Province: %s: illegal Index: %d",
+                                provinceArray.get(i), idx));
             }
             if (idx != i) {
-                throw new IllegalArgumentException(
-                        "Province: " + provinceArray[i] + ": out of order (index: " + idx + "; position: " + i + ")");
+                throw new IllegalArgumentException("Province: " + provinceArray
+                        .get(i) + ": out of order (index: " + idx + "; position: " + i + ")");
             }
         });
 
@@ -109,7 +109,7 @@ public final class WorldMap implements Serializable {
                 .toMap(power -> power.getAdjective().toLowerCase(),
                         Function.identity())));
         powers.stream().forEach(power -> {
-            powerNameMap.putAll(Arrays.stream(power.getNames()).collect(
+            powerNameMap.putAll(power.getNames().stream().collect(
                     Collectors.toMap(String::toLowerCase, aTmp -> power)));
         });
         // create lcPowerNameList
@@ -122,14 +122,14 @@ public final class WorldMap implements Serializable {
                 .toMap(province -> province.getFullName().toLowerCase(),
                         Function.identity())));
         provinces.stream().forEach(province -> nameMap
-                .putAll(Arrays.stream(province.getShortNames()).collect(
+                .putAll(province.getShortNames().stream().collect(
                         Collectors.toMap(String::toLowerCase,
                                 lcShortName -> province))));
         // add to List
         names = new ArrayList<>(provinces.stream().map(Province::getFullName)
                 .map(String::toLowerCase).collect(Collectors.toList()));
         names.addAll(provinces.stream()
-                .flatMap(province -> Arrays.stream(province.getShortNames()))
+                .flatMap(province -> province.getShortNames().stream())
                 .map(String::toLowerCase).collect(Collectors.toList()));
 
     }// createMappings()
@@ -138,8 +138,8 @@ public final class WorldMap implements Serializable {
     /**
      * Returns an Array of all Powers.
      */
-    public final Power[] getPowers() {
-        return powers.toArray(new Power[powers.size()]);
+    public List<Power> getPowers() {
+        return Collections.unmodifiableList(powers);
     }// getPowers()
 
 
@@ -268,8 +268,8 @@ public final class WorldMap implements Serializable {
     /**
      * Returns an Array of all Provinces.
      */
-    public final Province[] getProvinces() {
-        return provinces.toArray(new Province[provinces.size()]);
+    public List<Province> getProvinces() {
+        return Collections.unmodifiableList(provinces);
     }// getProvinces()
 
 
@@ -593,7 +593,7 @@ public final class WorldMap implements Serializable {
     /**
      * Given an index, returns the Province to which that index corresponds.
      */
-    public final Province reverseIndex(final int i) {
+    public Province reverseIndex(final int i) {
         return provinces.get(i);
     }// reverseIndex()
 
@@ -606,7 +606,7 @@ public final class WorldMap implements Serializable {
      */
     private List<String> createLCPowerNameList() {
         final List<String> tmpNames = new ArrayList<>(powers.stream()
-                .flatMap(power -> Arrays.stream(power.getNames()))
+                .flatMap(power -> power.getNames().stream())
                 .map(String::toLowerCase).collect(Collectors.toList()));
         tmpNames.addAll(
                 powers.stream().map(power -> power.getAdjective().toLowerCase())

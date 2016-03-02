@@ -123,7 +123,7 @@ public class StateWriter {
     private StateWriter(ClientFrame cf, TurnState ts) {
         assert (cf != null);
         turnState = ts;
-        allPowers = ts.getWorld().getMap().getPowers();
+        allPowers = ts.getWorld().getMap().getPowers().toArray(new Power[0]);
         displayablePowers = (cf == null) ? allPowers : cf
                 .getDisplayablePowers();
         powerMap = getUnitsByPower();
@@ -333,7 +333,7 @@ public class StateWriter {
         // we're going to do this the slow, but simple way
         for (int i = 0; i < allPowers.length; i++) {
             // create a sorted list of owned supply centers for this power.
-            Province[] ownedSCs = position.getOwnedSupplyCenters(allPowers[i]);
+            Province[] ownedSCs = position.getOwnedSupplyCenters(allPowers[i]).toArray(new Province[0]);
             Arrays.sort(ownedSCs);
 
             // print the power name
@@ -382,7 +382,7 @@ public class StateWriter {
 
         for (int i = 0; i < allPowers.length; i++) {
             Province[] dislodged = position
-                    .getDislodgedUnitProvinces(allPowers[i]);
+                    .getDislodgedUnitProvinces(allPowers[i]).toArray(new Province[0]);
             if (dislodged.length > 0) {
                 anyDislodged = true;
 
@@ -495,7 +495,7 @@ public class StateWriter {
         }
 
         Position position = turnState.getPosition();
-        Province[] provinces = position.getProvinces();
+        Province[] provinces = position.getProvinces().toArray(new Province[0]);
         for (int i = 0; i < provinces.length; i++) {
             Province province = provinces[i];
 

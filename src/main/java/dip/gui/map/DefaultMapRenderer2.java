@@ -28,7 +28,15 @@ import dip.gui.order.GUIOrder;
 import dip.gui.order.GUIOrder.MapInfo;
 import dip.misc.Log;
 import dip.order.Orderable;
-import dip.world.*;
+import dip.world.Coast;
+import dip.world.Location;
+import dip.world.Phase;
+import dip.world.Position;
+import dip.world.Power;
+import dip.world.Province;
+import dip.world.TurnState;
+import dip.world.Unit;
+import dip.world.WorldMap;
 import dip.world.variant.data.SymbolPack;
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.util.CSSConstants;
@@ -41,7 +49,11 @@ import org.w3c.dom.svg.SVGElement;
 import org.w3c.dom.svg.SVGGElement;
 
 import java.awt.geom.Point2D;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 
@@ -198,8 +210,9 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
 
         // init variables
         worldMap = mapPanel.getClientFrame().getWorld().getMap();
-        provinces = worldMap.getProvinces();
-        powers = mapPanel.getClientFrame().getWorld().getMap().getPowers();
+        provinces = worldMap.getProvinces().toArray(new Province[0]);
+        powers = mapPanel.getClientFrame().getWorld().getMap().getPowers()
+                .toArray(new Power[0]);
 
         // setup object maps
         trackerMap = new HashMap(113);
@@ -952,7 +965,8 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
                         .isLand()) {
                     setCSSIfChanged(provinceGroupElement,
                             tracker.getPowerCSSClass(
-                                    position.getLastOccupier(province).orElse(null)));
+                                    position.getLastOccupier(province)
+                                            .orElse(null)));
                 } else {
                     // use default province CSS styling, if not already
                     setCSSIfChanged(provinceGroupElement,
@@ -970,7 +984,8 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
                 } else {
                     if (province.hasSupplyCenter()) {
                         // get supply center owner
-                        Power power = position.getSupplyCenterOwner(province).orElse(null);
+                        Power power = position.getSupplyCenterOwner(province)
+                                .orElse(null);
 
                         // note:
                         // if we are not showing province SC (supply center) hilites, then
@@ -1274,7 +1289,8 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
         ArrayList lookupProvList = new ArrayList(
                 125);    // stores corresponding Province
         for (int i = 0; i < provinces.length; i++) {
-            String[] shortNames = provinces[i].getShortNames();
+            String[] shortNames = provinces[i].getShortNames()
+                    .toArray(new String[0]);
             for (int j = 0; j < shortNames.length; j++) {
                 uscoreProvList.add('_' + shortNames[j]);
                 lookupProvList.add(provinces[i]);
@@ -1306,8 +1322,8 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      * Retreat phase.
      */
     private Unit getPhaseApropriateUnit(Province p) {
-        return (isDislodgedPhase) ? position.getDislodgedUnit(p).orElse(null) : position
-                .getUnit(p).orElse(null);
+        return (isDislodgedPhase) ? position.getDislodgedUnit(p)
+                .orElse(null) : position.getUnit(p).orElse(null);
     }// getPhaseAppropriateUnit()
 
 

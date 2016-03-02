@@ -698,7 +698,7 @@ public final class TestSuite {
         //
         Set resolvedUnits = new HashSet();
 
-        Province[] provs = pos.getUnitProvinces();
+        Province[] provs = pos.getUnitProvinces().toArray(new Province[0]);
         for (int i = 0; i < provs.length; i++) {
             if (!resolvedUnits.add(new UnitPos(pos, provs[i], false))) {
                 throw new IllegalStateException(
@@ -706,7 +706,7 @@ public final class TestSuite {
             }
         }
 
-        provs = pos.getDislodgedUnitProvinces();
+        provs = pos.getDislodgedUnitProvinces().toArray(new Province[0]);
         for (int i = 0; i < provs.length; i++) {
             if (!resolvedUnits.add(new UnitPos(pos, provs[i], true))) {
                 throw new IllegalStateException(
@@ -1075,7 +1075,7 @@ public final class TestSuite {
                 Position position = currentTS.getPosition();
 
                 // ensure all powers are active
-                Power[] powers = world.getMap().getPowers();
+                Power[] powers = world.getMap().getPowers().toArray(new Power[0]);
                 for (int i = 0; i < powers.length; i++) {
                     position.setEliminated(powers[i], false);
                 }
@@ -1104,7 +1104,7 @@ public final class TestSuite {
                 // no need to validate units
                 if (supplySCOwners.length > 0) {
                     // first erase old info
-                    final Province[] provinces = position.getProvinces();
+                    final Province[] provinces = position.getProvinces().toArray(new Province[0]);
 
                     for (int i = 0; i < provinces.length; i++) {
                         Province province = provinces[i];

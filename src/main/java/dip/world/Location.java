@@ -26,7 +26,6 @@ import dip.misc.Utils;
 import dip.order.OrderException;
 import dip.world.Unit.Type;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -40,10 +39,6 @@ import java.util.stream.Collectors;
  * information.
  */
 public class Location implements Cloneable {
-    /**
-     * Constant defining an empty array of Location() objects
-     */
-    public static final Location[] EMPTY = new Location[0];
 
     // il8n text strings
     private static final String LOC_VWM_MULTICOAST = "LOC_VWM_MULTICOAST";
@@ -300,8 +295,8 @@ public class Location implements Cloneable {
             // then we should throw an exception
             // (this prevents iterating completely thru all coasts each time)
             //
-            final List<Location> locs = Arrays
-                    .asList(from.province.getAdjacentLocations(from.coast));
+            final List<Location> locs = from.province
+                    .getAdjacentLocations(from.coast);
             final List<Coast> coasts = locs.stream().filter(loc -> Objects
                     .equals(loc.province, newLoc.province))
                     .map(loc -> loc.coast).collect(Collectors.toList());

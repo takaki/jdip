@@ -40,8 +40,7 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Defines the game starting options for the New Game dialog.
@@ -202,21 +201,21 @@ public class NGDRuleOptions extends JPanel implements NewGameDialog.NGDTabPane {
         description.setText(makeHTML(option.getDescriptionI18N()));
 
         // radio-button setup
-        OptionValue[] allowedOptVals = option.getAllowed();
+        java.util.List<OptionValue> allowedOptVals = option.getAllowed();
         OptionValue current = ruleOpts
                 .getOptionValue(option);    // currently selected value
 
         for (int i = 0; i < radioButtons.length; i++) {
-            if (i < allowedOptVals.length) {
-                radioButtons[i].setText(allowedOptVals[i].getNameI18N());
+            if (i < allowedOptVals.size()) {
+                radioButtons[i].setText(allowedOptVals.get(i).getNameI18N());
                 radioButtons[i]
-                        .setToolTipText(allowedOptVals[i].getDescriptionI18N());
+                        .setToolTipText(allowedOptVals.get(i).getDescriptionI18N());
                 radioButtons[i].setActionCommand(String.valueOf(i));
                 radioButtons[i].setVisible(true);
 
                 // select, if we are selected
                 radioButtons[i].setSelected(
-                        ((current == allowedOptVals[i]) ? true : false));
+                        ((current == allowedOptVals.get(i)) ? true : false));
             } else {
                 radioButtons[i].setText("");
                 radioButtons[i].setSelected(false);
@@ -336,7 +335,7 @@ public class NGDRuleOptions extends JPanel implements NewGameDialog.NGDTabPane {
                 if (oli != null) {
                     int idx = Integer.parseInt(e.getActionCommand());
                     ruleOpts.setOption(oli.getOption(),
-                            oli.getOption().getAllowed()[idx]);
+                            oli.getOption().getAllowed().get(idx));
                 }
             }
         }

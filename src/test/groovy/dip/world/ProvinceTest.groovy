@@ -32,7 +32,7 @@ class ProvinceTest extends Specification {
     def locd = new Location(ddd, Coast.LAND)
 
     def setup() {
-        def locs = [locb, locc] as Location[]
+        def locs = [locb, locc]
         def adj = aaa.getAdjacency()
         adj.setLocations(Coast.LAND, locs)
     }
@@ -40,7 +40,7 @@ class ProvinceTest extends Specification {
     def "test instance"() {
         expect:
         mos.getIndex() == 0
-        mos.getAdjacentLocations(Coast.EAST).length == 0
+        mos.getAdjacentLocations(Coast.EAST).size() == 0
         mos.getFullName() == "Moscow"
         mos.getShortName() == "mos"
         mos.getShortNames()[0] == "mos"

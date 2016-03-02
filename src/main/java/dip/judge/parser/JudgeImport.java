@@ -26,13 +26,29 @@ import dip.misc.Log;
 import dip.misc.Utils;
 import dip.order.OrderException;
 import dip.order.OrderFactory;
-import dip.world.*;
+import dip.world.InvalidWorldException;
+import dip.world.Location;
+import dip.world.Phase;
+import dip.world.Position;
+import dip.world.Power;
+import dip.world.Province;
+import dip.world.RuleOptions;
+import dip.world.TurnState;
+import dip.world.Unit;
+import dip.world.World;
+import dip.world.WorldFactory;
+import dip.world.WorldMap;
 import dip.world.metadata.GameMetadata;
 import dip.world.metadata.PlayerMetadata;
 import dip.world.variant.VariantManager;
 import dip.world.variant.data.Variant;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.regex.PatternSyntaxException;
 
@@ -123,7 +139,8 @@ public class JudgeImport {
     private void procJudgeInput() throws IOException, PatternSyntaxException {
         // determine if we can load the variant
         Variant variant = new VariantManager()
-                .getVariant(jp.getVariantName(), VariantManager.VERSION_NEWEST).orElse(null);
+                .getVariant(jp.getVariantName(), VariantManager.VERSION_NEWEST)
+                .orElse(null);
         if (variant == null) {
             throw new IOException(Utils.getLocalString(JI_VARIANT_NOTFOUND,
                     jp.getVariantName()));
@@ -143,8 +160,8 @@ public class JudgeImport {
         // set the 'explicit convoy' rule option (all nJudge games require this)
         Log.println("JudgeImport: RuleOptions.VALUE_PATHS_EXPLICIT set");
         RuleOptions ruleOpts = world.getRuleOptions();
-        ruleOpts.setOption(RuleOptions.OPTION_CONVOYED_MOVES,
-                RuleOptions.VALUE_PATHS_EXPLICIT);
+        ruleOpts.setOption(RuleOptions.Option.OPTION_CONVOYED_MOVES,
+                RuleOptions.OptionValue.VALUE_PATHS_EXPLICIT);
         world.setRuleOptions(ruleOpts);
 
         // eliminate all existing TurnStates; we will create our own from parsed values
@@ -164,7 +181,8 @@ public class JudgeImport {
         World.VariantInfo variantInfo = world.getVariantInfo();
         variantInfo.setVariantName(variant.getName());
         variantInfo.setVariantVersion(variant.getVersion());
-        variantInfo.setMapName(variant.getDefaultMapGraphic().orElse(null).getName());
+        variantInfo.setMapName(
+                variant.getDefaultMapGraphic().orElse(null).getName());
 
         // set general metadata
         GameMetadata gmd = world.getGameMetadata();
@@ -180,7 +198,8 @@ public class JudgeImport {
             Power power = map.getPowerMatching(pPowerNames[i]).orElse(null);
             if (power != null) {
                 PlayerMetadata pmd = world.getPlayerMetadata(power);
-                pmd.setEmailAddresses(new String[]{pPowerEmail[i]});
+                pmd.setEmailAddresses(
+                        Collections.singletonList(pPowerEmail[i]));
             } else if (pPowerNames[i].equalsIgnoreCase("master")) {
                 gmd.setModeratorEmail(pPowerEmail[i]);
             }
@@ -296,9 +315,10 @@ public class JudgeImport {
         WorldMap map = world.getMap();
 
         // reset home supply centers
-        Province[] provinces = map.getProvinces();
+        Province[] provinces = map.getProvinces().toArray(new Province[0]);
         for (int i = 0; i < provinces.length; i++) {
-            Power power = oldPosition.getSupplyCenterHomePower(provinces[i]).orElse(null);
+            Power power = oldPosition.getSupplyCenterHomePower(provinces[i])
+                    .orElse(null);
             if (power != null) {
                 position.setSupplyCenterHomePower(provinces[i], power);
             }
@@ -306,7 +326,8 @@ public class JudgeImport {
 
         // set SC ownership information
         for (int i = 0; i < ownerInfo.length; i++) {
-            Power power = map.getPowerMatching(ownerInfo[i].getPowerName()).orElse(null);
+            Power power = map.getPowerMatching(ownerInfo[i].getPowerName())
+                    .orElse(null);
             if (power == null) {
                 throw new IOException(Utils.getLocalString(JI_UNKNOWN_POWER,
                         ownerInfo[i].getPowerName()));
@@ -314,7 +335,8 @@ public class JudgeImport {
 
             String[] ownedProvNames = ownerInfo[i].getProvinces();
             for (int j = 0; j < ownedProvNames.length; j++) {
-                Province province = map.getProvinceMatching(ownedProvNames[j]).orElse(null);
+                Province province = map.getProvinceMatching(ownedProvNames[j])
+                        .orElse(null);
                 if (province == null) {
                     throw new IOException(
                             Utils.getLocalString(JI_UNKNOWN_PROVINCE,
@@ -327,9 +349,11 @@ public class JudgeImport {
 
         // create units & positions on the map
         for (int i = 0; i < posInfo.length; i++) {
-            Power power = map.getPowerMatching(posInfo[i].getPowerName()).orElse(null);
+            Power power = map.getPowerMatching(posInfo[i].getPowerName())
+                    .orElse(null);
             Unit.Type unitType = Unit.Type.parse(posInfo[i].getUnitName());
-            Location location = map.parseLocation(posInfo[i].getLocationName()).orElse(null);
+            Location location = map.parseLocation(posInfo[i].getLocationName())
+                    .orElse(null);
 
             // check
             if (power == null || location == null || unitType

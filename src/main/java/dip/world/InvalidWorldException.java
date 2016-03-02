@@ -36,4 +36,7 @@ public class InvalidWorldException extends Exception {
     }
 
 
-}// InvalidWorldException 
+    public InvalidWorldException(String message, Exception e) {
+        super(message, e);
+    }
+}// InvalidWorldException

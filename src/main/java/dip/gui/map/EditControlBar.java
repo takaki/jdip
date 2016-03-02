@@ -139,7 +139,7 @@ public class EditControlBar extends ViewControlBar {
         add(new JLabel(Utils.getLocalString(POWER_LABEL)));
         addSeparator(new Dimension(5, 0));
         powerBox = new JComboBox(
-                mapPanel.getClientFrame().getWorld().getMap().getPowers());
+                mapPanel.getClientFrame().getWorld().getMap().getPowers().toArray(new Power[0]));
         powerBox.insertItemAt(POWER_NONE, 0);
         powerBox.setEditable(false);
         powerBox.addItemListener(new ItemListener() {
@@ -185,7 +185,7 @@ public class EditControlBar extends ViewControlBar {
         // if WING units enabled, add a WING unit button
         RuleOptions ro = mapPanel.getWorld().getRuleOptions();
         if (ro.getOptionValue(
-                RuleOptions.OPTION_WINGS) == RuleOptions.VALUE_WINGS_ENABLED) {
+                RuleOptions.Option.OPTION_WINGS) == RuleOptions.OptionValue.VALUE_WINGS_ENABLED) {
             bWing = new JToggleButton(Utils.getLocalString(BUTTON_TEXT_WING));
             bWing.setToolTipText(Utils.getLocalString(TOOLTIP_WING));
             bWing.addActionListener(tl);

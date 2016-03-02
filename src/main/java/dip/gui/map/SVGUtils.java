@@ -382,7 +382,7 @@ public class SVGUtils {
             } else {
                 if (obj instanceof Province) {
                     // use getShortNames() to check against all short names
-                    String[] provShortNames = ((Province) obj).getShortNames();
+                    String[] provShortNames = ((Province) obj).getShortNames().toArray(new String[0]);
                     for (int i = 0; i < provShortNames.length; i++) {
                         if (nodeValue.equalsIgnoreCase(provShortNames[i])) {
                             map.put(obj, parentNode);

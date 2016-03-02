@@ -24,6 +24,7 @@ package dip.gui;
 
 import dip.gui.map.MapPanel;
 import dip.gui.undo.UndoRedoManager;
+import dip.world.Power;
 import dip.world.World;
 
 import javax.swing.*;
@@ -79,9 +80,9 @@ public class DefaultGUIGameSetup implements GUIGameSetup {
 
         // set turnstate and powers
         cf.fireDisplayablePowersChanged(cf.getDisplayablePowers(),
-                world.getMap().getPowers());
+                world.getMap().getPowers().toArray(new Power[0]));
         cf.fireOrderablePowersChanged(cf.getOrderablePowers(),
-                world.getMap().getPowers());
+                world.getMap().getPowers().toArray(new Power[0]));
         cf.fireTurnstateChanged(world.getLastTurnState());
     }// setup()
 

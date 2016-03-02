@@ -150,10 +150,10 @@ public class GUIBuild extends Build implements GUIOrder {
             //
             RuleOptions ruleOpts = stateInfo.getRuleOptions();
             if (ruleOpts.getOptionValue(
-                    RuleOptions.OPTION_BUILDS) == RuleOptions.VALUE_BUILDS_ANY_OWNED) {
+                    RuleOptions.Option.OPTION_BUILDS) == RuleOptions.OptionValue.VALUE_BUILDS_ANY_OWNED) {
                 return checkBuildUnit(stateInfo, province, location, sb);
             } else if (ruleOpts.getOptionValue(
-                    RuleOptions.OPTION_BUILDS) == RuleOptions.VALUE_BUILDS_ANY_IF_HOME_OWNED) {
+                    RuleOptions.Option.OPTION_BUILDS) == RuleOptions.OptionValue.VALUE_BUILDS_ANY_IF_HOME_OWNED) {
                 // check if we have ONE owned home supply center before buidling
                 // in a non-home supply center.
                 //

@@ -27,7 +27,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -73,12 +72,12 @@ public class Power implements Comparable<Power>, Serializable {
      * Power uses instance equality, so two Power() objects created with the same arguments
      * will NOT be the same.
      */
-    public Power(final String[] names, final String adjective,
+    public Power(final List<String> names, final String adjective,
                  final boolean active) {
         Objects.requireNonNull(names);
         Objects.requireNonNull(adjective);
 
-        if (names.length == 0) {
+        if (names.isEmpty()) {
             throw new IllegalArgumentException("no names");
         }
 
@@ -86,8 +85,8 @@ public class Power implements Comparable<Power>, Serializable {
             throw new IllegalArgumentException("empty adjective");
         }
 
-        name = names[0];
-        altnames = Arrays.asList(Arrays.copyOfRange(names, 1, names.length));
+        name = names.get(0);
+        altnames = names.subList(1, names.size());
         this.adjective = adjective;
         this.active = active;
     }// Power()
@@ -110,11 +109,11 @@ public class Power implements Comparable<Power>, Serializable {
     /**
      * Get all names. There is always at least one. Does not include adjectives.
      */
-    public String[] getNames() {
+    public List<String> getNames() {
         final List<String> names = new ArrayList<>();
         names.add(name);
         names.addAll(altnames);
-        return names.toArray(new String[names.size()]);
+        return names;
     }// getAllNames()
 
 

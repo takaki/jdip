@@ -42,6 +42,7 @@ import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 
 /**
  * Metadata Editing/Viewing dialog
@@ -173,7 +174,7 @@ public class MetadataDialog extends HeaderDialog {
                 makeGamePanel(world.getGameMetadata()));
 
         // all other tabs are by Power name
-        Power[] powers = world.getMap().getPowers();
+        Power[] powers = world.getMap().getPowers().toArray(new Power[0]);
         for (int i = 0; i < powers.length; i++) {
             tabPane.add(powers[i].getName(), makePlayerPanel(powers[i],
                     world.getPlayerMetadata(powers[i])));
@@ -384,7 +385,7 @@ public class MetadataDialog extends HeaderDialog {
             name.setText(pmd.getName());
             uri.setText(n2e(pmd.getURI()));
 
-            String[] tmpEmail = pmd.getEmailAddresses();
+            String[] tmpEmail = pmd.getEmailAddresses().toArray(new String[0]);
             for (int i = 0; i < email.length; i++) {
                 if (i < tmpEmail.length) {
                     email[i].setText(n2e(tmpEmail[i]));
@@ -407,7 +408,7 @@ public class MetadataDialog extends HeaderDialog {
                 tmpEmail[i] = email[i].getText().trim();
             }
 
-            pmd.setEmailAddresses(tmpEmail);
+            pmd.setEmailAddresses(Arrays.asList(tmpEmail));
         }// write()
     }// inner class PlayerPanel
 

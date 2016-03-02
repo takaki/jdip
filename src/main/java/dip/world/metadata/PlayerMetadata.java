@@ -24,19 +24,22 @@ package dip.world.metadata;
 
 import java.io.Serializable;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Contains MetaData about a player.
  * One PlayerMetadata object exists for each player.
  */
-public class PlayerMetadata implements Serializable {
+public final class PlayerMetadata implements Serializable {
     // constants
     private static final String EMPTY = "";
 
     // MetaData
     private String name = EMPTY;
-    private String[] email = new String[0];
-    private URI uri = null;
+    private List<String> email = Collections.emptyList();
+    private URI uri;
     private String notes = EMPTY;
 
 
@@ -57,8 +60,8 @@ public class PlayerMetadata implements Serializable {
     /**
      * Gets player email addresses. Never null.
      */
-    public String[] getEmailAddresses() {
-        return email;
+    public List<String> getEmailAddresses() {
+        return Collections.unmodifiableList(email);
     }
 
     /**
@@ -79,29 +82,30 @@ public class PlayerMetadata implements Serializable {
     /**
      * Sets the player name. A null value will create an empty string.
      */
-    public void setName(String value) {
-        name = (value == null) ? EMPTY : value;
+    public void setName(final String value) {
+        name = value == null ? EMPTY : value;
     }
 
     /**
      * Sets the player's email addresses. a Null value will create a zero-length array.
      */
-    public void setEmailAddresses(String[] value) {
-        email = (value == null) ? new String[0] : value;
+    public void setEmailAddresses(final List<String> value) {
+        email = value == null ? Collections.emptyList() : new ArrayList<>(
+                value);
     }
 
     /**
      * Sets the player contact URI. Null values are permissable.
      */
-    public void setURI(URI value) {
+    public void setURI(final URI value) {
         uri = value;
     }
 
     /**
      * Sets notes. Null values will create an empty string.
      */
-    public void setNotes(String value) {
-        notes = (value == null) ? EMPTY : value;
+    public void setNotes(final String value) {
+        notes = value == null ? EMPTY : value;
     }
 
 }// class PlayerMetadata

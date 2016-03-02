@@ -31,7 +31,6 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -159,13 +158,6 @@ public final class SymbolPack implements Comparable<SymbolPack> {
         Objects.requireNonNull(styles);
         cssStyles = new ArrayList<>(styles);
     }// setCSSStyles()
-
-    /**
-     * Set the Symbols
-     */
-    public void setSymbols(final Symbol[] symbols) {
-        this.symbols = Arrays.asList(symbols);
-    }
 
     /**
      * Set the Symbols

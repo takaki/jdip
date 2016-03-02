@@ -26,7 +26,9 @@ import dip.order.OrderException;
 
 import javax.xml.bind.annotation.XmlEnumValue;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -117,30 +119,35 @@ public enum Coast {
     public static final Coast SEA = SINGLE;
 
     // index-to-coast array
-    private static final Coast[] IDX_ARRAY = {UNDEFINED, WING, NONE, SINGLE, NORTH, SOUTH, WEST, EAST};
+    private static final List<Coast> IDX_ARRAY = Arrays
+            .asList(UNDEFINED, WING, NONE, SINGLE, NORTH, SOUTH, WEST, EAST);
 
 
     /**
      * Array of Coasts that are not typically displayed
      * <b>Warning: this should not be mutated.</b>
      */
-    public static final Coast[] NOT_DISPLAYED = {NONE, SINGLE, UNDEFINED, WING};
+    private static final Set<Coast> NOT_DISPLAYED = EnumSet
+            .of(NONE, SINGLE, UNDEFINED, WING);
 
     /**
      * Array of the 6 main coast types (NONE, SINGLE, NORTH, SOUTH, WEST, EAST)
      * <b>Warning: this should not be mutated.</b>
      */
-    public static final Coast[] ALL_COASTS = {NONE, SINGLE, NORTH, SOUTH, WEST, EAST};
+    public static final Set<Coast> ALL_COASTS = EnumSet
+            .of(NONE, SINGLE, NORTH, SOUTH, WEST, EAST);
     /**
      * Array of sea coasts (SINGLE, NORTH, SOUTH, WEST, EAST)
      * <b>Warning: this should not be mutated.</b>
      */
-    public static final Coast[] ANY_SEA = {SINGLE, NORTH, SOUTH, WEST, EAST};
+    public static final Set<Coast> ANY_SEA = EnumSet
+            .of(SINGLE, NORTH, SOUTH, WEST, EAST);
     /**
      * Array of directional coasts (NORTH, SOUTH, WEST, EAST)
      * <b>Warning: this should not be mutated.</b>
      */
-    public static final Coast[] ANY_DIRECTIONAL = {NORTH, SOUTH, WEST, EAST};
+    public static final Set<Coast> ANY_DIRECTIONAL = EnumSet
+            .of(NORTH, SOUTH, WEST, EAST);
 
 
     // class variables
@@ -152,6 +159,7 @@ public enum Coast {
      * Constructs a Coast
      */
     Coast(final String name, final String abbreviation, final int index) {
+
         if (index < 0) {
             throw new IllegalArgumentException();
         }
@@ -194,8 +202,7 @@ public enum Coast {
      * Returns if this Coast is typically displayed
      */
     public static boolean isDisplayable(final Coast coast) {
-        return !Arrays.stream(NOT_DISPLAYED)
-                .anyMatch(anotDisplayed -> (coast == anotDisplayed));
+        return !NOT_DISPLAYED.contains(coast);
     }// isDisplayable()
 
     /**
@@ -360,8 +367,7 @@ public enum Coast {
      * Coast.NORTH, Coast.SOUTH, Coast.WEST, or Coast.EAST
      */
     public boolean isDirectional() {
-        return Arrays.stream(ANY_DIRECTIONAL)
-                .anyMatch(aanyDirectional -> this == aanyDirectional);
+        return ANY_DIRECTIONAL.contains(this);
     }// isDirectionalCoast()
 
 

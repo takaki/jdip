@@ -1078,7 +1078,7 @@ public class ClientMenu {
      */
     private class ModeListener extends AbstractCFPListener {
         public void actionWorldCreated(World w) {
-            Power[] thePowers = w.getMap().getPowers();
+            Power[] thePowers = w.getMap().getPowers().toArray(new Power[0]);
             updatePowers(thePowers);
         }// actionWorldCreated()
 

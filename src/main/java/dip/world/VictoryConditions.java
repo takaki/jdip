@@ -128,10 +128,10 @@ public class VictoryConditions implements Serializable {
 
         // create an array of AdjustmentInfo, indexed the same as the array of Powers,
         // from the passed HashMap
-        final Power[] powers = turnState.getWorld().getMap().getPowers();
-        final AdjustmentInfo[] adjInfo = new AdjustmentInfo[powers.length];
-        for (int i = 0; i < adjInfo.length; i++) {
-            adjInfo[i] = adjMap.get(powers[i]);
+        final List<Power> powers = turnState.getWorld().getMap().getPowers();
+        final List<AdjustmentInfo> adjInfo = new ArrayList<>();
+        for (int i = 0; i < powers.size(); i++) {
+            adjInfo.add(adjMap.get(powers.get(i)));
         }
 
 
@@ -139,7 +139,8 @@ public class VictoryConditions implements Serializable {
         if (maxGameTimeYears > 0) {
             if (currentYear - initialYear + 1 >= maxGameTimeYears) {
                 evalResults.add(new Result(null,
-                        Utils.getLocalString(VC_MAX_GAME_TIME, maxGameTimeYears)));
+                        Utils.getLocalString(VC_MAX_GAME_TIME,
+                                maxGameTimeYears)));
                 evalResults.add(new Result(null, Utils.getLocalString(VC_DRAW,
                         getRemainingPowers(turnState, powers, adjInfo))));
                 return true;
@@ -149,11 +150,11 @@ public class VictoryConditions implements Serializable {
 
         // check for single-power victory (via controlling numSCForVictory supply centers)
         if (numSCForVictory > 0) {
-            for (int i = 0; i < adjInfo.length; i++) {
-                if (adjInfo[i].getSupplyCenterCount() >= numSCForVictory) {
+            for (int i = 0; i < adjInfo.size(); i++) {
+                if (adjInfo.get(i).getSupplyCenterCount() >= numSCForVictory) {
                     evalResults.add(new Result(null,
-                            Utils.getLocalString(VC_WIN_SINGLE, powers[i],
-                                    adjInfo[i].getSupplyCenterCount(),
+                            Utils.getLocalString(VC_WIN_SINGLE, powers.get(i),
+                                    adjInfo.get(i).getSupplyCenterCount(),
                                     numSCForVictory)));
                     return true;
                 }
@@ -220,18 +221,18 @@ public class VictoryConditions implements Serializable {
 
     // creates a comma-seperated list of power names, if they are still in play
     private String getRemainingPowers(final TurnState turnState,
-                                      final Power[] powers,
-                                      final AdjustmentInfo[] adjInfo) {
+                                      final List<Power> powers,
+                                      final List<AdjustmentInfo> adjInfo) {
         final StringBuffer sb = new StringBuffer(128);
         final Position pos = turnState.getPosition();
 
-        for (int i = 0; i < powers.length; i++) {
+        for (int i = 0; i < powers.size(); i++) {
             // check for power elimination [note: check might be redundant...]
             // we need to check adjInfo because we check for victory BEFORE powers may
             // be eliminated in the adjustment phase.
-            if (adjInfo[i].getSupplyCenterCount() > 0 && !pos
-                    .isEliminated(powers[i])) {
-                sb.append(powers[i]);
+            if (adjInfo.get(i).getSupplyCenterCount() > 0 && !pos
+                    .isEliminated(powers.get(i))) {
+                sb.append(powers.get(i));
                 sb.append(", ");
             }
         }
