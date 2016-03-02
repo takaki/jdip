@@ -1341,9 +1341,8 @@ public class StdAdjudicator implements Adjudicator {
             int orderCount = 0;
             final int adjAmount = ai.getAdjustmentAmount();
 
-            final List<Orderable> orders = turnState.getOrders(power);
-            for (final Object order1 : orders) {
-                final Order order = (Order) order1;
+            final List<Order> orders = turnState.getOrders(power);
+            for (final Order order : orders) {
 
                 if (order instanceof Remove && adjAmount > 0) {
                     addResult(new OrderResult(order, Utils.getLocalString(
