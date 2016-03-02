@@ -61,7 +61,7 @@ import java.util.zip.GZIPOutputStream;
  * <li>HashMap of per-power and global state information (used to set various data)
  * </ol>
  */
-public class World implements Serializable {
+public final class World implements Serializable {
     // constants for non-turn-data lookup
     private static final String KEY_GLOBAL_DATA = "_global_data_";
     private static final String KEY_VICTORY_CONDITIONS = "_victory_conditions_";
@@ -72,8 +72,8 @@ public class World implements Serializable {
     private static final String KEY_VARIANT_INFO = "_variant_info_";
 
     // instance variables
-    private SortedMap turnStates;            // turn data
-    private Map nonTurnData;            // non-turn data (misc data & per-player data)
+    private final SortedMap<Phase, TurnState> turnStates;            // turn data
+    private final Map<Object, Object> nonTurnData;            // non-turn data (misc data & per-player data)
     private final WorldMap map;                        // the actual map (constant)
 
 
@@ -86,10 +86,10 @@ public class World implements Serializable {
                 final GZIPInputStream gzi = new GZIPInputStream(
                         new BufferedInputStream(new FileInputStream(file),
                                 4096));
-                ObjectReader in = new ObjectReader(gzi);) {
+                ObjectReader in = new ObjectReader(gzi)) {
             final World w = (World) in.readObject();
             return w;
-        } catch (ClassNotFoundException e) {
+        } catch (final ClassNotFoundException e) {
             throw new IOException(e);
         }
     }// open()
@@ -118,8 +118,8 @@ public class World implements Serializable {
     protected World(final WorldMap map) {
         this.map = map;
         turnStates = Collections.synchronizedSortedMap(
-                new TreeMap());    // synchronize on TreeMap
-        nonTurnData = new HashMap(17);
+                new TreeMap<>());    // synchronize on TreeMap
+        nonTurnData = new HashMap<>(17);
     }// World()
 
 
@@ -150,7 +150,7 @@ public class World implements Serializable {
      * Gets the first TurnState object
      */
     public TurnState getInitialTurnState() {
-        final TurnState ts = (TurnState) turnStates.get(turnStates.firstKey());
+        final TurnState ts = turnStates.get(turnStates.firstKey());
         if (ts != null) {
             ts.setWorld(this);
         }
@@ -162,7 +162,7 @@ public class World implements Serializable {
      * Gets the most current (last in the list) TurnState.
      */
     public TurnState getLastTurnState() {
-        final TurnState ts = (TurnState) turnStates.get(turnStates.lastKey());
+        final TurnState ts = turnStates.get(turnStates.lastKey());
         if (ts != null) {
             ts.setWorld(this);
         }
@@ -174,7 +174,7 @@ public class World implements Serializable {
      * Gets the TurnState associated with the specified Phase
      */
     public TurnState getTurnState(final Phase phase) {
-        final TurnState ts = (TurnState) turnStates.get(phase);
+        final TurnState ts = turnStates.get(phase);
         if (ts != null) {
             ts.setWorld(this);
         }
@@ -196,12 +196,12 @@ public class World implements Serializable {
         }
 
         Phase next = null;
-        final Iterator iter = turnStates.keySet().iterator();
+        final Iterator<Phase> iter = turnStates.keySet().iterator();
         while (iter.hasNext()) {
-            final Phase phase = (Phase) iter.next();
+            final Phase phase = iter.next();
             if (current.compareTo(phase) == 0) {
                 if (iter.hasNext()) {
-                    next = (Phase) iter.next();
+                    next = iter.next();
                 }
 
                 break;
@@ -212,7 +212,7 @@ public class World implements Serializable {
             return Optional.empty();
         }
 
-        final TurnState ts = (TurnState) turnStates.get(next);
+        final TurnState ts = turnStates.get(next);
         ts.setWorld(this);
         return Optional.of(ts);
     }// getNextTurnState()
@@ -225,9 +225,9 @@ public class World implements Serializable {
      * TurnState objects will be reflected in the World object
      * (TurnStates are not cloned here).
      */
-    public List getAllTurnStates() {
-        final Collection values = turnStates.values();
-        final ArrayList al = new ArrayList(values.size());
+    public List<TurnState> getAllTurnStates() {
+        final Collection<TurnState> values = turnStates.values();
+        final List<TurnState> al = new ArrayList<>(values.size());
         al.addAll(values);
         return al;
     }// getAllTurnStates()
@@ -248,9 +248,7 @@ public class World implements Serializable {
 
 
         Phase previous = null;
-        final Iterator iter = turnStates.keySet().iterator();
-        while (iter.hasNext()) {
-            final Phase phase = (Phase) iter.next();
+        for (final Phase phase : turnStates.keySet()) {
             if (phase.compareTo(current) != 0) {
                 previous = phase;
             } else {
@@ -262,7 +260,7 @@ public class World implements Serializable {
             return Optional.empty();
         }
 
-        final TurnState ts = (TurnState) turnStates.get(previous);
+        final TurnState ts = turnStates.get(previous);
         ts.setWorld(this);
         return Optional.of(ts);
     }// getPreviousTurnState()
@@ -296,7 +294,7 @@ public class World implements Serializable {
     /**
      * returns sorted (ascending) set of all Phases
      */
-    public Set getPhaseSet() {
+    public Set<Phase> getPhaseSet() {
         return turnStates.keySet();
     }// getPhaseSet()
 
