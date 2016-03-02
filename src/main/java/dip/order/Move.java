@@ -397,7 +397,7 @@ public class Move extends Order {
 
                 // determine if explicit/implicit convoys are required
                 final RuleOptions.OptionValue convoyRule = ruleOpts
-                        .getOptionValue(RuleOptions.OPTION_CONVOYED_MOVES);
+                        .getOptionValue(RuleOptions.Option.OPTION_CONVOYED_MOVES);
                 if (convoyRule == RuleOptions.OptionValue.VALUE_PATHS_EXPLICIT && convoyRoutes == null) {
                     // no explicit route defined, and at least one should be
                     throw new OrderException(

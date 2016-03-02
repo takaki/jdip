@@ -185,7 +185,7 @@ public class EditControlBar extends ViewControlBar {
         // if WING units enabled, add a WING unit button
         RuleOptions ro = mapPanel.getWorld().getRuleOptions();
         if (ro.getOptionValue(
-                RuleOptions.OPTION_WINGS) == RuleOptions.OptionValue.VALUE_WINGS_ENABLED) {
+                RuleOptions.Option.OPTION_WINGS) == RuleOptions.OptionValue.VALUE_WINGS_ENABLED) {
             bWing = new JToggleButton(Utils.getLocalString(BUTTON_TEXT_WING));
             bWing.setToolTipText(Utils.getLocalString(TOOLTIP_WING));
             bWing.addActionListener(tl);

@@ -161,7 +161,7 @@ public class Build extends Order {
                     Utils.getLocalString(BUILD_OWNED_SUPPLY, power));
         } else if (power != position
                 .getSupplyCenterHomePower(province).orElse(null) && ruleOpts.getOptionValue(
-                RuleOptions.OPTION_BUILDS) == RuleOptions.OptionValue.VALUE_BUILDS_HOME_ONLY) {
+                RuleOptions.Option.OPTION_BUILDS) == RuleOptions.OptionValue.VALUE_BUILDS_HOME_ONLY) {
             throw new OrderException(Utils.getLocalString(BUILD_HOME_SUPPLY));
         }
 
@@ -172,7 +172,7 @@ public class Build extends Order {
 
         // disallow wing units, if wing unit option prohibited
         if (srcUnitType == Unit.Type.WING && ruleOpts.getOptionValue(
-                RuleOptions.OPTION_WINGS) == RuleOptions.OptionValue.VALUE_WINGS_DISABLED) {
+                RuleOptions.Option.OPTION_WINGS) == RuleOptions.OptionValue.VALUE_WINGS_DISABLED) {
             throw new OrderException(
                     Utils.getLocalString(BUILD_WING_PROHIBITED));
         }

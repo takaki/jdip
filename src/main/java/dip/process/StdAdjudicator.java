@@ -1549,7 +1549,7 @@ public class StdAdjudicator implements Adjudicator {
         // then *all* owned supply centers are considered.
         Province[] homeSupplyCenters = null;
         RuleOptions.OptionValue buildOpt = ruleOpts
-                .getOptionValue(RuleOptions.OPTION_BUILDS);
+                .getOptionValue(RuleOptions.Option.OPTION_BUILDS);
         if (buildOpt == RuleOptions.OptionValue.VALUE_BUILDS_HOME_ONLY) {
             homeSupplyCenters = position.getHomeSupplyCenters(power).toArray(new Province[0]);
         } else {

@@ -26,10 +26,7 @@ import dip.misc.Utils;
 import dip.world.variant.data.Variant;
 import dip.world.variant.data.Variant.NameValuePair;
 
-import java.io.InvalidObjectException;
-import java.io.ObjectStreamException;
 import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -66,38 +63,13 @@ public final class RuleOptions implements Serializable {
     private static final String RO_BAD_OPTIONVALUE = "RuleOpts.parser.badoptionvalue";
     private static final String RO_BAD_NVP = "RuleOpts.parser.badnvp";
 
-    // DO NOT change the names of these!!
-    // pre-defined option values that are shared between multiple options
-
-    // DO NOT change the names of these!!
-    // defined options, and their values
-    // BUILD options
-    public static final Option OPTION_BUILDS = new Option("Option.builds",
-            OptionValue.VALUE_BUILDS_HOME_ONLY,
-            Arrays.asList(OptionValue.VALUE_BUILDS_HOME_ONLY,
-                    OptionValue.VALUE_BUILDS_ANY_OWNED,
-                    OptionValue.VALUE_BUILDS_ANY_IF_HOME_OWNED));
-
-
-    public static final Option OPTION_WINGS = new Option("Option.wings",
-            OptionValue.VALUE_WINGS_DISABLED,
-            Arrays.asList(OptionValue.VALUE_WINGS_ENABLED,
-                    OptionValue.VALUE_WINGS_DISABLED));
-
-
-    public static final Option OPTION_CONVOYED_MOVES = new Option(
-            "Option.move.convoyed", OptionValue.VALUE_PATHS_EITHER,
-            Arrays.asList(OptionValue.VALUE_PATHS_EITHER,
-                    OptionValue.VALUE_PATHS_EXPLICIT,
-                    OptionValue.VALUE_PATHS_IMPLICIT));
-
 
     // array of default options, that are always set for every variant.
-    private static final Option[] DEFAULT_RULE_OPTIONS = {OPTION_BUILDS, OPTION_WINGS, OPTION_CONVOYED_MOVES};
+    private static final Option[] DEFAULT_RULE_OPTIONS = {Option.OPTION_BUILDS, Option.OPTION_WINGS, Option.OPTION_CONVOYED_MOVES};
 
     // NOTE: we must include all options / optionvalues in these arrays
     // OptionList -- for serialization/deserialization
-    private static final Option[] ALL_OPTIONS = {OPTION_BUILDS, OPTION_WINGS, OPTION_CONVOYED_MOVES};
+    private static final Option[] ALL_OPTIONS = {Option.OPTION_BUILDS, Option.OPTION_WINGS, Option.OPTION_CONVOYED_MOVES};
 
     // OptionValue -- for serialization/deserialization
     private static final OptionValue[] ALL_OPTIONVALUES = {OptionValue.VALUE_BUILDS_HOME_ONLY, OptionValue.VALUE_BUILDS_ANY_OWNED, OptionValue.VALUE_BUILDS_ANY_IF_HOME_OWNED, OptionValue.VALUE_WINGS_ENABLED, OptionValue.VALUE_WINGS_DISABLED, OptionValue.VALUE_PATHS_EXPLICIT, OptionValue.VALUE_PATHS_IMPLICIT, OptionValue.VALUE_PATHS_EITHER};
@@ -105,12 +77,30 @@ public final class RuleOptions implements Serializable {
     // instance variables
     private final Map<Option, OptionValue> optionMap;
 
-
     /**
      * An Option is created for each type of Rule that may have more than
      * one allowable option. The name of each Option must be unique.
      */
-    public static final class Option implements Serializable {
+    public enum Option {
+        // DO NOT change the names of these!!
+        // defined options, and their values
+        // BUILD options
+        OPTION_BUILDS("Option.builds", OptionValue.VALUE_BUILDS_HOME_ONLY,
+                Arrays.asList(OptionValue.VALUE_BUILDS_HOME_ONLY,
+                        OptionValue.VALUE_BUILDS_ANY_OWNED,
+                        OptionValue.VALUE_BUILDS_ANY_IF_HOME_OWNED)),
+
+        OPTION_WINGS("Option.wings", OptionValue.VALUE_WINGS_DISABLED,
+                Arrays.asList(OptionValue.VALUE_WINGS_ENABLED,
+                        OptionValue.VALUE_WINGS_DISABLED)),
+
+        OPTION_CONVOYED_MOVES("Option.move.convoyed",
+                OptionValue.VALUE_PATHS_EITHER,
+                Arrays.asList(OptionValue.VALUE_PATHS_EITHER,
+                        OptionValue.VALUE_PATHS_EXPLICIT,
+                        OptionValue.VALUE_PATHS_IMPLICIT));
+
+
         // instance variables
         private final String name;
         private final List<OptionValue> allowed;
@@ -119,8 +109,8 @@ public final class RuleOptions implements Serializable {
         /**
          * Create an Option.
          */
-        public Option(final String name, final OptionValue defaultValue,
-                      final List<OptionValue> allowed) {
+        Option(final String name, final OptionValue defaultValue,
+               final List<OptionValue> allowed) {
             Objects.requireNonNull(defaultValue);
             Objects.requireNonNull(name);
             Objects.requireNonNull(allowed);
@@ -182,36 +172,6 @@ public final class RuleOptions implements Serializable {
         }// checkValue()
 
 
-        @Override
-        public boolean equals(final Object obj) {
-            if (this == obj) {
-                return true;
-            }
-            if (obj instanceof Option) {
-                final Option o = (Option) obj;
-                return name.equals(o.name);
-            }
-            return false;
-        }// equals()
-
-
-        @Override
-        public int hashCode() {
-            return name.hashCode();
-        }// hashCode()
-
-        private Object readResolve() throws ObjectStreamException {
-            // slow but easy
-            for (final Option option : ALL_OPTIONS) {
-                if (name.equals(option.name)) {
-                    return option;
-                }
-            }
-
-            throw new InvalidObjectException(
-                    "RuleOptions: ALL_OPTIONS internal error");
-        }// readResolve()
-
         /**
          * For debugging only
          */
@@ -229,6 +189,9 @@ public final class RuleOptions implements Serializable {
      * options.
      */
     public enum OptionValue {
+        // DO NOT change the names of these!!
+        // pre-defined option values that are shared between multiple options
+
         /**
          * TRUE (Boolean) OptionValue
          */
@@ -382,13 +345,13 @@ public final class RuleOptions implements Serializable {
      * is invalid.
      */
     public static RuleOptions createFromVariant(
-            final Variant variant) throws InvalidWorldException {
+            final Variant variant) throws InvalidWorldException, RuntimeException, IllegalArgumentException {
         // create ruleoptions
         // set rule options
         final RuleOptions ruleOpts = new RuleOptions();
 
         // set default rule options
-        for (Option DEFAULT_RULE_OPTION : DEFAULT_RULE_OPTIONS) {
+        for (final Option DEFAULT_RULE_OPTION : DEFAULT_RULE_OPTIONS) {
             ruleOpts.setOption(DEFAULT_RULE_OPTION,
                     DEFAULT_RULE_OPTION.getDefault());
         }
@@ -398,20 +361,11 @@ public final class RuleOptions implements Serializable {
 
         // look up all name-value pairs via reflection.
         final List<NameValuePair> nvps = variant.getRuleOptionNVPs();
-        for (NameValuePair nvp : nvps) {
-            final Option option;
-            final OptionValue optionValue;
+        for (final NameValuePair nvp : nvps) {
 
             // first, check the name
-            try {
-                Field field = clazz.getField(nvp.getName());
-                option = (Option) field.get(null);
-                optionValue = OptionValue.valueOf(nvp.getValue());
-            } catch (final Exception e) {
-                throw new InvalidWorldException(
-                        Utils.getLocalString(RO_BAD_NVP, nvp.getName(),
-                                nvp.getValue(), e.getMessage()),e);
-            }
+            final Option option = Option.valueOf(nvp.getName());
+            final OptionValue optionValue = OptionValue.valueOf(nvp.getValue());
 
 
             // ensure that optionValue is valid for option

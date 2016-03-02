@@ -160,7 +160,7 @@ public class JudgeImport {
         // set the 'explicit convoy' rule option (all nJudge games require this)
         Log.println("JudgeImport: RuleOptions.VALUE_PATHS_EXPLICIT set");
         RuleOptions ruleOpts = world.getRuleOptions();
-        ruleOpts.setOption(RuleOptions.OPTION_CONVOYED_MOVES,
+        ruleOpts.setOption(RuleOptions.Option.OPTION_CONVOYED_MOVES,
                 RuleOptions.OptionValue.VALUE_PATHS_EXPLICIT);
         world.setRuleOptions(ruleOpts);
 

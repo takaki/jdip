@@ -1497,8 +1497,8 @@ final class JudgeImportHistory {
         if (Unit.Type.WING.equals(unitType)) {
             RuleOptions ruleOpts = world.getRuleOptions();
             if (RuleOptions.OptionValue.VALUE_WINGS_DISABLED.equals(ruleOpts
-                    .getOptionValue(RuleOptions.OPTION_WINGS))) {
-                ruleOpts.setOption(RuleOptions.OPTION_WINGS,
+                    .getOptionValue(RuleOptions.Option.OPTION_WINGS))) {
+                ruleOpts.setOption(RuleOptions.Option.OPTION_WINGS,
                         RuleOptions.OptionValue.VALUE_WINGS_ENABLED);
                 world.setRuleOptions(ruleOpts);
             }

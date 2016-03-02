@@ -199,7 +199,7 @@ public class Adjustment {
          */
         private void calculate() {
             RuleOptions.OptionValue buildOpt = ruleOpts
-                    .getOptionValue(RuleOptions.OPTION_BUILDS);
+                    .getOptionValue(RuleOptions.Option.OPTION_BUILDS);
 
             assert (numOccSC <= numSC);
 
