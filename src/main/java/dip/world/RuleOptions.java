@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -57,7 +58,7 @@ import java.util.Set;
  *
  * </pre>
  */
-public class RuleOptions implements Serializable {
+public final class RuleOptions implements Serializable {
     // internal constnats
     private static final String DESCRIPTION = "_description";
 
@@ -126,7 +127,7 @@ public class RuleOptions implements Serializable {
 
 
     // instance variables
-    protected HashMap optionMap;
+    private final Map<Option, OptionValue> optionMap;
 
 
     /**
@@ -251,9 +252,9 @@ public class RuleOptions implements Serializable {
      * OptionValue names need not be unique, and may be shared between
      * options.
      */
-    public static class OptionValue implements Serializable {
+    public static final class OptionValue implements Serializable {
         // instance variables
-        final String name;
+        private final String name;
 
         /**
          * Create an OptionValue.
@@ -274,26 +275,35 @@ public class RuleOptions implements Serializable {
          * Gets the internationalized ("display") version of the name.
          */
         public String getNameI18N() {
-            return Utils.getLocalString(getName());
+            return Utils.getLocalString(name);
         }
 
         /**
          * Gets the internationalized ("display") version of the description.
          */
         public String getDescriptionI18N() {
-            return Utils.getLocalString(getName() + DESCRIPTION);
+            return Utils.getLocalString(name + DESCRIPTION);
         }
 
+        @Override
         public boolean equals(final Object obj) {
-            return name.equals(((OptionValue) obj).name);
+            if (this == obj) {
+                return true;
+            }
+            if (obj instanceof OptionValue) {
+                OptionValue o = (OptionValue) obj;
+                return name.equals(o.name);
+            }
+            return false;
         }// equals()
 
+        @Override
         public int hashCode() {
             return name.hashCode();
         }// hashCode()
 
 
-        protected Object readResolve() throws ObjectStreamException {
+        private Object readResolve() throws ObjectStreamException {
             // slow but easy
             for (OptionValue ALL_OPTIONVALUE : ALL_OPTIONVALUES) {
                 if (name.equals(ALL_OPTIONVALUE.name)) {
@@ -308,6 +318,7 @@ public class RuleOptions implements Serializable {
         /**
          * For debugging only
          */
+        @Override
         public String toString() {
             return name;
         }
@@ -318,7 +329,7 @@ public class RuleOptions implements Serializable {
      * Creates a new RuleOptions object, which stores various Rule options.
      */
     public RuleOptions() {
-        optionMap = new HashMap(31);
+        optionMap = new HashMap<>(31);
     }// RuleOptions()
 
 
@@ -350,7 +361,7 @@ public class RuleOptions implements Serializable {
     public OptionValue getOptionValue(final Option option) {
         Objects.requireNonNull(option);
 
-        final OptionValue value = (OptionValue) optionMap.get(option);
+        final OptionValue value = optionMap.get(option);
         if (value == null) {
             return option.getDefault();
         }
@@ -362,7 +373,7 @@ public class RuleOptions implements Serializable {
     /**
      * Returns a Set of all Options.
      */
-    public Set getAllOptions() {
+    public Set<Option> getAllOptions() {
         return optionMap.keySet();
     }// getAllOptions()
 
@@ -370,15 +381,16 @@ public class RuleOptions implements Serializable {
     /**
      * For debugging only; print the rule options
      */
+    @Override
     public String toString() {
         final StringBuffer sb = new StringBuffer(256);
         sb.append(getClass().getName());
         sb.append('\n');
 
-        final Set set = getAllOptions();
-        final Iterator iter = set.iterator();
+        final Set<Option> set = getAllOptions();
+        final Iterator<Option> iter = set.iterator();
         while (iter.hasNext()) {
-            final Option opt = (Option) iter.next();
+            final Option opt = iter.next();
             final OptionValue ov = getOptionValue(opt);
             sb.append("  ");
             sb.append(opt);
