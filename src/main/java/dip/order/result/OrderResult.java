@@ -23,7 +23,7 @@ package dip.order.result;
 
 import dip.order.Orderable;
 
-import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * A message sent to a specific Power that refers to a specific order.
@@ -36,11 +36,11 @@ public class OrderResult extends Result {
     /**
      * The ResultType
      */
-    protected ResultType resultType = null;
+    protected ResultType resultType;
     /**
      * The Order to which this Result refers
      */
-    protected Orderable order = null;
+    protected Orderable order;
 
 
     /**
@@ -62,13 +62,13 @@ public class OrderResult extends Result {
      * Create an OrderResult with the given Order, ResultType, and Message.
      * A null Order or ResultType is not permissable.
      */
-    public OrderResult(final Orderable order, final ResultType type, final String message) {
+    public OrderResult(final Orderable order, final ResultType type,
+                       final String message) {
         super(order.getPower(), message);
-        if (type == null || order == null) {
-            throw new IllegalArgumentException("null type or order");
-        }
+        Objects.requireNonNull(type);
+        Objects.requireNonNull(order);
 
-        this.resultType = type;
+        resultType = type;
         this.order = order;
     }// OrderResult()
 
@@ -114,21 +114,22 @@ public class OrderResult extends Result {
      * If power is null, it will be first in ascending order.
      * If message may be empty, but never is null.
      */
+    @Override
     public int compareTo(final Object o) {
         if (o instanceof OrderResult) {
             final OrderResult result = (OrderResult) o;
 
             // 1: compare powers
             int compareResult = 0;
-            if (result.power == null && this.power == null) {
+            if (result.power == null && power == null) {
                 compareResult = 0;
-            } else if (this.power == null && result.power != null) {
+            } else if (power == null && result.power != null) {
                 return -1;
-            } else if (this.power != null && result.power == null) {
+            } else if (power != null && result.power == null) {
                 return +1;
             } else {
                 // if these are equal, could be 0
-                compareResult = this.power.compareTo(result.power);
+                compareResult = power.compareTo(result.power);
             }
 
             if (compareResult != 0) {
@@ -137,13 +138,13 @@ public class OrderResult extends Result {
 
             // 2: compare Order Source province
             // null orders come first.
-            if (this.order == null && result.order != null) {
+            if (order == null && result.order != null) {
                 return -1;
-            } else if (this.order != null && result.order == null) {
+            } else if (order != null && result.order == null) {
                 return +1;
-            } else if (this.order != null && result.order != null) {
+            } else if (order != null && result.order != null) {
                 // neither are null
-                compareResult = this.order.getSource().getProvince()
+                compareResult = order.getSource().getProvince()
                         .compareTo(result.order.getSource().getProvince());
                 if (compareResult != 0) {
                     return compareResult;
@@ -151,13 +152,13 @@ public class OrderResult extends Result {
             }
 
             // 3: compare ResultType
-            compareResult = this.resultType.compareTo(result.resultType);
+            compareResult = resultType.compareTo(result.resultType);
             if (compareResult != 0) {
                 return compareResult;
             }
 
             // 4: compare message
-            return this.message.compareTo(result.message);
+            return message.compareTo(result.message);
         } else {
             return super.compareTo(o);
         }
@@ -167,126 +168,68 @@ public class OrderResult extends Result {
     /**
      * Type-Safe enumerated categories of OrderResults.
      */
-    public static class ResultType implements Serializable, Comparable {
-        // key constants
-        private static final String KEY_VALIDATION_FAILURE = "VALIDATION_FAILURE";
-        private static final String KEY_SUCCESS = "SUCCESS";
-        private static final String KEY_FAILURE = "FAILURE";
-        private static final String KEY_DISLODGED = "DISLODGED";
-        private static final String KEY_CONVOY_PATH_TAKEN = "CONVOY_PATH_TAKEN";
-        private static final String KEY_TEXT = "TEXT";
-        private static final String KEY_SUBSTITUTED = "SUBSTITUTED";
+    // key constants
+    private static final String KEY_VALIDATION_FAILURE = "VALIDATION_FAILURE";
+    private static final String KEY_SUCCESS = "SUCCESS";
+    private static final String KEY_FAILURE = "FAILURE";
+    private static final String KEY_DISLODGED = "DISLODGED";
+    private static final String KEY_CONVOY_PATH_TAKEN = "CONVOY_PATH_TAKEN";
+    private static final String KEY_TEXT = "TEXT";
+    private static final String KEY_SUBSTITUTED = "SUBSTITUTED";
 
-        // enumerated constants
+    public enum ResultType {
         /**
          * ResultType indicating that order validation failed
          */
-        public static final ResultType VALIDATION_FAILURE = new ResultType(
-                KEY_VALIDATION_FAILURE, 10);
+        VALIDATION_FAILURE(KEY_VALIDATION_FAILURE, 10),
         /**
          * ResultType indicating the order was successful
          */
-        public static final ResultType SUCCESS = new ResultType(KEY_SUCCESS,
-                20);
+        SUCCESS(KEY_SUCCESS, 20),
         /**
          * ResultType indicating the order has failed
          */
-        public static final ResultType FAILURE = new ResultType(KEY_FAILURE,
-                30);
+        FAILURE(KEY_FAILURE, 30),
         /**
          * ResultType indicating the order's source unit has been dislodged
          */
-        public static final ResultType DISLODGED = new ResultType(KEY_DISLODGED,
-                40);
+        DISLODGED(KEY_DISLODGED, 40),
         /**
          * ResultType indicating what convoy path a convoyed unit used
          */
-        public static final ResultType CONVOY_PATH_TAKEN = new ResultType(
-                KEY_CONVOY_PATH_TAKEN, 50);
+        CONVOY_PATH_TAKEN(KEY_CONVOY_PATH_TAKEN, 50),
         /**
          * ResultType for a general (not otherwise specified) message
          */
-        public static final ResultType TEXT = new ResultType(KEY_TEXT,
-                60);        // text message only
+        // text message only
+        TEXT(KEY_TEXT, 60),
         /**
          * ResultType indicating that the order was substituted with another order
          */
-        public static final ResultType SUBSTITUTED = new ResultType(
-                KEY_SUBSTITUTED, 70);
+        SUBSTITUTED(KEY_SUBSTITUTED, 70);
+
 
         // instance variables
         private final String key;
         private final int ordering;
 
-        protected ResultType(final String key, final int ordering) {
-            if (key == null) {
-                throw new IllegalArgumentException("null key");
-            }
+        ResultType(final String key, final int ordering) {
+            Objects.requireNonNull(key);
 
-            this.ordering = ordering;
             this.key = key;
+            this.ordering = ordering;
         }// ResultType()
 
-		
-		/*
-            equals():
-			
-			We use Object.equals(), which just does a test of 
-			referential equality. 
-			
-		*/
 
         /**
          * For debugging: return the name
          */
+        @Override
         public String toString() {
             return key;
         }// toString()
 
-        /**
-         * Sorts the result type
-         */
-        public int compareTo(final Object obj) {
-            final ResultType rt = (ResultType) obj;
-            return (ordering - rt.ordering);
-        }// compareTo()
 
-
-        /**
-         * Assigns serialized objects to a single constant reference
-         */
-        protected Object readResolve() throws java.io.ObjectStreamException {
-            ResultType rt = null;
-
-            switch (key) {
-                case KEY_VALIDATION_FAILURE:
-                    rt = VALIDATION_FAILURE;
-                    break;
-                case KEY_SUCCESS:
-                    rt = SUCCESS;
-                    break;
-                case KEY_FAILURE:
-                    rt = FAILURE;
-                    break;
-                case KEY_DISLODGED:
-                    rt = DISLODGED;
-                    break;
-                case KEY_CONVOY_PATH_TAKEN:
-                    rt = CONVOY_PATH_TAKEN;
-                    break;
-                case KEY_TEXT:
-                    rt = TEXT;
-                    break;
-                case KEY_SUBSTITUTED:
-                    rt = SUBSTITUTED;
-                    break;
-                default:
-                    throw new java.io.InvalidObjectException(
-                            "Unknown ResultType: " + key);
-            }
-
-            return rt;
-        }// readResolve()
     }// nested class ResultType
 
 }// class OrderResult
