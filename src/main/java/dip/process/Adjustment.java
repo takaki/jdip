@@ -203,7 +203,7 @@ public class Adjustment {
 
             assert (numOccSC <= numSC);
 
-            if (buildOpt == RuleOptions.VALUE_BUILDS_HOME_ONLY) {
+            if (buildOpt == RuleOptions.OptionValue.VALUE_BUILDS_HOME_ONLY) {
                 // Adjustment = number of SC gained. But, if we have gained more adjustments
                 // than we have home supply centers to build on, those builds are discarded.
                 // Or, if some are occupied, those builds are discarded.
@@ -212,13 +212,13 @@ public class Adjustment {
                 // 		3 builds, 2 empty owned home supply centers: adjustments: +2
                 adj = numSC - numUnits;
                 adj = (adj > (numHSC - numOccHSC)) ? (numHSC - numOccHSC) : adj;
-            } else if (buildOpt == RuleOptions.VALUE_BUILDS_ANY_OWNED) {
+            } else if (buildOpt == RuleOptions.OptionValue.VALUE_BUILDS_ANY_OWNED) {
                 // We can build in any owned supply center. Effectively, then,
                 // ALL owned supply centers are home supply centers.
                 numHSC = numSC;
                 adj = (numSC - numUnits);
                 adj = (adj > (numSC - numOccSC)) ? (numSC - numOccSC) : adj;
-            } else if (buildOpt == RuleOptions.VALUE_BUILDS_ANY_IF_HOME_OWNED) {
+            } else if (buildOpt == RuleOptions.OptionValue.VALUE_BUILDS_ANY_IF_HOME_OWNED) {
                 // We can build in any supply center, if at least ONE home supply
                 // center is owned.
                 adj = numSC - numUnits;

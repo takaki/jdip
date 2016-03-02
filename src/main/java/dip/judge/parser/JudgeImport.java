@@ -161,7 +161,7 @@ public class JudgeImport {
         Log.println("JudgeImport: RuleOptions.VALUE_PATHS_EXPLICIT set");
         RuleOptions ruleOpts = world.getRuleOptions();
         ruleOpts.setOption(RuleOptions.OPTION_CONVOYED_MOVES,
-                RuleOptions.VALUE_PATHS_EXPLICIT);
+                RuleOptions.OptionValue.VALUE_PATHS_EXPLICIT);
         world.setRuleOptions(ruleOpts);
 
         // eliminate all existing TurnStates; we will create our own from parsed values

@@ -138,12 +138,12 @@ public class GUIWaive extends Waive implements GUIOrder {
             //
             RuleOptions ruleOpts = stateInfo.getRuleOptions();
             if (ruleOpts.getOptionValue(
-                    RuleOptions.OPTION_BUILDS) == RuleOptions.VALUE_BUILDS_ANY_OWNED) {
+                    RuleOptions.OPTION_BUILDS) == RuleOptions.OptionValue.VALUE_BUILDS_ANY_OWNED) {
                 sb.append(
                         Utils.getLocalString(GUIOrder.COMPLETE, getFullName()));
                 return true;
             } else if (ruleOpts.getOptionValue(
-                    RuleOptions.OPTION_BUILDS) == RuleOptions.VALUE_BUILDS_ANY_IF_HOME_OWNED) {
+                    RuleOptions.OPTION_BUILDS) == RuleOptions.OptionValue.VALUE_BUILDS_ANY_IF_HOME_OWNED) {
                 // check if we have ONE owned home supply center before buidling
                 // in a non-home supply center.
                 //

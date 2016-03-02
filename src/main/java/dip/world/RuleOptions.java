@@ -68,51 +68,28 @@ public final class RuleOptions implements Serializable {
 
     // DO NOT change the names of these!!
     // pre-defined option values that are shared between multiple options
-    /**
-     * TRUE (Boolean) OptionValue
-     */
-    public static final OptionValue VALUE_TRUE = new OptionValue(
-            "OptionValue.true");
-    /**
-     * FALSE (Boolean) OptionValue
-     */
-    public static final OptionValue VALUE_FALSE = new OptionValue(
-            "OptionValue.false");
 
     // DO NOT change the names of these!!
     // defined options, and their values
     // BUILD options
-    public static final OptionValue VALUE_BUILDS_HOME_ONLY = new OptionValue(
-            "OptionValue.home-only");
-    public static final OptionValue VALUE_BUILDS_ANY_OWNED = new OptionValue(
-            "OptionValue.any-owned");
-    public static final OptionValue VALUE_BUILDS_ANY_IF_HOME_OWNED = new OptionValue(
-            "OptionValue.any-if-home-owned");
     public static final Option OPTION_BUILDS = new Option("Option.builds",
-            VALUE_BUILDS_HOME_ONLY,
-            Arrays.asList(VALUE_BUILDS_HOME_ONLY, VALUE_BUILDS_ANY_OWNED,
-                    VALUE_BUILDS_ANY_IF_HOME_OWNED));
+            OptionValue.VALUE_BUILDS_HOME_ONLY,
+            Arrays.asList(OptionValue.VALUE_BUILDS_HOME_ONLY,
+                    OptionValue.VALUE_BUILDS_ANY_OWNED,
+                    OptionValue.VALUE_BUILDS_ANY_IF_HOME_OWNED));
 
 
-    public static final OptionValue VALUE_WINGS_ENABLED = new OptionValue(
-            "OptionValue.wings-enabled");
-    public static final OptionValue VALUE_WINGS_DISABLED = new OptionValue(
-            "OptionValue.wings-disabled");
     public static final Option OPTION_WINGS = new Option("Option.wings",
-            VALUE_WINGS_DISABLED,
-            Arrays.asList(VALUE_WINGS_ENABLED, VALUE_WINGS_DISABLED));
+            OptionValue.VALUE_WINGS_DISABLED,
+            Arrays.asList(OptionValue.VALUE_WINGS_ENABLED,
+                    OptionValue.VALUE_WINGS_DISABLED));
 
 
-    public static final OptionValue VALUE_PATHS_EXPLICIT = new OptionValue(
-            "OptionValue.explicit-paths");
-    public static final OptionValue VALUE_PATHS_IMPLICIT = new OptionValue(
-            "OptionValue.implicit-paths");
-    public static final OptionValue VALUE_PATHS_EITHER = new OptionValue(
-            "OptionValue.either-path");
     public static final Option OPTION_CONVOYED_MOVES = new Option(
-            "Option.move.convoyed", VALUE_PATHS_EITHER,
-            Arrays.asList(VALUE_PATHS_EITHER, VALUE_PATHS_EXPLICIT,
-                    VALUE_PATHS_IMPLICIT));
+            "Option.move.convoyed", OptionValue.VALUE_PATHS_EITHER,
+            Arrays.asList(OptionValue.VALUE_PATHS_EITHER,
+                    OptionValue.VALUE_PATHS_EXPLICIT,
+                    OptionValue.VALUE_PATHS_IMPLICIT));
 
 
     // array of default options, that are always set for every variant.
@@ -123,8 +100,7 @@ public final class RuleOptions implements Serializable {
     private static final Option[] ALL_OPTIONS = {OPTION_BUILDS, OPTION_WINGS, OPTION_CONVOYED_MOVES};
 
     // OptionValue -- for serialization/deserialization
-    private static final OptionValue[] ALL_OPTIONVALUES = {VALUE_BUILDS_HOME_ONLY, VALUE_BUILDS_ANY_OWNED, VALUE_BUILDS_ANY_IF_HOME_OWNED, VALUE_WINGS_ENABLED, VALUE_WINGS_DISABLED, VALUE_PATHS_EXPLICIT, VALUE_PATHS_IMPLICIT, VALUE_PATHS_EITHER};
-
+    private static final OptionValue[] ALL_OPTIONVALUES = {OptionValue.VALUE_BUILDS_HOME_ONLY, OptionValue.VALUE_BUILDS_ANY_OWNED, OptionValue.VALUE_BUILDS_ANY_IF_HOME_OWNED, OptionValue.VALUE_WINGS_ENABLED, OptionValue.VALUE_WINGS_DISABLED, OptionValue.VALUE_PATHS_EXPLICIT, OptionValue.VALUE_PATHS_IMPLICIT, OptionValue.VALUE_PATHS_EITHER};
 
     // instance variables
     private final Map<Option, OptionValue> optionMap;
@@ -252,14 +228,40 @@ public final class RuleOptions implements Serializable {
      * OptionValue names need not be unique, and may be shared between
      * options.
      */
-    public static final class OptionValue implements Serializable {
+    public enum OptionValue {
+        /**
+         * TRUE (Boolean) OptionValue
+         */
+        VALUE_TRUE("OptionValue.true"),
+        /**
+         * FALSE (Boolean) OptionValue
+         */
+        VALUE_FALSE("OptionValue.false"),
+
+        // DO NOT change the names of these!!
+        // defined options, and their values
+        // BUILD options
+        VALUE_BUILDS_HOME_ONLY("OptionValue.home-only"),
+        VALUE_BUILDS_ANY_OWNED("OptionValue.any-owned"),
+        VALUE_BUILDS_ANY_IF_HOME_OWNED("OptionValue.any-if-home-owned"),
+
+
+        VALUE_WINGS_ENABLED("OptionValue.wings-enabled"),
+        VALUE_WINGS_DISABLED("OptionValue.wings-disabled"),
+
+
+        VALUE_PATHS_EXPLICIT("OptionValue.explicit-paths"),
+        VALUE_PATHS_IMPLICIT("OptionValue.implicit-paths"),
+        VALUE_PATHS_EITHER("OptionValue.either-path");
+
+
         // instance variables
         private final String name;
 
         /**
          * Create an OptionValue.
          */
-        public OptionValue(final String name) {
+        OptionValue(final String name) {
             Objects.requireNonNull(name);
             this.name = name;
         }// OptionValue()
@@ -284,36 +286,6 @@ public final class RuleOptions implements Serializable {
         public String getDescriptionI18N() {
             return Utils.getLocalString(name + DESCRIPTION);
         }
-
-        @Override
-        public boolean equals(final Object obj) {
-            if (this == obj) {
-                return true;
-            }
-            if (obj instanceof OptionValue) {
-                OptionValue o = (OptionValue) obj;
-                return name.equals(o.name);
-            }
-            return false;
-        }// equals()
-
-        @Override
-        public int hashCode() {
-            return name.hashCode();
-        }// hashCode()
-
-
-        private Object readResolve() throws ObjectStreamException {
-            // slow but easy
-            for (OptionValue ALL_OPTIONVALUE : ALL_OPTIONVALUES) {
-                if (name.equals(ALL_OPTIONVALUE.name)) {
-                    return ALL_OPTIONVALUE;
-                }
-            }
-
-            throw new InvalidObjectException(
-                    "RuleOptions: ALL_OPTIONVALUES internal error");
-        }// readResolve()
 
         /**
          * For debugging only
@@ -434,13 +406,11 @@ public final class RuleOptions implements Serializable {
             try {
                 Field field = clazz.getField(nvp.getName());
                 option = (Option) field.get(null);
-
-                field = clazz.getField(nvp.getValue());
-                optionValue = (OptionValue) field.get(null);
+                optionValue = OptionValue.valueOf(nvp.getValue());
             } catch (final Exception e) {
                 throw new InvalidWorldException(
                         Utils.getLocalString(RO_BAD_NVP, nvp.getName(),
-                                nvp.getValue(), e.getMessage()));
+                                nvp.getValue(), e.getMessage()),e);
             }
 
 
