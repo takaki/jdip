@@ -554,9 +554,8 @@ public class Path {
         // note that we ONLY add a location if it is ok'd by the PathEvaluator.
         final List<Location> adjLocs = new LinkedList<>();
         for (int i = 0; i < Coast.ALL_COASTS.length; i++) {
-            final Location[] locations = current.getProvince()
-                    .getAdjacentLocations(Coast.ALL_COASTS[i]).toArray(new Location[0]);
-
+            final List<Location> locations = current.getProvince()
+                    .getAdjacentLocations(Coast.ALL_COASTS[i]);
             for (final Location testLoc : locations) {
                 if (pathEvaluator.evaluate(testLoc)) {
                     adjLocs.add(testLoc);
@@ -832,7 +831,8 @@ public class Path {
 				*/
 
                 // NEW CODE: using Coast.TOUCHING
-                final Location[] locs = p.getAdjacentLocations(Coast.TOUCHING).toArray(new Location[0]);
+                final List<Location> locs = p
+                        .getAdjacentLocations(Coast.TOUCHING);
                 for (final Location loc : locs) {
                     final Province ckp = loc.getProvince();
 
@@ -882,7 +882,7 @@ public class Path {
         }
 
         // quick check: dest: next to at least 1 sea/conv coastal province
-        final Location[] dLocs = dest.getAdjacentLocations(Coast.TOUCHING).toArray(new Location[0]);
+        final List<Location> dLocs = dest.getAdjacentLocations(Coast.TOUCHING);
         boolean isOk = false;
         for (final Location dLoc : dLocs) {
             final Province p = dLoc.getProvince();
@@ -908,7 +908,8 @@ public class Path {
         while (queue.size() > 0) {
             final TreeNode node = queue.removeFirst();
             final Province prov = node.getProvince();
-            final Location[] locs = prov.getAdjacentLocations(Coast.TOUCHING).toArray(new Location[0]);
+            final List<Location> locs = prov
+                    .getAdjacentLocations(Coast.TOUCHING);
             for (final Location loc : locs) {
                 final Province p = loc.getProvince();
                 if (p.equals(dest)) {
