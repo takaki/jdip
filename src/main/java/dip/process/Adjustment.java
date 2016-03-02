@@ -22,15 +22,24 @@
 //
 package dip.process;
 
-import dip.world.*;
+import dip.world.Position;
+import dip.world.Power;
+import dip.world.Province;
+import dip.world.RuleOptions;
+import dip.world.RuleOptions.Option;
+import dip.world.RuleOptions.OptionValue;
+import dip.world.TurnState;
+import dip.world.Unit;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 
 /**
  * Calculates Adjustments (how many units a power may build or must remove).
  */
-public class Adjustment {
+public final class Adjustment {
 
 
     private Adjustment() {
@@ -41,21 +50,18 @@ public class Adjustment {
      * <p>
      * Note that this will work during any phase.
      */
-    public static AdjustmentInfo getAdjustmentInfo(TurnState turnState,
-                                                   RuleOptions ruleOpts,
-                                                   Power power) {
-        if (power == null || turnState == null) {
-            throw new IllegalArgumentException();
-        }
+    public static AdjustmentInfo getAdjustmentInfo(final TurnState turnState,
+                                                   final RuleOptions ruleOpts,
+                                                   final Power power) {
+        Objects.requireNonNull(power);
+        Objects.requireNonNull(turnState);
+        final AdjustmentInfo ai = new AdjustmentInfo(ruleOpts);
 
-        AdjustmentInfo ai = new AdjustmentInfo(ruleOpts);
+        final Position position = turnState.getPosition();
+        final Province[] provinces = position.getProvinces()
+                .toArray(new Province[0]);
 
-        Position position = turnState.getPosition();
-        final Province[] provinces = position.getProvinces().toArray(new Province[0]);
-
-        for (int i = 0; i < provinces.length; i++) {
-            Province province = provinces[i];
-
+        for (final Province province : provinces) {
             // tally units
             Unit unit = position.getUnit(province).orElse(null);
             if (unit != null && unit.getPower() == power) {
@@ -71,7 +77,8 @@ public class Adjustment {
             if (power == position.getSupplyCenterOwner(province).orElse(null)) {
                 ai.numSC++;
 
-                if (power == position.getSupplyCenterHomePower(province).orElse(null)) {
+                if (power == position.getSupplyCenterHomePower(province)
+                        .orElse(null)) {
                     ai.numHSC++;
                 }
             }
@@ -88,25 +95,24 @@ public class Adjustment {
      * <p>
      * Results are returned as an AdjustmentInfoMap
      */
-    public static AdjustmentInfoMap getAdjustmentInfo(TurnState turnState,
-                                                      RuleOptions ruleOpts,
-                                                      Power[] powers) {
-        if (powers == null || turnState == null) {
-            throw new IllegalArgumentException();
-        }
+    public static AdjustmentInfoMap getAdjustmentInfo(final TurnState turnState,
+                                                      final RuleOptions ruleOpts,
+                                                      final Power[] powers) {
+        Objects.requireNonNull(powers);
+        Objects.requireNonNull(turnState);
 
         // setup AdjustmentInfoMap
-        AdjustmentInfoMap adjMap = new AdjustmentInfoMap();
-        for (int i = 0; i < powers.length; i++) {
-            adjMap.put(powers[i], new AdjustmentInfo(ruleOpts));
+        final AdjustmentInfoMap adjMap = new AdjustmentInfoMap();
+        for (final Power power1 : powers) {
+            adjMap.put(power1, new AdjustmentInfo(ruleOpts));
         }
 
         // Iterate for all Powers
-        Position position = turnState.getPosition();
-        final Province[] provinces = position.getProvinces().toArray(new Province[0]);
+        final Position position = turnState.getPosition();
+        final Province[] provinces = position.getProvinces()
+                .toArray(new Province[0]);
 
-        for (int i = 0; i < provinces.length; i++) {
-            Province province = provinces[i];
+        for (final Province province : provinces) {
             boolean hasUnit = false;
 
             // tally units
@@ -131,7 +137,8 @@ public class Adjustment {
                 }
 
 
-                power = position.getSupplyCenterHomePower(province).orElse(null);
+                power = position.getSupplyCenterHomePower(province)
+                        .orElse(null);
                 if (power != null) {
                     adjMap.get(power).numHSC++;
 
@@ -152,25 +159,23 @@ public class Adjustment {
     public static class AdjustmentInfo {
         // these private fields may still be set by enclosing class
         //
-        private int numUnits = 0;        // # of units total
-        private int numSC = 0;        // # of owned supply centers
-        private int numHSC = 0;        // # of owned home supply centers
-        private int numOccHSC = 0;    // # of occupied owned home supply centers
-        private int numOccSC = 0;        // # of occupied non-home supply centers
-        private int numDislodgedUnits = 0;    // # of dislodged units
+        private int numUnits;        // # of units total
+        private int numSC;        // # of owned supply centers
+        private int numHSC;        // # of owned home supply centers
+        private int numOccHSC;    // # of occupied owned home supply centers
+        private int numOccSC;        // # of occupied non-home supply centers
+        private int numDislodgedUnits;    // # of dislodged units
 
-        private int adj = 0;            // the adjustment amount, as determined by calculate()
-        private boolean isCalc = false;    // if we have been calculated
-        private RuleOptions ruleOpts; // for calculating
+        private int adj;            // the adjustment amount, as determined by calculate()
+        private boolean isCalc;    // if we have been calculated
+        private final RuleOptions ruleOpts; // for calculating
 
 
         /**
          * Construct an AdjustmentInfo object
          */
-        protected AdjustmentInfo(RuleOptions ruleOpts) {
-            if (ruleOpts == null) {
-                throw new IllegalArgumentException();
-            }
+        protected AdjustmentInfo(final RuleOptions ruleOpts) {
+            Objects.requireNonNull(ruleOpts);
 
             this.ruleOpts = ruleOpts;
         }// AdjustmentInfo()
@@ -198,12 +203,12 @@ public class Adjustment {
          * as long as RuleOptions do NOT change in between callings.
          */
         private void calculate() {
-            RuleOptions.OptionValue buildOpt = ruleOpts
-                    .getOptionValue(RuleOptions.Option.OPTION_BUILDS);
+            final OptionValue buildOpt = ruleOpts
+                    .getOptionValue(Option.OPTION_BUILDS);
 
-            assert (numOccSC <= numSC);
+            assert numOccSC <= numSC;
 
-            if (buildOpt == RuleOptions.OptionValue.VALUE_BUILDS_HOME_ONLY) {
+            if (buildOpt == OptionValue.VALUE_BUILDS_HOME_ONLY) {
                 // Adjustment = number of SC gained. But, if we have gained more adjustments
                 // than we have home supply centers to build on, those builds are discarded.
                 // Or, if some are occupied, those builds are discarded.
@@ -211,19 +216,19 @@ public class Adjustment {
                 // 		3 builds, 3 empty owned home supply centers: adjustments: +3
                 // 		3 builds, 2 empty owned home supply centers: adjustments: +2
                 adj = numSC - numUnits;
-                adj = (adj > (numHSC - numOccHSC)) ? (numHSC - numOccHSC) : adj;
-            } else if (buildOpt == RuleOptions.OptionValue.VALUE_BUILDS_ANY_OWNED) {
+                adj = adj > numHSC - numOccHSC ? numHSC - numOccHSC : adj;
+            } else if (buildOpt == OptionValue.VALUE_BUILDS_ANY_OWNED) {
                 // We can build in any owned supply center. Effectively, then,
                 // ALL owned supply centers are home supply centers.
                 numHSC = numSC;
-                adj = (numSC - numUnits);
-                adj = (adj > (numSC - numOccSC)) ? (numSC - numOccSC) : adj;
-            } else if (buildOpt == RuleOptions.OptionValue.VALUE_BUILDS_ANY_IF_HOME_OWNED) {
+                adj = numSC - numUnits;
+                adj = adj > numSC - numOccSC ? numSC - numOccSC : adj;
+            } else if (buildOpt == OptionValue.VALUE_BUILDS_ANY_IF_HOME_OWNED) {
                 // We can build in any supply center, if at least ONE home supply
                 // center is owned.
                 adj = numSC - numUnits;
-                adj = (adj > 0 && numHSC < 1) ? 0 : adj;
-                adj = (adj > (numSC - numOccSC)) ? (numSC - numOccSC) : adj;
+                adj = adj > 0 && numHSC < 1 ? 0 : adj;
+                adj = adj > numSC - numOccSC ? numSC - numOccSC : adj;
             } else {
                 // should not occur
                 throw new IllegalStateException();
@@ -268,7 +273,7 @@ public class Adjustment {
          * mostly for debugging
          */
         public String toString() {
-            StringBuffer sb = new StringBuffer(128);
+            final StringBuffer sb = new StringBuffer(128);
             sb.append("[AdjustmentInfo: units=");
             sb.append(numUnits);
             sb.append("; supplycenters=");
@@ -299,35 +304,35 @@ public class Adjustment {
      * Aggregation of HashMap that contains only AdjustmentInfo objects,
      * mapped by Power.
      */
-    public static class AdjustmentInfoMap {
-        private HashMap map;
+    public static final class AdjustmentInfoMap {
+        private final Map<Power, AdjustmentInfo> map;
 
         /**
          * Create an AdjustmentInfoMap
          */
         public AdjustmentInfoMap() {
-            map = new HashMap(13);
+            map = new HashMap<Power, AdjustmentInfo>(13);
         }// AdjustmentInfoMap()
 
         /**
          * Create an AdjustmentInfoMap
          */
-        public AdjustmentInfoMap(int size) {
-            map = new HashMap(size);
+        public AdjustmentInfoMap(final int size) {
+            map = new HashMap<Power, AdjustmentInfo>(size);
         }// AdjustmentInfoMap()
 
         /**
          * Set AdjustmentInfo for a power.
          */
-        private void put(Power power, AdjustmentInfo ai) {
+        private void put(final Power power, final AdjustmentInfo ai) {
             map.put(power, ai);
         }// put()
 
         /**
          * Gets AdjustmentInfo for a power.
          */
-        public AdjustmentInfo get(Power power) {
-            return (AdjustmentInfo) map.get(power);
+        public AdjustmentInfo get(final Power power) {
+            return map.get(power);
         }// get()
 
         /**
