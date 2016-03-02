@@ -559,7 +559,7 @@ public class Path {
         // from adjacency list.
         // Step 6: If there are ANY paths left in the adjacency list, we have
         // at least one path that may be valid.
-        return Arrays.stream(Coast.ALL_COASTS).flatMap(
+        return Coast.ALL_COASTS.stream().flatMap(
                 coast -> current.getProvince().getAdjacentLocations(coast)
                         .stream().filter(pathEvaluator::evaluate))
                 .filter(location -> !path.contains(location))

@@ -27,7 +27,6 @@ import dip.world.Unit.Type;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
@@ -127,7 +126,7 @@ public class Province implements Serializable, Comparable<Province> {
          * to 'touching' adjacency.
          */
         protected void createWingCoasts() {
-            final List<Location> locList = Arrays.stream(Coast.ALL_COASTS)
+            final List<Location> locList = Coast.ALL_COASTS.stream()
                     .flatMap(coast -> getLocations(coast).stream())
                     .map(Location::getProvince).distinct()
                     .map(prov -> new Location(prov, Coast.WING))
@@ -158,7 +157,7 @@ public class Province implements Serializable, Comparable<Province> {
          * </code>
          */
         protected boolean validate(final Province p) {
-            final boolean isDirectional = Arrays.stream(Coast.ANY_DIRECTIONAL)
+            final boolean isDirectional = Coast.ANY_DIRECTIONAL.stream()
                     .anyMatch(coast -> adjLoc.get(coast) != null);
 
             final boolean isLand = adjLoc.get(Coast.LAND) != null;
@@ -262,10 +261,9 @@ public class Province implements Serializable, Comparable<Province> {
      * returned.
      */
     public List<Location> getAllAdjacent() {
-        final List<Location> locList = Arrays.stream(Coast.ALL_COASTS)
+        return Coast.ALL_COASTS.stream()
                 .flatMap(coast -> adjacency.getLocations(coast).stream())
                 .distinct().collect(Collectors.toList());
-        return locList;
     }// getAllAdjacent()
 
 
@@ -355,7 +353,7 @@ public class Province implements Serializable, Comparable<Province> {
      * Determines if this Province is landlocked.
      */
     public boolean isLandLocked() {
-        return !Arrays.stream(Coast.ANY_SEA)
+        return !Coast.ANY_SEA.stream()
                 .anyMatch(coast -> !adjacency.getLocations(coast).isEmpty());
     }// isLandLocked()
 
@@ -365,8 +363,8 @@ public class Province implements Serializable, Comparable<Province> {
      * Determines if this Province is coastal (including multi-coastal).
      */
     public boolean isCoastal() {
-        return !adjacency.getLocations(Coast.LAND).isEmpty() && Arrays
-                .stream(Coast.ANY_SEA)
+        return !adjacency.getLocations(Coast.LAND).isEmpty() && Coast.ANY_SEA
+                .stream()
                 .anyMatch(coast -> !adjacency.getLocations(coast).isEmpty());
 
     }// isCoastal()
@@ -384,8 +382,8 @@ public class Province implements Serializable, Comparable<Province> {
      * Determines if this Province is a Sea province (no land, not coastal).
      */
     public boolean isSea() {
-        return adjacency.getLocations(Coast.LAND).size() <= 0 && !Arrays
-                .stream(Coast.ANY_DIRECTIONAL)
+        return adjacency.getLocations(Coast.LAND)
+                .isEmpty() && !Coast.ANY_DIRECTIONAL.stream()
                 .anyMatch(coast -> !adjacency.getLocations(coast).isEmpty());
 
     }// isSea()
@@ -395,8 +393,8 @@ public class Province implements Serializable, Comparable<Province> {
      * Determines if this Province has multiple coasts (e.g., Spain).
      */
     public boolean isMultiCoastal() {
-        return adjacency.getLocations(Coast.SEA).isEmpty() && Arrays
-                .stream(Coast.ANY_DIRECTIONAL)
+        return adjacency.getLocations(Coast.SEA)
+                .isEmpty() && Coast.ANY_DIRECTIONAL.stream()
                 .anyMatch(coast -> !adjacency.getLocations(coast).isEmpty());
     }// isMultiCoastal()
 
@@ -407,10 +405,9 @@ public class Province implements Serializable, Comparable<Province> {
      */
     public List<Coast> getValidDirectionalCoasts() {
         if (adjacency.getLocations(Coast.SEA).isEmpty()) {
-            final List<Coast> dir = Arrays.stream(Coast.ANY_DIRECTIONAL)
+            return Coast.ANY_DIRECTIONAL.stream()
                     .filter(coast -> !adjacency.getLocations(coast).isEmpty())
                     .collect(Collectors.toList());
-            return dir;
         }
         return Collections.emptyList();
     }// getValidCoasts()
