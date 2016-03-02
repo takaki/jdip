@@ -255,7 +255,7 @@ final class JudgeImportHistory {
             RuleOptions ruleOpts = world.getRuleOptions();
             Adjustment.AdjustmentInfoMap adjMap = Adjustment
                     .getAdjustmentInfo(ts, ruleOpts,
-                            world.getMap().getPowers().toArray(new Power[0]));
+                            world.getMap().getPowers());
             vc.evaluate(ts, adjMap);
             List evalResults = ts.getResultList();
             evalResults.addAll(vc.getEvaluationResults());

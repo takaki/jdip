@@ -34,6 +34,7 @@ import org.w3c.dom.events.MouseEvent;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 
 /*
@@ -142,8 +143,8 @@ public class OrderControlBar extends ViewControlBar {
         // add to StateInfo object
         if (stateInfo.getTurnState().getPhase()
                 .getPhaseType() == Phase.PhaseType.ADJUSTMENT) {
-            Power[] powers = stateInfo.getTurnState().getWorld().getMap()
-                    .getPowers().toArray(new Power[0]);
+            List<Power> powers = stateInfo.getTurnState().getWorld().getMap()
+                    .getPowers();
             Adjustment.AdjustmentInfoMap adjMap = Adjustment
                     .getAdjustmentInfo(stateInfo.getTurnState(),
                             stateInfo.getRuleOptions(), powers);

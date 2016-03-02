@@ -94,7 +94,7 @@ public final class Adjustment {
      */
     public static AdjustmentInfoMap getAdjustmentInfo(final TurnState turnState,
                                                       final RuleOptions ruleOpts,
-                                                      final Power[] powers) {
+                                                      final List<Power> powers) {
         Objects.requireNonNull(powers);
         Objects.requireNonNull(turnState);
 

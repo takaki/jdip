@@ -886,7 +886,7 @@ public class OrderDisplayPanel extends JPanel {
                     .getPhaseType() == Phase.PhaseType.ADJUSTMENT) {
                 adjMap = Adjustment
                         .getAdjustmentInfo(turnState, world.getRuleOptions(),
-                                world.getMap().getPowers().toArray(new Power[0]));
+                                world.getMap().getPowers());
             } else {
                 adjMap = null;
             }
