@@ -31,11 +31,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * RuleOptions is an object for storing Options and OptionValues that
@@ -287,13 +287,7 @@ public final class RuleOptions implements Serializable {
      */
     public OptionValue getOptionValue(final Option option) {
         Objects.requireNonNull(option);
-
-        final OptionValue value = optionMap.get(option);
-        if (value == null) {
-            return option.getDefault();
-        }
-
-        return value;
+        return optionMap.getOrDefault(option, option.getDefault());
     }// getOption()
 
 
@@ -310,23 +304,13 @@ public final class RuleOptions implements Serializable {
      */
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer(256);
-        sb.append(getClass().getName());
-        sb.append('\n');
-
-        final Set<Option> set = getAllOptions();
-        final Iterator<Option> iter = set.iterator();
-        while (iter.hasNext()) {
-            final Option opt = iter.next();
-            final OptionValue ov = getOptionValue(opt);
-            sb.append("  ");
-            sb.append(opt);
-            sb.append(" : ");
-            sb.append(ov);
-            sb.append('\n');
-        }
-
-        return sb.toString();
+        return getClass().getName() +
+                '\n' +
+                getAllOptions().stream().map(opt -> {
+                    final OptionValue ov = getOptionValue(opt);
+                    return String.join("", "  ", opt.toString(), " : ",
+                            ov.toString());
+                }).collect(Collectors.joining("\n"));
     }// toString()
 
 
