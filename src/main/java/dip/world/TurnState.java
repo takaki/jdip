@@ -26,6 +26,7 @@ import dip.order.Order;
 import dip.order.Orderable;
 import dip.order.result.OrderResult;
 import dip.order.result.OrderResult.ResultType;
+import dip.order.result.Result;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -60,7 +61,7 @@ import java.util.Objects;
 public class TurnState implements Serializable {
     // instance variables (we serialize all of this)
     private Phase phase;
-    private List resultList;                // order results, post-adjudication
+    private List<Result> resultList;                // order results, post-adjudication
     private Map<Power, List<Order>> orderMap;                // Map of power=>orders
     private boolean isSCOwnerChanged;        // 'true' if any supply centers changed ownership
     private Position position;                // Position data (majority of game state)
@@ -141,7 +142,7 @@ public class TurnState implements Serializable {
     /**
      * Returns the result list
      */
-    public List getResultList() {
+    public List<Result> getResultList() {
         return resultList;
     }// getResultList()
 
