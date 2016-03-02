@@ -503,7 +503,7 @@ public final class Position implements Serializable, Cloneable {
     private ProvinceData getProvinceData(final Province province) {
         final int idx = province.getIndex();
         ProvinceData pd = provArray.get(idx);
-        if (pd == null) {
+        if (Objects.isNull(pd)) {
             pd = new ProvinceData();
             provArray.set(idx, pd);
         }

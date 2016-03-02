@@ -632,7 +632,7 @@ public class Path {
         // set Src and Dest of path, so we can evaluate fleet orders
         public LegalConvoyPathEvaluator(final Location src,
                                         final Location dest) {
-            if (adjudicator == null) {
+            if (Objects.isNull(adjudicator)) {
                 throw new IllegalStateException("null adjudicator in path");
             }
 
@@ -677,7 +677,7 @@ public class Path {
         public SuperConvoyPathEvaluator(final Location src, final Location dest,
                                         final Location invalid,
                                         final boolean noteUncertains) {
-            if (adjudicator == null) {
+            if (Objects.isNull(adjudicator)) {
                 throw new IllegalStateException("null adjudicator in path");
             }
 
