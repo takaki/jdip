@@ -60,7 +60,7 @@ public class TurnState implements Serializable {
     // instance variables (we serialize all of this)
     private Phase phase;
     private List resultList;                // order results, post-adjudication
-    private Map<Power, List> orderMap;                // Map of power=>orders
+    private Map<Power, List<Orderable>> orderMap;                // Map of power=>orders
     private boolean isSCOwnerChanged;        // 'true' if any supply centers changed ownership
     private Position position;                // Position data (majority of game state)
     private transient World world;                // makes it easier when we just pass a turnstate
@@ -180,10 +180,10 @@ public class TurnState implements Serializable {
     public List<Object> getAllOrders() {
         final List<Object> list = new ArrayList<>(75);
 
-        final Iterator<Entry<Power, List>> esIter = orderMap.entrySet()
-                .iterator();
+        final Iterator<Entry<Power, List<Orderable>>> esIter = orderMap
+                .entrySet().iterator();
         while (esIter.hasNext()) {
-            final Entry<Power, List> mapEntry = esIter.next();
+            final Entry<Power, List<Orderable>> mapEntry = esIter.next();
             final List orders = mapEntry.getValue();
 
             final Iterator ordIter = orders.iterator();
@@ -212,8 +212,7 @@ public class TurnState implements Serializable {
      */
     public List getOrders(final Power power) {
         Objects.requireNonNull(power);
-        return orderMap
-                .computeIfAbsent(power, k -> new ArrayList(15));
+        return orderMap.computeIfAbsent(power, k -> new ArrayList(15));
     }// getOrders()
 
     /**
