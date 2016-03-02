@@ -70,7 +70,8 @@ public final class RetreatChecker {
     public RetreatChecker(final TurnState current) {
         final List results;
 
-        final TurnState last = current.getWorld().getPreviousTurnState(current).get();
+        final TurnState last = current.getWorld().getPreviousTurnState(current)
+                .get();
         if (last == null) {
             // if we are the very first TurnState, last==null is permissable,
             // but we must take special action to make it work
@@ -97,7 +98,8 @@ public final class RetreatChecker {
      * Useful for when the previous TurnState has not yet been inserted
      * into the World object.
      */
-    public RetreatChecker(final TurnState current, final List previousTurnStateResults) {
+    public RetreatChecker(final TurnState current,
+                          final List previousTurnStateResults) {
         if (current == null || previousTurnStateResults == null) {
             throw new IllegalStateException("null arguments!");
         }
@@ -112,7 +114,7 @@ public final class RetreatChecker {
      * the Location <code>to</code>
      */
     public boolean isValid(final Location from, final Location to) {
-        final Location[] validLocs = getValidLocations(from);
+        final List<Location> validLocs = getValidLocations(from);
 
         // debugging
         /*
@@ -146,11 +148,11 @@ public final class RetreatChecker {
      * <p>
      * Returns a zero-length array if there are no acceptable retreat locations.
      */
-    public Location[] getValidLocations(final Location from) {
+    public List<Location> getValidLocations(final Location from) {
         final List<Location> retreatLocations = new ArrayList<>(8);
 
-        final Location[] adjacent = from.getProvince()
-                .getAdjacentLocations(from.getCoast()).toArray(new Location[0]);
+        final List<Location> adjacent = from.getProvince()
+                .getAdjacentLocations(from.getCoast());
 
         for (final Location anAdjacent : adjacent) {
             if (!position
@@ -160,8 +162,7 @@ public final class RetreatChecker {
             }
         }
 
-        return retreatLocations
-                .toArray(new Location[retreatLocations.size()]);
+        return retreatLocations;
     }// getValidLocations()
 
 
@@ -169,8 +170,8 @@ public final class RetreatChecker {
      * Returns 'true' if at least one valid retreat exists for the dislodged unit in 'from'
      */
     public boolean hasRetreats(final Location from) {
-        final Location[] adjacent = from.getProvince()
-                .getAdjacentLocations(from.getCoast()).toArray(new Location[0]);
+        final List<Location> adjacent = from.getProvince()
+                .getAdjacentLocations(from.getCoast());
 
         for (final Location anAdjacent : adjacent) {
             if (!position
@@ -195,7 +196,8 @@ public final class RetreatChecker {
      * @return <code>true</code> if Move from <code>loc</code>
      * dislodged <code>dislodgedLoc</code>
      */
-    private boolean isDislodgersSpace(final Location dislodgedLoc, final Location loc) {
+    private boolean isDislodgersSpace(final Location dislodgedLoc,
+                                      final Location loc) {
         for (final RCMoveResult rcmr : filteredMoveResults) {
             // note: dislodgedLoc is the potential move destination
             if (rcmr.isDislodger(loc, dislodgedLoc)) {
@@ -244,7 +246,8 @@ public final class RetreatChecker {
      */
     private List<RCMoveResult> makeFMRList(final List turnStateResults) {
         final List<RCMoveResult> mrList = new ArrayList<>(64);
-        final Map<Province, RCMoveResult> map = new HashMap<>(119);    // key: move source province; value: RCMoveResult
+        final Map<Province, RCMoveResult> map = new HashMap<>(
+                119);    // key: move source province; value: RCMoveResult
 
         for (final Object obj : turnStateResults) {
             if (obj instanceof OrderResult) {
@@ -309,8 +312,7 @@ public final class RetreatChecker {
                 isByConvoy = true;
             } else if (or.getResultType() == ResultType.SUCCESS) {
                 isSuccess = true;
-            } else if (or
-                    .getResultType() == ResultType.VALIDATION_FAILURE) {
+            } else if (or.getResultType() == ResultType.VALIDATION_FAILURE) {
                 isValid = false;
             }
         }// setOptions()
@@ -331,8 +333,7 @@ public final class RetreatChecker {
          * (3) Move is NOT invalid (i.e., no VALIDATION_FAILURE result)
          */
         public boolean isPossibleStandoff(final Location loc) {
-            return isValid && !isSuccess && move.getDest()
-                    .isProvinceEqual(loc);
+            return isValid && !isSuccess && move.getDest().isProvinceEqual(loc);
         }// isPossibleStandoff()
 
 
