@@ -25,15 +25,17 @@ package dip.process;
 import dip.order.Move;
 import dip.order.Orderable;
 import dip.order.result.OrderResult;
+import dip.order.result.OrderResult.ResultType;
 import dip.world.Location;
 import dip.world.Position;
+import dip.world.Province;
 import dip.world.TurnState;
 import dip.world.World;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * RetreatChecker analyzes the current TurnState and the results of the previous
@@ -53,10 +55,10 @@ import java.util.List;
  * <p>
  * Should be threadsafe.
  */
-public class RetreatChecker {
+public final class RetreatChecker {
     // instance variables
-    private transient final Position position;
-    private transient final ArrayList filteredMoveResults;
+    private final Position position;
+    private final List<RCMoveResult> filteredMoveResults;
 
     /**
      * Create a RetreatChecker.
@@ -65,14 +67,14 @@ public class RetreatChecker {
      * this to work, however, if we a unit is Dislodged and it is the very
      * first TurnState (this can happen if the game is edited), it is allowed.
      */
-    public RetreatChecker(TurnState current) {
-        List results = null;
+    public RetreatChecker(final TurnState current) {
+        final List results;
 
-        TurnState last = current.getWorld().getPreviousTurnState(current).get();
+        final TurnState last = current.getWorld().getPreviousTurnState(current).get();
         if (last == null) {
             // if we are the very first TurnState, last==null is permissable,
             // but we must take special action to make it work
-            World w = current.getWorld();
+            final World w = current.getWorld();
             if (w.getInitialTurnState() == current) {
                 //Log.println("     no previous turnstate, and we are first; creating results");
                 results = new ArrayList();
@@ -84,8 +86,8 @@ public class RetreatChecker {
             //Log.println("     last turnstate: ",last.getPhase());
         }
 
-        this.position = current.getPosition();
-        this.filteredMoveResults = makeFMRList(results);
+        position = current.getPosition();
+        filteredMoveResults = makeFMRList(results);
     }// RetreatChecker()
 
 
@@ -95,13 +97,13 @@ public class RetreatChecker {
      * Useful for when the previous TurnState has not yet been inserted
      * into the World object.
      */
-    public RetreatChecker(TurnState current, List previousTurnStateResults) {
+    public RetreatChecker(final TurnState current, final List previousTurnStateResults) {
         if (current == null || previousTurnStateResults == null) {
             throw new IllegalStateException("null arguments!");
         }
 
-        this.position = current.getPosition();
-        this.filteredMoveResults = makeFMRList(previousTurnStateResults);
+        position = current.getPosition();
+        filteredMoveResults = makeFMRList(previousTurnStateResults);
     }// RetreatChecker()
 
 
@@ -109,8 +111,8 @@ public class RetreatChecker {
      * Determines if the unit located in <code>from</code> can retreat to
      * the Location <code>to</code>
      */
-    public boolean isValid(Location from, Location to) {
-        Location[] validLocs = getValidLocations(from);
+    public boolean isValid(final Location from, final Location to) {
+        final Location[] validLocs = getValidLocations(from);
 
         // debugging
         /*
@@ -129,8 +131,8 @@ public class RetreatChecker {
 		}
 		*/
 
-        for (int i = 0; i < validLocs.length; i++) {
-            if (validLocs[i].equals(to)) {
+        for (final Location validLoc : validLocs) {
+            if (validLoc.equals(to)) {
                 return true;
             }
         }
@@ -144,21 +146,21 @@ public class RetreatChecker {
      * <p>
      * Returns a zero-length array if there are no acceptable retreat locations.
      */
-    public Location[] getValidLocations(Location from) {
-        List retreatLocations = new ArrayList(8);
+    public Location[] getValidLocations(final Location from) {
+        final List<Location> retreatLocations = new ArrayList<>(8);
 
-        Location[] adjacent = from.getProvince()
+        final Location[] adjacent = from.getProvince()
                 .getAdjacentLocations(from.getCoast()).toArray(new Location[0]);
 
-        for (int i = 0; i < adjacent.length; i++) {
+        for (final Location anAdjacent : adjacent) {
             if (!position
-                    .hasUnit(adjacent[i].getProvince()) && !isDislodgersSpace(
-                    from, adjacent[i]) && !isContestedSpace(adjacent[i])) {
-                retreatLocations.add(adjacent[i]);
+                    .hasUnit(anAdjacent.getProvince()) && !isDislodgersSpace(
+                    from, anAdjacent) && !isContestedSpace(anAdjacent)) {
+                retreatLocations.add(anAdjacent);
             }
         }
 
-        return (Location[]) retreatLocations
+        return retreatLocations
                 .toArray(new Location[retreatLocations.size()]);
     }// getValidLocations()
 
@@ -166,14 +168,14 @@ public class RetreatChecker {
     /**
      * Returns 'true' if at least one valid retreat exists for the dislodged unit in 'from'
      */
-    public boolean hasRetreats(Location from) {
-        Location[] adjacent = from.getProvince()
+    public boolean hasRetreats(final Location from) {
+        final Location[] adjacent = from.getProvince()
                 .getAdjacentLocations(from.getCoast()).toArray(new Location[0]);
 
-        for (int i = 0; i < adjacent.length; i++) {
+        for (final Location anAdjacent : adjacent) {
             if (!position
-                    .hasUnit(adjacent[i].getProvince()) && !isDislodgersSpace(
-                    from, adjacent[i]) && !isContestedSpace(adjacent[i])) {
+                    .hasUnit(anAdjacent.getProvince()) && !isDislodgersSpace(
+                    from, anAdjacent) && !isContestedSpace(anAdjacent)) {
                 return true;
             }
         }
@@ -193,11 +195,8 @@ public class RetreatChecker {
      * @return <code>true</code> if Move from <code>loc</code>
      * dislodged <code>dislodgedLoc</code>
      */
-    private boolean isDislodgersSpace(Location dislodgedLoc, Location loc) {
-        Iterator iter = filteredMoveResults.iterator();
-        while (iter.hasNext()) {
-            RCMoveResult rcmr = (RCMoveResult) iter.next();
-
+    private boolean isDislodgersSpace(final Location dislodgedLoc, final Location loc) {
+        for (final RCMoveResult rcmr : filteredMoveResults) {
             // note: dislodgedLoc is the potential move destination
             if (rcmr.isDislodger(loc, dislodgedLoc)) {
                 return true;
@@ -217,23 +216,20 @@ public class RetreatChecker {
      * with dest of space</li>
      * </ol>
      */
-    private boolean isContestedSpace(Location loc) {
+    private boolean isContestedSpace(final Location loc) {
         if (position.hasUnit(loc.getProvince())) {
             return false;
         }
 
         int moveCount = 0;
 
-        Iterator iter = filteredMoveResults.iterator();
-        while (iter.hasNext()) {
-            RCMoveResult rcmr = (RCMoveResult) iter.next();
-
+        for (final RCMoveResult rcmr : filteredMoveResults) {
             if (rcmr.isPossibleStandoff(loc)) {
                 moveCount++;
             }
         }
 
-        return (moveCount >= 2);
+        return moveCount >= 2;
     }// isContestedSpace()
 
 
@@ -246,23 +242,20 @@ public class RetreatChecker {
      * generate one RCMoveResult object, which holds the pertinent information
      * about that Move order.
      */
-    private ArrayList makeFMRList(List turnStateResults) {
-        ArrayList mrList = new ArrayList(64);
-        HashMap map = new HashMap(
-                119);    // key: move source province; value: RCMoveResult
+    private List<RCMoveResult> makeFMRList(final List turnStateResults) {
+        final List<RCMoveResult> mrList = new ArrayList<>(64);
+        final Map<Province, RCMoveResult> map = new HashMap<>(119);    // key: move source province; value: RCMoveResult
 
-        Iterator iter = turnStateResults.iterator();
-        while (iter.hasNext()) {
-            Object obj = iter.next();
+        for (final Object obj : turnStateResults) {
             if (obj instanceof OrderResult) {
-                OrderResult or = (OrderResult) obj;
-                Orderable order = or.getOrder();
+                final OrderResult or = (OrderResult) obj;
+                final Orderable order = or.getOrder();
                 if (order instanceof Move) {
                     // see if we have an entry for this Move; if so,
                     // set options; if not, create an entry.
                     // This avoids duplicate entries per Move.
                     //
-                    RCMoveResult rcmr = (RCMoveResult) map
+                    RCMoveResult rcmr = map
                             .get(order.getSource().getProvince());
                     if (rcmr == null) {
                         rcmr = new RCMoveResult(or);
@@ -287,8 +280,8 @@ public class RetreatChecker {
      */
     private class RCMoveResult {
         private final Move move;
-        private boolean isSuccess = false;
-        private boolean isByConvoy = false;
+        private boolean isSuccess;
+        private boolean isByConvoy;
         private boolean isValid = true;
 
         /**
@@ -296,7 +289,7 @@ public class RetreatChecker {
          * OrderResult refers to a Move order. Sets any options
          * for the OrderResult.
          */
-        public RCMoveResult(OrderResult or) {
+        private RCMoveResult(final OrderResult or) {
             move = (Move) or.getOrder();
             setOptions(or);
         }// RCMoveResult()
@@ -307,17 +300,17 @@ public class RetreatChecker {
          * does NOT refer to the same Move (via referential
          * equality), an exception is thrown.
          */
-        public final void setOptions(OrderResult or) {
+        public final void setOptions(final OrderResult or) {
             if (or.getOrder() != move) {
                 throw new IllegalArgumentException();
             }
 
-            if (or.getResultType() == OrderResult.ResultType.CONVOY_PATH_TAKEN) {
+            if (or.getResultType() == ResultType.CONVOY_PATH_TAKEN) {
                 isByConvoy = true;
-            } else if (or.getResultType() == OrderResult.ResultType.SUCCESS) {
+            } else if (or.getResultType() == ResultType.SUCCESS) {
                 isSuccess = true;
             } else if (or
-                    .getResultType() == OrderResult.ResultType.VALIDATION_FAILURE) {
+                    .getResultType() == ResultType.VALIDATION_FAILURE) {
                 isValid = false;
             }
         }// setOptions()
@@ -337,9 +330,9 @@ public class RetreatChecker {
          * (2) Move is NOT successful
          * (3) Move is NOT invalid (i.e., no VALIDATION_FAILURE result)
          */
-        public boolean isPossibleStandoff(Location loc) {
-            return (isValid && !isSuccess && move.getDest()
-                    .isProvinceEqual(loc));
+        public boolean isPossibleStandoff(final Location loc) {
+            return isValid && !isSuccess && move.getDest()
+                    .isProvinceEqual(loc);
         }// isPossibleStandoff()
 
 
@@ -350,10 +343,10 @@ public class RetreatChecker {
          * (2) successful
          * (3) NOT convoyed (DATC 16-dec-03 4.A.5)
          */
-        public boolean isDislodger(Location src, Location dest) {
-            return (isSuccess && !isByConvoy && move.getSource()
+        public boolean isDislodger(final Location src, final Location dest) {
+            return isSuccess && !isByConvoy && move.getSource()
                     .isProvinceEqual(src) && move.getDest()
-                    .isProvinceEqual(dest));
+                    .isProvinceEqual(dest);
         }// isDislodger()
 
     }// inner class RCMoveResult
