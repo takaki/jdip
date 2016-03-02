@@ -32,6 +32,7 @@ import dip.world.TurnState;
 import dip.world.Unit;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -58,30 +59,25 @@ public final class Adjustment {
         final AdjustmentInfo ai = new AdjustmentInfo(ruleOpts);
 
         final Position position = turnState.getPosition();
-        final Province[] provinces = position.getProvinces()
-                .toArray(new Province[0]);
+        final List<Province> provinces = position.getProvinces();
 
         for (final Province province : provinces) {
             // tally units
-            Unit unit = position.getUnit(province).orElse(null);
-            if (unit != null && unit.getPower() == power) {
-                ai.numUnits++;
-            }
+            position.getUnit(province).filter(u -> u.getPower() == power)
+                    .ifPresent(u -> ai.numUnits++);
 
-            unit = position.getDislodgedUnit(province).orElse(null);
-            if (unit != null && unit.getPower() == power) {
-                ai.numDislodgedUnits++;
-            }
+            position.getDislodgedUnit(province)
+                    .filter(unit -> unit.getPower() == power)
+                    .ifPresent(unit -> ai.numDislodgedUnits++);
 
             // tally supply centers
-            if (power == position.getSupplyCenterOwner(province).orElse(null)) {
-                ai.numSC++;
-
-                if (power == position.getSupplyCenterHomePower(province)
-                        .orElse(null)) {
-                    ai.numHSC++;
-                }
-            }
+            position.getSupplyCenterOwner(province).filter(p -> p == power)
+                    .ifPresent(p0 -> {
+                        ai.numSC++;
+                        position.getSupplyCenterHomePower(province)
+                                .filter(p -> p == power)
+                                .ifPresent(p -> ai.numHSC++);
+                    });
         }
 
         return ai;
@@ -109,26 +105,27 @@ public final class Adjustment {
 
         // Iterate for all Powers
         final Position position = turnState.getPosition();
-        final Province[] provinces = position.getProvinces()
-                .toArray(new Province[0]);
+        final List<Province> provinces = position.getProvinces();
 
         for (final Province province : provinces) {
             boolean hasUnit = false;
 
             // tally units
-            Unit unit = position.getUnit(province).orElse(null);
+            final Unit unit = position.getUnit(province).orElse(null);
             if (unit != null) {
                 adjMap.get(unit.getPower()).numUnits++;
                 hasUnit = true;
             }
 
-            unit = position.getDislodgedUnit(province).orElse(null);
-            if (unit != null) {
-                adjMap.get(unit.getPower()).numDislodgedUnits++;
+            final Unit orElse = position.getDislodgedUnit(province)
+                    .orElse(null);
+            if (orElse != null) {
+                adjMap.get(orElse.getPower()).numDislodgedUnits++;
             }
 
             // tally supply centers
-            Power power = position.getSupplyCenterOwner(province).orElse(null);
+            final Power power = position.getSupplyCenterOwner(province)
+                    .orElse(null);
             if (power != null) {
                 adjMap.get(power).numSC++;
 
@@ -137,13 +134,13 @@ public final class Adjustment {
                 }
 
 
-                power = position.getSupplyCenterHomePower(province)
+                final Power anElse = position.getSupplyCenterHomePower(province)
                         .orElse(null);
-                if (power != null) {
-                    adjMap.get(power).numHSC++;
+                if (anElse != null) {
+                    adjMap.get(anElse).numHSC++;
 
                     if (hasUnit) {
-                        adjMap.get(power).numOccHSC++;
+                        adjMap.get(anElse).numOccHSC++;
                     }
                 }
             }
@@ -311,14 +308,14 @@ public final class Adjustment {
          * Create an AdjustmentInfoMap
          */
         public AdjustmentInfoMap() {
-            map = new HashMap<Power, AdjustmentInfo>(13);
+            map = new HashMap<>(13);
         }// AdjustmentInfoMap()
 
         /**
          * Create an AdjustmentInfoMap
          */
         public AdjustmentInfoMap(final int size) {
-            map = new HashMap<Power, AdjustmentInfo>(size);
+            map = new HashMap<>(size);
         }// AdjustmentInfoMap()
 
         /**
