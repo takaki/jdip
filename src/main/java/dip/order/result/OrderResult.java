@@ -53,7 +53,7 @@ public class OrderResult extends Result {
      * Create an OrderResult with the given Order and Message.
      * A null order is not permissable.
      */
-    public OrderResult(Orderable order, String message) {
+    public OrderResult(final Orderable order, final String message) {
         this(order, ResultType.TEXT, message);
     }// OrderResult()
 
@@ -62,7 +62,7 @@ public class OrderResult extends Result {
      * Create an OrderResult with the given Order, ResultType, and Message.
      * A null Order or ResultType is not permissable.
      */
-    public OrderResult(Orderable order, ResultType type, String message) {
+    public OrderResult(final Orderable order, final ResultType type, final String message) {
         super(order.getPower(), message);
         if (type == null || order == null) {
             throw new IllegalArgumentException("null type or order");
@@ -90,7 +90,7 @@ public class OrderResult extends Result {
      * For debugging
      */
     public String toString() {
-        StringBuffer sb = new StringBuffer(180);
+        final StringBuffer sb = new StringBuffer(180);
         sb.append(power);
         sb.append(": [");
         sb.append(resultType);
@@ -114,9 +114,9 @@ public class OrderResult extends Result {
      * If power is null, it will be first in ascending order.
      * If message may be empty, but never is null.
      */
-    public int compareTo(Object o) {
+    public int compareTo(final Object o) {
         if (o instanceof OrderResult) {
-            OrderResult result = (OrderResult) o;
+            final OrderResult result = (OrderResult) o;
 
             // 1: compare powers
             int compareResult = 0;
@@ -218,7 +218,7 @@ public class OrderResult extends Result {
         private final String key;
         private final int ordering;
 
-        protected ResultType(String key, int ordering) {
+        protected ResultType(final String key, final int ordering) {
             if (key == null) {
                 throw new IllegalArgumentException("null key");
             }
@@ -246,8 +246,8 @@ public class OrderResult extends Result {
         /**
          * Sorts the result type
          */
-        public int compareTo(Object obj) {
-            ResultType rt = (ResultType) obj;
+        public int compareTo(final Object obj) {
+            final ResultType rt = (ResultType) obj;
             return (ordering - rt.ordering);
         }// compareTo()
 
@@ -258,23 +258,31 @@ public class OrderResult extends Result {
         protected Object readResolve() throws java.io.ObjectStreamException {
             ResultType rt = null;
 
-            if (key.equals(KEY_VALIDATION_FAILURE)) {
-                rt = VALIDATION_FAILURE;
-            } else if (key.equals(KEY_SUCCESS)) {
-                rt = SUCCESS;
-            } else if (key.equals(KEY_FAILURE)) {
-                rt = FAILURE;
-            } else if (key.equals(KEY_DISLODGED)) {
-                rt = DISLODGED;
-            } else if (key.equals(KEY_CONVOY_PATH_TAKEN)) {
-                rt = CONVOY_PATH_TAKEN;
-            } else if (key.equals(KEY_TEXT)) {
-                rt = TEXT;
-            } else if (key.equals(KEY_SUBSTITUTED)) {
-                rt = SUBSTITUTED;
-            } else {
-                throw new java.io.InvalidObjectException(
-                        "Unknown ResultType: " + key);
+            switch (key) {
+                case KEY_VALIDATION_FAILURE:
+                    rt = VALIDATION_FAILURE;
+                    break;
+                case KEY_SUCCESS:
+                    rt = SUCCESS;
+                    break;
+                case KEY_FAILURE:
+                    rt = FAILURE;
+                    break;
+                case KEY_DISLODGED:
+                    rt = DISLODGED;
+                    break;
+                case KEY_CONVOY_PATH_TAKEN:
+                    rt = CONVOY_PATH_TAKEN;
+                    break;
+                case KEY_TEXT:
+                    rt = TEXT;
+                    break;
+                case KEY_SUBSTITUTED:
+                    rt = SUBSTITUTED;
+                    break;
+                default:
+                    throw new java.io.InvalidObjectException(
+                            "Unknown ResultType: " + key);
             }
 
             return rt;
