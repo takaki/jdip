@@ -30,7 +30,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -66,13 +66,6 @@ public final class RuleOptions implements Serializable {
 
     // array of default options, that are always set for every variant.
     private static final Option[] DEFAULT_RULE_OPTIONS = {Option.OPTION_BUILDS, Option.OPTION_WINGS, Option.OPTION_CONVOYED_MOVES};
-
-    // NOTE: we must include all options / optionvalues in these arrays
-    // OptionList -- for serialization/deserialization
-    private static final Option[] ALL_OPTIONS = {Option.OPTION_BUILDS, Option.OPTION_WINGS, Option.OPTION_CONVOYED_MOVES};
-
-    // OptionValue -- for serialization/deserialization
-    private static final OptionValue[] ALL_OPTIONVALUES = {OptionValue.VALUE_BUILDS_HOME_ONLY, OptionValue.VALUE_BUILDS_ANY_OWNED, OptionValue.VALUE_BUILDS_ANY_IF_HOME_OWNED, OptionValue.VALUE_WINGS_ENABLED, OptionValue.VALUE_WINGS_DISABLED, OptionValue.VALUE_PATHS_EXPLICIT, OptionValue.VALUE_PATHS_IMPLICIT, OptionValue.VALUE_PATHS_EITHER};
 
     // instance variables
     private final Map<Option, OptionValue> optionMap;
@@ -167,8 +160,7 @@ public final class RuleOptions implements Serializable {
          * Checks if the given OptionValue is permitted; if so, returns true.
          */
         public boolean checkValue(final OptionValue value) {
-            return allowed.stream()
-                    .anyMatch(anAllowed -> anAllowed.equals(value));
+            return allowed.stream().anyMatch(anAllowed -> anAllowed == value);
         }// checkValue()
 
 
@@ -264,7 +256,7 @@ public final class RuleOptions implements Serializable {
      * Creates a new RuleOptions object, which stores various Rule options.
      */
     public RuleOptions() {
-        optionMap = new HashMap<>(31);
+        optionMap = new EnumMap<>(Option.class);
     }// RuleOptions()
 
 
@@ -345,19 +337,15 @@ public final class RuleOptions implements Serializable {
      * is invalid.
      */
     public static RuleOptions createFromVariant(
-            final Variant variant) throws InvalidWorldException, RuntimeException, IllegalArgumentException {
+            final Variant variant) throws InvalidWorldException {
         // create ruleoptions
         // set rule options
         final RuleOptions ruleOpts = new RuleOptions();
 
         // set default rule options
-        for (final Option DEFAULT_RULE_OPTION : DEFAULT_RULE_OPTIONS) {
-            ruleOpts.setOption(DEFAULT_RULE_OPTION,
-                    DEFAULT_RULE_OPTION.getDefault());
+        for (final Option option : DEFAULT_RULE_OPTIONS) {
+            ruleOpts.setOption(option, option.getDefault());
         }
-
-        // this class
-        final Class clazz = ruleOpts.getClass();
 
         // look up all name-value pairs via reflection.
         final List<NameValuePair> nvps = variant.getRuleOptionNVPs();
