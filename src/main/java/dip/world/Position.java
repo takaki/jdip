@@ -430,7 +430,7 @@ public final class Position implements Serializable, Cloneable {
      * Deep clone of the contents of this Position.
      */
     @Override
-    public Object clone() {
+    public Position clone() {
         final Position pos = new Position(map);
 
         for (int i = 0; i < provArray.size(); i++) {
@@ -441,13 +441,8 @@ public final class Position implements Serializable, Cloneable {
             }
         }
 
-        final Iterator<Power> iter = powerMap.keySet().iterator();
-        while (iter.hasNext()) {
-            final Power key = iter.next();
-            final PowerData pd = powerMap.get(key);
-
-            pos.powerMap.put(key, pd.normClone());
-        }
+        powerMap.keySet().stream().forEach(
+                key -> pos.powerMap.compute(key, (k, v) -> v.normClone()));
 
         return pos;
     }// clone()
@@ -549,12 +544,7 @@ public final class Position implements Serializable, Cloneable {
      * Same type of functionality as getProvinceData() but for PowerData objects
      */
     private PowerData getPowerData(final Power power) {
-        PowerData pd = powerMap.get(power);
-        if (pd == null) {
-            pd = new PowerData();
-            powerMap.put(power, pd);
-        }
-        return pd;
+        return powerMap.computeIfAbsent(power, key -> new PowerData());
     }// getPowerData()
 
 
