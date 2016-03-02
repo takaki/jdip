@@ -779,9 +779,9 @@ public class Move extends Order {
         ArrayList depSup = null;
         ArrayList depSelfSup = null;
 
-        OrderState[] orderStates = adjudicator.getOrderStates();
-        for (int osIdx = 0; osIdx < orderStates.length; osIdx++) {
-            OrderState dependentOS = orderStates[osIdx];
+        List<OrderState> orderStates = adjudicator.getOrderStates();
+        for (int osIdx = 0; osIdx < orderStates.size(); osIdx++) {
+            OrderState dependentOS = orderStates.get(osIdx);
             Order order = dependentOS.getOrder();
 
             if (order instanceof Move && order != this) {

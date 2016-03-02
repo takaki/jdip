@@ -95,7 +95,7 @@ public interface Adjudicator {
     /**
      * Get all OrderStates
      */
-    public OrderState[] getOrderStates();
+    public List<OrderState> getOrderStates();
 
     /**
      * Returns 'true' if The Orderstate in question is a support order

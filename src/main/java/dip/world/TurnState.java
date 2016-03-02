@@ -212,7 +212,8 @@ public class TurnState implements Serializable {
      */
     public List getOrders(final Power power) {
         Objects.requireNonNull(power);
-        return orderMap.computeIfAbsent(power, k -> new ArrayList(15));
+        return orderMap
+                .computeIfAbsent(power, k -> new ArrayList(15));
     }// getOrders()
 
     /**

@@ -27,6 +27,7 @@ import dip.process.OrderState;
 import dip.world.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is the base class for all Order objects.
@@ -197,9 +198,9 @@ public abstract class Order extends Object implements Orderable, java.io.Seriali
         ArrayList depMTS = null;
         ArrayList depSup = null;
 
-        OrderState[] orderStates = adjudicator.getOrderStates();
-        for (int osIdx = 0; osIdx < orderStates.length; osIdx++) {
-            OrderState dependentOS = orderStates[osIdx];
+        List<OrderState> orderStates = adjudicator.getOrderStates();
+        for (int osIdx = 0; osIdx < orderStates.size(); osIdx++) {
+            OrderState dependentOS = orderStates.get(osIdx);
             Order order = dependentOS.getOrder();
 
             if (order != this) // always exclude self

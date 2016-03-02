@@ -67,7 +67,6 @@ import dip.world.World;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -141,7 +140,7 @@ public class StdAdjudicator implements Adjudicator {
     private final Map<Province, OrderState> osMap;
     private final List<OrderState> substOrders;
 
-    private OrderState[] orderStates;
+    private List<OrderState> orderStates;
     private boolean isUnRezParadox;
     private int paradoxBreakAttempt;
     private int syzkmanAppliedCount;
@@ -227,7 +226,7 @@ public class StdAdjudicator implements Adjudicator {
      * Get all OrderStates
      */
     @Override
-    public final OrderState[] getOrderStates() {
+    public final List<OrderState> getOrderStates() {
         return orderStates;
     }// getOrderStates()
 
@@ -444,13 +443,13 @@ public class StdAdjudicator implements Adjudicator {
         }
 
         // set OrderStates from our temporary list
-        orderStates = osList.toArray(new OrderState[osList.size()]);
+        orderStates = osList;
 
         // null out unitList & orderList -- we don't need them (and shouldn't use them)
         // (we'll get an NPE if we accidentaly use them later)
 
         // integrity check: osList && osMap should have the same number of entries.
-        assert orderStates.length == osMap.size();
+        assert orderStates.size() == osMap.size();
 
         // step 3: perform a complete validation of all orders
         final ValidationOptions valOpts = new ValidationOptions();
@@ -1053,12 +1052,12 @@ public class StdAdjudicator implements Adjudicator {
      */
     protected void verifyOrders() {
         Log.println("verifying orders...");
-        int nRemainingToVerify = orderStates.length;
+        int nRemainingToVerify = orderStates.size();
         int nLastVerified = 1;    // reset in while() loop
 
         while (nRemainingToVerify > 0 && nLastVerified > 0) {
             nLastVerified = 0;
-            nRemainingToVerify = orderStates.length;
+            nRemainingToVerify = orderStates.size();
 
             for (final OrderState os : orderStates) {
                 if (os.isVerified()) {
@@ -1147,13 +1146,13 @@ public class StdAdjudicator implements Adjudicator {
         }
 
         // set OrderStates from our temporary list
-        orderStates = osList.toArray(new OrderState[osList.size()]);
+        orderStates = osList;
 
         // null out unitList & orderList -- we don't need them (and shouldn't use them)
         // (we'll get an NPE if we use them later)
 
         // integrity check: osList && osMap should have the same number of entries.
-        assert orderStates.length == osMap.size();
+        assert orderStates.size() == osMap.size();
 
         // step 3: perform a complete validation of all orders
         // use the most strict validation options
@@ -1412,9 +1411,9 @@ public class StdAdjudicator implements Adjudicator {
         }// for(power)
 
         // set OrderStates from our temporary list
-        orderStates = osList.toArray(new OrderState[osList.size()]);
+        orderStates = osList;
 
-        assert osMap.size() == orderStates.length;
+        assert osMap.size() == orderStates.size();
 
         // step 4: calculate dependencies
         // NOTE: while no orders currently use this, it's here for future use (thus a variant
@@ -1431,8 +1430,8 @@ public class StdAdjudicator implements Adjudicator {
         //
         // WARNING: this doesn't handle dependent-verifications, as verifyOrders() does.
         //
-        for (int osIdx = 0; osIdx < orderStates.length; osIdx++) {
-            final OrderState os = orderStates[osIdx];
+        for (int osIdx = 0; osIdx < orderStates.size(); osIdx++) {
+            final OrderState os = orderStates.get(osIdx);
             final Order order = os.getOrder();
             order.verify(this);
 
@@ -1444,9 +1443,9 @@ public class StdAdjudicator implements Adjudicator {
                 osMap.remove(os);
 
                 // safe... can't use an index...
-                final List<OrderState> list = Arrays.asList(orderStates);
+                final List<OrderState> list = orderStates;
                 list.remove(os);
-                orderStates = list.toArray(new OrderState[list.size()]);
+                orderStates = list;
             }
         }
 
