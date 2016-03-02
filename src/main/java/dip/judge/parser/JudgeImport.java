@@ -56,7 +56,8 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Collections;
-import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Imports text or reads a file, that is a Judge history file or listing.
@@ -66,7 +67,7 @@ import java.util.Iterator;
  * <br>
  * <br>
  */
-public class JudgeImport {
+public final class JudgeImport {
     // resource constants
     private static final String JI_VARIANT_NOTFOUND = "JP.import.novariant";
     private static final String JI_NO_SUPPLY_INFO = "JP.import.nosupplyinfo";
@@ -160,7 +161,7 @@ public class JudgeImport {
             world.setRuleOptions(RuleOptions.createFromVariant(variant));
 
         } catch (final InvalidWorldException e) {
-            throw new IOException(e.getMessage());
+            throw new IOException(e);
         }
 
         // set the 'explicit convoy' rule option (all nJudge games require this)
@@ -173,9 +174,8 @@ public class JudgeImport {
         // eliminate all existing TurnStates; we will create our own from parsed values
         // we need the Position, though, since it has home-supply-center information
         Position position = null;
-        final Iterator iter = world.getPhaseSet().iterator();
-        while (iter.hasNext()) {
-            final TurnState ts = world.getTurnState((Phase) iter.next());
+        for (final Phase phase : world.getPhaseSet()) {
+            final TurnState ts = world.getTurnState(phase);
             if (position == null) {
                 position = ts.getPosition();
             }
@@ -213,15 +213,16 @@ public class JudgeImport {
         }
 
         // activate listing or history parsing
-        if (jp.getType() == JudgeParser.JP_TYPE_LISTING) {
+        if (Objects.equals(jp.getType(), JudgeParser.JP_TYPE_LISTING)) {
             procListing(position);
-        } else if (jp.getType() == JudgeParser.JP_TYPE_HISTORY) {
+        } else if (Objects.equals(jp.getType(), JudgeParser.JP_TYPE_HISTORY)) {
             final JudgeImportHistory jih = new JudgeImportHistory(orderFactory,
                     world, jp, position);
             world = jih.getWorld();
-        } else if (jp.getType() == JudgeParser.JP_TYPE_RESULTS) {
+        } else if (Objects.equals(jp.getType(), JudgeParser.JP_TYPE_RESULTS)) {
             procResults(jp, variant.getName());
-        } else if (jp.getType() == JudgeParser.JP_TYPE_GAMESTART) {
+        } else if (Objects
+                .equals(jp.getType(), JudgeParser.JP_TYPE_GAMESTART)) {
             jp.prependText("Subject: " + jp.getJudgeName() + ":" + jp
                     .getGameName() + " - " +
                     jp.getPhase().getBriefName() + " Game Starting\n");
@@ -260,18 +261,17 @@ public class JudgeImport {
             // wrong game
             importResult = JI_RESULT_LOADOTHER;
             return;
-        } else {
-            // right game, check phase
+        }
+        // right game, check phase
+        if (currentWorld.getLastTurnState().getPhase()
+                .compareTo(jp.getPhase()) != 0) {
             if (currentWorld.getLastTurnState().getPhase()
-                    .compareTo(jp.getPhase()) != 0) {
-                if (currentWorld.getLastTurnState().getPhase()
-                        .compareTo(jp.getPhase()) > 0) {
-                    importResult = JI_RESULT_TRYREWIND;
-                } else {
-                    importResult = JI_RESULT_LOADOTHER;
-                }
-                return;
+                    .compareTo(jp.getPhase()) > 0) {
+                importResult = JI_RESULT_TRYREWIND;
+            } else {
+                importResult = JI_RESULT_LOADOTHER;
             }
+            return;
         }
 
         final Turn turn = new Turn();
@@ -321,9 +321,8 @@ public class JudgeImport {
         final WorldMap map = world.getMap();
 
         // reset home supply centers
-        final Province[] provinces = map.getProvinces()
-                .toArray(new Province[0]);
-        for (Province province1 : provinces) {
+        final List<Province> provinces = map.getProvinces();
+        for (final Province province1 : provinces) {
             final Power power = oldPosition.getSupplyCenterHomePower(province1)
                     .orElse(null);
             if (power != null) {
@@ -332,7 +331,7 @@ public class JudgeImport {
         }
 
         // set SC ownership information
-        for (OwnerInfo anOwnerInfo : ownerInfo) {
+        for (final OwnerInfo anOwnerInfo : ownerInfo) {
             final Power power = map.getPowerMatching(anOwnerInfo.getPowerName())
                     .orElse(null);
             if (power == null) {
@@ -341,7 +340,7 @@ public class JudgeImport {
             }
 
             final String[] ownedProvNames = anOwnerInfo.getProvinces();
-            for (String ownedProvName : ownedProvNames) {
+            for (final String ownedProvName : ownedProvNames) {
                 final Province province = map.getProvinceMatching(ownedProvName)
                         .orElse(null);
                 if (province == null) {
@@ -355,7 +354,7 @@ public class JudgeImport {
         }
 
         // create units & positions on the map
-        for (PositionInfo aPosInfo : posInfo) {
+        for (final PositionInfo aPosInfo : posInfo) {
             final Power power = map.getPowerMatching(aPosInfo.getPowerName())
                     .orElse(null);
             final Type unitType = Type.parse(aPosInfo.getUnitName());
@@ -363,8 +362,7 @@ public class JudgeImport {
                     .orElse(null);
 
             // check
-            if (power == null || location == null || unitType
-                    .equals(Type.UNDEFINED)) {
+            if (power == null || location == null || unitType == Type.UNDEFINED) {
                 throw new IOException(Utils.getLocalString(JI_BAD_POSITION,
                         aPosInfo.getPowerName(), aPosInfo.getUnitName(),
                         aPosInfo.getLocationName()));
@@ -374,7 +372,7 @@ public class JudgeImport {
             try {
                 location = location.getValidated(unitType);
             } catch (final OrderException e) {
-                throw new IOException(e.getMessage());
+                throw new IOException(e);
             }
 
             // create unit, and add to Position
