@@ -179,7 +179,7 @@ public final class TestSuite {
     private static float parseTime = -1;
     private static final String VARIANT_DIR = "variants";
 
-    private Map keyMap = null;
+    private Map<String, LinkedList<String>> keyMap = null;
 
 
     private static boolean isAdjudicatorLogged = true;
@@ -189,11 +189,11 @@ public final class TestSuite {
 
     private static String inFileName = null;
 
-    private List cases = new ArrayList(10);
+    private List<Case> cases = new ArrayList<>(10);
     private World world = null;
     private TurnState templateTurnState;
     private StdAdjudicator stdJudge = null;
-    private List failedCaseNames = new ArrayList(10);
+    private List<String> failedCaseNames = new ArrayList<>(10);
     private static int benchTimes = 1;
 
     // VARIANT_ALL name
@@ -351,7 +351,7 @@ public final class TestSuite {
         int nFail = 0;
         int nCases = 0;
 
-        List unRezParadoxes = new LinkedList();
+        List<String> unRezParadoxes = new LinkedList<>();
 
         long startMillis = System.currentTimeMillis();    // start timing!
 
@@ -472,10 +472,10 @@ public final class TestSuite {
                     println("=NEXT PHASE: ",
                             stdJudge.getNextTurnState().getPhase());
                 }
-                List resultList = stdJudge.getTurnState().getResultList();
-                Iterator resultIter = resultList.iterator();
+                List<Result> resultList = stdJudge.getTurnState().getResultList();
+                Iterator<Result> resultIter = resultList.iterator();
                 while (resultIter.hasNext() && isLogging) {
-                    Result r = (Result) resultIter.next();
+                    Result r = resultIter.next();
                     println("  ", r);
                 }
 
@@ -515,7 +515,7 @@ public final class TestSuite {
 
         println("\nFailed Cases:");
         println("=============");
-        Iterator iter = failedCaseNames.iterator();
+        Iterator<String> iter = failedCaseNames.iterator();
         while (iter.hasNext()) {
             println("   ", iter.next());
         }
@@ -525,7 +525,7 @@ public final class TestSuite {
         println("=====================");
         iter = unRezParadoxes.iterator();
         while (iter.hasNext()) {
-            println("   " + ((String) iter.next()));
+            println("   " + (iter.next()));
         }
         println("   [total: ", unRezParadoxes.size(), "]");
 
@@ -696,7 +696,7 @@ public final class TestSuite {
 
         // create set of resolvedUnits
         //
-        Set resolvedUnits = new HashSet();
+        Set<UnitPos> resolvedUnits = new HashSet<>();
 
         Province[] provs = pos.getUnitProvinces().toArray(new Province[0]);
         for (int i = 0; i < provs.length; i++) {
@@ -721,7 +721,7 @@ public final class TestSuite {
 
         // create set of caseUnits
         //
-        Set caseUnits = new HashSet();
+        Set<UnitPos> caseUnits = new HashSet<>();
 
         DefineState[] dsOrds = c.getPostState();
         for (int i = 0; i < dsOrds.length; i++) {
@@ -745,14 +745,14 @@ public final class TestSuite {
         // first, we must make a duplicate of one set.
         // these are the units that are in the correct position (intersection)
         //
-        Set intersection = new HashSet(caseUnits);
+        Set<UnitPos> intersection = new HashSet<>(caseUnits);
         intersection.retainAll(resolvedUnits);
 
         // now, create subtraction sets
-        Set added = new HashSet(resolvedUnits);
+        Set<UnitPos> added = new HashSet<>(resolvedUnits);
         added.removeAll(caseUnits);
 
-        Set missing = new HashSet(caseUnits);
+        Set<UnitPos> missing = new HashSet<>(caseUnits);
         missing.removeAll(resolvedUnits);
 
         // if subtraction sets have no units, we are done. Otherwise, we must print
@@ -782,10 +782,10 @@ public final class TestSuite {
     /**
      * Print all the UnitPos objects from a Set; prefixing with the given prefix
      */
-    private void printSet(Set set, String prefix) {
-        Iterator iter = set.iterator();
+    private void printSet(Set<UnitPos> set, String prefix) {
+        Iterator<UnitPos> iter = set.iterator();
         while (iter.hasNext()) {
-            UnitPos up = (UnitPos) iter.next();
+            UnitPos up = iter.next();
 
             StringBuffer sb = new StringBuffer(64);
             sb.append("  ");    // spacer
@@ -893,12 +893,12 @@ public final class TestSuite {
 
         // tsTemplate: template turnstate to create the current, and (if needed) previous
         // turnstates.
-        public Case(String name, String phaseName, List pre, List ord,
-                    List post, List supplySCOwnersList, List preDislodgedList,
-                    List postDislodgedList, List orderResultList) {
+        public Case(String name, String phaseName, List<String> pre, List<String> ord,
+                    List<String> post, List<String> supplySCOwnersList, List<String> preDislodgedList,
+                    List<String> postDislodgedList, List<String> orderResultList) {
             this.name = name;
-            List temp = new ArrayList(50);
-            Iterator iter = null;
+            List temp = new ArrayList<>(50);
+            Iterator<String> iter = null;
             of = OrderParser.getInstance();
 
 
@@ -933,7 +933,7 @@ public final class TestSuite {
             temp.clear();
             iter = pre.iterator();
             while (iter.hasNext()) {
-                String line = (String) iter.next();
+                String line = iter.next();
                 Order order = parseOrder(line, currentTS, true);
                 temp.add(order);
             }
@@ -945,7 +945,7 @@ public final class TestSuite {
             temp.clear();
             iter = ord.iterator();
             while (iter.hasNext()) {
-                String line = (String) iter.next();
+                String line = iter.next();
                 Order order = parseOrder(line, currentTS, false);
                 temp.add(order);
             }
@@ -956,7 +956,7 @@ public final class TestSuite {
             temp.clear();
             iter = post.iterator();
             while (iter.hasNext()) {
-                String line = (String) iter.next();
+                String line = iter.next();
                 Order order = parseOrder(line, currentTS, true);
                 temp.add(order);
             }
@@ -968,7 +968,7 @@ public final class TestSuite {
                 temp.clear();
                 iter = preDislodgedList.iterator();
                 while (iter.hasNext()) {
-                    String line = (String) iter.next();
+                    String line = iter.next();
                     Order order = parseOrder(line, currentTS, true);
                     temp.add(order);
                 }
@@ -981,7 +981,7 @@ public final class TestSuite {
                 temp.clear();
                 iter = postDislodgedList.iterator();
                 while (iter.hasNext()) {
-                    String line = (String) iter.next();
+                    String line = iter.next();
                     Order order = parseOrder(line, currentTS, true);
                     temp.add(order);
                 }
@@ -994,7 +994,7 @@ public final class TestSuite {
                 temp.clear();
                 iter = supplySCOwnersList.iterator();
                 while (iter.hasNext()) {
-                    String line = (String) iter.next();
+                    String line = iter.next();
                     Order order = parseOrder(line, currentTS, true);
                     temp.add(order);
                 }
@@ -1014,7 +1014,7 @@ public final class TestSuite {
                 temp.clear();
                 iter = orderResultList.iterator();
                 while (iter.hasNext()) {
-                    String line = (String) iter.next();
+                    String line = iter.next();
                     OrderResult.ResultType ordResultType = null;
 
                     // success or failure??
@@ -1059,14 +1059,14 @@ public final class TestSuite {
                         .toArray(new OrderResult[temp.size()]);
 
                 // add results to previous turnstate
-                previousTS.setResultList(new ArrayList(temp));
+                previousTS.setResultList(new ArrayList<>(temp));
 
                 // add positions/ownership/orders to current turnstate
                 //
                 // add orders, first clearing any existing orders in the turnstate
                 currentTS.clearAllOrders();
                 for (int i = 0; i < orders.length; i++) {
-                    List orderList = currentTS.getOrders(orders[i].getPower());
+                    List<Orderable> orderList = currentTS.getOrders(orders[i].getPower());
                     orderList.add(orders[i]);
                     currentTS.setOrders(orders[i].getPower(), orderList);
                 }
@@ -1313,7 +1313,7 @@ public final class TestSuite {
                         if (inCase) {
                             if (currentKey.equals(POSTSTATE_SAME)) {
                                 // just copy prestate data
-                                List list = getListForKeyType(POSTSTATE);
+                                List<String> list = getListForKeyType(POSTSTATE);
                                 list.addAll(getListForKeyType(PRESTATE));
                             } else if (currentKey.equals(PRESTATE_SETPHASE)) {
                                 // phase appears after keyword
@@ -1321,7 +1321,7 @@ public final class TestSuite {
                             } else if (key == null) // important: we don't want to add key lines to the lists
                             {
                                 // we need to get a list.
-                                List list = getListForKeyType(currentKey);
+                                List<String> list = getListForKeyType(currentKey);
                                 list.add(line);
                             }
                         } else {
@@ -1403,13 +1403,13 @@ public final class TestSuite {
 
     private void clearAndSetupKeyMap() {
         if (keyMap == null) {
-            keyMap = new HashMap(23);
+            keyMap = new HashMap<>(23);
         }
 
         keyMap.clear();
 
         for (int i = 0; i < KEY_TYPES_WITH_LIST.length; i++) {
-            keyMap.put(KEY_TYPES_WITH_LIST[i], new LinkedList());
+            keyMap.put(KEY_TYPES_WITH_LIST[i], new LinkedList<>());
         }
     }// setupKeyMap()
 
@@ -1439,8 +1439,8 @@ public final class TestSuite {
     }// getKeyType()
 
 
-    private List getListForKeyType(String keyType) {
-        return (List) keyMap.get(keyType);
+    private List<String> getListForKeyType(String keyType) {
+        return keyMap.get(keyType);
     }// getListForKeyType()
 
 

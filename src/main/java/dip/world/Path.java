@@ -104,10 +104,10 @@ public class Path {
      */
     public Tristate getConvoyRouteEvaluation(final Move move,
                                              final Location invalidLoc,
-                                             final List actualPath) {
+                                             final List<Province> actualPath) {
         Objects.requireNonNull(move);
 
-        final List explicitRoutes = move.getConvoyRoutes();
+        final List<Province[]> explicitRoutes = move.getConvoyRoutes();
 
         if (explicitRoutes == null) {
             // implicit paths.
@@ -124,9 +124,9 @@ public class Path {
 
             boolean hasUncertainRoute = false;        // true if >= 1 route is uncertain, but not failed.
 
-            final Iterator iter = explicitRoutes.iterator();
+            final Iterator<Province[]> iter = explicitRoutes.iterator();
             while (iter.hasNext()) {
-                final Province[] route = (Province[]) iter.next();
+                final Province[] route = iter.next();
                 boolean isFailed = true;
                 boolean isUncertain = false;
 
@@ -295,7 +295,7 @@ public class Path {
      * See getConvoyRouteEvaluation() for return values.
      */
     public static Tristate evaluateRoutes(final Adjudicator adj,
-                                          final List routes,
+                                          final List<Province[]> routes,
                                           final Location invalid) {
         final Province invalidProvince = invalid == null ? null : invalid
                 .getProvince();
@@ -439,7 +439,7 @@ public class Path {
      */
     public Tristate getConvoyRouteEvaluation(final Location src,
                                              final Location dest,
-                                             final List validPath) {
+                                             final List<Province> validPath) {
         return getConvoyRouteEvaluation(src, dest, null, validPath);
     }// getConvoyRouteEvaluation()
 
@@ -489,7 +489,7 @@ public class Path {
     public Tristate getConvoyRouteEvaluation(final Location src,
                                              final Location dest,
                                              final Location invalid,
-                                             final List validPath) {
+                                             final List<Province> validPath) {
         final List<Location> path = new ArrayList<>(12);
         SuperConvoyPathEvaluator spe = null;
         boolean isPathFound = false;

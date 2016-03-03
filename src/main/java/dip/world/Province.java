@@ -434,7 +434,7 @@ public class Province implements Serializable, Comparable<Province> {
      * Checks if unit can transit from a Location to this Province.
      */
     public boolean canTransit(final Location fromLoc, final Type unit,
-                              final Phase phase, final Class orderClass) {
+                              final Phase phase, final Class<?> orderClass) {
         return !getTransit(fromLoc, unit, phase, orderClass).isPresent();
     }// canTransit()
 
@@ -453,7 +453,7 @@ public class Province implements Serializable, Comparable<Province> {
      */
     public Optional<Border> getTransit(final Location fromLoc, final Type unit,
                                        final Phase phase,
-                                       final Class orderClass) {
+                                       final Class<?> orderClass) {
         return borders != null ? borders.stream().filter(border -> !border
                 .canTransit(fromLoc, unit, phase, orderClass))
                 .findFirst() : Optional.empty();

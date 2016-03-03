@@ -461,7 +461,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
     private TabComponent selectNextRandomTab() {
         // find Power tabs that are not disabled
         final Power[] powers = world.getMap().getPowers().toArray(new Power[0]);
-        List tabSelectionOrderList = new ArrayList(powers.length);
+        List<TabComponent> tabSelectionOrderList = new ArrayList<TabComponent>(powers.length);
 
         for (int i = 0; i < powers.length; i++) {
             TabComponent tc = getTabComponent(powers[i]);
@@ -475,7 +475,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
         } else {
             // shuffle, return first on list.
             Collections.shuffle(tabSelectionOrderList);
-            return (TabComponent) tabSelectionOrderList.get(0);
+            return tabSelectionOrderList.get(0);
         }
     }// selectNextRandomTab()
 
@@ -674,14 +674,14 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
      * The F2F Statekeeping object, for saving
      */
     public static class F2FState {
-        private final HashMap submittedMap;
+        private final HashMap<Power, Boolean> submittedMap;
         private Power currentPower;
 
         /**
          * Create an F2FState object
          */
         public F2FState() {
-            submittedMap = new HashMap(11);
+            submittedMap = new HashMap<Power, Boolean>(11);
         }// F2FState()
 
         /**
@@ -694,7 +694,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
 
             synchronized (f2fs) {
                 currentPower = f2fs.getCurrentPower();
-                submittedMap = (HashMap) f2fs.submittedMap.clone();
+                submittedMap = (HashMap<Power, Boolean>) f2fs.submittedMap.clone();
             }
         }// F2FState()
 
@@ -743,7 +743,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
          * Get an iterator. Note that this <b>always</b> returns an iterator
          * on a <b>copy</b> of the F2FState.
          */
-        public synchronized Iterator iterator() {
+        public synchronized Iterator<Map.Entry<Power, Boolean>> iterator() {
             final F2FState copy = new F2FState(this);
             return copy.submittedMap.entrySet().iterator();
         }// iterator()

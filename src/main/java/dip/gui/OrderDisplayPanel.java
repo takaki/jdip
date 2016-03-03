@@ -379,8 +379,8 @@ public class OrderDisplayPanel extends JPanel {
      * @param undoable - <b>true</b> if this is an undoable action
      * @return A list of OrderExceptions, or null
      */
-    public synchronized java.util.Map addOrdersRaw(Orderable[] orders,
-                                                   boolean undoable) {
+    public synchronized Map<Orderable, OrderException> addOrdersRaw(Orderable[] orders,
+                                                                    boolean undoable) {
         // null orders not permitted.
         if (orders == null) {
             throw new IllegalArgumentException();
@@ -391,9 +391,9 @@ public class OrderDisplayPanel extends JPanel {
             throw new IllegalStateException("not in editable state");
         }
 
-        LinkedHashMap map = new LinkedHashMap(19);
-        ArrayList ordersAdded = new ArrayList(orders.length);
-        ArrayList ordersDeleted = new ArrayList(orders.length);
+        LinkedHashMap<Orderable, OrderException> map = new LinkedHashMap<Orderable, OrderException>(19);
+        ArrayList<Orderable> ordersAdded = new ArrayList<Orderable>(orders.length);
+        ArrayList<Orderable> ordersDeleted = new ArrayList<Orderable>(orders.length);
 
         for (int i = 0; i < orders.length; i++) {
             Orderable order = orders[i];
@@ -500,7 +500,7 @@ public class OrderDisplayPanel extends JPanel {
     public synchronized boolean removeOrders(Orderable[] orders,
                                              boolean undoable) {
         int count = 0;
-        ArrayList deletedOrderList = new ArrayList(orders.length);
+        ArrayList<Orderable> deletedOrderList = new ArrayList<Orderable>(orders.length);
 
         for (int i = 0; i < orders.length; i++) {
             Orderable order = orders[i];
@@ -548,9 +548,9 @@ public class OrderDisplayPanel extends JPanel {
         {
             // clear the orders from the turnstate.
             // keep cleared orders in a temporary arraylist
-            ArrayList deletedOrders = new ArrayList(100);
+            ArrayList<Orderable> deletedOrders = new ArrayList<>(100);
             for (int i = 0; i < orderablePowers.length; i++) {
-                List orders = turnState.getOrders(orderablePowers[i]);
+                List<Orderable> orders = turnState.getOrders(orderablePowers[i]);
                 if (orders.size() > 0) {
                     deletedOrders.addAll(orders);
                     orders.clear();
@@ -769,7 +769,7 @@ public class OrderDisplayPanel extends JPanel {
     private boolean removeOrderFromTS(Orderable order) {
         //synchronized(clientFrame.getLock())
         {
-            List orders = turnState.getOrders(order.getPower());
+            List<Orderable> orders = turnState.getOrders(order.getPower());
             return orders.remove(order);
         }
     }// removeOrderFromTS()
@@ -934,14 +934,14 @@ public class OrderDisplayPanel extends JPanel {
      * displayablePowers into account.
      */
     private class OrderListModel extends AbstractListModel {
-        private ArrayList list;
+        private ArrayList<DisplayOrder> list;
         private DOComparator comparator;
 
         /**
          * Create an OrderListModel object
          */
         public OrderListModel() {
-            list = new ArrayList(50);
+            list = new ArrayList<DisplayOrder>(50);
             comparator = new DOSortProvince();    // default comparator
         }// OrderListModel()
 
@@ -1056,9 +1056,9 @@ public class OrderDisplayPanel extends JPanel {
             // note: if duplicates are present, this will remove duplicates
             // no displayed-power checking is required here
             synchronized (list) {
-                Iterator iter = list.iterator();
+                Iterator<DisplayOrder> iter = list.iterator();
                 while (iter.hasNext()) {
-                    DisplayOrder displayOrder = (DisplayOrder) iter.next();
+                    DisplayOrder displayOrder = iter.next();
                     if (displayOrder.getOrder() == order) {
                         iter.remove();
                     }
@@ -1075,9 +1075,9 @@ public class OrderDisplayPanel extends JPanel {
             // note: if duplicates are present, this will remove duplicates
             // no displayed-power checking is required here
             synchronized (list) {
-                Iterator iter = list.iterator();
+                Iterator<DisplayOrder> iter = list.iterator();
                 while (iter.hasNext()) {
-                    DisplayOrder displayOrder = (DisplayOrder) iter.next();
+                    DisplayOrder displayOrder = iter.next();
                     final Orderable doOrder = displayOrder.getOrder();
 
                     for (int i = 0; i < orders.length; i++) {
@@ -1114,9 +1114,9 @@ public class OrderDisplayPanel extends JPanel {
             synchronized (list) {
                 list.clear();
 
-                Iterator iter = turnState.getAllOrders().iterator();
+                Iterator<Orderable> iter = turnState.getAllOrders().iterator();
                 while (iter.hasNext()) {
-                    Orderable order = (Orderable) iter.next();
+                    Orderable order = iter.next();
                     if (isDisplayable(order)) {
                         list.add(createDisplayOrder(order));
                     }
@@ -1132,9 +1132,9 @@ public class OrderDisplayPanel extends JPanel {
          */
         public void revalidateAllOrders() {
             synchronized (list) {
-                Iterator iter = list.iterator();
+                Iterator<DisplayOrder> iter = list.iterator();
                 while (iter.hasNext()) {
-                    DisplayOrder displayOrder = (DisplayOrder) iter.next();
+                    DisplayOrder displayOrder = iter.next();
 
                     try {
                         displayOrder.getOrder().validate(turnState, valOpts,
@@ -1398,18 +1398,18 @@ public class OrderDisplayPanel extends JPanel {
          * Mark the highlighted items in a collection of orders.
          * NOTE: the Iterator must return DisplayOrder objects.
          */
-        public void setHighlighting(Iterator iter) {
+        public void setHighlighting(Iterator<DisplayOrder> iter) {
             boolean toHilite = true;
             Object lastObject = null;
 
             if (iter.hasNext()) {
-                DisplayOrder first = (DisplayOrder) iter.next();
+                DisplayOrder first = iter.next();
                 first.setHighlighted(toHilite);
                 lastObject = getComparisonObject(first);
             }
 
             while (iter.hasNext()) {
-                DisplayOrder next = (DisplayOrder) iter.next();
+                DisplayOrder next = iter.next();
                 Object nextObject = getComparisonObject(next);
 
                 if (!lastObject.equals(nextObject)) {
@@ -1573,7 +1573,7 @@ public class OrderDisplayPanel extends JPanel {
         JLabel label = new JLabel(Utils.getLocalString(LABEL_SORT));
 
         // combobox
-        JComboBox sortCombo = new JComboBox();
+        JComboBox<String> sortCombo = new JComboBox<String>();
         sortCombo.setEditable(false);
         sortCombo.addItem(Utils.getLocalString(LABEL_SORT_POWER));
         sortCombo.addItem(Utils.getLocalString(LABEL_SORT_PROVINCE));

@@ -475,16 +475,16 @@ public class PersistenceManager {
                     // we need to rewind the current game
                     if (rewindDialog(phase)) {
                         // rewind current game
-                        Iterator iter = currentWorld.getPhaseSet().iterator();
-                        LinkedList l = new LinkedList();
+                        Iterator<Phase> iter = currentWorld.getPhaseSet().iterator();
+                        LinkedList<Phase> l = new LinkedList<Phase>();
                         while (iter.hasNext()) {
-                            Phase p = (Phase) iter.next();
+                            Phase p = iter.next();
                             if (p.compareTo(phase) > 0) {
                                 l.add(p);
                             }
                         }
                         while (!l.isEmpty()) {
-                            Phase p = (Phase) l.getFirst();
+                            Phase p = l.getFirst();
                             l.removeFirst();
                             TurnState ts = currentWorld.getTurnState(p);
                             currentWorld.removeTurnState(ts);

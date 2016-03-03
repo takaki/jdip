@@ -115,7 +115,7 @@ public class OrderResult extends Result {
      * If message may be empty, but never is null.
      */
     @Override
-    public int compareTo(final Object o) {
+    public int compareTo(final Result o) {
         if (o instanceof OrderResult) {
             final OrderResult result = (OrderResult) o;
 

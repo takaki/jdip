@@ -28,17 +28,30 @@ import dip.gui.swing.XJEditorPane;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
-import javax.swing.text.*;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.DocumentFilter;
 import javax.swing.text.html.HTMLDocument;
 import java.awt.*;
 import java.awt.image.AreaAveragingScaleFilter;
 import java.awt.image.FilteredImageSource;
 import java.awt.image.ImageProducer;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -1237,7 +1250,7 @@ public class Utils {
      */
     public static String[] parseCSV(String input) {
         Matcher m = REAL_COMMAS.matcher(input);
-        ArrayList matchList = new ArrayList();
+        ArrayList<String> matchList = new ArrayList<String>();
 
         // find all matches (except last)
         // we trim extra whitespace from ends (no effect if within quotes)
@@ -1440,7 +1453,7 @@ public class Utils {
      */
     public static boolean isInWebstart() {
         try {
-            final Class service = Class.forName("javax.jnlp.ServiceManager");
+            final Class<?> service = Class.forName("javax.jnlp.ServiceManager");
             final Method lookup = service
                     .getMethod("lookup", new Class[]{String.class});
             final Object basic = lookup

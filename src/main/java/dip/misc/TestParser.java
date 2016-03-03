@@ -67,7 +67,7 @@ public class TestParser {
     World world = null;
     TurnState turnState = null;    // the first & only TurnState in the World object
     WorldMap map = null;
-    List cases = null;            // a List of ORPairs
+    List<ORPair> cases = null;            // a List of ORPairs
     OrderParser op = null;
     boolean isLogging = false;    // OrderParser internal logging enabled
     ValidationOptions valOpts = null;    // validation options
@@ -570,7 +570,7 @@ public class TestParser {
      * Get tokens from an order result (non-failure) as a string array
      */
     private String[] getORPTokens(String in) {
-        ArrayList al = new ArrayList(10);
+        ArrayList<String> al = new ArrayList<String>(10);
 
         // parse result.
         // format is like xxxx(a, b, c, d)
@@ -649,7 +649,7 @@ public class TestParser {
      * A bunch of DefineState orders used to set unit positions
      * for subsequent order processing.
      */
-    private void setupPositions(List nonDislodged, List dislodged) {
+    private void setupPositions(List<String> nonDislodged, List<String> dislodged) {
         assert (nonDislodged != null);
         assert (dislodged != null);
         assert (turnState != null);
@@ -657,9 +657,9 @@ public class TestParser {
         Position pos = turnState.getPosition();
 
         int count = 0;
-        Iterator iter = nonDislodged.iterator();
+        Iterator<String> iter = nonDislodged.iterator();
         while (iter.hasNext()) {
-            String line = (String) iter.next();
+            String line = iter.next();
             DefineState ds = parseDSOrder(line.trim());
             Unit unit = new Unit(ds.getPower(), ds.getSourceUnitType());
             unit.setCoast(ds.getSource().getCoast());
@@ -672,7 +672,7 @@ public class TestParser {
         count = 0;
         iter = dislodged.iterator();
         while (iter.hasNext()) {
-            String line = (String) iter.next();
+            String line = iter.next();
             DefineState ds = parseDSOrder(line.trim());
             Unit unit = new Unit(ds.getPower(), ds.getSourceUnitType());
             unit.setCoast(ds.getSource().getCoast());
@@ -691,11 +691,11 @@ public class TestParser {
 
         try {
             boolean setupDone = false;
-            List accum = null;
-            cases = new ArrayList(200);
+            List<String> accum = null;
+            cases = new ArrayList<ORPair>(200);
             ORPair currentCase = null;
-            List posList = null;
-            List dislodgedPosList = null;
+            List<String> posList = null;
+            List<String> dislodgedPosList = null;
 
             lnr = new LineNumberReader(
                     new BufferedReader(new FileReader(caseFile)));
@@ -728,7 +728,7 @@ public class TestParser {
                             lnrErrorExit(lnr, "SETUP block already defined.");
                         }
 
-                        accum = new ArrayList(50);
+                        accum = new ArrayList<String>(50);
                     } else if (key == KEY_END) {
                         if (accum == null) {
                             lnrErrorExit(lnr,
@@ -759,7 +759,7 @@ public class TestParser {
                                     "SETUPDISLODGED block already defined.");
                         }
 
-                        accum = new ArrayList(50);
+                        accum = new ArrayList<String>(50);
                     } else if (key == KEY_ORDER) {
                         if (!setupDone) {
                             lnrErrorExit(lnr,

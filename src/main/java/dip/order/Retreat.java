@@ -164,19 +164,19 @@ public class Retreat extends Move {
     public void determineDependencies(Adjudicator adjudicator) {
         // add moves to destination space, and supports of this space
         OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
-        ArrayList depMTDest = null;
+        List<OrderState> depMTDest = null;
 
         List<OrderState> orderStates = adjudicator.getOrderStates();
         for (int osIdx = 0; osIdx < orderStates.size(); osIdx++) {
             OrderState dependentOS = orderStates.get(osIdx);
-            Order order = dependentOS.getOrder();
+            Orderable order = dependentOS.getOrder();
 
             if (order instanceof Retreat && order != this) {
                 Retreat retreat = (Retreat) order;
 
                 if (retreat.getDest().isProvinceEqual(this.getDest())) {
                     if (depMTDest == null) {
-                        depMTDest = new ArrayList(4);
+                        depMTDest = new ArrayList<OrderState>(4);
                     }
                     depMTDest.add(dependentOS);
                 }

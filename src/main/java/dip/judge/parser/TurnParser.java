@@ -94,7 +94,7 @@ public class TurnParser {
         Pattern isResultsPattern = Pattern.compile(RESULT_SUBJ_REGEX);
 
 
-        LinkedList turnList = new LinkedList();
+        LinkedList<Turn> turnList = new LinkedList<Turn>();
         BufferedReader reader = new BufferedReader(new StringReader(input));
 
         String line = reader.readLine();

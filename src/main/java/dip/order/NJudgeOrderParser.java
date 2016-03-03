@@ -226,7 +226,7 @@ public final class NJudgeOrderParser {
      */
     public static class NJudgeOrder {
         private final Orderable order;
-        private final List results;
+        private final List<Result> results;
         private final boolean isAdjustment;
         private final Power specialAdjustmentPower;
         private final boolean isWaive;
@@ -308,8 +308,8 @@ public final class NJudgeOrderParser {
          * Returns the Results of the order. Each item in the list
          * is a subclass of dip.order.Result.
          */
-        public List getResults() {
-            return results;
+        public List<Result> getResults() {
+            return Collections.unmodifiableList(results);
         }// getResults()
 
 

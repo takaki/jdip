@@ -135,7 +135,7 @@ public class OrderFormat {
      * For null values, when debugging, print the word "null"
      * followed by the type (indicated by cls).
      */
-    private static String handleNull(Class cls) {
+    private static String handleNull(Class<?> cls) {
         assert (cls != null);
         StringBuffer sb = new StringBuffer(64);
         sb.append("null(");
@@ -522,7 +522,7 @@ public class OrderFormat {
         assert (order != null);
         assert (name != null);
 
-        final Class cls = order.getClass();
+        final Class<? extends Orderable> cls = order.getClass();
         final boolean isMethod = (name.endsWith("()"));
 
         if (isMethod) {
@@ -719,8 +719,10 @@ public class OrderFormat {
         Province prov3 = new Province("Golf of Bothnia",
                 Collections.singletonList("gob"), 0, false);
 
-        Power power1 = new Power(Collections.singletonList("Russia"), "Russian", true);
-        Power power2 = new Power(Collections.singletonList("German"), "German", true);
+        Power power1 = new Power(Collections.singletonList("Russia"), "Russian",
+                true);
+        Power power2 = new Power(Collections.singletonList("German"), "German",
+                true);
 
         Location src = new Location(prov1, Coast.SEA);
         Location supSrc = new Location(prov2, Coast.SOUTH);

@@ -25,9 +25,18 @@ package dip.gui.report;
 import dip.gui.ClientFrame;
 import dip.gui.dialog.TextViewer;
 import dip.misc.Utils;
-import dip.order.*;
+import dip.order.Convoy;
+import dip.order.Hold;
+import dip.order.Move;
+import dip.order.OrderFormatOptions;
+import dip.order.Orderable;
+import dip.order.Support;
 import dip.order.result.OrderResult;
-import dip.world.*;
+import dip.world.Phase;
+import dip.world.Power;
+import dip.world.TurnState;
+import dip.world.Unit;
+import dip.world.World;
 
 import javax.swing.*;
 import java.text.DecimalFormat;
@@ -231,12 +240,13 @@ public class OrderStatsWriter {
      * ONLY Movement TURNS are used to create statistical data.
      */
     public MovePhaseTurnData[] collectData() {
-        List turns = world.getAllTurnStates();
-        ArrayList data = new ArrayList(turns.size());
+        List<TurnState> turns = world.getAllTurnStates();
+        ArrayList<MovePhaseTurnData> data = new ArrayList<MovePhaseTurnData>(
+                turns.size());
 
-        Iterator iter = turns.iterator();
+        Iterator<TurnState> iter = turns.iterator();
         while (iter.hasNext()) {
-            TurnState ts = (TurnState) iter.next();
+            TurnState ts = iter.next();
             if (ts.isResolved() && Phase.PhaseType.MOVEMENT
                     .equals(ts.getPhase().getPhaseType())) {
                 data.add(new MovePhaseTurnData(ts));
@@ -295,7 +305,8 @@ public class OrderStatsWriter {
 
         private void collectStats(TurnState ts) {
             // create order-result mapping
-            HashMap resultMap = new HashMap(53);
+            HashMap<Orderable, Boolean> resultMap = new HashMap<Orderable, Boolean>(
+                    53);
             Iterator iter = ts.getResultList().iterator();
             while (iter.hasNext()) {
                 Object obj = iter.next();
@@ -348,7 +359,8 @@ public class OrderStatsWriter {
                         // self support?
                         final Support sup = (Support) order;
                         final Unit supUnit = ts.getPosition()
-                                .getUnit(sup.getSupportedSrc().getProvince()).orElse(null);
+                                .getUnit(sup.getSupportedSrc().getProvince())
+                                .orElse(null);
                         if (supUnit != null) {
                             if (sup.getPower().equals(supUnit.getPower())) {
                                 s.nSupportsSelf++;

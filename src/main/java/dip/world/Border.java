@@ -406,7 +406,7 @@ public class Border implements Serializable {
      * Null arguments are not permitted.
      */
     public boolean canTransit(final Location fromLoc, final Type unit,
-                              final Phase phase, final Class orderClass) {
+                              final Phase phase, final Class<?> orderClass) {
         /*
         System.out.println("border: "+id);
 		System.out.println("  "+fromLoc.getProvince()+":"+fromLoc.getCoast()+", "+phase);

@@ -200,7 +200,7 @@ public final class JudgeImportHistory {
         // get home supply center information from the oldPosition object
         // and store it in HSCInfo object array, so that it can be set during each successive
         // turn.
-        final ArrayList<HSCInfo> hscList = new ArrayList<HSCInfo>(50);
+        final ArrayList<HSCInfo> hscList = new ArrayList<>(50);
         final Province[] provinces = map.getProvinces()
                 .toArray(new Province[0]);
         for (final Province province : provinces) {
@@ -472,7 +472,7 @@ public final class JudgeImportHistory {
         Log.println("  Turn.getPhase() = ", turn.getPhase());
 
         final TurnState ts = makeTurnState(turn, positionPlacement);
-        final List results = ts.getResultList();
+        final List<Result> results = ts.getResultList();
 
         Log.println("  Turnstate created. Phase: ", ts.getPhase());
 
@@ -558,9 +558,10 @@ public final class JudgeImportHistory {
 
         Log.println("  :created power->order mapping");
 
-        final HashMap orderMap = new HashMap(powers.length);
+        final HashMap<Power, LinkedList<dip.order.Orderable>> orderMap = new HashMap<>(
+                powers.length);
         for (final Power power1 : powers) {
-            orderMap.put(power1, new LinkedList());
+            orderMap.put(power1, new LinkedList<>());
         }
 
         // process all orders
@@ -574,7 +575,7 @@ public final class JudgeImportHistory {
             try {
                 order.validate(ts, valOpts, ruleOpts);
 
-                final List list = (LinkedList) orderMap.get(order.getPower());
+                final List list = orderMap.get(order.getPower());
                 list.add(order);
 
                 results.addAll(njo.getResults());
@@ -599,7 +600,7 @@ public final class JudgeImportHistory {
                 try {
                     order.validate(ts, valOpts, ruleOpts);
 
-                    final List list = (LinkedList) orderMap
+                    final List list = orderMap
                             .get(order.getPower());
                     list.add(order);
 
@@ -711,7 +712,7 @@ public final class JudgeImportHistory {
 
         // set orders in turnstate
         for (final Power power : powers) {
-            ts.setOrders(power, (LinkedList) orderMap.get(power));
+            ts.setOrders(power, orderMap.get(power));
         }
 
         // process dislodged unit info, to determine retreat paths
@@ -750,7 +751,7 @@ public final class JudgeImportHistory {
         // create TurnState
         final TurnState ts = makeTurnState(turn, positionPlacement);
         final Position position = ts.getPosition();
-        final List results = ts.getResultList();
+        final List<Result> results = ts.getResultList();
         final RuleOptions ruleOpts = world.getRuleOptions();
 
         Log.println("  :procRetreat(): ", ts.getPhase(),
@@ -770,9 +771,10 @@ public final class JudgeImportHistory {
         // create units for all successfull move (retreat) orders in destination province
         // create orderMap, which maps powers to their respective order list
         final Power[] powers = map.getPowers().toArray(new Power[0]);
-        final HashMap orderMap = new HashMap(powers.length);
+        final HashMap<Power, LinkedList<dip.order.Orderable>> orderMap = new HashMap<>(
+                powers.length);
         for (final Power power1 : powers) {
-            orderMap.put(power1, new LinkedList());
+            orderMap.put(power1, new LinkedList<>());
         }
 
         // validate all parsed orders
@@ -790,7 +792,7 @@ public final class JudgeImportHistory {
             try {
                 order.validate(ts, valOpts, ruleOpts);
 
-                final List list = (LinkedList) orderMap.get(order.getPower());
+                final List list = orderMap.get(order.getPower());
                 list.add(order);
 
                 results.addAll(njo.getResults());
@@ -874,7 +876,7 @@ public final class JudgeImportHistory {
 
         // set orders in turnstate
         for (final Power power : powers) {
-            ts.setOrders(power, (LinkedList) orderMap.get(power));
+            ts.setOrders(power, orderMap.get(power));
         }
 
         // process adjustment info ownership info (if any)
@@ -905,7 +907,7 @@ public final class JudgeImportHistory {
 
         // create TurnState
         final TurnState ts = makeTurnState(turn, positionPlacement);
-        final List results = ts.getResultList();
+        final List<Result> results = ts.getResultList();
         final RuleOptions ruleOpts = world.getRuleOptions();
 
         Log.println("JIH::procAdjust(): ", ts.getPhase());
@@ -939,9 +941,9 @@ public final class JudgeImportHistory {
 
             // create orderMap, which maps powers to their respective order list
             final Power[] powers = map.getPowers().toArray(new Power[0]);
-            final HashMap orderMap = new HashMap(powers.length);
+            final HashMap<Power, LinkedList<dip.order.Orderable>> orderMap = new HashMap<>(powers.length);
             for (final Power power1 : powers) {
-                orderMap.put(power1, new LinkedList());
+                orderMap.put(power1, new LinkedList<>());
             }
 
             // parse all orders
@@ -986,7 +988,7 @@ public final class JudgeImportHistory {
                         newOrder.validate(ts, valOpts, ruleOpts);
 
                         if (!isDefaulted) {
-                            final List list = (LinkedList) orderMap
+                            final List<Orderable> list = orderMap
                                     .get(newOrder.getPower());
                             list.add(newOrder);
                         }
@@ -1040,7 +1042,7 @@ public final class JudgeImportHistory {
 
             // set orders in turnstate
             for (final Power power : powers) {
-                ts.setOrders(power, (LinkedList) orderMap.get(power));
+                ts.setOrders(power, orderMap.get(power));
             }
         }
 
@@ -1268,15 +1270,15 @@ public final class JudgeImportHistory {
      * <p>
      * old Dislodged results are discarded.
      */
-    private void makeDislodgedResults(final Phase phase, final List results,
+    private void makeDislodgedResults(final Phase phase, final List<Result> results,
                                       final Position position,
                                       final DislodgedInfo[] dislodgedInfo,
                                       final boolean positionPlacement) throws IOException {
         Log.println("JIH::makeDislodgedResults() [", phase, "]");
         Log.println("  # results: ", results.size());
-        final ListIterator iter = results.listIterator();
+        final ListIterator<Result> iter = results.listIterator();
         while (iter.hasNext()) {
-            final Result result = (Result) iter.next();
+            final Result result = iter.next();
             if (result instanceof OrderResult) {
                 final OrderResult orderResult = (OrderResult) result;
                 if (ResultType.DISLODGED.equals(orderResult.getResultType())) {

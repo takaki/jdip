@@ -248,9 +248,9 @@ public class DMR2RenderCommandFactory extends RenderCommandFactory {
                 Log.println("  degrading label to: ", newLabelValue);
             }
 
-            final SVGElement elBrief = (SVGElement) dmr2.layerMap
+            final SVGElement elBrief = dmr2.layerMap
                     .get(DefaultMapRenderer2.LABEL_LAYER_BRIEF);
-            final SVGElement elFull = (SVGElement) dmr2.layerMap
+            final SVGElement elFull = dmr2.layerMap
                     .get(DefaultMapRenderer2.LABEL_LAYER_FULL);
 
             if (newLabelValue == MapRenderer2.VALUE_LABELS_NONE) {
@@ -280,7 +280,7 @@ public class DMR2RenderCommandFactory extends RenderCommandFactory {
             DefaultMapRenderer2 dmr2 = (DefaultMapRenderer2) mr;
             dmr2.setRenderSetting(MapRenderer2.KEY_SHOW_SUPPLY_CENTERS,
                     Boolean.valueOf(value));
-            dmr2.setElementVisibility((SVGElement) dmr2.layerMap
+            dmr2.setElementVisibility(dmr2.layerMap
                     .get(DefaultMapRenderer2.LAYER_SC), value);
             dmr2.unsyncUpdateAllProvinces();    // update provinces, but not orders
         }// execute()
@@ -297,7 +297,7 @@ public class DMR2RenderCommandFactory extends RenderCommandFactory {
             DefaultMapRenderer2 dmr2 = (DefaultMapRenderer2) mr;
             dmr2.setRenderSetting(MapRenderer2.KEY_SHOW_UNITS,
                     Boolean.valueOf(value));
-            dmr2.setElementVisibility((SVGElement) dmr2.layerMap
+            dmr2.setElementVisibility(dmr2.layerMap
                     .get(DefaultMapRenderer2.LAYER_UNITS), value);
         }// execute()
     }// nested class RCSetDisplayUnits

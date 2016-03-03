@@ -251,16 +251,16 @@ public class SVGUtils {
      * <li>Province (checks all short names via getShortNames())
      * </ul>
      */
-    public static Map tagFinderSVG(List lookList, Node root) {
+    public static Map tagFinderSVG(List<String> lookList, Node root) {
         return tagFinderSVG(lookList, root, false);
     }// tagFinderSVG
 
     /**
      * As above, but allows any SVG element to be returned
      */
-    public static Map tagFinderSVG(List lookList, Node root,
+    public static Map tagFinderSVG(List<String> lookList, Node root,
                                    boolean anySVGElement) {
-        List list = new ArrayList(lookList);
+        List<String> list = new ArrayList<String>(lookList);
         Map map = new HashMap((4 * lookList.size()) / 3);
 
         // recursively walk tree from root
@@ -285,16 +285,16 @@ public class SVGUtils {
      * <li>Province (checks all short names via getShortNames())
      * </ul>
      */
-    public static void tagFinderSVG(Map map, List lookList, Node root) {
+    public static void tagFinderSVG(Map<String, org.w3c.dom.svg.SVGGElement> map, List<String> lookList, Node root) {
         tagFinderSVG(map, lookList, root, false);
     }// tagFinderSVG
 
     /**
      * As above but allows any SVG element to be returned
      */
-    public static void tagFinderSVG(Map map, List lookList, Node root,
+    public static void tagFinderSVG(Map<String, org.w3c.dom.svg.SVGGElement> map, List<String> lookList, Node root,
                                     boolean anySVGElement) {
-        List list = new ArrayList(lookList);
+        List<String> list = new ArrayList<String>(lookList);
 
         // recursively walk tree from root
         nodeWalker(root, list, map, anySVGElement);
@@ -306,7 +306,7 @@ public class SVGUtils {
      * Objects w/o IDs are ignored.
      */
     public static SVGElement[] idFinderSVG(Node root) {
-        List list = new ArrayList(150);
+        List<SVGElement> list = new ArrayList<SVGElement>(150);
         idNodeWalker(root, list, true);
         return (SVGElement[]) list.toArray(new SVGElement[list.size()]);
     }// idFinderSVG()
@@ -316,7 +316,7 @@ public class SVGUtils {
      * Walks the nodes of the SVG DOM, recursively.
      * All non-G or non-SYMBOL elements are ignored, if anySVGElement flag is false
      */
-    private static void nodeWalker(Node node, List list, Map map,
+    private static void nodeWalker(Node node, List<String> list, Map map,
                                    boolean anySVGElement) {
         if (node.getNodeType() == Node.ELEMENT_NODE && ((anySVGElement && node instanceof org.w3c.dom.svg.SVGElement) || (node
                 .getNodeName() == SVGConstants.SVG_G_TAG || node
@@ -347,7 +347,7 @@ public class SVGUtils {
      * Walks the nodes of the SVG DOM, recursively.
      * Looks for any ELEMENT with an ID value.
      */
-    private static void idNodeWalker(Node node, List list, boolean isRoot) {
+    private static void idNodeWalker(Node node, List<SVGElement> list, boolean isRoot) {
         if (node.getNodeType() == Node.ELEMENT_NODE && !isRoot) {
             String id = ((Element) node)
                     .getAttribute(SVGConstants.SVG_ID_ATTRIBUTE);
@@ -372,9 +372,9 @@ public class SVGUtils {
      * list. If it does, the element is added to map, and removed from the list.
      */
     private static void nodeChecker(Node attributeNode, Node parentNode,
-                                    List list, Map map) {
+                                    List<String> list, Map<Object, Node> map) {
         String nodeValue = attributeNode.getNodeValue();
-        Iterator iter = list.iterator();
+        Iterator<String> iter = list.iterator();
         while (iter.hasNext()) {
             Object obj = iter.next();
             if (obj == null) {

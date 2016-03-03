@@ -26,6 +26,7 @@ import dip.order.Move;
 import dip.order.Orderable;
 import dip.order.result.OrderResult;
 import dip.order.result.OrderResult.ResultType;
+import dip.order.result.Result;
 import dip.world.Location;
 import dip.world.Position;
 import dip.world.Province;
@@ -68,7 +69,7 @@ public final class RetreatChecker {
      * first TurnState (this can happen if the game is edited), it is allowed.
      */
     public RetreatChecker(final TurnState current) {
-        final List results;
+        final List<Result> results;
 
         final TurnState last = current.getWorld().getPreviousTurnState(current)
                 .get();
@@ -99,7 +100,7 @@ public final class RetreatChecker {
      * into the World object.
      */
     public RetreatChecker(final TurnState current,
-                          final List previousTurnStateResults) {
+                          final List<Result> previousTurnStateResults) {
         if (current == null || previousTurnStateResults == null) {
             throw new IllegalStateException("null arguments!");
         }
@@ -244,7 +245,7 @@ public final class RetreatChecker {
      * generate one RCMoveResult object, which holds the pertinent information
      * about that Move order.
      */
-    private List<RCMoveResult> makeFMRList(final List turnStateResults) {
+    private List<RCMoveResult> makeFMRList(final List<Result> turnStateResults) {
         final List<RCMoveResult> mrList = new ArrayList<>(64);
         final Map<Province, RCMoveResult> map = new HashMap<>(
                 119);    // key: move source province; value: RCMoveResult

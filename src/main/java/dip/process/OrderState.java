@@ -24,6 +24,7 @@ package dip.process;
 
 import dip.order.Move;
 import dip.order.Order;
+import dip.order.Orderable;
 import dip.order.Support;
 import dip.world.Location;
 import dip.world.Power;
@@ -83,7 +84,7 @@ public final class OrderState {
     private static final OrderState[] OS_EMPTY = new OrderState[0];
 
 
-    private Order order = null;
+    private Orderable order = null;
 
 
     private int defense_max = MAX_VALUE;
@@ -119,7 +120,7 @@ public final class OrderState {
      * this and adjudicators should be able to create new OrderState objects,
      * although other classes can definately use them.
      */
-    protected OrderState(Order order) {
+    protected OrderState(Orderable order) {
         if (order == null) {
             throw new IllegalArgumentException("null order");
         }
@@ -133,7 +134,7 @@ public final class OrderState {
     /**
      * Get the Order for this OrderState.
      */
-    public Order getOrder() {
+    public Orderable getOrder() {
         return order;
     }
 
@@ -422,7 +423,7 @@ public final class OrderState {
      * If assertions are enabled, the list is verified to contain only Support
      * OrderStates
      */
-    public void setDependentSupports(List osList) {
+    public void setDependentSupports(List<OrderState> osList) {
         assert (verifyListSupport(osList));
         dependentSupports = (OrderState[]) osList
                 .toArray(new OrderState[osList.size()]);
@@ -439,7 +440,7 @@ public final class OrderState {
      * <b>NOTE:</b> OrderState only checks criteria #1 and #2, and only if
      * asserts are enabled.
      */
-    public void setDependentSelfSupports(List osList) {
+    public void setDependentSelfSupports(List<OrderState> osList) {
         assert (verifyListSelfSupport(osList));
         dependentSelfSupports = (OrderState[]) osList
                 .toArray(new OrderState[osList.size()]);
@@ -450,7 +451,7 @@ public final class OrderState {
      * Adds a List of the Dependent Move Orderstates to the Source Province of this Orderstate.
      * <p>If asserts are enabled, all OrderStates are verified to contain only Move orders.
      */
-    public void setDependentMovesToSource(List osList) {
+    public void setDependentMovesToSource(List<OrderState> osList) {
         assert (verifyListMove(osList));
         dependentMovesToSource = (OrderState[]) osList
                 .toArray(new OrderState[osList.size()]);
@@ -461,7 +462,7 @@ public final class OrderState {
      * Adds a List of the Dependent Move Orderstates to the Destination Province of this Orderstate
      * <p>If asserts are enabled, all OrderStates are verified to contain only Move orders.
      */
-    public void setDependentMovesToDestination(List osList) {
+    public void setDependentMovesToDestination(List<OrderState> osList) {
         assert (verifyListMove(osList));
         dependentMovesToDestination = (OrderState[]) osList
                 .toArray(new OrderState[osList.size()]);
@@ -576,8 +577,8 @@ public final class OrderState {
     /**
      * Verifies that given list ONLY contains Move orderstates
      */
-    private boolean verifyListMove(List list) {
-        Iterator iter = list.iterator();
+    private boolean verifyListMove(List<OrderState> list) {
+        Iterator<OrderState> iter = list.iterator();
         while (iter.hasNext()) {
             OrderState os = (OrderState) iter.next();
             if (!(os.getOrder() instanceof Move)) {
@@ -592,8 +593,8 @@ public final class OrderState {
     /**
      * Verifies that given list ONLY contains Support orderstates
      */
-    private boolean verifyListSupport(List list) {
-        Iterator iter = list.iterator();
+    private boolean verifyListSupport(List<OrderState> list) {
+        Iterator<OrderState> iter = list.iterator();
         while (iter.hasNext()) {
             OrderState os = (OrderState) iter.next();
             if (!(os.getOrder() instanceof Support)) {
@@ -608,8 +609,8 @@ public final class OrderState {
     /**
      * Verifies that given list ONLY contains Self Support orderstates
      */
-    private boolean verifyListSelfSupport(List list) {
-        Iterator iter = list.iterator();
+    private boolean verifyListSelfSupport(List<OrderState> list) {
+        Iterator<OrderState> iter = list.iterator();
         while (iter.hasNext()) {
             OrderState os = (OrderState) iter.next();
             if (os.getOrder() instanceof Support) {
