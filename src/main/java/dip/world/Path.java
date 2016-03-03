@@ -853,16 +853,8 @@ public class Path {
 
         // quick check: dest: next to at least 1 sea/conv coastal province
         final List<Location> dLocs = dest.getAdjacentLocations(Coast.TOUCHING);
-        boolean isOk = false;
-        for (final Location dLoc : dLocs) {
-            final Province p = dLoc.getProvince();
-            if (p.isConvoyableCoast() || p.isSea()) {
-                isOk = true;
-                break;
-            }
-        }
-
-        if (!isOk) {
+        if (!dLocs.stream().map(dLoc -> dLoc.getProvince())
+                .anyMatch(p1 -> p1.isConvoyableCoast() || p1.isSea())) {
             return new Province[0][];
         }
 
