@@ -22,12 +22,11 @@
 //
 package dip.world;
 
-import dip.order.OrderException;
-
 import javax.xml.bind.annotation.XmlEnumValue;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -287,7 +286,7 @@ public enum Coast {
      * <p>
      * Bug note: the following "xxx-n.c." will be converted to "xxx-nc ." Note the extra period.
      */
-    public static String normalize(final String input) throws OrderException {
+    public static Optional<String> normalize(final String input)  {
         // start matching.
         String matchInput = input;
         for (final Pattern pattern : patterns) {
@@ -299,7 +298,7 @@ public enum Coast {
                 if (m.groupCount() == 2) {
                     // catch empty group "()"
                     if (m.group(1).length() == 0) {
-                        throw new OrderException("()");
+                        return Optional.empty();
                     }
 
                     final char c1 = m.group(1).charAt(0);
@@ -336,10 +335,10 @@ public enum Coast {
                                 ' ');    // space added afterwards--essential!
                         m.appendReplacement(sb, rep.toString());
                     } else {
-                        throw new OrderException(m.group(0));
+                        Optional.empty();
                     }
                 } else {
-                    throw new OrderException(m.group(0));
+                    Optional.empty();
                 }
 
                 result = m.find();
@@ -349,7 +348,7 @@ public enum Coast {
             matchInput = sb.toString();
         }
 
-        return matchInput.trim();
+        return Optional.of(matchInput.trim());
     }// normalize()
 
     /**

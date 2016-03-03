@@ -40,6 +40,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -493,8 +494,7 @@ public final class NJudgeOrderParser {
     /**
      * Parse the rest of the order
      */
-    private Order parsePredicate(final ParseContext pc,
-                                 final OrderPrefix op,
+    private Order parsePredicate(final ParseContext pc, final OrderPrefix op,
                                  final String[] tokens) throws OrderException {
         final String type = op.orderName;
 
@@ -647,10 +647,11 @@ public final class NJudgeOrderParser {
                                           final String text) throws OrderException {
         final String replaceFrom[] = {".", ","};
         final String replaceTo[] = {"", ""};
-        final String locationText = Coast
+        final Optional<String> locationText = Coast
                 .normalize(Utils.replaceAll(text, replaceFrom, replaceTo));
 
-        final Location loc = pc.map.parseLocation(locationText).orElse(null);
+        final Location loc = locationText.flatMap(pc.map::parseLocation)
+                .orElse(null);
 
         if (loc == null) {
             throw new OrderException(
@@ -694,8 +695,7 @@ public final class NJudgeOrderParser {
      */
     private Order parseHoldOrDisband(final ParseContext pc,
                                      final OrderPrefix op,
-                                     final String[] tokens,
-                                     final String type) {
+                                     final String[] tokens, final String type) {
         // NO additional parsing
         //
         if (Objects.equals(type, ORDER_HOLD)) {

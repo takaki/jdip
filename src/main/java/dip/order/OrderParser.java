@@ -290,15 +290,11 @@ public class OrderParser {
         // normalize coasts (Converts to /Xc format)
         //Log.println("OP: pre-coast normalization:", sb);
 
-        try {
-            final String ncOrd = Coast.normalize(sb.toString());
-            sb.setLength(0);
-            sb.append(ncOrd);
-        } catch (final OrderException e) {
-            Log.println("OrderException: order: ", sb);
-            throw new OrderException(
-                    Utils.getLocalString(OF_COAST_INVALID, e.getMessage()));
-        }
+        final String ncOrd = Coast.normalize(sb.toString()).orElseThrow(
+                () -> new OrderException(
+                        Utils.getLocalString(OF_COAST_INVALID, "empty")));
+        sb.setLength(0);
+        sb.append(ncOrd);
 
         //Log.println("OP: post-coast normalization:", sb);
 

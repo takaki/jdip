@@ -22,8 +22,6 @@
 //
 package dip.world;
 
-import dip.order.OrderException;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
@@ -426,14 +424,10 @@ public final class WorldMap implements Serializable {
      * by Coast.parse().
      */
     public Optional<Location> parseLocation(final String input) {
-        try {
-            final Coast coast = Coast.parse(Coast.normalize(input));
-            final Optional<Province> province = getProvinceMatching(
-                    Coast.getProvinceName(input));
-            return province.map(p -> new Location(p, coast));
-        } catch (final OrderException ignored) {
-            return Optional.empty();
-        }
+        final Optional<Province> province = getProvinceMatching(
+                Coast.getProvinceName(input));
+        return Coast.normalize(input).map(Coast::parse)
+                .flatMap(coast -> province.map(p -> new Location(p, coast)));
     }// parseLocation()
 
 
