@@ -280,7 +280,6 @@ public class DislodgedParser {
                         accum.append(line);
                     } else {
                         if (inBlock) {
-                            inBlock = false;
                             break;    // escape inner while
                         } else {
                             inBlock = true;
@@ -300,8 +299,6 @@ public class DislodgedParser {
 
         // cleanup
         br.close();
-        line = null;
-        header = null;
 		
 		/*
 		System.out.println("(DislodgedParser) text:");

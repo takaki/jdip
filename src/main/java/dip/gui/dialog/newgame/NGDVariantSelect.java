@@ -149,7 +149,7 @@ public class NGDVariantSelect extends JPanel implements NewGameDialog.NGDTabPane
         }
 
         // create world, based on selected variant
-        World world = null;
+        World world;
         try {
             final WorldFactory wf = WorldFactory.getInstance();
             final Variant variant = ngd.getStartOptionsPanel().getVariant();

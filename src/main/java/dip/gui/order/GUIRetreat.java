@@ -317,7 +317,7 @@ public class GUIRetreat extends Retreat implements GUIOrder {
 
         // now, render the order
         //
-        SVGElement element = null;
+        SVGElement element;
 
         // create hilight line
         final String cssStyle = mapInfo.getMapMetadata()

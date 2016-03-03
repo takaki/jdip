@@ -202,7 +202,6 @@ public class ResultWriter {
         // Sort the results
         Collections.sort(orderResults);
         Collections.sort(otherResults);
-        resultList = null;
 
         // Print results, by power.
         final StringBuffer sb = new StringBuffer(4096);

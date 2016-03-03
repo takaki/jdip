@@ -241,7 +241,7 @@ public class GUIHold extends Hold implements GUIOrder {
         // now, render the order
         //
         Log.println("GUIHold::updateDOM(): rendering order.");
-        SVGElement element = null;
+        SVGElement element;
 
         // create hilight line
         final String cssStyle = mapInfo.getMapMetadata()

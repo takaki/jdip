@@ -541,7 +541,7 @@ public class OrderDisplayPanel extends JPanel {
      * @param undoable - <b>true</b> if this is an undoable action
      */
     public synchronized void removeAllOrders(final boolean undoable) {
-        Orderable[] deletedOrderArray = null;
+        Orderable[] deletedOrderArray;
 
         //synchronized(clientFrame.getLock())
         {
@@ -657,7 +657,7 @@ public class OrderDisplayPanel extends JPanel {
      */
     public void setSorting(final String sortType, final boolean reversed) {
         if (sortType != null) {
-            DOComparator sortComparator = null;
+            DOComparator sortComparator;
 
             if (SORT_POWER.equals(sortType)) {
                 sortComparator = new DOSortPower();

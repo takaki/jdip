@@ -95,7 +95,7 @@ public class AIDemo {
         // Get default variant directory, where the jDip variants are stored.
         // This assumes the standard jdip package layout.
         //
-        File defaultVariantSearchDir = null;
+        File defaultVariantSearchDir;
         if (System.getProperty("user.dir") == null) {
             defaultVariantSearchDir = new File(".", VARIANT_DIR);
         } else {

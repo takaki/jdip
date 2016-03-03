@@ -114,8 +114,8 @@ public class SymbolInjector {
     public void inject() throws IOException {
         // find <defs> element
         final Element root = doc.getDocumentElement();
-        Element defs = null;
-        Element style = null;
+        Element defs;
+        Element style;
 
         defs = XMLUtils.findChildElementMatching(root, DEFS_ELEMENT_NAME);
 

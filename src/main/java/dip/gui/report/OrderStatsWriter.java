@@ -177,7 +177,7 @@ public class OrderStatsWriter {
 
             float sum = 0.0f;
             int nPowers = 0;            // for computing average....
-            float value = 0.0f;
+            float value;
             for (int i = 0; i < allPowers.length; i++) {
                 switch (type)    // it's just so easy...
                 {

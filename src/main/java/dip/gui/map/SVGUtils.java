@@ -454,7 +454,7 @@ public class SVGUtils {
             //System.out.println("viewport extents: (getBestFit()): "+dim);
 
             // find out if width or height is larger; we use that to scale.
-            double scaleFactor = 0.0;
+            double scaleFactor;
             if (docSize.getWidth() >= docSize.getHeight()) {
                 scaleFactor = dim.getWidth() / docSize.getWidth();
             } else {

@@ -1108,7 +1108,7 @@ public final class JudgeImportHistory {
 
         // get position info
         final Position newPos = current.getPosition();
-        Position oldPos = null;
+        Position oldPos;
         if (previousTS == null) {
             oldPos = oldPosition;
         } else {

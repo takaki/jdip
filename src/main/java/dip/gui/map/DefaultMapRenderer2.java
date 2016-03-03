@@ -1078,7 +1078,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
     private SVGElement makeUnitUse(final Unit u, final Province province,
                                    final boolean isDislodged) {
         // determine symbol ID
-        String symbolID = null;
+        String symbolID;
         if (u.getType() == Unit.Type.FLEET) {
             symbolID = (isDislodged) ? SYMBOL_DISLODGED_FLEET : SYMBOL_FLEET;
         } else if (u.getType() == Unit.Type.ARMY) {

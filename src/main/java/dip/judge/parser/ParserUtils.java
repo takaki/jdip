@@ -52,7 +52,6 @@ public class ParserUtils {
                 accum.append('\n');
             } else {
                 if (inBlock) {
-                    inBlock = false;
                     break;    // escape inner while
                 } else {
                     inBlock = true;

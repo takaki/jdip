@@ -143,7 +143,6 @@ public class TurnParser {
                     if (lastTurn != null) {
                         lastTurn.setText(sb.toString());
                         turnList.add(lastTurn);
-                        lastTurn = null;
                     }
 
                     lastTurn = turn;

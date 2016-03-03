@@ -275,7 +275,7 @@ public class JudgeParser {
     private void determineType() throws IOException, PatternSyntaxException {
         // are we are a history?
         // we will also be reading lines in pairs.
-        String line = null;
+        String line;
         reader.reset();
         reader.mark(READ_AHEAD_LENGTH);
         int count = 0;

@@ -286,9 +286,9 @@ public class ClientMenu {
         menuMap = new HashMap(31);
 
         // create menus
-        JMenu menu = null;
+        JMenu menu;
 
-        JMenu subMenu = null;
+        JMenu subMenu;
 
         // File
         menu = makeMenu(FILE);
@@ -1117,7 +1117,7 @@ public class ClientMenu {
         final JMenuItem menuItem = getMenuItem(item);
 
         // get our method
-        Method method = null;
+        Method method;
         try {
             method = target.getClass().getMethod(methodName, null);
         } catch (final NoSuchMethodException e) {

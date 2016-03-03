@@ -519,7 +519,7 @@ public class GUIMoveExplicit extends Move implements GUIOrder {
 
         // now, render the order
         //
-        SVGElement element = null;
+        SVGElement element;
 
         // create hilight line
         final String cssStyle = mapInfo.getMapMetadata()

@@ -561,7 +561,7 @@ public class TextViewer extends HeaderDialog {
         final JMenuBar menuBar = new JMenuBar();
         final JTextComponentMenuListener menuListener = new JTextComponentMenuListener(
                 textPane);
-        JMenuItem menuItem = null;
+        JMenuItem menuItem;
 
         // FILE menu
         ClientMenu.Item cmItem = new ClientMenu.Item(MENU_FILE);
@@ -658,7 +658,7 @@ public class TextViewer extends HeaderDialog {
      * text/HTML, otherwise, it saves as a .txt file.
      */
     protected void saveContents() {
-        File file = null;
+        File file;
         if (textPane.getContentType().equals("text/html")) {
             file = getFileName(SimpleFileFilter.HTML_FILTER);
         } else {

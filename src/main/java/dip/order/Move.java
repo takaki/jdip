@@ -1108,7 +1108,6 @@ public class Move extends Order {
                 if (os.getEvalState() == Tristate.SUCCESS) {
                     // 3.a.3.a: someone's already better than us.
                     Log.println("    -- they're better than us!");
-                    isBetterThanAllOtherMoves = false;
                     thisOS.setEvalState(Tristate.FAILURE);
                     adjudicator.addResult(thisOS, ResultType.FAILURE,
                             Utils.getLocalString(MOVE_FAILED));
@@ -1155,7 +1154,6 @@ public class Move extends Order {
                                 // 3.a.3.c: we can never be better than this pairing. Ever. Fail, unless destination
                                 // is part of a head-to-head battle which was dislodged by a unit involved in the
                                 // head-to-head battle. [3.d]
-                                isBetterThanAllOtherMoves = false;
                                 thisOS.setEvalState(Tristate.FAILURE);
                                 //adjudicator.addResult(thisOS, ResultType.FAILURE, Utils.getLocalString(MOVE_BOUNCE));
                                 adjudicator.addBouncedResult(thisOS, os);

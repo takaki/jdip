@@ -373,7 +373,7 @@ public class GUISupport extends Support implements GUIOrder {
         // we will not change the DOM.
         //
         // check dependent order status.
-        boolean found = false;
+        boolean found;
         if (isSupportingHold()) {
             // Support a hold
             found = (GUIOrderUtils
@@ -431,7 +431,7 @@ public class GUISupport extends Support implements GUIOrder {
      * Draw Supported Hold order
      */
     private void updateDOMHold(final MapInfo mapInfo) {
-        SVGElement[] elements = null;
+        SVGElement[] elements;
 
         // create hilight line
         final String cssStyle = mapInfo.getMapMetadata()
@@ -463,7 +463,7 @@ public class GUISupport extends Support implements GUIOrder {
      * Draw Supported Move order
      */
     private void updateDOMMove(final MapInfo mapInfo) {
-        SVGElement[] elements = null;
+        SVGElement[] elements;
 
         // create hilight line
         final String cssStyle = mapInfo.getMapMetadata()
@@ -521,7 +521,7 @@ public class GUISupport extends Support implements GUIOrder {
         // destination. If no unit, use the size of an army unit radius divided
         // by 2 (as we do in GUIMove)
         //
-        Point2D.Float newSupDest = null;
+        Point2D.Float newSupDest;
         if (position.hasUnit(supDest.getProvince())) {
             // since we're supporting a Move, we should use the Move radius
             final Unit.Type destUnitType = position.getUnit(supDest.getProvince()).orElse(null)

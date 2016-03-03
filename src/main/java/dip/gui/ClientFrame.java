@@ -320,7 +320,7 @@ public class ClientFrame extends JFrame {
         // use the preferred path, if set, and not overridden from command line
         variantDirPath = (variantDirPath == null) ? GeneralPreferencePanel
                 .getVariantDir() : variantDirPath;
-        File toolDirPath = null;
+        File toolDirPath;
         if (System.getProperty("user.dir") == null) {
             variantDirPath = (variantDirPath == null) ? new File(".",
                     VARIANT_DIR) : variantDirPath;

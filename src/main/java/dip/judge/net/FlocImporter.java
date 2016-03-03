@@ -189,7 +189,7 @@ public class FlocImporter implements Runnable {
     private String getGameInfo() throws IOException {
         final StringBuffer gameInformation = new StringBuffer(16384);
 
-        URL u = null;
+        URL u;
         BufferedReader reader = null;
         try {
             u = new URL(

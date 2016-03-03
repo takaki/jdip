@@ -228,7 +228,7 @@ public class AboutDialog extends HeaderDialog {
      */
     private String[][] getSystemInfo() {
         final Properties p = System.getProperties();
-        SortProp[] sortProps = null;
+        SortProp[] sortProps;
 
         synchronized (p) {
             // create 2 arrays, so that one can be sorted. We will combine these

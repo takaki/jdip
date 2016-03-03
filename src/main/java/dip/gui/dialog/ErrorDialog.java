@@ -211,7 +211,7 @@ public class ErrorDialog extends TextViewer {
         Log.println("  file: ", args[3]);
         Log.println("  stack trace:\n", args[2]);
 
-        String text = null;
+        String text;
         if (e instanceof FileNotFoundException) {
             text = Utils.getText(Utils.getLocalString(FNF_TEMPLATE));
         } else {
@@ -260,7 +260,7 @@ public class ErrorDialog extends TextViewer {
         Log.println("  connection: ", args[3]);
         Log.println("  stack trace:\n", args[2]);
 
-        String text = null;
+        String text;
         boolean submittable = false;
         if (e instanceof UnknownHostException) {
             text = Utils

@@ -893,7 +893,7 @@ public final class TestSuite {
                     final List<String> postDislodgedList, final List<String> orderResultList) {
             this.name = name;
             final List temp = new ArrayList<>(50);
-            Iterator<String> iter = null;
+            Iterator<String> iter;
             of = OrderParser.getInstance();
 
 
@@ -1268,7 +1268,6 @@ public final class TestSuite {
                         // clear data
                         inCase = true;
                         clearAndSetupKeyMap();
-                        caseName = null;
                         phaseName = null;
                         currentKey = null;
 
@@ -1383,7 +1382,7 @@ public final class TestSuite {
             return null;
         }
 
-        int idx = 0;
+        int idx;
 
         if (idxSpace == -1 || idxTab == -1) {
             idx = (idxSpace > idxTab) ? idxSpace : idxTab;        // return greater

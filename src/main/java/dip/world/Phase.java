@@ -174,7 +174,7 @@ public class Phase implements Serializable, Comparable<Phase> {
     @Override
     public int compareTo(final Phase obj) {
         final Phase phase = obj;
-        int result = 0;
+        int result;
 
         // year is dominant
         result = yearType.compareTo(phase.yearType);

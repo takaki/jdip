@@ -398,7 +398,7 @@ public class Utils {
      ********************************************************************/
     public static String getText(final String name) {
         BufferedReader br = null;
-        StringBuffer sb = null;
+        StringBuffer sb;
 
         try {
             br = new BufferedReader(getInputStreamReader(name));
@@ -562,7 +562,7 @@ public class Utils {
      * <p>.
      ********************************************************************/
     public static String[] getLocalStringArray(final String key) {
-        String str = null;
+        String str;
 
         try {
             str = resourceBundle.getString(key);
@@ -858,7 +858,7 @@ public class Utils {
     public static JEditorPane createTextLabel(final String text, final boolean blend,
                                               final boolean isFocusable) {
         // use antialiasing only if non-blended
-        JEditorPane jep = null;
+        JEditorPane jep;
         if (blend) {
             jep = new JEditorPane() {
                 final boolean mayFocus = isFocusable;
@@ -942,8 +942,8 @@ public class Utils {
     public static ImageIcon scaleDown(final ImageIcon src, final int maxW,
                                       final int maxH) {
         if (src.getIconWidth() >= maxW || src.getIconHeight() >= maxH) {
-            int w = maxW;
-            int h = maxH;
+            int w;
+            int h;
             final float aspect = (float) src.getIconWidth() / (float) src
                     .getIconHeight();
 

@@ -457,7 +457,7 @@ public class StateWriter {
 
 
             // determine build/remove/nochange text, and blocked builds
-            String adjustmentText = null;            // never null after below
+            String adjustmentText;            // never null after below
             String blockedBuildMessage = "";        // empty if no builds are blocked
 
             final int adjAmount = adjInfo.getAdjustmentAmount();

@@ -470,7 +470,7 @@ public class MapPanel extends JPanel {
      */
     private void setControlBar() {
         Log.println("MP::setControlBar())");
-        ControlBar cb = null;
+        ControlBar cb;
 
         if (turnState == null) {
             cb = new ViewControlBar(this);

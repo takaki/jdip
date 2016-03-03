@@ -354,7 +354,7 @@ public class GUIMove extends Move implements GUIOrder {
 
         // now, render the order
         //
-        SVGElement element = null;
+        SVGElement element;
 
         // create hilight line
         final String cssStyle = mapInfo.getMapMetadata()
@@ -431,9 +431,9 @@ public class GUIMove extends Move implements GUIOrder {
         // respect radius, if there is a unit present in destination.
         // if there is no unit, use radius / 2. (for an Army)
         //
-        Point2D.Float newPtTo = ptTo;
+        Point2D.Float newPtTo;
         final Position position = mapInfo.getTurnState().getPosition();
-        float r = 0.0f;
+        float r;
         if (position.hasUnit(dest.getProvince())) {
             final Unit.Type destUnitType = position.getUnit(dest.getProvince()).orElse(null)
                     .getType();

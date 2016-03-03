@@ -268,7 +268,7 @@ public class MultiOrderEntry {
      */
     private void recursiveParse(final String input) throws OrderException {
         Log.println("MOE::recursiveParse(): ", input);
-        OrderException firstException = null;
+        OrderException firstException;
 
         // first pass
         try {

@@ -400,7 +400,7 @@ public class Support extends Order {
      */
     @Override
     public void verify(final Adjudicator adjudicator) {
-        String failureText = null;
+        String failureText;
         boolean isMatched = false;
 
         final OrderState matchingOS = adjudicator

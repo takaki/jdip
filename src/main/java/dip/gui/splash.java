@@ -154,8 +154,6 @@ public final class splash {
                 }
             }
 
-            tracker = null;
-
             final Canvas canvas = new Canvas() {
                 public void paint(final Graphics g) {
                     super.paint(g);

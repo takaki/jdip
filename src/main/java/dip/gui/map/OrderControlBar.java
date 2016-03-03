@@ -568,9 +568,9 @@ public class OrderControlBar extends ViewControlBar {
      */
     private void makeLayout() {
         // phase determines groups
-        String[] text = null;
-        String[] cmd = null;
-        String defaultButton = null;
+        String[] text;
+        String[] cmd;
+        String defaultButton;
 
         final Phase.PhaseType phaseType = stateInfo.getTurnState().getPhase()
                 .getPhaseType();

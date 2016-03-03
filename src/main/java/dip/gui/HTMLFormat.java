@@ -175,8 +175,8 @@ public class HTMLFormat {
     private void replaceDate(final String text) {
         final int colonIdx = text.indexOf(':');
         final int commaIdx = text.indexOf(',');
-        String key = null;
-        String spec = null;
+        String key;
+        String spec;
 
         if (commaIdx == -1) {
             key = text.substring(colonIdx + 1);
@@ -195,8 +195,8 @@ public class HTMLFormat {
     private void replaceDecimal(final String text) {
         final int colonIdx = text.indexOf(':');
         final int commaIdx = text.indexOf(',');
-        String key = null;
-        String spec = null;
+        String key;
+        String spec;
 
         if (commaIdx == -1) {
             key = text.substring(colonIdx + 1);
@@ -215,7 +215,7 @@ public class HTMLFormat {
     private void replaceArray(final String text, final int colonIdx) {
         final String key = text.substring(0, colonIdx);
         final String index = text.substring(colonIdx + 1);
-        Object[] objs = null;
+        Object[] objs;
 
         try {
             objs = (Object[]) map.get(key);
@@ -238,10 +238,10 @@ public class HTMLFormat {
         // get 'for' parameters
         //	for:name 			(uses array "name" for start/end)
         //	for:start:end
-        int start = 0;
-        int end = 0;
+        int start;
+        int end;
 
-        String tok0 = null;
+        String tok0;
         String tok1 = null;
 
         final StringTokenizer st = new StringTokenizer(

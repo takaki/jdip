@@ -72,7 +72,6 @@ public class SVGColorParser {
         if (cm == null) {
             XColorManager xcm = new XColorManager();
             cm = xcm.getXColorStringMap();
-            xcm = null;
         }
     }// init()
 

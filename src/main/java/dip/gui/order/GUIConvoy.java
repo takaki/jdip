@@ -388,7 +388,7 @@ public class GUIConvoy extends Convoy implements GUIOrder {
 
         // now, render the order
         //
-        SVGElement[] elements = null;
+        SVGElement[] elements;
 
         // create hilight line
         final String cssStyle = mapInfo.getMapMetadata()
