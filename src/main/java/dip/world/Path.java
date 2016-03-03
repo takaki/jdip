@@ -302,8 +302,7 @@ public class Path {
 
         Tristate overallResult = Tristate.FAILURE;
 
-        for (final Object route1 : routes) {
-            final Province[] route = (Province[]) route1;
+        for (final Province[] route : routes) {
             final Province src = route[0];
             final Province dest = route[route.length - 1];
 
@@ -491,34 +490,34 @@ public class Path {
                                              final Location invalid,
                                              final List<Province> validPath) {
         final List<Location> path = new ArrayList<>(12);
-        SuperConvoyPathEvaluator spe = null;
-        boolean isPathFound = false;
 
         // 1st pass: look for a successful route only.
-        spe = new SuperConvoyPathEvaluator(src, dest, invalid, false);
-        isPathFound = findPathBreadthFirst(src, dest, src, path, spe);
+        final SuperConvoyPathEvaluator spe = new SuperConvoyPathEvaluator(src,
+                dest, invalid, false);
+        final boolean isPathFound = findPathBreadthFirst(src, dest, src, path,
+                spe);
         if (isPathFound) {
             // note: our path, if found, may be longer than required (due to
             // breadth-first search. So iterate until we find the dest.
             if (validPath != null) {
-                for (final Object aPath : path) {
-                    final Location loc = (Location) aPath;
+                for (final Location loc : path) {
                     validPath.add(loc.getProvince());
                     if (dest.isProvinceEqual(loc)) {
                         break;
                     }
                 }
             }
-
             return Tristate.SUCCESS;
         }
 
 
         // 2nd pass: determine unsuccessful vs. uncertain
-        path.clear();
-        spe = new SuperConvoyPathEvaluator(src, dest, invalid, true);
-        isPathFound = findPathBreadthFirst(src, dest, src, path, spe);
-        if (isPathFound) {
+        final List<Location> path1 = new ArrayList<>(12);
+        final SuperConvoyPathEvaluator spe0 = new SuperConvoyPathEvaluator(src,
+                dest, invalid, true);
+        final boolean pathBreadthFirst = findPathBreadthFirst(src, dest, src,
+                path1, spe0);
+        if (pathBreadthFirst) {
             // TODO: assert that isUncertain() is true here. It should be;
             // otherwise, we would have returned above.
             return Tristate.UNCERTAIN;
@@ -777,8 +776,7 @@ public class Path {
             dist++;
 
             // iterate toCheck, create nextToCheck list
-            for (final Object aToCheck : toCheck) {
-                final Province p = (Province) aToCheck;
+            for (final Province p : toCheck) {
                 if (p == dest) {
                     return dist;
                 }
@@ -853,7 +851,7 @@ public class Path {
 
         // quick check: dest: next to at least 1 sea/conv coastal province
         final List<Location> dLocs = dest.getAdjacentLocations(Coast.TOUCHING);
-        if (!dLocs.stream().map(dLoc -> dLoc.getProvince())
+        if (!dLocs.stream().map(Location::getProvince)
                 .anyMatch(p1 -> p1.isConvoyableCoast() || p1.isSea())) {
             return new Province[0][];
         }
@@ -867,7 +865,7 @@ public class Path {
         //
         final LinkedList<TreeNode> queue = new LinkedList<>();
         queue.addLast(root);
-        while (queue.size() > 0) {
+        while (!queue.isEmpty()) {
             final TreeNode node = queue.removeFirst();
             final Province prov = node.getProvince();
             final List<Location> locs = prov
@@ -1091,7 +1089,7 @@ public class Path {
             final LinkedList<TreeNode> queue = new LinkedList<>();
 
             queue.addLast(this);
-            while (queue.size() > 0) {
+            while (!queue.isEmpty()) {
                 final TreeNode n = queue.removeFirst();
 
                 if (n.isLeaf()) {
@@ -1139,10 +1137,7 @@ public class Path {
         private Province[][] createProvinceArray(final List<TreeNode> list) {
             final Province[][] pathArray = new Province[list.size()][];
             int idx = 0;
-            final Iterator<TreeNode> iter = list.iterator();
-            while (iter.hasNext()) {
-
-                TreeNode n = iter.next();
+            for (TreeNode n : list) {
                 final Province[] path = new Province[n
                         .getDepth() + 1];    // root is depth 0
                 for (int i = path.length - 1; i >= 0; i--) {
