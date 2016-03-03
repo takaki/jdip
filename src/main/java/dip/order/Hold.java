@@ -159,14 +159,14 @@ public class Hold extends Order {
             Log.println("   initial evalstate: ", thisOS.getEvalState());
             Log.println("     def-max: ", thisOS.getDefMax());
             Log.println("    def-cert: ", thisOS.getDefCertain());
-            Log.println("  # supports: ", thisOS.getDependentSupports().length);
+            Log.println("  # supports: ", thisOS.getDependentSupports().size());
             Log.println("  dislodged?: ", thisOS.getDislodgedState());
         }
 
         if (thisOS.getEvalState() == Tristate.UNCERTAIN) {
             // if no moves against this order, we must succeed.
             // Otherwise, MOVE orders will determine if we are dislodged and thus fail.
-            if (thisOS.getDependentMovesToSource().length == 0) {
+            if (thisOS.getDependentMovesToSource().size() == 0) {
                 thisOS.setEvalState(Tristate.SUCCESS);
                 thisOS.setDislodgedState(Tristate.NO);
             }

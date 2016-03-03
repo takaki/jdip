@@ -29,6 +29,8 @@ import dip.process.OrderState;
 import dip.process.Tristate;
 import dip.world.*;
 
+import java.util.List;
+
 /**
  * Implementation of the Convoy order.
  */
@@ -348,7 +350,7 @@ public class Convoy extends Order {
             Log.println("   initial evalstate: ", thisOS.getEvalState());
             Log.println("     def-max: ", thisOS.getDefMax());
             Log.println("    def-cert: ", thisOS.getDefCertain());
-            Log.println("  # supports: ", thisOS.getDependentSupports().length);
+            Log.println("  # supports: ", thisOS.getDependentSupports().size());
         }
 
         // determine evaluation state. This is important for Convoy orders, since
@@ -364,7 +366,7 @@ public class Convoy extends Order {
             // we will also succeed if there are *no* moves against us, or if all the
             // moves against us have failed.
             boolean isSuccess = true;
-            final OrderState[] depMovesToSrc = thisOS.getDependentMovesToSource();
+            final List<OrderState> depMovesToSrc = thisOS.getDependentMovesToSource();
             for (OrderState aDepMovesToSrc : depMovesToSrc) {
                 if (aDepMovesToSrc.getEvalState() != Tristate.FAILURE) {
                     isSuccess = false;

@@ -29,6 +29,8 @@ import dip.process.OrderState;
 import dip.process.Tristate;
 import dip.world.*;
 
+import java.util.List;
+
 
 /**
  * Implementation of the Support order.
@@ -524,11 +526,11 @@ public class Support extends Order {
             Log.println("    def-cert: ", thisOS.getDefCertain());
             Log.println("	atk-max:	", thisOS.getAtkMax());
             Log.println("	atk-cert:	", thisOS.getAtkCertain());
-            Log.println("  # supports: ", thisOS.getDependentSupports().length);
+            Log.println("  # supports: ", thisOS.getDependentSupports().size());
             Log.println("  # supports to hold: ",
-                    thisOS.getDependentSupports().length);
+                    thisOS.getDependentSupports().size());
             Log.println("  # of possible cuts: ",
-                    thisOS.getDependentMovesToSource().length);
+                    thisOS.getDependentMovesToSource().size());
             Log.println("  dislodged?: ", thisOS.getDislodgedState());
         }
 
@@ -544,7 +546,7 @@ public class Support extends Order {
             Tristate evalResult = Tristate.SUCCESS;
             Move cuttingMove = null;
 
-            final OrderState[] depMovesToSrc = thisOS.getDependentMovesToSource();
+            final List<OrderState> depMovesToSrc = thisOS.getDependentMovesToSource();
 
             for (final OrderState depMoveOS : depMovesToSrc) {
                 final Move depMove = (Move) depMoveOS.getOrder();

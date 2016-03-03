@@ -209,15 +209,15 @@ public class Retreat extends Move {
         Log.println("   retreat strength: [dpb check]: ",
                 thisOS.getRetreatStrength());
         Log.println("   # moves to dest: ",
-                thisOS.getDependentMovesToDestination().length);
+                thisOS.getDependentMovesToDestination().size());
 
         // if other retreats to destination, we will succeed; otherwise, we will
         // probably fail.
         if (thisOS.getEvalState() == Tristate.UNCERTAIN) {
-            final OrderState[] depMovesToDest = thisOS
+            final List<OrderState> depMovesToDest = thisOS
                     .getDependentMovesToDestination();
 
-            if (depMovesToDest.length == 0) {
+            if (depMovesToDest.size() == 0) {
                 // typical case
                 Log.println("    SUCCESS!");
                 thisOS.setEvalState(Tristate.SUCCESS);
