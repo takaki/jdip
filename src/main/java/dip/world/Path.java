@@ -33,7 +33,6 @@ import dip.world.Unit.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -124,9 +123,7 @@ public class Path {
 
             boolean hasUncertainRoute = false;        // true if >= 1 route is uncertain, but not failed.
 
-            final Iterator<Province[]> iter = explicitRoutes.iterator();
-            while (iter.hasNext()) {
-                final Province[] route = iter.next();
+            for (Province[] route : explicitRoutes) {
                 boolean isFailed = true;
                 boolean isUncertain = false;
 

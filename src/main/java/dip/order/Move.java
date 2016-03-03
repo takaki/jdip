@@ -790,9 +790,9 @@ public class Move extends Order {
         // add moves to destination space, and supports of this space
         final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
 
-        ArrayList<OrderState> depMTDest = null;
-        ArrayList<OrderState> depSup = null;
-        ArrayList<OrderState> depSelfSup = null;
+        List<OrderState> depMTDest = null;
+        List<OrderState> depSup = null;
+        List<OrderState> depSelfSup = null;
 
         final List<OrderState> orderStates = adjudicator.getOrderStates();
         for (final OrderState dependentOS : orderStates) {
@@ -1113,8 +1113,7 @@ public class Move extends Order {
                     adjudicator.addResult(thisOS, ResultType.FAILURE,
                             Utils.getLocalString(MOVE_FAILED));
                     return;
-                } else // other order is UNCERTAIN or FAILURE eval state
-                {
+                } else {// other order is UNCERTAIN or FAILURE eval state
                     // 3.d
                     if (os.isHeadToHead() && (os
                             .getEvalState() == Tristate.UNCERTAIN || !isDependentHTHResolved(
@@ -1124,8 +1123,7 @@ public class Move extends Order {
                                 "   -- can't tell if head-to-head battle caused dislodgement!");
                         isBetterThanAllOtherMoves = false;
                     } else if (!os.isHeadToHead() || os.isHeadToHead() && os
-                            .getDislodger() != os.getHeadToHead())    // 3.d.3
-                    {
+                            .getDislodger() != os.getHeadToHead()) {// 3.d.3
                         /*
                             This section has been re-written to take care of bugs
 							1116568 & 1053458 (which are the same bug). 
