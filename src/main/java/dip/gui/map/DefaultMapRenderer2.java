@@ -1355,8 +1355,8 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
     private boolean isOrdered(Province province) {
         Unit unit = getPhaseApropriateUnit(province);
         if (unit != null) {
-            List<dip.order.Order> list = turnState.getOrders(unit.getPower());
-            Iterator<dip.order.Order> iter = list.iterator();
+            List<dip.order.Orderable> list = turnState.getOrders(unit.getPower());
+            Iterator<dip.order.Orderable> iter = list.iterator();
             while (iter.hasNext()) {
                 Orderable order = iter.next();
                 if (order.getSource().isProvinceEqual(province)) {

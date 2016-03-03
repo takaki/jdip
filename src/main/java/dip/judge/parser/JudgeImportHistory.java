@@ -200,7 +200,7 @@ public final class JudgeImportHistory {
         // get home supply center information from the oldPosition object
         // and store it in HSCInfo object array, so that it can be set during each successive
         // turn.
-        final ArrayList<HSCInfo> hscList = new ArrayList<HSCInfo>(50);
+        final ArrayList<HSCInfo> hscList = new ArrayList<>(50);
         final Province[] provinces = map.getProvinces()
                 .toArray(new Province[0]);
         for (final Province province : provinces) {
@@ -558,9 +558,10 @@ public final class JudgeImportHistory {
 
         Log.println("  :created power->order mapping");
 
-        final HashMap<Power, LinkedList<dip.order.Order>> orderMap = new HashMap<Power, LinkedList<dip.order.Order>>(powers.length);
+        final HashMap<Power, LinkedList<dip.order.Orderable>> orderMap = new HashMap<>(
+                powers.length);
         for (final Power power1 : powers) {
-            orderMap.put(power1, new LinkedList<dip.order.Order>());
+            orderMap.put(power1, new LinkedList<>());
         }
 
         // process all orders
@@ -770,9 +771,10 @@ public final class JudgeImportHistory {
         // create units for all successfull move (retreat) orders in destination province
         // create orderMap, which maps powers to their respective order list
         final Power[] powers = map.getPowers().toArray(new Power[0]);
-        final HashMap<Power, LinkedList<dip.order.Order>> orderMap = new HashMap<Power, LinkedList<dip.order.Order>>(powers.length);
+        final HashMap<Power, LinkedList<dip.order.Orderable>> orderMap = new HashMap<>(
+                powers.length);
         for (final Power power1 : powers) {
-            orderMap.put(power1, new LinkedList<dip.order.Order>());
+            orderMap.put(power1, new LinkedList<>());
         }
 
         // validate all parsed orders
@@ -939,9 +941,9 @@ public final class JudgeImportHistory {
 
             // create orderMap, which maps powers to their respective order list
             final Power[] powers = map.getPowers().toArray(new Power[0]);
-            final HashMap<Power, LinkedList<dip.order.Order>> orderMap = new HashMap<Power, LinkedList<dip.order.Order>>(powers.length);
+            final HashMap<Power, LinkedList<dip.order.Orderable>> orderMap = new HashMap<>(powers.length);
             for (final Power power1 : powers) {
-                orderMap.put(power1, new LinkedList<dip.order.Order>());
+                orderMap.put(power1, new LinkedList<>());
             }
 
             // parse all orders
@@ -986,7 +988,7 @@ public final class JudgeImportHistory {
                         newOrder.validate(ts, valOpts, ruleOpts);
 
                         if (!isDefaulted) {
-                            final List list = orderMap
+                            final List<Orderable> list = orderMap
                                     .get(newOrder.getPower());
                             list.add(newOrder);
                         }

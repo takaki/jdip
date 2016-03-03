@@ -361,7 +361,7 @@ public class StdAdjudicator implements Adjudicator {
         final List<Power> powers = world.getMap().getPowers();
 
         for (final Power power : powers) {
-            final Iterator<Order> iter = turnState.getOrders(power).iterator();
+            final Iterator<Orderable> iter = turnState.getOrders(power).iterator();
             while (iter.hasNext()) {
                 final Orderable order = iter.next();
                 if (order.getPower() != power) {
@@ -457,7 +457,7 @@ public class StdAdjudicator implements Adjudicator {
                 ValidationOptions.VALUE_GLOBAL_PARSING_STRICT);
 
         for (final OrderState os : orderStates) {
-            final Order order = os.getOrder();
+            final Orderable order = os.getOrder();
 
             // validate order (Strict, No warnings)
             try {
@@ -489,7 +489,7 @@ public class StdAdjudicator implements Adjudicator {
 
         // step 4: calculate dependencies
         for (final OrderState os : orderStates) {
-            final Order order = os.getOrder();
+            final Orderable order = os.getOrder();
             order.determineDependencies(this);
         }
 
@@ -689,7 +689,7 @@ public class StdAdjudicator implements Adjudicator {
 
         // create units in the appropriate place.
         for (final OrderState os : orderStates) {
-            final Order order = os.getOrder();
+            final Orderable order = os.getOrder();
             final Province sourceProvince = os.getSourceProvince();
 
             // clone the old unit (from the old position)
@@ -1161,7 +1161,7 @@ public class StdAdjudicator implements Adjudicator {
                 ValidationOptions.VALUE_GLOBAL_PARSING_STRICT);
 
         for (final OrderState os : orderStates) {
-            final Order order = os.getOrder();
+            final Orderable order = os.getOrder();
 
             try {
                 order.validate(turnState, valOpts, ruleOpts);
@@ -1181,7 +1181,7 @@ public class StdAdjudicator implements Adjudicator {
 
         // step 4: calculate dependencies
         for (final OrderState os : orderStates) {
-            final Order order = os.getOrder();
+            final Orderable order = os.getOrder();
             order.determineDependencies(this);
         }
 
@@ -1244,7 +1244,7 @@ public class StdAdjudicator implements Adjudicator {
 
         // create units in the appropriate places
         for (final OrderState os : orderStates) {
-            final Order order = os.getOrder();
+            final Orderable order = os.getOrder();
             final Province sourceProvince = os.getSourceProvince();
 
             // clone the old unit (from the old position)
@@ -1341,8 +1341,8 @@ public class StdAdjudicator implements Adjudicator {
             int orderCount = 0;
             final int adjAmount = ai.getAdjustmentAmount();
 
-            final List<Order> orders = turnState.getOrders(power);
-            for (final Order order : orders) {
+            final List<Orderable> orders = turnState.getOrders(power);
+            for (final Orderable order : orders) {
 
                 if (order instanceof Remove && adjAmount > 0) {
                     addResult(new OrderResult(order, Utils.getLocalString(
@@ -1418,7 +1418,7 @@ public class StdAdjudicator implements Adjudicator {
         // NOTE: while no orders currently use this, it's here for future use (thus a variant
         // could subclass Build or Remove but not have to subclass StdAdjudicator)
         for (final OrderState os : orderStates) {
-            final Order order = os.getOrder();
+            final Orderable order = os.getOrder();
             order.determineDependencies(this);
         }
 
@@ -1431,7 +1431,7 @@ public class StdAdjudicator implements Adjudicator {
         //
         for (int osIdx = 0; osIdx < orderStates.size(); osIdx++) {
             final OrderState os = orderStates.get(osIdx);
-            final Order order = os.getOrder();
+            final Orderable order = os.getOrder();
             order.verify(this);
 
             // remove orders that failed verification.
@@ -1488,7 +1488,7 @@ public class StdAdjudicator implements Adjudicator {
 
         // remove units that are disbanded, and build units that are to be built.
         for (final OrderState os : orderStates) {
-            final Order order = os.getOrder();
+            final Orderable order = os.getOrder();
             final Province sourceProvince = os.getSourceProvince();
 
             if (os.getEvalState() == Tristate.SUCCESS) {
@@ -1756,10 +1756,10 @@ public class StdAdjudicator implements Adjudicator {
      * The returned List is guaranteed to be filled with Move orders only
      */
     private List findMovesTo(final Province moveDest) {
-        final List<Order> list = new ArrayList<>(6);
+        final List<Orderable> list = new ArrayList<>(6);
 
         for (final OrderState os : orderStates) {
-            final Order order = os.getOrder();
+            final Orderable order = os.getOrder();
             if (order instanceof Move && moveDest == ((Move) order).getDest()
                     .getProvince()) {
                 list.add(order);
@@ -1775,7 +1775,7 @@ public class StdAdjudicator implements Adjudicator {
      */
     private OrderState findMove(final Province src, final Province dest) {
         for (final OrderState os : orderStates) {
-            final Order order = os.getOrder();
+            final Orderable order = os.getOrder();
             if (order instanceof Move && order.getSource()
                     .isProvinceEqual(src) && ((Move) order).getDest()
                     .isProvinceEqual(dest)) {
@@ -1791,7 +1791,7 @@ public class StdAdjudicator implements Adjudicator {
      */
     private OrderState findMoveFrom(final Province src) {
         for (final OrderState os : orderStates) {
-            final Order order = os.getOrder();
+            final Orderable order = os.getOrder();
             if (order instanceof Move && order.getSource()
                     .isProvinceEqual(src)) {
                 return os;

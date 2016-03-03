@@ -169,7 +169,7 @@ public class Retreat extends Move {
         List<OrderState> orderStates = adjudicator.getOrderStates();
         for (int osIdx = 0; osIdx < orderStates.size(); osIdx++) {
             OrderState dependentOS = orderStates.get(osIdx);
-            Order order = dependentOS.getOrder();
+            Orderable order = dependentOS.getOrder();
 
             if (order instanceof Retreat && order != this) {
                 Retreat retreat = (Retreat) order;

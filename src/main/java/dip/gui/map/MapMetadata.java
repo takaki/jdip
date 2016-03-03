@@ -234,7 +234,7 @@ public class MapMetadata {
 
 
     // instance variables
-    private Map infoMap;                // placement info
+    private Map<Province, InfoEntry> infoMap;                // placement info
     private HashMap displayProps;        // display info
     private final MapPanel mp;
     private Point2D.Float dislodgedUnitOffset = null;
@@ -265,7 +265,7 @@ public class MapMetadata {
         this.mp = mp;
         this.sp = sp;
         this.supressPlacementErrors = supressPlacementErrors;
-        infoMap = new HashMap(113);
+        infoMap = new HashMap<Province, InfoEntry>(113);
         displayProps = new HashMap(47);
 
         Element root = mp.getSVGDocument().getRootElement();
@@ -289,7 +289,7 @@ public class MapMetadata {
      * Get an InfoEntry
      */
     public InfoEntry getInfoEntry(Province key) {
-        return (InfoEntry) infoMap.get(key);
+        return infoMap.get(key);
     }// getInfoEntry()
 
     /**
@@ -335,8 +335,8 @@ public class MapMetadata {
         private final Point2D.Float unit;
         private final Point2D.Float dislodgedUnit;
         private final Point2D.Float sc;
-        private Map unitCoasts;
-        private Map dislodgedUnitCoasts;
+        private Map<Coast, Point2D.Float> unitCoasts;
+        private Map<Coast, Point2D.Float> dislodgedUnitCoasts;
 
         /**
          * Create an InfoEntry object; if directional coasts, use setCoastMapings as well.
@@ -357,7 +357,7 @@ public class MapMetadata {
         /**
          * Sets coast data maps for multi-coastal provinces; if not set, default placement data is used.
          */
-        public void setCoastMappings(Map unitCoasts, Map dislodgedUnitCoasts) {
+        public void setCoastMappings(Map<Coast, Point2D.Float> unitCoasts, Map<Coast, Point2D.Float> dislodgedUnitCoasts) {
             this.unitCoasts = unitCoasts;
             this.dislodgedUnitCoasts = dislodgedUnitCoasts;
         }// setCoastData()
@@ -373,11 +373,11 @@ public class MapMetadata {
             }
 
             if (unitCoasts == null) {
-                unitCoasts = new HashMap(3);
+                unitCoasts = new HashMap<Coast, Point2D.Float>(3);
             }
 
             if (dislodgedUnitCoasts == null) {
-                dislodgedUnitCoasts = new HashMap(3);
+                dislodgedUnitCoasts = new HashMap<Coast, Point2D.Float>(3);
             }
 
             unitCoasts.put(coast, unitPt);
@@ -392,7 +392,7 @@ public class MapMetadata {
                 return makePt(unit);
             }
 
-            Point2D.Float pt = (Point2D.Float) unitCoasts.get(coast);
+            Point2D.Float pt = unitCoasts.get(coast);
             return (pt == null) ? makePt(unit) : makePt(pt);
         }// getUnitPt()
 
@@ -404,7 +404,7 @@ public class MapMetadata {
                 return makePt(dislodgedUnit);
             }
 
-            Point2D.Float pt = (Point2D.Float) dislodgedUnitCoasts.get(coast);
+            Point2D.Float pt = dislodgedUnitCoasts.get(coast);
             return (pt == null) ? makePt(dislodgedUnit) : makePt(pt);
         }// getDislodgedUnitPt()
 
@@ -667,7 +667,7 @@ public class MapMetadata {
                     InfoEntry ie = new InfoEntry(unit, dislodged, sc);
                     infoMap.put(province, ie);
                 } else {
-                    InfoEntry ie = (InfoEntry) infoMap.get(province);
+                    InfoEntry ie = infoMap.get(province);
                     if (ie == null) {
                         throw new MapException(
                                 "Error in PROVINCE: " + provinceName + "; province metadata with coast must succeed those without; e.g., stp-sc must come AFTER stp");

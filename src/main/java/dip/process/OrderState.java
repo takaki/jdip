@@ -24,6 +24,7 @@ package dip.process;
 
 import dip.order.Move;
 import dip.order.Order;
+import dip.order.Orderable;
 import dip.order.Support;
 import dip.world.Location;
 import dip.world.Power;
@@ -83,7 +84,7 @@ public final class OrderState {
     private static final OrderState[] OS_EMPTY = new OrderState[0];
 
 
-    private Order order = null;
+    private Orderable order = null;
 
 
     private int defense_max = MAX_VALUE;
@@ -119,7 +120,7 @@ public final class OrderState {
      * this and adjudicators should be able to create new OrderState objects,
      * although other classes can definately use them.
      */
-    protected OrderState(Order order) {
+    protected OrderState(Orderable order) {
         if (order == null) {
             throw new IllegalArgumentException("null order");
         }
@@ -133,7 +134,7 @@ public final class OrderState {
     /**
      * Get the Order for this OrderState.
      */
-    public Order getOrder() {
+    public Orderable getOrder() {
         return order;
     }
 
