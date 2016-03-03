@@ -246,23 +246,12 @@ public final class World implements Serializable {
             return Optional.empty();
         }
 
-
-        Phase previous = null;
-        for (final Phase phase : turnStates.keySet()) {
-            if (phase.compareTo(current) != 0) {
-                previous = phase;
-            } else {
-                break;
-            }
-        }
-
-        if (previous == null) {
-            return Optional.empty();
-        }
-
-        final TurnState ts = turnStates.get(previous);
-        ts.setWorld(this);
-        return Optional.of(ts);
+        return turnStates.keySet().stream()
+                .filter(phase -> phase.compareTo(current) != 0)
+                .reduce((a, b) -> b).map(turnStates::get).map(ts -> {
+                    ts.setWorld(this);
+                    return ts;
+                });
     }// getPreviousTurnState()
 
 
