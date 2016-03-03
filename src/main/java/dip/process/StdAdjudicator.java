@@ -290,8 +290,8 @@ public class StdAdjudicator implements Adjudicator {
      * no order was specified, and a Hold order was automatically generated).
      */
     @Override
-    public List getSubstitutedOrderStates() {
-        return substOrders;
+    public List<OrderState> getSubstitutedOrderStates() {
+        return Collections.unmodifiableList(substOrders);
     }// getSubstitutedOrderStates()
 
     /**
@@ -1755,7 +1755,7 @@ public class StdAdjudicator implements Adjudicator {
      * <p>
      * The returned List is guaranteed to be filled with Move orders only
      */
-    private List findMovesTo(final Province moveDest) {
+    private List<Orderable> findMovesTo(final Province moveDest) {
         final List<Orderable> list = new ArrayList<>(6);
 
         for (final OrderState os : orderStates) {

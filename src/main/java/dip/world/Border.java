@@ -24,7 +24,6 @@ package dip.world;
 
 import dip.misc.Utils;
 import dip.order.Order;
-import dip.order.Orderable;
 import dip.world.Phase.PhaseType;
 import dip.world.Phase.SeasonType;
 import dip.world.Unit.Type;
@@ -407,7 +406,7 @@ public class Border implements Serializable {
      * Null arguments are not permitted.
      */
     public boolean canTransit(final Location fromLoc, final Type unit,
-                              final Phase phase, final Class<? extends Orderable> orderClass) {
+                              final Phase phase, final Class<?> orderClass) {
         /*
         System.out.println("border: "+id);
 		System.out.println("  "+fromLoc.getProvince()+":"+fromLoc.getCoast()+", "+phase);
