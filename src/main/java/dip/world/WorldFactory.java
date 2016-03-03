@@ -28,7 +28,6 @@ import dip.order.OrderException;
 import dip.world.Province.Adjacency;
 import dip.world.Unit.Type;
 import dip.world.variant.data.BorderData;
-import dip.world.variant.data.InitialState;
 import dip.world.variant.data.ProvinceData;
 import dip.world.variant.data.Variant;
 
@@ -122,7 +121,7 @@ public class WorldFactory {
         // gather all adjacency data
         // parse adjacency data for all provinces
         // keep a list of the locations parsed below
-        for (final ProvinceData provinceData : provinceDataArray) {
+        provinceDataArray.stream().forEach(provinceData -> {
             final List<String> adjProvinceTypes = provinceData
                     .getAdjacentProvinceTypes();
             final List<String> adjProvinceNames = provinceData
@@ -166,7 +165,7 @@ public class WorldFactory {
 
             // create wing coast
             adjacency.createWingCoasts();
-        }
+        });
 
         // Process BorderData. This requires the Provinces to be known and
         // successfully parsed. They are mapped to the ID name, stored in the borderMap.
@@ -249,13 +248,9 @@ public class WorldFactory {
         });
 
         // set initial state [derived from INITIALSTATE elements in XML file]
-        final List<InitialState> initStates = variant.getInitialStates();
-        for (final InitialState initState : initStates) {
+        variant.getInitialStates().stream().forEach(initState -> {
             // a province and power is required, no matter what, unless
             // we are ONLY setting the supply center (which we do above)
-            final Power power = map.getPowerMatching(initState.getPowerName())
-                    .orElseThrow(() -> new InvalidWorldException(
-                            Utils.getLocalString(WF_BAD_IS_POWER)));
 
             final Province province = map
                     .getProvinceMatching(initState.getProvinceName())
@@ -268,11 +263,16 @@ public class WorldFactory {
                 // create unit in province, if location is valid
                 final Coast coast = initState.getCoast();
 
-                final Unit unit = new Unit(power, unitType);
-                Location location = new Location(province, coast);
+                final Unit unit = new Unit(
+                        map.getPowerMatching(initState.getPowerName())
+                                .orElseThrow(() -> new InvalidWorldException(
+                                        Utils.getLocalString(WF_BAD_IS_POWER))),
+                        unitType);
+                final Location location = new Location(province, coast);
                 try {
-                    location = location.getValidatedSetup(unitType);
-                    unit.setCoast(location.getCoast());
+                    final Location location2 = location
+                            .getValidatedSetup(unitType);
+                    unit.setCoast(location2.getCoast());
                     pos.setUnit(province, unit);
 
                     // set 'lastOccupier' for unit
@@ -288,7 +288,7 @@ public class WorldFactory {
                         Utils.getLocalString(WF_BAD_IS_UNIT,
                                 initState.getProvinceName()));
             }
-        }
+        });
 
         // create initial turn state based on starting game time
         final Phase phase = variant.getStartingPhase();
