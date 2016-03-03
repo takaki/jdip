@@ -75,7 +75,7 @@ public class Move extends Order {
 
     // instance variables
     protected Location dest = null;
-    protected ArrayList convoyRoutes = null;    // contains *defined* convoy routes; null if none.
+    protected ArrayList<Province[]> convoyRoutes = null;    // contains *defined* convoy routes; null if none.
     protected boolean _isViaConvoy = false;                    // 'true' if army was explicitly ordered to convoy.
     protected boolean _isConvoyIntent = false;                // 'true' if we determine that intent is to convoy. MUST be set to same initial value as _isViaConvoy
     protected boolean _isAdjWithPossibleConvoy = false;        // 'true' if an army with an adjacent move has a possible convoy route move too
