@@ -315,22 +315,16 @@ public final class RuleOptions implements Serializable {
      */
     public static RuleOptions createFromVariant(final Variant variant) {
         // create ruleoptions
-        // set rule options
         final RuleOptions ruleOpts = new RuleOptions();
 
         // set default rule options
         DEFAULT_RULE_OPTIONS.stream().forEach(
                 option -> ruleOpts.setOption(option, option.getDefault()));
 
-        // look up all name-value pairs via reflection.
-        variant.getRuleOptionNVPs().stream().forEach(nvp -> {
-            // first, check the name
-            final Option option = Option.valueOf(nvp.getName());
-            final OptionValue optionValue = OptionValue.valueOf(nvp.getValue());
-
-            // set option
-            ruleOpts.setOption(option, optionValue);
-        });
+        // look up all name-value pairs
+        variant.getRuleOptionNVPs().stream().forEach(nvp -> ruleOpts
+                .setOption(Option.valueOf(nvp.getName()),
+                        OptionValue.valueOf(nvp.getValue())));
 
         // done.
         return ruleOpts;
