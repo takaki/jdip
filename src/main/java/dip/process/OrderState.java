@@ -573,13 +573,8 @@ public final class OrderState {
      * Verifies that given list ONLY contains Move orderstates
      */
     private boolean verifyListMove(final List<OrderState> list) {
-        for (OrderState os : list) {
-            if (!(os.order instanceof Move)) {
-                return false;
-            }
-        }
+        return list.stream().allMatch(os -> (os.order instanceof Move));
 
-        return true;
     }// verifyListMove()
 
 
@@ -587,13 +582,7 @@ public final class OrderState {
      * Verifies that given list ONLY contains Support orderstates
      */
     private boolean verifyListSupport(final List<OrderState> list) {
-        for (OrderState os : list) {
-            if (!(os.order instanceof Support)) {
-                return false;
-            }
-        }
-
-        return true;
+        return list.stream().allMatch(os -> (os.order instanceof Support));
     }// verifyListSupport()
 
 
@@ -601,18 +590,10 @@ public final class OrderState {
      * Verifies that given list ONLY contains Self Support orderstates
      */
     private boolean verifyListSelfSupport(final List<OrderState> list) {
-        for (OrderState os : list) {
-            if (os.order instanceof Support) {
-                final Support support = (Support) os.order;
-                if (support.isSupportingHold()) {
-                    return false;
-                }
-            } else {
-                return false;
-            }
-        }
+        return list.stream().allMatch(
+                os -> os.order instanceof Support && !((Support) os.order)
+                        .isSupportingHold());
 
-        return true;
     }// verifyListSelfSupport()
 
 }// class OrderState
