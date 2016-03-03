@@ -24,22 +24,22 @@ package dip.order;
 import dip.misc.Utils;
 import dip.order.result.DislodgedResult;
 import dip.order.result.OrderResult;
+import dip.order.result.OrderResult.ResultType;
 import dip.order.result.Result;
 import dip.order.result.SubstitutedResult;
 import dip.world.Coast;
 import dip.world.Location;
-import dip.world.Phase;
+import dip.world.Phase.PhaseType;
 import dip.world.Power;
 import dip.world.Province;
-import dip.world.Unit;
 import dip.world.Unit.Type;
 import dip.world.WorldMap;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -65,7 +65,7 @@ import java.util.regex.Pattern;
  * Note that DISLOGDGED order results do not have valid retreat locations
  * set. This cannot be done until further processing occurs.
  */
-public class NJudgeOrderParser {
+public final class NJudgeOrderParser {
     // regexes for adjustment-phase processing
     //
     // general regex
@@ -91,10 +91,8 @@ public class NJudgeOrderParser {
     // class variables
     private static final Pattern ADJUSTMENT_PATTERN = Pattern
             .compile(ADJUSTMENT_REGEX);
-    ;
     private static final Pattern ALTERNATE_ADJUSTMENT_PATTERN = Pattern
             .compile(ALTERNATE_ADJUSTMENT_REGEX);
-    ;
 
 
     // TEST harness
@@ -239,16 +237,16 @@ public class NJudgeOrderParser {
          * Create an NJudgeOrder, which is an Orderable with
          * a dip.order.Result result(s).
          */
-        public NJudgeOrder(Orderable order, List results,
-                           boolean isAdjustmentPhase) {
+        public NJudgeOrder(final Orderable order, final List<Result> results,
+                           final boolean isAdjustmentPhase) {
             this(order, results, isAdjustmentPhase, null, false, 0, 0);
         }// NJudgeOrder()
 
         /**
          * Create an NJudgeOrder
          */
-        public NJudgeOrder(Orderable order, Result aResult,
-                           boolean isAdjustmentPhase) {
+        public NJudgeOrder(final Orderable order, final Result aResult,
+                           final boolean isAdjustmentPhase) {
             this(order, createResultList(aResult), isAdjustmentPhase, null,
                     false, 0, 0);
         }// NJudgeOrder()
@@ -258,12 +256,12 @@ public class NJudgeOrderParser {
          * or pending Waives, but not both.
          * Also creates a Result for this.
          */
-        public NJudgeOrder(Power power, int unusedPendingBuilds,
-                           int unusedPendingWaives, Result result) {
+        public NJudgeOrder(final Power power, final int unusedPendingBuilds,
+                           final int unusedPendingWaives, final Result result) {
             this(null, createResultList(result), true, power, false,
                     unusedPendingBuilds, unusedPendingWaives);
 
-            if (power == null || (unusedPendingBuilds > 0 && unusedPendingWaives > 0) || (unusedPendingBuilds < 0) || (unusedPendingWaives < 0)) {
+            if (power == null || unusedPendingBuilds > 0 && unusedPendingWaives > 0 || unusedPendingBuilds < 0 || unusedPendingWaives < 0) {
                 throw new IllegalArgumentException();
             }
         }// NJudgeOrder()
@@ -273,28 +271,26 @@ public class NJudgeOrderParser {
          * Create an Adjustment-phase NJudgeOrder for a Waived Build.
          * Also creates a Result for this.
          */
-        public NJudgeOrder(Power power, Result result) {
+        public NJudgeOrder(final Power power, final Result result) {
             this(null, createResultList(result), true, power, true, 0, 0);
-
-            if (power == null) {
-                throw new IllegalArgumentException();
-            }
+            Objects.requireNonNull(power);
         }// NJudgeOrder()
 
         /**
          * Create an NJudgeOrder
          */
-        private NJudgeOrder(Orderable order, List results, boolean isAdjustment,
-                            Power power, boolean isWaive,
-                            int unusedPendingBuilds, int unusedPendingWaives) {
-            if (results == null) {
-                throw new IllegalArgumentException();
-            }
+        private NJudgeOrder(final Orderable order, final List<Result> results,
+                            final boolean isAdjustment, final Power power,
+                            final boolean isWaive,
+                            final int unusedPendingBuilds,
+                            final int unusedPendingWaives) {
+            Objects.requireNonNull(results);
 
             this.order = order;
-            this.results = Collections.unmodifiableList(new ArrayList(results));
+            this.results = Collections
+                    .unmodifiableList(new ArrayList<>(results));
             this.isAdjustment = isAdjustment;
-            this.specialAdjustmentPower = power;
+            specialAdjustmentPower = power;
             this.isWaive = isWaive;
             this.unusedPendingBuilds = unusedPendingBuilds;
             this.unusedPendingWaives = unusedPendingWaives;
@@ -333,7 +329,7 @@ public class NJudgeOrderParser {
          * throw an IllegalStateException if <code>!isAdjustmentPhase()</code>.
          */
         public int getUnusedPendingBuilds() {
-            if (!isAdjustmentPhase()) {
+            if (!isAdjustment) {
                 throw new IllegalStateException();
             }
 
@@ -349,7 +345,7 @@ public class NJudgeOrderParser {
          * throw an IllegalStateException if <code>!isAdjustmentPhase()</code>.
          */
         public int getUnusedPendingWaives() {
-            if (!isAdjustmentPhase()) {
+            if (!isAdjustment) {
                 throw new IllegalStateException();
             }
 
@@ -372,7 +368,7 @@ public class NJudgeOrderParser {
          * throw an IllegalStateException if <code>!isAdjustmentPhase()</code>.
          */
         public boolean isWaivedBuild() {
-            if (!isAdjustmentPhase()) {
+            if (!isAdjustment) {
                 throw new IllegalStateException();
             }
 
@@ -394,7 +390,7 @@ public class NJudgeOrderParser {
          * getUnusedXXX() methods have been set.
          */
         public Power getAdjustmentPower() {
-            if (!isAdjustmentPhase()) {
+            if (!isAdjustment) {
                 throw new IllegalStateException();
             }
 
@@ -406,10 +402,10 @@ public class NJudgeOrderParser {
          * For debugging only
          */
         public String toString() {
-            StringBuffer sb = new StringBuffer(256);
-            sb.append(this.getClass().getName());
+            final StringBuffer sb = new StringBuffer(256);
+            sb.append(getClass().getName());
             sb.append("[");
-            sb.append(getOrder());
+            sb.append(order);
 
             sb.append(";results=");
             sb.append(results);
@@ -444,31 +440,31 @@ public class NJudgeOrderParser {
      */
     public NJudgeOrder parse(final WorldMap map,
                              final OrderFactory orderFactory,
-                             final Phase.PhaseType phaseType,
+                             final PhaseType phaseType,
                              final String line) throws OrderException {
         // create order parsing context
         final ParseContext pc = new ParseContext(map, orderFactory, phaseType,
                 line);
 
         // parse results. This also removes the trailing '.' from the order
-        final ArrayList resultList = new ArrayList(5);
+        final List<String> resultList = new ArrayList<>(5);
         final String newOrderLine = removeTrailingDot(
                 parseResults(pc, resultList));
 
-        if (Phase.PhaseType.ADJUSTMENT.equals(phaseType)) {
+        if (PhaseType.ADJUSTMENT == phaseType) {
             return parseAdjustmentOrder(pc, newOrderLine);
         } else {
             // tokenize order
             final String[] tokens = tokenize(newOrderLine);
 
             // parse order prefix
-            OrderPrefix prefix = new OrderPrefix(pc, tokens);
+            final OrderPrefix prefix = new OrderPrefix(pc, tokens);
 
             // parse predicate
-            Orderable order = parsePredicate(pc, prefix, tokens);
+            final Orderable order = parsePredicate(pc, prefix, tokens);
 
             // parse text results into real results
-            List results = createResults(pc, order, resultList);
+            final List<Result> results = createResults(pc, order, resultList);
 
             // create NJudgeOrder
             return new NJudgeOrder(order, results, pc.isAdjustmentPhase());
@@ -479,8 +475,8 @@ public class NJudgeOrderParser {
     /**
      * Tokenize input into whitespace-seperated strings.
      */
-    private String[] tokenize(final String input) {
-        assert (input != null);
+    private static String[] tokenize(final String input) {
+        assert input != null;
         return input.trim().split("\\s+");
     }// tokenize()
 
@@ -488,8 +484,8 @@ public class NJudgeOrderParser {
     /**
      * Creates a List with a single result
      */
-    private static List createResultList(Result aResult) {
-        List list = new ArrayList(1);
+    private static List<Result> createResultList(final Result aResult) {
+        final List<Result> list = new ArrayList<>(1);
         list.add(aResult);
         return list;
     }// createResultList()
@@ -502,13 +498,18 @@ public class NJudgeOrderParser {
                                      final String[] tokens) throws OrderException {
         final String type = op.orderName;
 
-        if (type == ORDER_HOLD || type == ORDER_DISBAND || type == ORDER_NO_ORDERS) {
+        if (Objects.equals(type, ORDER_HOLD) || Objects
+                .equals(type, ORDER_DISBAND) || Objects
+                .equals(type, ORDER_NO_ORDERS)) {
             return parseHoldOrDisband(pc, op, tokens, type);
-        } else if (type == ORDER_MOVE) {
+        }
+        if (Objects.equals(type, ORDER_MOVE)) {
             return parseMove(pc, op, tokens);
-        } else if (type == ORDER_SUPPORT) {
+        }
+        if (Objects.equals(type, ORDER_SUPPORT)) {
             return parseSupport(pc, op, tokens);
-        } else if (type == ORDER_CONVOY) {
+        }
+        if (Objects.equals(type, ORDER_CONVOY)) {
             return parseConvoy(pc, op, tokens);
         }
 
@@ -529,7 +530,7 @@ public class NJudgeOrderParser {
      */
     private class OrderPrefix {
         public final Power power;
-        public final Unit.Type unit;
+        public final Type unit;
         public final Location location;
         public final String orderName;
         public final int tokenIndex;        // index at which to continue parsing
@@ -542,7 +543,7 @@ public class NJudgeOrderParser {
          */
         public OrderPrefix(final ParseContext pc,
                            final String[] tokens) throws OrderException {
-            String tok = null;
+            String tok;
             int idx = 0;
 
             // search and parse power name; power name must be followed by a ":"
@@ -553,8 +554,8 @@ public class NJudgeOrderParser {
             }
 
             final String powerNameText = tok.substring(0, tok.length() - 1);
-            this.power = pc.map.getClosestPower(powerNameText).orElse(null);
-            if (this.power == null) {
+            power = pc.map.getClosestPower(powerNameText).orElse(null);
+            if (power == null) {
                 throw new OrderException(
                         "Unknown Power: \"" + powerNameText + "\" in order: " + pc.orderText);
             }
@@ -562,7 +563,7 @@ public class NJudgeOrderParser {
             // search and parse unit type
             idx++;
             tok = getToken(pc, idx, tokens);
-            this.unit = parseUnitType(pc, tok);
+            unit = parseUnitType(pc, tok);
 
 
             // find the order name (order type)
@@ -571,11 +572,11 @@ public class NJudgeOrderParser {
             String tmpOrderName = null;
             while (tokIdx < tokens.length && orderNameIndex < 0) {
                 final String aToken = tokens[tokIdx];
-                for (int onIdx = 0; onIdx < ORDER_NAME_TOKENS.length; onIdx++) {
-                    if (ORDER_NAME_TOKENS[onIdx].equals(aToken)) {
+                for (final String ORDER_NAME_TOKEN : ORDER_NAME_TOKENS) {
+                    if (ORDER_NAME_TOKEN.equals(aToken)) {
                         // error-check
                         orderNameIndex = tokIdx;
-                        tmpOrderName = ORDER_NAME_TOKENS[onIdx];
+                        tmpOrderName = ORDER_NAME_TOKEN;
                         break;
                     }
                 }
@@ -583,22 +584,22 @@ public class NJudgeOrderParser {
                 tokIdx++;
             }
 
-            this.tokenIndex = orderNameIndex + 1;
-            this.orderName = tmpOrderName;
+            tokenIndex = orderNameIndex + 1;
+            orderName = tmpOrderName;
 
             if (orderNameIndex == -1) {
                 throw new OrderException(
                         "Cannot determine order type for order: " + pc.orderText);
             }
 
-            assert (this.orderName != null);
+            assert orderName != null;
 
 
             // increment index (points to token AFTER unit type)
             idx++;
 
             // parse location
-            this.location = parseLocation(pc, idx, orderNameIndex, tokens);
+            location = parseLocation(pc, idx, orderNameIndex, tokens);
         }// parseOrderPrefix()
 
 
@@ -611,9 +612,9 @@ public class NJudgeOrderParser {
      * <p>
      * This will never return null.
      */
-    private Location parseLocation(final ParseContext pc, final int start,
-                                   final int end,
-                                   final String[] tokens) throws OrderException {
+    private static Location parseLocation(final ParseContext pc,
+                                          final int start, final int end,
+                                          final String[] tokens) throws OrderException {
         // check args
         if (start < 0 || end < 0 || end > tokens.length || start > end) {
             throw new IllegalArgumentException(
@@ -624,7 +625,7 @@ public class NJudgeOrderParser {
         // be multiple tokens) and, optionally, the coast (also multiple
         // tokens). Periods are stripped.
         //
-        StringBuffer sb = new StringBuffer(64);
+        final StringBuffer sb = new StringBuffer(64);
         for (int i = start; i < end; i++) {
             if (i > start) {
                 sb.append(' ');
@@ -642,8 +643,8 @@ public class NJudgeOrderParser {
      * <p>
      * This will never return null.
      */
-    private Location parseLocation(final ParseContext pc,
-                                   final String text) throws OrderException {
+    private static Location parseLocation(final ParseContext pc,
+                                          final String text) throws OrderException {
         final String replaceFrom[] = {".", ","};
         final String replaceTo[] = {"", ""};
         final String locationText = Coast
@@ -664,7 +665,8 @@ public class NJudgeOrderParser {
      * Parse a Unit Type, throw an exception if not recognized.
      * Never returns null.
      */
-    private Unit.Type parseUnitType(final ParseContext pc, final String input) {
+    private static Type parseUnitType(final ParseContext pc,
+                                      final String input) {
         return Type.parse(input);
     }// parseUnitType()
 
@@ -673,8 +675,8 @@ public class NJudgeOrderParser {
      * Parse a Power. Throw an exception if not recognized.
      * Never returns null.
      */
-    private Power parsePower(final ParseContext pc,
-                             final String input) throws OrderException {
+    private static Power parsePower(final ParseContext pc,
+                                    final String input) throws OrderException {
         final Power power = pc.map.getPower(input);
         if (power == null) {
             throw new OrderException(
@@ -690,17 +692,20 @@ public class NJudgeOrderParser {
      * <p>
      * Format: [prefix] (HOLD || DISBAND).
      */
-    private Orderable parseHoldOrDisband(ParseContext pc, OrderPrefix op,
+    private Orderable parseHoldOrDisband(final ParseContext pc,
+                                         final OrderPrefix op,
                                          final String[] tokens,
-                                         final String type) throws OrderException {
+                                         final String type) {
         // NO additional parsing
         //
-        if (type == ORDER_HOLD) {
+        if (Objects.equals(type, ORDER_HOLD)) {
             return pc.orderFactory.createHold(op.power, op.location, op.unit);
-        } else if (type == ORDER_DISBAND) {
+        }
+        if (Objects.equals(type, ORDER_DISBAND)) {
             return pc.orderFactory
                     .createDisband(op.power, op.location, op.unit);
-        } else if (type == ORDER_NO_ORDERS) {
+        }
+        if (Objects.equals(type, ORDER_NO_ORDERS)) {
             // FIXME: create own order type for "No Orders Processed"
             return pc.orderFactory.createHold(op.power, op.location, op.unit);
         }
@@ -709,10 +714,10 @@ public class NJudgeOrderParser {
     }// parseHoldOrDisband()
 
 
-    private Orderable parseMove(ParseContext pc, OrderPrefix op,
+    private Orderable parseMove(final ParseContext pc, final OrderPrefix op,
                                 final String[] tokens) throws OrderException {
         /*
-		
+
 			3-StP: Army St Petersburg -> Moscow.  (*bounce*)
 			
 			1-Smy: Army Constantinople -> Aegean Sea -> Greece.		
@@ -725,12 +730,12 @@ public class NJudgeOrderParser {
 			and then add that to the order Move order.
 		*/
 
-        LinkedList pathList = new LinkedList();
+        final LinkedList<Province> pathList = new LinkedList<>();
         int idx = op.tokenIndex;
         int movTokIdx = findNextMoveToken(idx, tokens);
 
         while (movTokIdx != -1) {
-            Location loc = parseLocation(pc, idx, movTokIdx, tokens);
+            final Location loc = parseLocation(pc, idx, movTokIdx, tokens);
             pathList.addLast(loc.getProvince());
 
             idx = movTokIdx + 1;
@@ -759,7 +764,7 @@ public class NJudgeOrderParser {
             // add source location at beginning of move list
             pathList.addFirst(op.location.getProvince());
 
-            final Province[] route = (Province[]) pathList
+            final Province[] route = pathList
                     .toArray(new Province[pathList.size()]);
 
             return pc.orderFactory
@@ -776,7 +781,8 @@ public class NJudgeOrderParser {
      * Finds the next "->" (ORDER_MOVE) token index; returns -1 if
      * none is found.
      */
-    private int findNextMoveToken(final int startIndex, final String[] tokens) {
+    private static int findNextMoveToken(final int startIndex,
+                                         final String[] tokens) {
         if (startIndex < 0) {
             throw new IllegalArgumentException();
         }
@@ -791,10 +797,10 @@ public class NJudgeOrderParser {
     }// findNextMoveToken()
 
 
-    private Orderable parseSupport(ParseContext pc, OrderPrefix op,
+    private Orderable parseSupport(final ParseContext pc, final OrderPrefix op,
                                    final String[] tokens) throws OrderException {
-		/*
-		
+        /*
+
 		"B-Bel: Army Belgium SUPPORT K-Hol Army Holland.";
 		"H-Den: Fleet Berlin SUPPORT Army Kiel.";
 		
@@ -815,10 +821,10 @@ public class NJudgeOrderParser {
         Power supPower = null;
 
         // parse next token; may be a power (or power adjective), or null
-        String[] toks = getTokenUpto(pc, idx, tokens, UNIT_DELIMS);
+        final String[] toks = getTokenUpto(pc, idx, tokens, UNIT_DELIMS);
         if (toks != null) {
             // conjugate strings before parsing with getPower()
-            StringBuffer sb = new StringBuffer(64);
+            final StringBuffer sb = new StringBuffer(64);
             sb.append(toks[0]);
             for (int i = 1; i < toks.length; i++) {
                 sb.append(' ');
@@ -839,8 +845,8 @@ public class NJudgeOrderParser {
         }
 
         // toks was null; thus, next token should be a unit.
-        String tok = getToken(pc, idx, tokens);
-        final Unit.Type supUnit = parseUnitType(pc, tok);
+        final String tok = getToken(pc, idx, tokens);
+        final Type supUnit = parseUnitType(pc, tok);
 
         // now parsing at token AFTER unit type token
         idx++;
@@ -893,10 +899,10 @@ public class NJudgeOrderParser {
      * PREFIX CONVOY [power] unit location -> location
      * remember, power is optional!
      */
-    private Orderable parseConvoy(ParseContext pc, OrderPrefix op,
+    private Orderable parseConvoy(final ParseContext pc, final OrderPrefix op,
                                   final String[] tokens) throws OrderException {
-		/*
-		
+        /*
+
 		"1-Smy: Fleet Ionian Sea CONVOY 			Army Bulgaria -> Serbia.";
 		"N-Lvp: Fleet Mid-Atlantic Ocean CONVOY 	Q-Mar Army Brest -> Spain.";
 		
@@ -908,10 +914,10 @@ public class NJudgeOrderParser {
         Power convoyPower = null;
 
         // parse next token; may be a power (or power adjective), or null
-        String[] toks = getTokenUpto(pc, idx, tokens, UNIT_DELIMS);
+        final String[] toks = getTokenUpto(pc, idx, tokens, UNIT_DELIMS);
         if (toks != null) {
             // conjugate strings before parsing with getPower()
-            StringBuffer sb = new StringBuffer(64);
+            final StringBuffer sb = new StringBuffer(64);
             sb.append(toks[0]);
             for (int i = 1; i < toks.length; i++) {
                 sb.append(' ');
@@ -932,8 +938,8 @@ public class NJudgeOrderParser {
         }
 
         // toks was null; thus, next token should be a unit.
-        String tok = getToken(pc, idx, tokens);
-        final Unit.Type convoyUnit = parseUnitType(pc, tok);
+        final String tok = getToken(pc, idx, tokens);
+        final Type convoyUnit = parseUnitType(pc, tok);
 
         // now parsing at token AFTER unit type token
         idx++;
@@ -977,8 +983,8 @@ public class NJudgeOrderParser {
      * If not, throws an OrderException. If so, return the
      * token at that index.
      */
-    private String getToken(final ParseContext pc, final int index,
-                            final String[] tokens) throws OrderException {
+    private static String getToken(final ParseContext pc, final int index,
+                                   final String[] tokens) throws OrderException {
         if (index < 0) {
             throw new IllegalArgumentException();
         }
@@ -1000,9 +1006,9 @@ public class NJudgeOrderParser {
      * 'null' will be returned. If no delimiter is found, an
      * exception is thrown.
      */
-    private String[] getTokenUpto(final ParseContext pc, final int index,
-                                  final String[] tokens,
-                                  final String[] delim) throws OrderException {
+    private static String[] getTokenUpto(final ParseContext pc, final int index,
+                                         final String[] tokens,
+                                         final String[] delim) throws OrderException {
         if (index < 0) {
             throw new IllegalArgumentException();
         }
@@ -1013,21 +1019,21 @@ public class NJudgeOrderParser {
 
         // is delim at start? if so, return null.
         String tok = tokens[index];
-        for (int nDelim = 0; nDelim < delim.length; nDelim++) {
-            if (tok.equalsIgnoreCase(delim[nDelim])) {
+        for (final String aDelim1 : delim) {
+            if (tok.equalsIgnoreCase(aDelim1)) {
                 return null;
             }
         }
 
-        ArrayList al = new ArrayList(3);
+        final ArrayList<String> al = new ArrayList<>(3);
         al.add(tok);
 
         boolean foundDelim = false;
         for (int i = index + 1; i < tokens.length; i++) {
             tok = tokens[i];
 
-            for (int nDelim = 0; nDelim < delim.length; nDelim++) {
-                if (tok.equalsIgnoreCase(delim[nDelim])) {
+            for (final String aDelim : delim) {
+                if (tok.equalsIgnoreCase(aDelim)) {
                     foundDelim = true;
                     break;
                 }
@@ -1045,8 +1051,8 @@ public class NJudgeOrderParser {
             throw new OrderException("Truncated order: " + pc.orderText);
         }
 
-        assert (!al.isEmpty());
-        return (String[]) al.toArray(new String[al.size()]);
+        assert !al.isEmpty();
+        return al.toArray(new String[al.size()]);
     }// getTokenUpto()
 
 
@@ -1059,8 +1065,8 @@ public class NJudgeOrderParser {
      * <p>
      * Returns the cleaned-up order text.
      */
-    private String parseResults(final ParseContext pc,
-                                final List results) throws OrderException {
+    private static String parseResults(final ParseContext pc,
+                                       final List<String> results) throws OrderException {
         final String line = pc.orderText;
 
         final int rStart = line.indexOf("(*");
@@ -1081,8 +1087,8 @@ public class NJudgeOrderParser {
         final String resultText = line.substring(rStart + 2, rEnd);
         final String[] resultStrings = resultText.split("\\s*,\\s*");
 
-        for (int i = 0; i < resultStrings.length; i++) {
-            results.add(resultStrings[i]);
+        for (final String resultString : resultStrings) {
+            results.add(resultString);
         }
 
         // return the order, without the result text.
@@ -1103,48 +1109,44 @@ public class NJudgeOrderParser {
      * </ul>
      * The given results are returned in the List.
      */
-    private List createResults(ParseContext pc, Orderable order,
-                               final List stringResults) throws OrderException {
-        List results = new ArrayList(stringResults.size());
+    private static List<Result> createResults(final ParseContext pc,
+                                              final Orderable order,
+                                              final List<String> stringResults) throws OrderException {
+        final List<Result> results = new ArrayList<>(stringResults.size());
 
-        Iterator iter = stringResults.iterator();
-        while (iter.hasNext()) {
-            final String textResult = ((String) iter.next()).trim();
+        for (final String stringResult : stringResults) {
+            final String textResult = stringResult.trim();
             if (textResult.equalsIgnoreCase("bounce")) {
                 results.add(
-                        new OrderResult(order, OrderResult.ResultType.FAILURE,
-                                "Bounce"));
+                        new OrderResult(order, ResultType.FAILURE, "Bounce"));
             } else if (textResult.equalsIgnoreCase("cut")) {
-                results.add(
-                        new OrderResult(order, OrderResult.ResultType.FAILURE,
-                                "Cut"));
+                results.add(new OrderResult(order, ResultType.FAILURE, "Cut"));
             } else if (textResult.equalsIgnoreCase("no convoy")) {
-                results.add(
-                        new OrderResult(order, OrderResult.ResultType.FAILURE,
-                                "No Convoy"));
+                results.add(new OrderResult(order, ResultType.FAILURE,
+                        "No Convoy"));
             } else if (textResult.equalsIgnoreCase("dislodged")) {
                 // create a failure result (if we were only dislodged)
                 if (stringResults.size() == 1) {
-                    results.add(new OrderResult(order,
-                            OrderResult.ResultType.FAILURE, null));
+                    results.add(
+                            new OrderResult(order, ResultType.FAILURE, null));
                 }
 
                 // create a TEMPORARY dislodged result here
-                results.add(
-                        new OrderResult(order, OrderResult.ResultType.DISLODGED,
-                                "**TEMP**"));
+                results.add(new OrderResult(order, ResultType.DISLODGED,
+                        "**TEMP**"));
             } else if (textResult.equalsIgnoreCase("destroyed")) {
                 // create a failure result (if we were only dislodged)
                 if (stringResults.size() == 1) {
-                    results.add(new OrderResult(order,
-                            OrderResult.ResultType.FAILURE, null));
+                    results.add(
+                            new OrderResult(order, ResultType.FAILURE, null));
                 }
 
                 // destroyed result
                 results.add(new DislodgedResult(order, null));
             } else if (textResult.equalsIgnoreCase("void")) {
-                results.add(new OrderResult(order,
-                        OrderResult.ResultType.VALIDATION_FAILURE, "Void"));
+                results.add(
+                        new OrderResult(order, ResultType.VALIDATION_FAILURE,
+                                "Void"));
             } else {
                 // unknown result type! Assume failure.
                 throw new OrderException(
@@ -1154,8 +1156,7 @@ public class NJudgeOrderParser {
 
         // if no result created, create a success result.
         if (results.isEmpty()) {
-            results.add(new OrderResult(order, OrderResult.ResultType.SUCCESS,
-                    null));
+            results.add(new OrderResult(order, ResultType.SUCCESS, null));
         }
 
         return results;
@@ -1166,7 +1167,7 @@ public class NJudgeOrderParser {
      * Removes the trailing '.' from the order, and any leading
      * or trailing spaces.
      */
-    private String removeTrailingDot(final String input) {
+    private static String removeTrailingDot(final String input) {
         final String line = input.trim();
         if (line.endsWith(".")) {
             return line.substring(0, line.length() - 1);
@@ -1176,14 +1177,14 @@ public class NJudgeOrderParser {
     }// removeTrailingDot()
 
 
-    private NJudgeOrder parseAdjustmentOrder(ParseContext pc,
-                                             String line) throws OrderException {
+    private static NJudgeOrder parseAdjustmentOrder(final ParseContext pc,
+                                                    final String line) throws OrderException {
         Matcher m = ADJUSTMENT_PATTERN.matcher(line);
 
         // attempt
         if (m.find()) {
-			/*
-				Groups:
+            /*
+                Groups:
 					1: Power
 					2: remove|build|default	(default is also a remove!)
 					3: fleet|army|wing
@@ -1195,15 +1196,15 @@ public class NJudgeOrderParser {
             final Power power = parsePower(pc, m.group(1).trim());
 
             // parse unit type
-            final Unit.Type unit = parseUnitType(pc, m.group(3));
+            final Type unit = parseUnitType(pc, m.group(3));
 
             // parse location
             final Location location = parseLocation(pc, m.group(4).trim());
 
             // parse action
-            final boolean isDefault = ("default".equalsIgnoreCase(m.group(2)));
+            final boolean isDefault = "default".equalsIgnoreCase(m.group(2));
 
-            Orderable order = null;
+            final Orderable order;
             if ("build".equalsIgnoreCase(m.group(2))) {
                 order = pc.orderFactory.createBuild(power, location, unit);
             } else {
@@ -1211,22 +1212,21 @@ public class NJudgeOrderParser {
                 order = pc.orderFactory.createRemove(power, location, unit);
             }
 
-            NJudgeOrder njo = null;
+            final NJudgeOrder njo;
 
             if (isDefault) {
                 // power defaulted; order is contained in a substitutedResult
-                SubstitutedResult substResult = new SubstitutedResult(null,
-                        order, "Power defaulted; unit removed.");
+                final SubstitutedResult substResult = new SubstitutedResult(
+                        null, order, "Power defaulted; unit removed.");
 
                 njo = new NJudgeOrder(null, substResult,
                         pc.isAdjustmentPhase());
             } else {
                 njo = new NJudgeOrder(order,
-                        new OrderResult(order, OrderResult.ResultType.SUCCESS,
-                                null), pc.isAdjustmentPhase());
+                        new OrderResult(order, ResultType.SUCCESS, null),
+                        pc.isAdjustmentPhase());
             }
 
-            assert (njo != null);
             return njo;
         } else {
             // reuse variable 'm'
@@ -1242,7 +1242,7 @@ public class NJudgeOrderParser {
                     if (m.group(2).length() >= 1) {
                         numBuilds = Integer.parseInt(m.group(2));
                     }
-                } catch (NumberFormatException e) {
+                } catch (final NumberFormatException e) {
                     throw new OrderException("Expected valid integer at \"" + m
                             .group(2) + "\" for order: " + pc.orderText);
                 }
@@ -1262,31 +1262,31 @@ public class NJudgeOrderParser {
 
                 if (m.group(3) == null) {
                     // Group3 is null when it is a 'regular' waive order.
-                    Result result = new Result(power, "Build waived.");
+                    final Result result = new Result(power, "Build waived.");
                     return new NJudgeOrder(power, result);
                 } else {
                     // since we depend on external input, these should
                     // be exceptions rather than asserts
                     //
-                    assert (isUnusable);
+                    assert isUnusable;
                     if (!isUnusable) {
                         throw new IllegalStateException();
                     }
 
-                    assert (isPending != isWaived);
+                    assert isPending != isWaived;
                     if (isPending == isWaived) {
                         throw new IllegalStateException();
                     }
 
                     if (isPending) {
                         // pending builds
-                        Result result = new Result(power, String.valueOf(
-                                numBuilds) + " unusable build(s) pending.");
+                        final Result result = new Result(power,
+                                numBuilds + " unusable build(s) pending.");
                         return new NJudgeOrder(power, numBuilds, 0, result);
                     } else {
                         // waived builds
-                        Result result = new Result(power, String.valueOf(
-                                numBuilds) + " unusable build(s) waived.");
+                        final Result result = new Result(power,
+                                numBuilds + " unusable build(s) waived.");
                         return new NJudgeOrder(power, 0, numBuilds, result);
                     }
                 }
@@ -1301,14 +1301,14 @@ public class NJudgeOrderParser {
     /**
      * Info needed by parsing methods
      */
-    private class ParseContext {
+    private static final class ParseContext {
         public final WorldMap map;
         public final OrderFactory orderFactory;
-        public final Phase.PhaseType phaseType;
+        public final PhaseType phaseType;
         public final String orderText;
 
-        public ParseContext(WorldMap map, OrderFactory orderFactory,
-                            Phase.PhaseType phaseType, String orderText) {
+        ParseContext(final WorldMap map, final OrderFactory orderFactory,
+                     final PhaseType phaseType, final String orderText) {
             this.map = map;
             this.orderFactory = orderFactory;
             this.phaseType = phaseType;
@@ -1316,12 +1316,12 @@ public class NJudgeOrderParser {
         }
 
         public boolean isRetreatPhase() {
-            return (Phase.PhaseType.RETREAT.equals(phaseType));
+            return PhaseType.RETREAT == phaseType;
         }// isRetreatPhase()
 
 
         public boolean isAdjustmentPhase() {
-            return (Phase.PhaseType.ADJUSTMENT.equals(phaseType));
+            return PhaseType.ADJUSTMENT == phaseType;
         }// isAdjustmentPhase()
     }// ParseContext()
 }// class NJudgeOrderParser

@@ -30,11 +30,11 @@ package dip.process;
  * readResolve() must be implemented to preserve the integrity
  * of referential equality.
  */
-final public class Tristate {
+public enum Tristate {
     // constants
-    public static final Tristate TRUE = new Tristate("True");
-    public static final Tristate FALSE = new Tristate("False");
-    public static final Tristate UNCERTAIN = new Tristate("Uncertain");
+    TRUE("True"),
+    FALSE("False"),
+    UNCERTAIN("Uncertain");
 
     // alternate set of constants, fully equivalent and interchangeable with above
     // constants.
@@ -46,17 +46,18 @@ final public class Tristate {
 
 
     // instance variables
-    private transient String text = null;
+    private final transient String text;
 
 
     /**
      * Create a TriState object
      */
-    private Tristate(String value) {
-        this.text = value;
+    Tristate(final String value) {
+        text = value;
     }// Tristate()
 
 
+    @Override
     public String toString() {
         return text;
     }// toString()
@@ -64,19 +65,16 @@ final public class Tristate {
     /**
      * Compares a Tristate to a boolean
      */
-    public boolean equals(boolean value) {
-        if ((value && (this == TRUE)) || (!value && (this == FALSE))) {
-            return true;
-        }
+    public boolean equals(final boolean value) {
+        return value && this == TRUE || !value && this == FALSE;
 
-        return false;
     }// equals()
 
     /**
      * Get a Tristate that is equivalent to the boolean
      */
-    public static Tristate getTristate(boolean value) {
-        return ((value) ? TRUE : FALSE);
+    public static Tristate getTristate(final boolean value) {
+        return value ? TRUE : FALSE;
     }// getTristate()
 
 }// class Tristate

@@ -31,6 +31,7 @@ import dip.process.Tristate;
 import dip.world.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Implementation of the Retreat order.
@@ -165,9 +166,9 @@ public class Retreat extends Move {
         OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
         ArrayList depMTDest = null;
 
-        OrderState[] orderStates = adjudicator.getOrderStates();
-        for (int osIdx = 0; osIdx < orderStates.length; osIdx++) {
-            OrderState dependentOS = orderStates[osIdx];
+        List<OrderState> orderStates = adjudicator.getOrderStates();
+        for (int osIdx = 0; osIdx < orderStates.size(); osIdx++) {
+            OrderState dependentOS = orderStates.get(osIdx);
             Order order = dependentOS.getOrder();
 
             if (order instanceof Retreat && order != this) {

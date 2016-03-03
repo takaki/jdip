@@ -22,9 +22,11 @@
 //
 package dip.world;
 
+import dip.order.Order;
 import dip.order.Orderable;
 import dip.order.result.OrderResult;
 import dip.order.result.OrderResult.ResultType;
+import dip.order.result.Result;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -59,8 +61,8 @@ import java.util.Objects;
 public class TurnState implements Serializable {
     // instance variables (we serialize all of this)
     private Phase phase;
-    private List resultList;                // order results, post-adjudication
-    private Map<Power, List> orderMap;                // Map of power=>orders
+    private List<Result> resultList;                // order results, post-adjudication
+    private Map<Power, List<Order>> orderMap;                // Map of power=>orders
     private boolean isSCOwnerChanged;        // 'true' if any supply centers changed ownership
     private Position position;                // Position data (majority of game state)
     private transient World world;                // makes it easier when we just pass a turnstate
@@ -140,7 +142,7 @@ public class TurnState implements Serializable {
     /**
      * Returns the result list
      */
-    public List getResultList() {
+    public List<Result> getResultList() {
         return resultList;
     }// getResultList()
 
@@ -177,18 +179,15 @@ public class TurnState implements Serializable {
      * <p>
      * Manipulations to this list will not be reflected in the TurnState object.
      */
-    public List<Object> getAllOrders() {
-        final List<Object> list = new ArrayList<>(75);
+    public List<Orderable> getAllOrders() {
+        final List<Orderable> list = new ArrayList<>(75);
 
-        final Iterator<Entry<Power, List>> esIter = orderMap.entrySet()
-                .iterator();
-        while (esIter.hasNext()) {
-            final Entry<Power, List> mapEntry = esIter.next();
-            final List orders = mapEntry.getValue();
+        for (final Entry<Power, List<Order>> mapEntry : orderMap
+                .entrySet()) {
+            final List<Order> orders = mapEntry.getValue();
 
-            final Iterator ordIter = orders.iterator();
-            while (ordIter.hasNext()) {
-                list.add(ordIter.next());
+            for (final Orderable order : orders) {
+                list.add(order);
             }
         }
 
@@ -210,15 +209,15 @@ public class TurnState implements Serializable {
      * Note that modifications to the returned order List will be reflected
      * in the TurnState.
      */
-    public List getOrders(final Power power) {
+    public List<Order> getOrders(final Power power) {
         Objects.requireNonNull(power);
-        return orderMap.computeIfAbsent(power, k -> new ArrayList(15));
+        return orderMap.computeIfAbsent(power, k -> new ArrayList<>(15));
     }// getOrders()
 
     /**
      * Sets the orders for the given Power, deleting any existing orders for the power
      */
-    public void setOrders(final Power power, final List list) {
+    public void setOrders(final Power power, final List<Order> list) {
         Objects.requireNonNull(power);
         Objects.requireNonNull(list);
 

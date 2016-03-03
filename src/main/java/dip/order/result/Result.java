@@ -34,7 +34,7 @@ import java.io.Serializable;
  * for debugging. To obtain a properly-formatted localized message, use
  * getMessage().
  */
-public class Result extends Object implements Serializable, Comparable {
+public class Result implements Serializable, Comparable {
     // constants
     private static final OrderFormatOptions DEFAULT_OFO = OrderFormatOptions
             .createDefault();
@@ -43,7 +43,7 @@ public class Result extends Object implements Serializable, Comparable {
     /**
      * The Power to whom this Result applies; null if it applies to everyone
      */
-    protected Power power = null;
+    protected Power power;
     /**
      * The Message text; this must <b>never</b> be null
      */
@@ -60,7 +60,7 @@ public class Result extends Object implements Serializable, Comparable {
      * A null Power indicates the result applies to
      * all Powers.
      */
-    public Result(Power power, String message) {
+    public Result(final Power power, final String message) {
         this.power = power;
 
         if (message != null) {
@@ -73,7 +73,7 @@ public class Result extends Object implements Serializable, Comparable {
      * Create a Result that is applicable to all
      * Powers.
      */
-    public Result(String message) {
+    public Result(final String message) {
         this(null, message);
     }// Result()
 
@@ -104,7 +104,7 @@ public class Result extends Object implements Serializable, Comparable {
      * options (if applicable) for formatting Province and Order names.
      * Subclasses must override this method to implement this.
      */
-    public String getMessage(OrderFormatOptions ofo) {
+    public String getMessage(final OrderFormatOptions ofo) {
         return message;
     }// getMessage()
 
@@ -112,7 +112,7 @@ public class Result extends Object implements Serializable, Comparable {
      * For debugging. Use getPower() and getMessage() for general use.
      */
     public String toString() {
-        StringBuffer sb = new StringBuffer(128);
+        final StringBuffer sb = new StringBuffer(128);
 
         if (power == null) {
             sb.append("(none)");
@@ -132,25 +132,26 @@ public class Result extends Object implements Serializable, Comparable {
      * If power is null, it will be first in ascending order.
      * If message may be empty, but never is null.
      */
-    public int compareTo(Object o) {
-        Result result = (Result) o;
+    @Override
+    public int compareTo(final Object o) {
+        final Result result = (Result) o;
 
         // first: compare powers
         int compareResult = 0;
-        if (result.power == null && this.power == null) {
+        if (result.power == null && power == null) {
             compareResult = 0;
-        } else if (this.power == null && result.power != null) {
+        } else if (power == null && result.power != null) {
             return -1;
-        } else if (this.power != null && result.power == null) {
+        } else if (power != null && result.power == null) {
             return +1;
         } else {
             // if these are equal, could be 0
-            compareResult = this.power.compareTo(result.power);
+            compareResult = power.compareTo(result.power);
         }
 
         // finally: compare messages
-        return ((compareResult != 0) ? compareResult : message
-                .compareTo(result.message));
+        return compareResult != 0 ? compareResult : message
+                .compareTo(result.message);
     }// compareTo()
 
 

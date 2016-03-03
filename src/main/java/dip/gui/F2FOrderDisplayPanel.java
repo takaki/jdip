@@ -32,7 +32,6 @@ import dip.process.Adjustment;
 import dip.world.Phase;
 import dip.world.Position;
 import dip.world.Power;
-import dip.world.Province;
 import dip.world.TurnState;
 
 import javax.swing.*;
@@ -389,13 +388,13 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
         // disable tabs for powers that don't require orders during
         // retreat or adjustment phases, if appropriate.
         final Position pos = turnState.getPosition();
-        final Power[] powers = world.getMap().getPowers().toArray(new Power[0]);
+        final List<Power> powers = world.getMap().getPowers();
 
         Adjustment.AdjustmentInfoMap f2fAdjMap = Adjustment
                 .getAdjustmentInfo(turnState, world.getRuleOptions(), powers);
 
-        for (int i = 0; i < powers.length; i++) {
-            final Power power = powers[i];
+        for (int i = 0; i < powers.size(); i++) {
+            final Power power = powers.get(i);
             if (!pos.isEliminated(power) && power.isActive()) {
                 // create icon, if possible
                 Icon icon = null;

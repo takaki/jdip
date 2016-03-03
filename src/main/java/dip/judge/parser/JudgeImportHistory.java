@@ -22,6 +22,8 @@
 //
 package dip.judge.parser;
 
+import dip.judge.parser.AdjustmentParser.OwnerInfo;
+import dip.judge.parser.DislodgedParser.DislodgedInfo;
 import dip.judge.parser.TurnParser.Turn;
 import dip.misc.Log;
 import dip.misc.Utils;
@@ -36,17 +38,23 @@ import dip.order.Remove;
 import dip.order.ValidationOptions;
 import dip.order.result.DislodgedResult;
 import dip.order.result.OrderResult;
+import dip.order.result.OrderResult.ResultType;
 import dip.order.result.Result;
 import dip.order.result.SubstitutedResult;
 import dip.process.Adjustment;
+import dip.process.Adjustment.AdjustmentInfoMap;
 import dip.world.Location;
 import dip.world.Phase;
+import dip.world.Phase.PhaseType;
 import dip.world.Position;
 import dip.world.Power;
 import dip.world.Province;
 import dip.world.RuleOptions;
+import dip.world.RuleOptions.Option;
+import dip.world.RuleOptions.OptionValue;
 import dip.world.TurnState;
 import dip.world.Unit;
+import dip.world.Unit.Type;
 import dip.world.VictoryConditions;
 import dip.world.World;
 import dip.world.WorldMap;
@@ -54,7 +62,6 @@ import dip.world.WorldMap;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -68,7 +75,7 @@ import java.util.regex.PatternSyntaxException;
  * TODO:
  * <br>positioning units with orders that failed parsing (e.g., a move to Switzerland (swi))
  */
-final class JudgeImportHistory {
+public final class JudgeImportHistory {
     // constants
     private static final String STDADJ_MV_UNIT_DESTROYED = "STDADJ_MV_UNIT_DESTROYED";
 
@@ -95,23 +102,25 @@ final class JudgeImportHistory {
     private final WorldMap map;
     private final OrderFactory orderFactory;
     private final World world;
-    private JudgeParser jp = null;
-    private Position oldPosition = null;
+    private JudgeParser jp;
+    private Position oldPosition;
     private final ValidationOptions valOpts;
-    private HSCInfo[] homeSCInfo = null;
-    private boolean finalTurn = false;
+    private HSCInfo[] homeSCInfo;
+    private boolean finalTurn;
 
     /**
      * Create a JudgeImportHistory
+     *
+     * @throws PatternSyntaxException
      */
-    protected JudgeImportHistory(OrderFactory orderFactory, World world,
-                                 JudgeParser jp,
-                                 Position oldPosition) throws IOException, PatternSyntaxException {
+    public JudgeImportHistory(final OrderFactory orderFactory,
+                              final World world, final JudgeParser jp,
+                              final Position oldPosition) throws IOException {
         this.orderFactory = orderFactory;
         this.world = world;
         this.jp = jp;
         this.oldPosition = oldPosition;
-        this.map = world.getMap();
+        map = world.getMap();
 
         // create a very strict validation object, loose seems to have some weird problems when importing.
         valOpts = new ValidationOptions();
@@ -123,15 +132,17 @@ final class JudgeImportHistory {
 
     /**
      * Create a JudgeImportHistory and process a single turn
+     *
+     * @throws PatternSyntaxException
      */
-    protected JudgeImportHistory(OrderFactory orderFactory, World world,
-                                 JudgeParser jp,
-                                 Turn turn) throws IOException, PatternSyntaxException {
+    public JudgeImportHistory(final OrderFactory orderFactory,
+                              final World world, final JudgeParser jp,
+                              final Turn turn) throws IOException {
         this.orderFactory = orderFactory;
         this.world = world;
         this.jp = jp;
-        this.oldPosition = world.getLastTurnState().getPosition();
-        this.map = world.getMap();
+        oldPosition = world.getLastTurnState().getPosition();
+        map = world.getMap();
 
         // create a very strict validation object, loose seems to have some weird problems when importing.
         valOpts = new ValidationOptions();
@@ -152,18 +163,19 @@ final class JudgeImportHistory {
     /**
      * Processes the Turn data, starting with the first Movement phase. An exception is
      * thrown if no Movement phase exists.
+     *
+     * @throws PatternSyntaxException
      */
-    private void processTurns() throws IOException, PatternSyntaxException {
+    private void processTurns() throws IOException {
         // break data up into turns
-        Turn[] turns = new TurnParser(jp.getText()).getTurns();
+        final Turn[] turns = new TurnParser(jp.getText()).getTurns();
         //System.out.println("# of turns: "+turns.length);
 
         // find first movement phase, if any
         int firstMovePhase = -1;
         for (int i = 0; i < turns.length; i++) {
             if (turns[i].getPhase() != null) {
-                if (turns[i].getPhase()
-                        .getPhaseType() == Phase.PhaseType.MOVEMENT) {
+                if (turns[i].getPhase().getPhaseType() == PhaseType.MOVEMENT) {
                     firstMovePhase = i;
                     break;
                 }
@@ -177,7 +189,7 @@ final class JudgeImportHistory {
                 createStartingPositions();
                 // Don't do the rest of this method, it will all fail.
                 return;
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 throw new IOException(
                         Utils.getLocalString(JIH_NO_MOVEMENT_PHASE));
             }
@@ -188,16 +200,17 @@ final class JudgeImportHistory {
         // get home supply center information from the oldPosition object
         // and store it in HSCInfo object array, so that it can be set during each successive
         // turn.
-        ArrayList hscList = new ArrayList(50);
-        Province[] provinces = map.getProvinces().toArray(new Province[0]);
-        for (int i = 0; i < provinces.length; i++) {
-            Power power = oldPosition.getSupplyCenterHomePower(provinces[i])
+        final ArrayList<HSCInfo> hscList = new ArrayList<HSCInfo>(50);
+        final Province[] provinces = map.getProvinces()
+                .toArray(new Province[0]);
+        for (final Province province : provinces) {
+            final Power power = oldPosition.getSupplyCenterHomePower(province)
                     .orElse(null);
             if (power != null) {
-                hscList.add(new HSCInfo(provinces[i], power));
+                hscList.add(new HSCInfo(province, power));
             }
         }
-        homeSCInfo = (HSCInfo[]) hscList.toArray(new HSCInfo[hscList.size()]);
+        homeSCInfo = hscList.toArray(new HSCInfo[hscList.size()]);
 
         // process all but the final phase
         for (int i = firstMovePhase; i < turns.length - 1; i++) {
@@ -222,11 +235,32 @@ final class JudgeImportHistory {
                     turns[turns.length - 3], true);
         }
 
-        Pattern endofgame = Pattern.compile(END_FOF_GAME);
+        final Pattern endofgame = Pattern.compile(END_FOF_GAME);
 
-        Matcher e = endofgame.matcher(turns[turns.length - 1].getText());
+        final Matcher e = endofgame.matcher(turns[turns.length - 1].getText());
 
-        if (!e.find()) {
+        if (e.find()) {
+            // The imported game has ended
+            // Reprocess the last turn, again, not as final, so it looks right for viewing.
+            finalTurn = false;
+            procTurn(turns[turns.length - 1], turns[turns.length - 2],
+                    turns[turns.length - 3], false);
+            // Set the game as ended.
+            final TurnState ts = world
+                    .getTurnState(turns[turns.length - 1].getPhase());
+            final VictoryConditions vc = world.getVictoryConditions();
+            final RuleOptions ruleOpts = world.getRuleOptions();
+            final AdjustmentInfoMap adjMap = Adjustment
+                    .getAdjustmentInfo(ts, ruleOpts,
+                            world.getMap().getPowers());
+            vc.evaluate(ts, adjMap);
+            final List<Result> evalResults = ts.getResultList();
+            evalResults.addAll(vc.getEvaluationResults());
+            ts.setResultList(evalResults);
+            ts.setEnded(true);
+            ts.setResolved(true);
+            world.setTurnState(ts);
+        } else {
 
             // create last (un-resolved) turnstate
             makeLastTurnState(turns[turns.length - 1]);
@@ -242,27 +276,6 @@ final class JudgeImportHistory {
                 procTurn(turns[turns.length - 1], turns[turns.length - 2],
                         turns[turns.length - 3], false);
             }
-        } else {
-            // The imported game has ended
-            // Reprocess the last turn, again, not as final, so it looks right for viewing.
-            finalTurn = false;
-            procTurn(turns[turns.length - 1], turns[turns.length - 2],
-                    turns[turns.length - 3], false);
-            // Set the game as ended.
-            TurnState ts = world
-                    .getTurnState(turns[turns.length - 1].getPhase());
-            VictoryConditions vc = world.getVictoryConditions();
-            RuleOptions ruleOpts = world.getRuleOptions();
-            Adjustment.AdjustmentInfoMap adjMap = Adjustment
-                    .getAdjustmentInfo(ts, ruleOpts,
-                            world.getMap().getPowers().toArray(new Power[0]));
-            vc.evaluate(ts, adjMap);
-            List evalResults = ts.getResultList();
-            evalResults.addAll(vc.getEvaluationResults());
-            ts.setResultList(evalResults);
-            ts.setEnded(true);
-            ts.setResolved(true);
-            world.setTurnState(ts);
         }
 
         // all phases have been processed; perform post-processing here.
@@ -270,27 +283,29 @@ final class JudgeImportHistory {
 
     /**
      * Processes a single turn.
+     *
+     * @throws PatternSyntaxException
      */
-    private void processSingleTurn(
-            Turn turn) throws IOException, PatternSyntaxException {
+    private void processSingleTurn(final Turn turn) throws IOException {
         // get home supply center information from the oldPosition object
         // and store it in HSCInfo object array, so that it can be set during each successive
         // turn.
-        ArrayList hscList = new ArrayList(50);
-        Province[] provinces = map.getProvinces().toArray(new Province[0]);
-        for (int i = 0; i < provinces.length; i++) {
-            Power power = oldPosition.getSupplyCenterHomePower(provinces[i])
+        final ArrayList<HSCInfo> hscList = new ArrayList<>(50);
+        final Province[] provinces = map.getProvinces()
+                .toArray(new Province[0]);
+        for (final Province province : provinces) {
+            final Power power = oldPosition.getSupplyCenterHomePower(province)
                     .orElse(null);
             if (power != null) {
-                hscList.add(new HSCInfo(provinces[i], power));
+                hscList.add(new HSCInfo(province, power));
             }
         }
-        homeSCInfo = (HSCInfo[]) hscList.toArray(new HSCInfo[hscList.size()]);
+        homeSCInfo = hscList.toArray(new HSCInfo[hscList.size()]);
 
         // process the turn
         procTurn(turn, null, null, false);
         // save new turn state
-        TurnState savedTS = world.getLastTurnState();
+        final TurnState savedTS = world.getLastTurnState();
 
         // process the last turn once more, but as the final turn, to allow proper positioning.
         finalTurn = true;
@@ -311,41 +326,42 @@ final class JudgeImportHistory {
      * This is not the best way to process the turns, especially the adjustment phase,
      * but it works.
      */
-    private void procTurn(Turn turn, Turn prevTurn, Turn thirdTurn,
-                          boolean positionPlacement) throws IOException {
+    private void procTurn(final Turn turn, final Turn prevTurn,
+                          final Turn thirdTurn,
+                          final boolean positionPlacement) throws IOException {
         Log.println("JIH:procTurn():METHOD ENTRY");
-        Phase phase = turn.getPhase();
+        final Phase phase = turn.getPhase();
         if (phase != null) {
-            Phase.PhaseType phaseType = phase.getPhaseType();
-            if (phaseType == Phase.PhaseType.MOVEMENT) {
+            final PhaseType phaseType = phase.getPhaseType();
+            if (phaseType == PhaseType.MOVEMENT) {
                 Log.println("JIH:procTurn():MOVEMENT START");
                 procMove(turn, positionPlacement);
                 Log.println("JIH:procTurn():MOVEMENT END");
-            } else if (phaseType == Phase.PhaseType.RETREAT) {
+            } else if (phaseType == PhaseType.RETREAT) {
                 Log.println("JIH:procTurn():RETREAT START");
                     /*
                      * Set the proper positionPlacement value depending on if the turn being
 					 * processed is the final turn. Set it back again when done. 
 					 */
-                if (!finalTurn) {
-                    procMove(prevTurn, !positionPlacement);
-                } else {
+                if (finalTurn) {
                     procMove(prevTurn, positionPlacement);
+                } else {
+                    procMove(prevTurn, !positionPlacement);
                 }
 
                 procRetreat(turn, positionPlacement);
 
-                if (!finalTurn) {
-                    procMove(prevTurn, positionPlacement);
-                } else {
+                if (finalTurn) {
                     procMove(prevTurn, !positionPlacement);
+                } else {
+                    procMove(prevTurn, positionPlacement);
                 }
                 Log.println("JIH:procTurn():RETREAT END");
-            } else if (phaseType == Phase.PhaseType.ADJUSTMENT) {
+            } else if (phaseType == PhaseType.ADJUSTMENT) {
                 Log.println("JIH:procTurn():ADJUSTMENT START");
-                Phase.PhaseType prevPhaseType = Phase.PhaseType.MOVEMENT; // dummy
+                PhaseType prevPhaseType = PhaseType.MOVEMENT; // dummy
                 if (prevTurn != null) {
-                    Phase phase_p = prevTurn.getPhase();
+                    final Phase phase_p = prevTurn.getPhase();
                     prevPhaseType = phase_p.getPhaseType();
                 }
                 /*
@@ -353,39 +369,39 @@ final class JudgeImportHistory {
 				 * on the PhaseType and if the turn being processed is the final turn.
 				 * Set it back again when done. 
 				 */
-                if (prevPhaseType == Phase.PhaseType.MOVEMENT) {
-                    if (!finalTurn) {
-                        procMove(prevTurn, !positionPlacement);
-                    } else {
+                if (prevPhaseType == PhaseType.MOVEMENT) {
+                    if (finalTurn) {
                         procMove(prevTurn, positionPlacement);
+                    } else {
+                        procMove(prevTurn, !positionPlacement);
                     }
 
                     procAdjust(turn, positionPlacement);
 
-                    if (!finalTurn) {
-                        procMove(prevTurn, positionPlacement);
-                    } else {
+                    if (finalTurn) {
                         procMove(prevTurn, !positionPlacement);
+                    } else {
+                        procMove(prevTurn, positionPlacement);
                     }
 
                 } else {
 
-                    if (!finalTurn) {
-                        procMove(thirdTurn, !positionPlacement);
-                        procRetreat(prevTurn, !positionPlacement);
-                    } else {
+                    if (finalTurn) {
                         procMove(thirdTurn, positionPlacement);
                         procRetreat(prevTurn, positionPlacement);
+                    } else {
+                        procMove(thirdTurn, !positionPlacement);
+                        procRetreat(prevTurn, !positionPlacement);
                     }
 
                     procAdjust(turn, positionPlacement);
 
-                    if (!finalTurn) {
-                        procRetreat(prevTurn, positionPlacement);
-                        procMove(thirdTurn, positionPlacement);
-                    } else {
+                    if (finalTurn) {
                         procRetreat(prevTurn, !positionPlacement);
                         procMove(thirdTurn, !positionPlacement);
+                    } else {
+                        procRetreat(prevTurn, positionPlacement);
+                        procMove(thirdTurn, positionPlacement);
                     }
                 }
                 Log.println("JIH:procTurn():ADJUSTMENT END");
@@ -403,7 +419,8 @@ final class JudgeImportHistory {
      * <p>
      * This method ensures that TurnState objects are properly (and consistently) initialized.
      */
-    private TurnState makeTurnState(Turn turn, boolean positionPlacement) {
+    private TurnState makeTurnState(final Turn turn,
+                                    final boolean positionPlacement) {
         // does the turnstate already exist?
         // it could, if we are importing orders into an already-existing game.
         //
@@ -412,7 +429,7 @@ final class JudgeImportHistory {
         // TODO: we can import judge games, but we cannot import judge games
         // into existing games successfully.
         //
-        TurnState ts = new TurnState(turn.getPhase());
+        final TurnState ts = new TurnState(turn.getPhase());
         ts.setWorld(world);
         ts.setPosition(new Position(world.getMap()));
 
@@ -420,10 +437,10 @@ final class JudgeImportHistory {
         // if a processing error occurs, we don't want a partial turnstate object in the World.
 
         // set Home Supply centers in position
-        Position pos = ts.getPosition();
-        for (int i = 0; i < homeSCInfo.length; i++) {
-            pos.setSupplyCenterHomePower(homeSCInfo[i].getProvince(),
-                    homeSCInfo[i].getPower());
+        final Position pos = ts.getPosition();
+        for (final HSCInfo aHomeSCInfo : homeSCInfo) {
+            pos.setSupplyCenterHomePower(aHomeSCInfo.getProvince(),
+                    aHomeSCInfo.getPower());
         }
 
         return ts;
@@ -433,7 +450,7 @@ final class JudgeImportHistory {
     /**
      * Old method
      */
-    private void procMove(Turn turn,
+    private void procMove(final Turn turn,
                           final boolean positionPlacement) throws IOException {
         procMove(turn, positionPlacement, false);
     }// procMove()
@@ -442,7 +459,7 @@ final class JudgeImportHistory {
     /**
      * Process a Movement phase turn
      */
-    private void procMove(Turn turn, final boolean positionPlacement,
+    private void procMove(final Turn turn, final boolean positionPlacement,
                           final boolean isRetreatMoveProcessing) throws IOException {
         Log.println("JIH::procMove():METHOD ENTRY");
         Log.println("  positionPlacement = ", positionPlacement);
@@ -454,8 +471,8 @@ final class JudgeImportHistory {
         // create TurnState
         Log.println("  Turn.getPhase() = ", turn.getPhase());
 
-        TurnState ts = makeTurnState(turn, positionPlacement);
-        List results = ts.getResultList();
+        final TurnState ts = makeTurnState(turn, positionPlacement);
+        final List results = ts.getResultList();
 
         Log.println("  Turnstate created. Phase: ", ts.getPhase());
 
@@ -468,16 +485,14 @@ final class JudgeImportHistory {
         final NJudgeOrder[] nJudgeOrders = jop.getNJudgeOrders();
 
         // get Position. Remember, this position contains no units.
-        Position position = ts.getPosition();
+        final Position position = ts.getPosition();
 
         Log.println("  :Creating start positions; # NJudgeOrders = ",
                 nJudgeOrders.length);
         Log.println("  :getResultList().size() = ", results.size());
 
         // create units from start position
-        for (int i = 0; i < nJudgeOrders.length; i++) {
-            final NJudgeOrder njo = nJudgeOrders[i];
-
+        for (final NJudgeOrder njo : nJudgeOrders) {
             final Orderable order = njo.getOrder();
             if (order == null) {
                 Log.println("JIH::procMove(): Null order; njo: ", njo);
@@ -486,16 +501,16 @@ final class JudgeImportHistory {
             }
 
             Location loc = order.getSource();
-            final Unit.Type unitType = order.getSourceUnitType();
+            final Type unitType = order.getSourceUnitType();
             final Power power = order.getPower();
 
             // validate location
             try {
                 loc = loc.getValidated(unitType);
-            } catch (OrderException e) {
+            } catch (final OrderException e) {
                 Log.println("ERROR: ", njo);
                 Log.println("TURN: \n", turn.getText());
-                throw new IOException(e.getMessage());
+                throw new IOException(e);
             }
 
             // create unit, and add to Position
@@ -503,12 +518,11 @@ final class JudgeImportHistory {
             // We must first check for a 'dislodged' indicator.
             boolean isUnitDislodged = false;
             if (isRetreatMoveProcessing) {
-                Iterator iter = njo.getResults().iterator();
-                while (iter.hasNext()) {
-                    final Result r = (Result) iter.next();
+                for (Object o : njo.getResults()) {
+                    final Result r = (Result) o;
                     if (r instanceof OrderResult) {
                         if (((OrderResult) r).getResultType()
-                                .equals(OrderResult.ResultType.DISLODGED)) {
+                                .equals(ResultType.DISLODGED)) {
                             isUnitDislodged = true;
                             break;
                         }
@@ -516,7 +530,7 @@ final class JudgeImportHistory {
                 }
             }
 
-            Unit unit = new Unit(order.getPower(), unitType);
+            final Unit unit = new Unit(order.getPower(), unitType);
             unit.setCoast(loc.getCoast());
             position.setLastOccupier(loc.getProvince(), power);
 
@@ -539,189 +553,179 @@ final class JudgeImportHistory {
         // note that we only need to set the last occupier for changing (moving)
         // units, but we will do it for all units for consistency
         //
-        {
-            // create orderMap, which maps powers to their respective order list
-            Power[] powers = map.getPowers().toArray(new Power[0]);
+        // create orderMap, which maps powers to their respective order list
+        final Power[] powers = map.getPowers().toArray(new Power[0]);
 
-            Log.println("  :created power->order mapping");
+        Log.println("  :created power->order mapping");
 
-            HashMap orderMap = new HashMap(powers.length);
-            for (int i = 0; i < powers.length; i++) {
-                orderMap.put(powers[i], new LinkedList());
-            }
+        final HashMap orderMap = new HashMap(powers.length);
+        for (final Power power1 : powers) {
+            orderMap.put(power1, new LinkedList());
+        }
 
-            // process all orders
-            final RuleOptions ruleOpts = world.getRuleOptions();
+        // process all orders
+        final RuleOptions ruleOpts = world.getRuleOptions();
 
-            for (int i = 0; i < nJudgeOrders.length; i++) {
-                final NJudgeOrder njo = nJudgeOrders[i];
-                final Orderable order = njo.getOrder();
+        for (final NJudgeOrder njo : nJudgeOrders) {
+            final Orderable order = njo.getOrder();
 
-                // first try to validate under strict settings; if fail, try
-                // to validate under loose settings.
+            // first try to validate under strict settings; if fail, try
+            // to validate under loose settings.
+            try {
+                order.validate(ts, valOpts, ruleOpts);
+
+                final List list = (LinkedList) orderMap.get(order.getPower());
+                list.add(order);
+
+                results.addAll(njo.getResults());
+
+                Log.println("  order ok: ", order);
+            } catch (final OrderException e) {
+                Log.println(
+                        "  *** JIH::procMove():OrderException while processing order: ",
+                        order);
+                Log.println("      error: ", e);
+                Log.println("      Retesting with loose validation");
+
+                //Try loosening the validation object
+                valOpts.setOption(ValidationOptions.KEY_GLOBAL_PARSING,
+                        ValidationOptions.VALUE_GLOBAL_PARSING_LOOSE);
+
+                /* Try the order once more.
+                 * nJudge accepts illegal moves as valid as long as the syntax is valid.
+                 * (Perhaps a few other things as well). jDip should accept these as well,
+                 * even if the move is illegal.
+                 */
                 try {
                     order.validate(ts, valOpts, ruleOpts);
 
-                    List list = (LinkedList) orderMap.get(order.getPower());
+                    final List list = (LinkedList) orderMap
+                            .get(order.getPower());
                     list.add(order);
 
                     results.addAll(njo.getResults());
 
                     Log.println("  order ok: ", order);
-                } catch (OrderException e) {
+                } catch (final OrderException e1) {
+                    // create a general result indicating failure if an order could not be validated.
+                    results.add(new Result(
+                            Utils.getLocalString(JIH_ORDER_PARSE_FAILURE, order,
+                                    e.getMessage())));
                     Log.println(
-                            "  *** JIH::procMove():OrderException while processing order: ",
-                            order);
-                    Log.println("      error: ", e);
-                    Log.println("      Retesting with loose validation");
-
-                    //Try loosening the validation object
-                    valOpts.setOption(ValidationOptions.KEY_GLOBAL_PARSING,
-                            ValidationOptions.VALUE_GLOBAL_PARSING_LOOSE);
-
-					/* Try the order once more.
-					 * nJudge accepts illegal moves as valid as long as the syntax is valid.
-					 * (Perhaps a few other things as well). jDip should accept these as well,
-					 * even if the move is illegal.
-					 */
-                    try {
-                        order.validate(ts, valOpts, ruleOpts);
-
-                        List list = (LinkedList) orderMap.get(order.getPower());
-                        list.add(order);
-
-                        results.addAll(njo.getResults());
-
-                        Log.println("  order ok: ", order);
-                    } catch (OrderException e1) {
-                        // create a general result indicating failure if an order could not be validated.
-                        results.add(new Result(
-                                Utils.getLocalString(JIH_ORDER_PARSE_FAILURE,
-                                        order, e.getMessage())));
-                        Log.println(
-                                "JIH::procMove():OrderException (during validation): ",
-                                order, "; ", e1.getMessage());
-                        throw new IOException(
-                                "Cannot validate order on second pass.\n" + e1
-                                        .getMessage());
-                    }
-
-                    // Back to strict!
-                    valOpts.setOption(ValidationOptions.KEY_GLOBAL_PARSING,
-                            ValidationOptions.VALUE_GLOBAL_PARSING_STRICT);
+                            "JIH::procMove():OrderException (during validation): ",
+                            order, "; ", e1.getMessage());
+                    throw new IOException(
+                            "Cannot validate order on second pass.\n" + e1
+                                    .getMessage());
                 }
+
+                // Back to strict!
+                valOpts.setOption(ValidationOptions.KEY_GLOBAL_PARSING,
+                        ValidationOptions.VALUE_GLOBAL_PARSING_STRICT);
             }
+        }
 
-            Log.println("JIH::procMove():ORDER PARSING COMPLETE");
+        Log.println("JIH::procMove():ORDER PARSING COMPLETE");
 
-            // clear all units (dislodged or not) from the board
-            Province[] unitProv = position.getUnitProvinces()
-                    .toArray(new Province[0]);
-            Province[] dislProv = position.getDislodgedUnitProvinces()
-                    .toArray(new Province[0]);
-            for (int i = 0; i < unitProv.length; i++) {
-                position.setUnit(unitProv[i], null);
-            }
-            for (int i = 0; i < dislProv.length; i++) {
-                position.setUnit(dislProv[i], null);
-            }
+        // clear all units (dislodged or not) from the board
+        final Province[] unitProv = position.getUnitProvinces()
+                .toArray(new Province[0]);
+        final Province[] dislProv = position.getDislodgedUnitProvinces()
+                .toArray(new Province[0]);
+        for (final Province anUnitProv : unitProv) {
+            position.setUnit(anUnitProv, null);
+        }
+        for (final Province aDislProv : dislProv) {
+            position.setUnit(aDislProv, null);
+        }
 
-            // now that all orders are parsed, and all units are cleared, put
-            // unit in the proper place.
-            Iterator iter = results.iterator();
-            while (iter.hasNext()) {
-                Result result = (Result) iter.next();
-                if (result instanceof OrderResult) {
-                    OrderResult ordResult = (OrderResult) result;
-                    Orderable order = ordResult.getOrder();
+        // now that all orders are parsed, and all units are cleared, put
+        // unit in the proper place.
+        for (Object result1 : results) {
+            final Result result = (Result) result1;
+            if (result instanceof OrderResult) {
+                final OrderResult ordResult = (OrderResult) result;
+                final Orderable order = ordResult.getOrder();
 
-                    if (ordResult
-                            .getResultType() == OrderResult.ResultType.DISLODGED) {
-                        // dislodged orders create a unit in the source province, marked as dislodged,
-                        // unless it was destroyed; if so, it will be destroyed later. Mark as dislodged for now.
-                        Unit unit = new Unit(order.getPower(),
-                                order.getSourceUnitType());
-						/*
-						 * Check for the positionPlacement flag, if not, we need to position the units
-						 * in their source places for VIEWING. Otherwise the units need to be
-						 * in their destination place for copying.
-						 */
-                        if (!positionPlacement) {
-                            unit.setCoast(order.getSource().getCoast());
-                            position.setUnit(order.getSource().getProvince(),
-                                    unit);
-                        } else {
-                            unit.setCoast(order.getSource().getCoast());
-                            position.setDislodgedUnit(
-                                    order.getSource().getProvince(), unit);
-                            Log.println("     unit dislodged: ",
-                                    order.getSource().getProvince());
-                        }
-                    } else if (ordResult
-                            .getResultType() == OrderResult.ResultType.SUCCESS && order instanceof Move) {
-                        // successful moves create a unit in the destination province
-                        Move move = (Move) order;
-                        Unit unit = new Unit(move.getPower(),
-                                move.getSourceUnitType());
-						/*
-						 * Check for the positionPlacement flag, if not, we need to position the units
-						 * in their source places for VIEWING. Otherwise the units need to be
-						 * in their destination place for copying.
-						 */
-                        if (!positionPlacement) {
-                            unit.setCoast(move.getSource().getCoast());
-                            position.setUnit(move.getSource().getProvince(),
-                                    unit);
-                            position.setLastOccupier(
-                                    move.getSource().getProvince(),
-                                    move.getPower());
-                        } else {
-                            unit.setCoast(move.getDest().getCoast());
-                            position.setUnit(move.getDest().getProvince(),
-                                    unit);
-                            position.setLastOccupier(
-                                    move.getDest().getProvince(),
-                                    move.getPower());
-                        }
+                if (ordResult.getResultType() == ResultType.DISLODGED) {
+                    // dislodged orders create a unit in the source province, marked as dislodged,
+                    // unless it was destroyed; if so, it will be destroyed later. Mark as dislodged for now.
+                    final Unit unit = new Unit(order.getPower(),
+                            order.getSourceUnitType());
+                    /*
+                     * Check for the positionPlacement flag, if not, we need to position the units
+                     * in their source places for VIEWING. Otherwise the units need to be
+                     * in their destination place for copying.
+                     */
+                    if (positionPlacement) {
+                        unit.setCoast(order.getSource().getCoast());
+                        position.setDislodgedUnit(
+                                order.getSource().getProvince(), unit);
+                        Log.println("     unit dislodged: ",
+                                order.getSource().getProvince());
                     } else {
-                        // all other orders create a non-dislodged unit in the source province
-                        Unit unit = new Unit(order.getPower(),
-                                order.getSourceUnitType());
-						/*
-						 * Only add a unit if there is not a unit currently there, this stops
-						 * powers further down in alpha. order from overriding powers before
-						 * them. Eg. England dislodged Germany will be overriding if this isn't here.
-						 */
-                        if (!position
-                                .hasUnit(order.getSource().getProvince())) {
-                            unit.setCoast(order.getSource().getCoast());
-                            position.setUnit(order.getSource().getProvince(),
-                                    unit);
-                            position.setLastOccupier(
-                                    order.getSource().getProvince(),
-                                    order.getPower());
-                        }
+                        unit.setCoast(order.getSource().getCoast());
+                        position.setUnit(order.getSource().getProvince(), unit);
+                    }
+                } else if (ordResult
+                        .getResultType() == ResultType.SUCCESS && order instanceof Move) {
+                    // successful moves create a unit in the destination province
+                    final Move move = (Move) order;
+                    final Unit unit = new Unit(move.getPower(),
+                            move.getSourceUnitType());
+                    /*
+                     * Check for the positionPlacement flag, if not, we need to position the units
+                     * in their source places for VIEWING. Otherwise the units need to be
+                     * in their destination place for copying.
+                     */
+                    if (positionPlacement) {
+                        unit.setCoast(move.getDest().getCoast());
+                        position.setUnit(move.getDest().getProvince(), unit);
+                        position.setLastOccupier(move.getDest().getProvince(),
+                                move.getPower());
+                    } else {
+                        unit.setCoast(move.getSource().getCoast());
+                        position.setUnit(move.getSource().getProvince(), unit);
+                        position.setLastOccupier(move.getSource().getProvince(),
+                                move.getPower());
+                    }
+                } else {
+                    // all other orders create a non-dislodged unit in the source province
+                    final Unit unit = new Unit(order.getPower(),
+                            order.getSourceUnitType());
+                    /*
+                     * Only add a unit if there is not a unit currently there, this stops
+                     * powers further down in alpha. order from overriding powers before
+                     * them. Eg. England dislodged Germany will be overriding if this isn't here.
+                     */
+                    if (!position.hasUnit(order.getSource().getProvince())) {
+                        unit.setCoast(order.getSource().getCoast());
+                        position.setUnit(order.getSource().getProvince(), unit);
+                        position.setLastOccupier(
+                                order.getSource().getProvince(),
+                                order.getPower());
                     }
                 }
             }
+        }
 
-            // set orders in turnstate
-            for (int i = 0; i < powers.length; i++) {
-                ts.setOrders(powers[i], (LinkedList) orderMap.get(powers[i]));
-            }
+        // set orders in turnstate
+        for (final Power power : powers) {
+            ts.setOrders(power, (LinkedList) orderMap.get(power));
         }
 
         // process dislodged unit info, to determine retreat paths
         // correct dislodged results are created here, and the old dislodged
         // results are removed
-        DislodgedParser dislodgedParser = new DislodgedParser(ts.getPhase(),
-                turn.getText());
+        final DislodgedParser dislodgedParser = new DislodgedParser(
+                ts.getPhase(), turn.getText());
         makeDislodgedResults(ts.getPhase(), results, position,
                 dislodgedParser.getDislodgedInfo(), positionPlacement);
 
         // process adjustment info ownership info (if any)
         //
-        AdjustmentParser adjParser = new AdjustmentParser(map, turn.getText());
+        final AdjustmentParser adjParser = new AdjustmentParser(map,
+                turn.getText());
         procAdjustmentBlock(adjParser.getOwnership(), ts, position);
 
         // check for elimination
@@ -739,8 +743,8 @@ final class JudgeImportHistory {
     /**
      * Process a Retreat phase turn
      */
-    private void procRetreat(Turn turn,
-                             boolean positionPlacement) throws IOException {
+    private void procRetreat(final Turn turn,
+                             final boolean positionPlacement) throws IOException {
         Log.println("JIH::procRetreat(): METHOD START");
         if (turn == null) return;
         // create TurnState
@@ -753,9 +757,9 @@ final class JudgeImportHistory {
                 "; positionPlacement: ", String.valueOf(positionPlacement));
 
         // parse orders, and create orders for each unit
-        JudgeOrderParser jop = new JudgeOrderParser(map, orderFactory,
+        final JudgeOrderParser jop = new JudgeOrderParser(map, orderFactory,
                 turn.getText());
-        NJudgeOrder[] nJudgeOrders = jop.getNJudgeOrders();
+        final NJudgeOrder[] nJudgeOrders = jop.getNJudgeOrders();
 
         // Copy previous phase positions
         copyPreviousPositions(ts);
@@ -764,129 +768,122 @@ final class JudgeImportHistory {
         // if order failed, it counts as a disband
         // generate results
         // create units for all successfull move (retreat) orders in destination province
-        {
-            // create orderMap, which maps powers to their respective order list
-            Power[] powers = map.getPowers().toArray(new Power[0]);
-            HashMap orderMap = new HashMap(powers.length);
-            for (int i = 0; i < powers.length; i++) {
-                orderMap.put(powers[i], new LinkedList());
+        // create orderMap, which maps powers to their respective order list
+        final Power[] powers = map.getPowers().toArray(new Power[0]);
+        final HashMap orderMap = new HashMap(powers.length);
+        for (final Power power1 : powers) {
+            orderMap.put(power1, new LinkedList());
+        }
+
+        // validate all parsed orders
+        for (final NJudgeOrder njo : nJudgeOrders) {
+            final Orderable order = njo.getOrder();
+            if (order == null) {
+                Log.println("JIH::procRetreat(): Null order; njo: ", njo);
+                throw new IOException(
+                        "Internal error: null order in JudgeImportHistory::procRetreat()");
             }
 
-            // validate all parsed orders
-            for (int i = 0; i < nJudgeOrders.length; i++) {
-                final NJudgeOrder njo = nJudgeOrders[i];
-                final Orderable order = njo.getOrder();
-                if (order == null) {
-                    Log.println("JIH::procRetreat(): Null order; njo: ", njo);
-                    throw new IOException(
-                            "Internal error: null order in JudgeImportHistory::procRetreat()");
-                }
+            // if we found a Wing unit, make sure Wing units are enabled.
+            checkAndEnableWings(order.getSourceUnitType());
 
-                // if we found a Wing unit, make sure Wing units are enabled.
-                checkAndEnableWings(order.getSourceUnitType());
+            try {
+                order.validate(ts, valOpts, ruleOpts);
 
-                try {
-                    order.validate(ts, valOpts, ruleOpts);
+                final List list = (LinkedList) orderMap.get(order.getPower());
+                list.add(order);
 
-                    List list = (LinkedList) orderMap.get(order.getPower());
-                    list.add(order);
+                results.addAll(njo.getResults());
 
-                    results.addAll(njo.getResults());
-
-                    Log.println("  order ok: ", order);
-                } catch (OrderException e) {
-                    results.add(new Result(
-                            Utils.getLocalString(JIH_ORDER_PARSE_FAILURE, order,
-                                    e.getMessage())));
-                    Log.println(
-                            "JIH::procMove():OrderException (during validation): ",
-                            order, "; ", e.getMessage());
-                    throw new IOException("Cannot validate retreat order.\n" + e
-                            .getMessage());
-                }
-            }
-
-            // clear all dislodged units from board
-            if (positionPlacement) {
-                Province[] dislProv = position.getDislodgedUnitProvinces()
-                        .toArray(new Province[0]);
-                for (int i = 0; i < dislProv.length; i++) {
-                    position.setDislodgedUnit(dislProv[i], null);
-                }
-            }
-
-            // now that all orders are parsed, and all units are cleared, put
-            // unit in the proper place.
-            //
-            Iterator iter = results.iterator();
-            while (iter.hasNext()) {
-                Result result = (Result) iter.next();
-                if (result instanceof OrderResult) {
-                    OrderResult ordResult = (OrderResult) result;
-                    Orderable order = ordResult.getOrder();
-
-                    // successful moves create a unit in the destination province
-                    // unsuccessful moves OR disbands create no unit
-                    if (order instanceof Move)// && ordResult.getResultType() == OrderResult.ResultType.SUCCESS)
-                    {
-                        // success: unit retreat to destination
-                        Move move = (Move) order;
-
-                        Unit unit = new Unit(move.getPower(),
-                                move.getSourceUnitType());
-						/*
-						 * Check for the positionPlacement flag, if not, we need to position the units
-						 * in their source places for VIEWING. Otherwise the units need to be
-						 * in their destination place for copying.
-						 */
-                        if (!positionPlacement) {
-                            unit.setCoast(move.getSource().getCoast());
-                            position.setDislodgedUnit(
-                                    move.getSource().getProvince(), unit);
-                            position.setLastOccupier(
-                                    move.getSource().getProvince(),
-                                    move.getPower());
-                            Log.println("     unit dislodged: ",
-                                    move.getSource().getProvince());
-                        } else {
-                            unit.setCoast(move.getDest().getCoast());
-                            position.setUnit(move.getDest().getProvince(),
-                                    unit);
-                            position.setLastOccupier(
-                                    move.getSource().getProvince(),
-                                    move.getPower());
-                        }
-                    } else if (order instanceof Disband) {
-						/*
-						 * Check for the positionPlacement flag, if not, we need to position the units
-						 * in their source places for VIEWING. Otherwise the units should not be drawn.
-						 */
-                        Unit unit = new Unit(order.getPower(),
-                                order.getSourceUnitType());
-                        if (!positionPlacement) {
-                            unit.setCoast(order.getSource().getCoast());
-                            position.setDislodgedUnit(
-                                    order.getSource().getProvince(), unit);
-                            Log.println("     unit dislodged: ",
-                                    order.getSource().getProvince());
-                        }
-                    }
-                }
-            }
-
-            // set orders in turnstate
-            for (int i = 0; i < powers.length; i++) {
-                ts.setOrders(powers[i], (LinkedList) orderMap.get(powers[i]));
+                Log.println("  order ok: ", order);
+            } catch (final OrderException e) {
+                results.add(new Result(
+                        Utils.getLocalString(JIH_ORDER_PARSE_FAILURE, order,
+                                e.getMessage())));
+                Log.println(
+                        "JIH::procMove():OrderException (during validation): ",
+                        order, "; ", e.getMessage());
+                throw new IOException(
+                        "Cannot validate retreat order.\n" + e.getMessage());
             }
         }
 
+        // clear all dislodged units from board
+        if (positionPlacement) {
+            final Province[] dislProv = position.getDislodgedUnitProvinces()
+                    .toArray(new Province[0]);
+            for (final Province aDislProv : dislProv) {
+                position.setDislodgedUnit(aDislProv, null);
+            }
+        }
+
+        // now that all orders are parsed, and all units are cleared, put
+        // unit in the proper place.
+        //
+        for (Object result1 : results) {
+            final Result result = (Result) result1;
+            if (result instanceof OrderResult) {
+                final OrderResult ordResult = (OrderResult) result;
+                final Orderable order = ordResult.getOrder();
+
+                // successful moves create a unit in the destination province
+                // unsuccessful moves OR disbands create no unit
+                if (order instanceof Move) {
+                    // && ordResult.getResultType() == OrderResult.ResultType.SUCCESS)
+                    // success: unit retreat to destination
+                    final Move move = (Move) order;
+
+                    final Unit unit = new Unit(move.getPower(),
+                            move.getSourceUnitType());
+                    /*
+                     * Check for the positionPlacement flag, if not, we need to position the units
+                     * in their source places for VIEWING. Otherwise the units need to be
+                     * in their destination place for copying.
+                     */
+                    if (positionPlacement) {
+                        unit.setCoast(move.getDest().getCoast());
+                        position.setUnit(move.getDest().getProvince(), unit);
+                        position.setLastOccupier(move.getSource().getProvince(),
+                                move.getPower());
+                    } else {
+                        unit.setCoast(move.getSource().getCoast());
+                        position.setDislodgedUnit(
+                                move.getSource().getProvince(), unit);
+                        position.setLastOccupier(move.getSource().getProvince(),
+                                move.getPower());
+                        Log.println("     unit dislodged: ",
+                                move.getSource().getProvince());
+                    }
+                } else if (order instanceof Disband) {
+                    /*
+                     * Check for the positionPlacement flag, if not, we need to position the units
+                     * in their source places for VIEWING. Otherwise the units should not be drawn.
+                     */
+                    final Unit unit = new Unit(order.getPower(),
+                            order.getSourceUnitType());
+                    if (!positionPlacement) {
+                        unit.setCoast(order.getSource().getCoast());
+                        position.setDislodgedUnit(
+                                order.getSource().getProvince(), unit);
+                        Log.println("     unit dislodged: ",
+                                order.getSource().getProvince());
+                    }
+                }
+            }
+        }
+
+        // set orders in turnstate
+        for (final Power power : powers) {
+            ts.setOrders(power, (LinkedList) orderMap.get(power));
+        }
+
         // process adjustment info ownership info (if any)
-        AdjustmentParser adjParser = new AdjustmentParser(map, turn.getText());
+        final AdjustmentParser adjParser = new AdjustmentParser(map,
+                turn.getText());
         procAdjustmentBlock(adjParser.getOwnership(), ts, position);
 
         // check for elimination
-        ts.getPosition()
-                .setEliminationStatus(map.getPowers());
+        ts.getPosition().setEliminationStatus(map.getPowers());
 
         // set adjudicated flag
         ts.setResolved(true);
@@ -900,8 +897,8 @@ final class JudgeImportHistory {
     /**
      * Process an Adjustment phase turn
      */
-    private void procAdjust(Turn turn,
-                            boolean positionPlacement) throws IOException {
+    private void procAdjust(final Turn turn,
+                            final boolean positionPlacement) throws IOException {
         if (turn == null) {
             return;
         }
@@ -925,8 +922,8 @@ final class JudgeImportHistory {
         copyPreviousSCInfo(ts);
 
         // DEBUG: use Adjustment to check out WTF is going on
-		/*
-		System.out.println("dip.process.Adjustment.getAdjustmentInfo()");
+        /*
+        System.out.println("dip.process.Adjustment.getAdjustmentInfo()");
 		for(int i=0; i<map.getPowers().length; i++)
 		{
 			Power power = map.getPowers()[i];
@@ -941,15 +938,14 @@ final class JudgeImportHistory {
             final Position position = ts.getPosition();
 
             // create orderMap, which maps powers to their respective order list
-            Power[] powers = map.getPowers().toArray(new Power[0]);
-            HashMap orderMap = new HashMap(powers.length);
-            for (int i = 0; i < powers.length; i++) {
-                orderMap.put(powers[i], new LinkedList());
+            final Power[] powers = map.getPowers().toArray(new Power[0]);
+            final HashMap orderMap = new HashMap(powers.length);
+            for (final Power power1 : powers) {
+                orderMap.put(power1, new LinkedList());
             }
 
             // parse all orders
-            for (int i = 0; i < nJudgeOrders.length; i++) {
-                final NJudgeOrder njo = nJudgeOrders[i];
+            for (final NJudgeOrder njo : nJudgeOrders) {
                 final Orderable order = njo.getOrder();
 
                 // all adjustment orders produced by NJudgeOrderParser should
@@ -965,7 +961,7 @@ final class JudgeImportHistory {
                 // if result is a substituted result, the player defaulted,
                 // and the Judge inserted a Disband order
                 //
-                final boolean isDefaulted = (result instanceof SubstitutedResult);
+                final boolean isDefaulted = result instanceof SubstitutedResult;
 
                 if (order == null && !isDefaulted) {
                     // orders may be null; if they are, that is because
@@ -980,7 +976,7 @@ final class JudgeImportHistory {
                     if (isDefaulted) {
                         newOrder = ((SubstitutedResult) result)
                                 .getSubstitutedOrder();
-                        assert (newOrder != null);
+                        assert newOrder != null;
                     }
 
                     // if we found a Wing unit, make sure Wing units are enabled.
@@ -990,7 +986,7 @@ final class JudgeImportHistory {
                         newOrder.validate(ts, valOpts, ruleOpts);
 
                         if (!isDefaulted) {
-                            List list = (LinkedList) orderMap
+                            final List list = (LinkedList) orderMap
                                     .get(newOrder.getPower());
                             list.add(newOrder);
                         }
@@ -1024,7 +1020,7 @@ final class JudgeImportHistory {
                             throw new IllegalStateException(
                                     "JIH::procAdjust(): type :" + newOrder + " not handled!");
                         }
-                    } catch (OrderException e) {
+                    } catch (final OrderException e) {
                         results.add(new Result(
                                 Utils.getLocalString(JIH_ORDER_PARSE_FAILURE,
                                         newOrder, e.getMessage())));
@@ -1043,15 +1039,14 @@ final class JudgeImportHistory {
             }
 
             // set orders in turnstate
-            for (int i = 0; i < powers.length; i++) {
-                ts.setOrders(powers[i], (LinkedList) orderMap.get(powers[i]));
+            for (final Power power : powers) {
+                ts.setOrders(power, (LinkedList) orderMap.get(power));
             }
         }
 
 
         // check for elimination
-        ts.getPosition()
-                .setEliminationStatus(map.getPowers());
+        ts.getPosition().setEliminationStatus(map.getPowers());
 
         // set adjudicated flag
         ts.setResolved(true);
@@ -1060,29 +1055,27 @@ final class JudgeImportHistory {
         // Otherwise, problems can arise and the game will end after importing due to no SC change.
         if (!positionPlacement) {
             TurnState previousTS = world.getPreviousTurnState(ts).get();
-            while (previousTS.getPhase()
-                    .getPhaseType() != Phase.PhaseType.MOVEMENT) {
+            while (previousTS.getPhase().getPhaseType() != PhaseType.MOVEMENT) {
                 previousTS = world.getPreviousTurnState(previousTS).get();
             }
             //System.out.println(previousTS.getPhase());
-            Position oldPosition = previousTS.getPosition();
-            Position position = ts.getPosition();
-            Province[] provinces = position.getProvinces()
+            final Position oldPosition = previousTS.getPosition();
+            final Position position = ts.getPosition();
+            final Province[] provinces = position.getProvinces()
                     .toArray(new Province[0]);
-            for (int i = 0; i < provinces.length; i++) {
-                Province province = provinces[i];
+            for (final Province province : provinces) {
                 if (province != null && province.hasSupplyCenter()) {
-                    Unit unit = position.getUnit(province).orElse(null);
+                    final Unit unit = position.getUnit(province).orElse(null);
                     if (unit != null) {
                         // nextPosition still contains old ownership information
-                        Power oldOwner = oldPosition
+                        final Power oldOwner = oldPosition
                                 .getSupplyCenterOwner(province).orElse(null);
-                        Power newOwner = unit.getPower();
+                        final Power newOwner = unit.getPower();
                         //System.out.println(oldOwner + " VS " + newOwner);
 
                         // change if ownership change, and not a wing unit
                         if (oldOwner != newOwner && unit
-                                .getType() != Unit.Type.WING) {
+                                .getType() != Type.WING) {
                             // set owner-changed flag in TurnState [req'd for certain victory conditions]
                             ts.setSCOwnerChanged(true);
                         }
@@ -1103,15 +1096,15 @@ final class JudgeImportHistory {
      * We also copy non-dislodged units, unless the CURRENT turnstate is
      * an Adjustment phase
      */
-    private void copyPreviousPositions(TurnState current) {
+    private void copyPreviousPositions(final TurnState current) {
         // get previous turnstate
-        TurnState previousTS = current.getWorld().getPreviousTurnState(current)
-                .get();
-        final boolean isCopyDislodged = (current.getPhase()
-                .getPhaseType() != Phase.PhaseType.ADJUSTMENT);
+        final TurnState previousTS = current.getWorld()
+                .getPreviousTurnState(current).get();
+        final boolean isCopyDislodged = current.getPhase()
+                .getPhaseType() != PhaseType.ADJUSTMENT;
 
         // get position info
-        Position newPos = current.getPosition();
+        final Position newPos = current.getPosition();
         Position oldPos = null;
         if (previousTS == null) {
             oldPos = oldPosition;
@@ -1124,11 +1117,10 @@ final class JudgeImportHistory {
         // clone!
         final Province[] provinces = map.getProvinces()
                 .toArray(new Province[0]);
-        for (int i = 0; i < provinces.length; i++) {
-            final Province p = provinces[i];
+        for (final Province p : provinces) {
             Unit unit = oldPos.getUnit(p).orElse(null);
             if (unit != null) {
-                Unit newUnit = (Unit) unit.clone();
+                final Unit newUnit = unit.clone();
                 newPos.setUnit(p, newUnit);
                 Log.println("  cloned unit from/into: ", p, " - ",
                         unit.getPower());
@@ -1136,7 +1128,7 @@ final class JudgeImportHistory {
 
             unit = oldPos.getDislodgedUnit(p).orElse(null);
             if (isCopyDislodged && unit != null) {
-                Unit newUnit = (Unit) unit.clone();
+                final Unit newUnit = unit.clone();
                 newPos.setDislodgedUnit(p, newUnit);
                 Log.println("  cloned dislodged unit from/into: ", p, " - ",
                         unit.getPower());
@@ -1158,15 +1150,15 @@ final class JudgeImportHistory {
      * This method should only be used if no AdjustmentInfo block has
      * been detected.
      */
-    private void copyPreviousSCInfo(TurnState current) {
+    private void copyPreviousSCInfo(final TurnState current) {
         Log.println("copyPreviousSCInfo(): ", current.getPhase());
 
         // get previous position information (or initial, if previous not available)
         final TurnState previousTS = current.getWorld()
                 .getPreviousTurnState(current).get();
-        Position prevPos = (previousTS == null) ? oldPosition : previousTS
+        final Position prevPos = previousTS == null ? oldPosition : previousTS
                 .getPosition();
-		
+
 		/*
 		if(previousTS != null)
 		{
@@ -1181,22 +1173,22 @@ final class JudgeImportHistory {
 		*/
 
         // current position
-        Position currentPos = current.getPosition();
+        final Position currentPos = current.getPosition();
 
         // copy!
-        Province[] provinces = map.getProvinces().toArray(new Province[0]);
-        for (int i = 0; i < provinces.length; i++) {
-            Power power = prevPos.getSupplyCenterOwner(provinces[i])
-                    .orElse(null);
+        final Province[] provinces = map.getProvinces()
+                .toArray(new Province[0]);
+        for (final Province province : provinces) {
+            Power power = prevPos.getSupplyCenterOwner(province).orElse(null);
             if (power != null) {
                 //System.out.println("  SC @ "+provinces[i]+", owned by "+power);
-                currentPos.setSupplyCenterOwner(provinces[i], power);
-                Log.println("  set SC: ", provinces[i], " owned by ", power);
+                currentPos.setSupplyCenterOwner(province, power);
+                Log.println("  set SC: ", province, " owned by ", power);
             }
-            power = prevPos.getSupplyCenterHomePower(provinces[i]).orElse(null);
+            power = prevPos.getSupplyCenterHomePower(province).orElse(null);
             if (power != null) {
-                currentPos.setSupplyCenterHomePower(provinces[i], power);
-                Log.println("  set HSC: ", provinces[i], " owned by ", power);
+                currentPos.setSupplyCenterHomePower(province, power);
+                Log.println("  set HSC: ", province, " owned by ", power);
             }
         }
     }// copyPreviousSCInfo()
@@ -1205,18 +1197,16 @@ final class JudgeImportHistory {
     /**
      * Copies the Previous turnstate's lastOccupier information only
      */
-    private void copyPreviousLastOccupierInfo(TurnState current) {
-        TurnState previousTS = current.getWorld().getPreviousTurnState(current)
-                .get();
-        Position newPos = current.getPosition();
-        Position oldPos = (previousTS == null) ? oldPosition : previousTS
+    private void copyPreviousLastOccupierInfo(final TurnState current) {
+        final TurnState previousTS = current.getWorld()
+                .getPreviousTurnState(current).get();
+        final Position newPos = current.getPosition();
+        final Position oldPos = previousTS == null ? oldPosition : previousTS
                 .getPosition();
 
         final Province[] provinces = map.getProvinces()
                 .toArray(new Province[0]);
-        for (int i = 0; i < provinces.length; i++) {
-            final Province p = provinces[i];
-
+        for (final Province p : provinces) {
             // clone any lastOccupied info as well.
             newPos.setLastOccupier(p, oldPos.getLastOccupier(p).orElse(null));
         }
@@ -1232,28 +1222,28 @@ final class JudgeImportHistory {
      * If no SC owner info exists, copyPreviousSCInfo() is used to
      * supply the appropriate information.
      */
-    private void procAdjustmentBlock(AdjustmentParser.OwnerInfo[] ownerInfo,
-                                     TurnState ts,
-                                     Position position) throws IOException {
+    private void procAdjustmentBlock(final OwnerInfo[] ownerInfo,
+                                     final TurnState ts,
+                                     final Position position) throws IOException {
         Log.println("procAdjustmentBlock(): ", ts.getPhase());
         if (ownerInfo.length == 0) {
             Log.println(
                     "   No adjustment block. Copying previous SC ownership info.");
             copyPreviousSCInfo(ts);
         } else {
-            for (int i = 0; i < ownerInfo.length; i++) {
-                Power power = map.getPowerMatching(ownerInfo[i].getPowerName())
+            for (final OwnerInfo anOwnerInfo : ownerInfo) {
+                final Power power = map
+                        .getPowerMatching(anOwnerInfo.getPowerName())
                         .orElse(null);
                 if (power != null) {
                     Log.println("   SC Owned by Power: ", power);
-                    String[] provNames = ownerInfo[i].getProvinces();
-                    for (int pi = 0; pi < provNames.length; pi++) {
-                        Province province = map
-                                .getProvinceMatching(provNames[pi])
-                                .orElse(null);
+                    final String[] provNames = anOwnerInfo.getProvinces();
+                    for (final String provName : provNames) {
+                        final Province province = map
+                                .getProvinceMatching(provName).orElse(null);
                         if (province == null) {
                             throw new IOException(
-                                    "Unknown Province in SC Ownership block: " + provNames[pi]);
+                                    "Unknown Province in SC Ownership block: " + provName);
                         }
 
                         Log.println("       ", province);
@@ -1261,8 +1251,8 @@ final class JudgeImportHistory {
                     }
                 } else {
                     Log.println("  *** Unrecognized power: ",
-                            ownerInfo[i].getPowerName());
-                    throw new IOException("Unregognized power \"" + ownerInfo[i]
+                            anOwnerInfo.getPowerName());
+                    throw new IOException("Unregognized power \"" + anOwnerInfo
                             .getPowerName() + "\" in Ownership block.");
                 }
             }
@@ -1278,31 +1268,30 @@ final class JudgeImportHistory {
      * <p>
      * old Dislodged results are discarded.
      */
-    private void makeDislodgedResults(Phase phase, List results,
-                                      Position position,
-                                      DislodgedParser.DislodgedInfo[] dislodgedInfo,
-                                      boolean positionPlacement) throws IOException {
+    private void makeDislodgedResults(final Phase phase, final List results,
+                                      final Position position,
+                                      final DislodgedInfo[] dislodgedInfo,
+                                      final boolean positionPlacement) throws IOException {
         Log.println("JIH::makeDislodgedResults() [", phase, "]");
         Log.println("  # results: ", results.size());
-        ListIterator iter = results.listIterator();
+        final ListIterator iter = results.listIterator();
         while (iter.hasNext()) {
-            Result result = (Result) iter.next();
+            final Result result = (Result) iter.next();
             if (result instanceof OrderResult) {
-                OrderResult orderResult = (OrderResult) result;
-                if (OrderResult.ResultType.DISLODGED
-                        .equals(orderResult.getResultType())) {
+                final OrderResult orderResult = (OrderResult) result;
+                if (ResultType.DISLODGED.equals(orderResult.getResultType())) {
                     Log.println("  failed order: ", orderResult.getOrder());
 
                     String[] retreatLocNames = null;
-                    for (int i = 0; i < dislodgedInfo.length; i++) {
+                    for (final DislodgedInfo aDislodgedInfo : dislodgedInfo) {
                         // find the province for this dislodgedInfo source
                         // remember, we use map.parseLocation() to auto-normalize coasts (see Coast.normalize())
-                        Location location = map
-                                .parseLocation(dislodgedInfo[i].getSourceName())
+                        final Location location = map
+                                .parseLocation(aDislodgedInfo.getSourceName())
                                 .orElse(null);
                         if (orderResult.getOrder().getSource()
                                 .isProvinceEqual(location)) {
-                            retreatLocNames = dislodgedInfo[i]
+                            retreatLocNames = aDislodgedInfo
                                     .getRetreatLocationNames();
                             break;
                         }
@@ -1314,7 +1303,7 @@ final class JudgeImportHistory {
                                 Utils.getLocalString(JIH_NO_DISLODGED_MATCH,
                                         orderResult.getOrder())));
 
-                        String message = "Could not match dislodged order: " + orderResult
+                        final String message = "Could not match dislodged order: " + orderResult
                                 .getOrder() + "; phase: " + phase;
                         Log.println(message);
 
@@ -1323,7 +1312,7 @@ final class JudgeImportHistory {
                     } else {
                         try {
                             // create objects from retreat location names
-                            Location[] retreatLocations = new Location[retreatLocNames.length];
+                            final Location[] retreatLocations = new Location[retreatLocNames.length];
                             for (int i = 0; i < retreatLocNames.length; i++) {
                                 retreatLocations[i] = map
                                         .parseLocation(retreatLocNames[i])
@@ -1343,9 +1332,9 @@ final class JudgeImportHistory {
                             // if no retreat results, destroy unit
                             if (retreatLocations.length == 0) {
                                 // destroy
-                                Province province = orderResult.getOrder()
+                                final Province province = orderResult.getOrder()
                                         .getSource().getProvince();
-                                Unit unit;
+                                final Unit unit;
 								
 								/*
 								 * Check for the positionPlacement flag. If so, go ahead and set the unit to the
@@ -1369,7 +1358,7 @@ final class JudgeImportHistory {
                                                 unit.getType().getFullName(),
                                                 province)));
                             }
-                        } catch (OrderException e) {
+                        } catch (final OrderException e) {
                             // couldn't validate!!
                             iter.add(new Result(
                                     Utils.getLocalString(JIH_INVALID_RETREAT,
@@ -1377,7 +1366,7 @@ final class JudgeImportHistory {
                             Log.println(
                                     "JIH::makeDislodgedResults(): exception: ",
                                     orderResult.getOrder());
-                            throw new IOException(e.getMessage());
+                            throw new IOException(e);
                         }
                     }
                 }
@@ -1389,11 +1378,11 @@ final class JudgeImportHistory {
         Phase phase = null;
 
         // determine the next phase by reading through the turn text.
-        Pattern pattern = Pattern.compile(START_POSITIONS);
-        Matcher m = pattern.matcher(jp.getText());
+        final Pattern pattern = Pattern.compile(START_POSITIONS);
+        final Matcher m = pattern.matcher(jp.getText());
 
         if (m.find()) {
-            StringBuffer sb = new StringBuffer(64);
+            final StringBuffer sb = new StringBuffer(64);
             sb.append(m.group(1));
             sb.append(' ');
             sb.append(m.group(2));
@@ -1407,12 +1396,12 @@ final class JudgeImportHistory {
         }
 
         // Create the new turnstate
-        TurnState ts = new TurnState(phase);
+        final TurnState ts = new TurnState(phase);
         ts.setWorld(world);
         ts.setPosition(new Position(world.getMap()));
 
         // set Home Supply centers in position
-        Position pos = oldPosition;
+        final Position pos = oldPosition;
         for (int i = 0; i < oldPosition.getHomeSupplyCenters()
                 .toArray(new Province[0]).length; i++) {
             pos.setSupplyCenterHomePower(oldPosition.getHomeSupplyCenters()
@@ -1428,8 +1417,7 @@ final class JudgeImportHistory {
         copyPreviousSCInfo(ts);
 
         // check for elimination
-        ts.getPosition()
-                .setEliminationStatus(map.getPowers());
+        ts.getPosition().setEliminationStatus(map.getPowers());
 
         // add to World
         world.setTurnState(ts);
@@ -1440,16 +1428,16 @@ final class JudgeImportHistory {
      * <p>
      * If parsing fails, no last turnstate will be created.
      */
-    private void makeLastTurnState(Turn lastTurn) throws IOException {
+    private void makeLastTurnState(final Turn lastTurn) throws IOException {
         Phase phase = null;
 
         // determine the next phase by reading through the turn text.
-        Pattern pattern = Pattern.compile(PARSE_REGEX);
+        final Pattern pattern = Pattern.compile(PARSE_REGEX);
 
-        Matcher m = pattern.matcher(lastTurn.getText());
+        final Matcher m = pattern.matcher(lastTurn.getText());
 
         if (m.find()) {
-            StringBuffer sb = new StringBuffer(64);
+            final StringBuffer sb = new StringBuffer(64);
             sb.append(m.group(1));
             sb.append(' ');
             sb.append(m.group(2));
@@ -1463,15 +1451,15 @@ final class JudgeImportHistory {
         }
 
         // Create the new turnstate
-        TurnState ts = new TurnState(phase);
+        final TurnState ts = new TurnState(phase);
         ts.setWorld(world);
         ts.setPosition(new Position(world.getMap()));
 
         // set Home Supply centers in position
-        Position pos = ts.getPosition();
-        for (int i = 0; i < homeSCInfo.length; i++) {
-            pos.setSupplyCenterHomePower(homeSCInfo[i].getProvince(),
-                    homeSCInfo[i].getPower());
+        final Position pos = ts.getPosition();
+        for (final HSCInfo aHomeSCInfo : homeSCInfo) {
+            pos.setSupplyCenterHomePower(aHomeSCInfo.getProvince(),
+                    aHomeSCInfo.getPower());
         }
 
         // Copy previous phase positions
@@ -1481,8 +1469,7 @@ final class JudgeImportHistory {
         copyPreviousSCInfo(ts);
 
         // check for elimination
-        ts.getPosition()
-                .setEliminationStatus(map.getPowers());
+        ts.getPosition().setEliminationStatus(map.getPowers());
 
         // add to World
         world.setTurnState(ts);
@@ -1493,13 +1480,13 @@ final class JudgeImportHistory {
      * If a WING unit is detected, make sure we have the WING option
      * enabled; if it already is, do nothing.
      */
-    private void checkAndEnableWings(Unit.Type unitType) {
-        if (Unit.Type.WING.equals(unitType)) {
-            RuleOptions ruleOpts = world.getRuleOptions();
-            if (RuleOptions.OptionValue.VALUE_WINGS_DISABLED.equals(ruleOpts
-                    .getOptionValue(RuleOptions.Option.OPTION_WINGS))) {
-                ruleOpts.setOption(RuleOptions.Option.OPTION_WINGS,
-                        RuleOptions.OptionValue.VALUE_WINGS_ENABLED);
+    private void checkAndEnableWings(final Type unitType) {
+        if (Type.WING.equals(unitType)) {
+            final RuleOptions ruleOpts = world.getRuleOptions();
+            if (OptionValue.VALUE_WINGS_DISABLED
+                    .equals(ruleOpts.getOptionValue(Option.OPTION_WINGS))) {
+                ruleOpts.setOption(Option.OPTION_WINGS,
+                        OptionValue.VALUE_WINGS_ENABLED);
                 world.setRuleOptions(ruleOpts);
             }
         }
@@ -1509,11 +1496,11 @@ final class JudgeImportHistory {
     /**
      * Home Supply Center information
      */
-    private class HSCInfo {
-        private Province province;
-        private Power power;
+    private static class HSCInfo {
+        private final Province province;
+        private final Power power;
 
-        public HSCInfo(Province province, Power power) {
+        private HSCInfo(final Province province, final Power power) {
             this.province = province;
             this.power = power;
         }// HSCInfo()

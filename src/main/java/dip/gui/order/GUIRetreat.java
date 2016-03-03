@@ -40,6 +40,7 @@ import org.w3c.dom.svg.SVGGElement;
 import org.w3c.dom.svg.SVGLineElement;
 
 import java.awt.geom.Point2D;
+import java.util.List;
 
 /**
  * GUIOrder subclass of Retreat order.
@@ -118,11 +119,11 @@ public class GUIRetreat extends Retreat implements GUIOrder {
 
                 // determine valid retreat locations
                 RetreatChecker rc = stateInfo.getRetreatChecker();
-                final Location[] retreatLocs = rc.getValidLocations(
+                final List<Location> retreatLocs = rc.getValidLocations(
                         new Location(province, unit.getCoast()));
 
                 // if we have no valid retreat locations, inform that we must disband
-                if (retreatLocs.length == 0) {
+                if (retreatLocs.size() == 0) {
                     sb.append(Utils.getLocalString(UNIT_MUST_DISBAND));
                     return false;
                 }
@@ -162,10 +163,11 @@ public class GUIRetreat extends Retreat implements GUIOrder {
             // strict parsing is enabled. We are more selective.
             // check destination against possible retreat locations.
             RetreatChecker rc = stateInfo.getRetreatChecker();
-            final Location[] retreatLocs = rc.getValidLocations(getSource());
+            final List<Location> retreatLocs = rc
+                    .getValidLocations(getSource());
 
-            for (int i = 0; i < retreatLocs.length; i++) {
-                if (retreatLocs[i].getProvince() == province) {
+            for (int i = 0; i < retreatLocs.size(); i++) {
+                if (retreatLocs.get(i).getProvince() == province) {
                     sb.append(Utils.getLocalString(CLICK_TO_SET_DEST));
                     return true;
                 }
@@ -406,17 +408,17 @@ public class GUIRetreat extends Retreat implements GUIOrder {
     /**
      * Generate text message containing valid retreat locations (if any). Assumes non-zero retreatLocs length.
      */
-    private String getRetLocText(Location[] retreatLocs) {
-        if (retreatLocs.length == 0) {
+    private String getRetLocText(List<Location> retreatLocs) {
+        if (retreatLocs.size() == 0) {
             throw new IllegalStateException();
         } else {
             StringBuffer tmp = new StringBuffer(64);
             tmp.append(Utils.getLocalString(VALID_RETREAT_LOCS));
 
-            tmp.append(retreatLocs[0].getProvince().getShortName());
-            for (int i = 1; i < retreatLocs.length; i++) {
+            tmp.append(retreatLocs.get(0).getProvince().getShortName());
+            for (int i = 1; i < retreatLocs.size(); i++) {
                 tmp.append(", ");
-                tmp.append(retreatLocs[i].getProvince().getShortName());
+                tmp.append(retreatLocs.get(i).getProvince().getShortName());
             }
 
             tmp.append('.');
