@@ -276,7 +276,8 @@ public class Support extends Order {
     public boolean equals(final Object obj) {
         if (obj instanceof Support) {
             final Support support = (Support) obj;
-            if (super.equals(support) && supUnitType == support.supUnitType && supSrc
+            if (super
+                    .equals(support) && supUnitType == support.supUnitType && supSrc
                     .equals(support.supSrc) && supPower
                     .equals(support.supPower) && (supDest == support.supDest || supDest != null && supDest
                     .equals(support.supDest))) {
@@ -300,7 +301,7 @@ public class Support extends Order {
             final Position position = state.getPosition();
 
             // validate Borders
-            Border border = src.getProvince()
+            final Border border = src.getProvince()
                     .getTransit(src, srcUnitType, state.getPhase(), getClass())
                     .orElse(null);
             if (border != null) {
@@ -332,13 +333,13 @@ public class Support extends Order {
             }
 
             // validate Borders
-            border = supSrc.getProvince()
+            final Border border1 = supSrc.getProvince()
                     .getTransit(supSrc, supUnitType, state.getPhase(),
                             getClass()).orElse(null);
-            if (border != null) {
+            if (border1 != null) {
                 throw new OrderException(
                         Utils.getLocalString(ORD_VAL_BORDER, src.getProvince(),
-                                border.getDescription()));
+                                border1.getDescription()));
             }
 
             // support source (hold) destination (move) validation
@@ -368,14 +369,14 @@ public class Support extends Order {
                 }
 
                 // destination border validation
-                border = supDest.getProvince()
+                final Border border0 = supDest.getProvince()
                         .getTransit(supDest, supUnitType, state.getPhase(),
                                 getClass()).orElse(null);
-                if (border != null) {
+                if (border0 != null) {
                     throw new OrderException(
                             Utils.getLocalString(ORD_VAL_BORDER,
                                     src.getProvince(),
-                                    border.getDescription()));
+                                    border0.getDescription()));
                 }
             }
 
