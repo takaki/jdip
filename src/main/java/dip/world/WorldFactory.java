@@ -259,34 +259,31 @@ public class WorldFactory {
 
             final Type unitType = initState.getUnitType();
 
-            if (unitType != null) {
-                // create unit in province, if location is valid
-                final Coast coast = initState.getCoast();
-
-                final Unit unit = new Unit(
-                        map.getPowerMatching(initState.getPowerName())
-                                .orElseThrow(() -> new InvalidWorldException(
-                                        Utils.getLocalString(WF_BAD_IS_POWER))),
-                        unitType);
-                final Location location = new Location(province, coast);
-                try {
-                    final Location location2 = location
-                            .getValidatedSetup(unitType);
-                    unit.setCoast(location2.getCoast());
-                    pos.setUnit(province, unit);
-
-                    // set 'lastOccupier' for unit
-                    pos.setLastOccupier(province, unit.getPower());
-                } catch (final OrderException e) {
-                    throw new InvalidWorldException(
-                            Utils.getLocalString(WF_BAD_IS_UNIT_LOC,
-                                    initState.getProvinceName(),
-                                    e.getMessage()), e);
-                }
-            } else {
+            if (unitType == null) {
                 throw new InvalidWorldException(
                         Utils.getLocalString(WF_BAD_IS_UNIT,
                                 initState.getProvinceName()));
+            }
+            // create unit in province, if location is valid
+            final Coast coast = initState.getCoast();
+
+            final Unit unit = new Unit(
+                    map.getPowerMatching(initState.getPowerName()).orElseThrow(
+                            () -> new InvalidWorldException(
+                                    Utils.getLocalString(WF_BAD_IS_POWER))),
+                    unitType);
+            final Location location = new Location(province, coast);
+            try {
+                unit.setCoast(location.getValidatedSetup(unitType).getCoast());
+                pos.setUnit(province, unit);
+
+                // set 'lastOccupier' for unit
+                pos.setLastOccupier(province, unit.getPower());
+            } catch (final OrderException e) {
+                throw new InvalidWorldException(
+                        Utils.getLocalString(WF_BAD_IS_UNIT_LOC,
+                                initState.getProvinceName(), e.getMessage()),
+                        e);
             }
         });
 
