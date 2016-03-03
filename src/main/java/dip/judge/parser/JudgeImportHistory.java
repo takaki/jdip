@@ -31,6 +31,7 @@ import dip.order.Build;
 import dip.order.Disband;
 import dip.order.Move;
 import dip.order.NJudgeOrderParser.NJudgeOrder;
+import dip.order.Order;
 import dip.order.OrderException;
 import dip.order.OrderFactory;
 import dip.order.Orderable;
@@ -558,7 +559,7 @@ public final class JudgeImportHistory {
 
         Log.println("  :created power->order mapping");
 
-        final HashMap<Power, LinkedList<dip.order.Orderable>> orderMap = new HashMap<>(
+        final HashMap<Power, LinkedList<dip.order.Order>> orderMap = new HashMap<>(
                 powers.length);
         for (final Power power1 : powers) {
             orderMap.put(power1, new LinkedList<>());
@@ -568,14 +569,14 @@ public final class JudgeImportHistory {
         final RuleOptions ruleOpts = world.getRuleOptions();
 
         for (final NJudgeOrder njo : nJudgeOrders) {
-            final Orderable order = njo.getOrder();
+            final Order order = njo.getOrder();
 
             // first try to validate under strict settings; if fail, try
             // to validate under loose settings.
             try {
                 order.validate(ts, valOpts, ruleOpts);
 
-                final List<Orderable> list = orderMap.get(order.getPower());
+                final LinkedList<Order> list = orderMap.get(order.getPower());
                 list.add(order);
 
                 results.addAll(njo.getResults());
@@ -600,7 +601,7 @@ public final class JudgeImportHistory {
                 try {
                     order.validate(ts, valOpts, ruleOpts);
 
-                    final List<Orderable> list = orderMap
+                    final List<Order> list = orderMap
                             .get(order.getPower());
                     list.add(order);
 
@@ -771,7 +772,7 @@ public final class JudgeImportHistory {
         // create units for all successfull move (retreat) orders in destination province
         // create orderMap, which maps powers to their respective order list
         final Power[] powers = map.getPowers().toArray(new Power[0]);
-        final HashMap<Power, LinkedList<dip.order.Orderable>> orderMap = new HashMap<>(
+        final HashMap<Power, LinkedList<dip.order.Order>> orderMap = new HashMap<>(
                 powers.length);
         for (final Power power1 : powers) {
             orderMap.put(power1, new LinkedList<>());
@@ -779,7 +780,7 @@ public final class JudgeImportHistory {
 
         // validate all parsed orders
         for (final NJudgeOrder njo : nJudgeOrders) {
-            final Orderable order = njo.getOrder();
+            final Order order = njo.getOrder();
             if (order == null) {
                 Log.println("JIH::procRetreat(): Null order; njo: ", njo);
                 throw new IOException(
@@ -792,7 +793,7 @@ public final class JudgeImportHistory {
             try {
                 order.validate(ts, valOpts, ruleOpts);
 
-                final List<Orderable> list = orderMap.get(order.getPower());
+                final LinkedList<Order> list = orderMap.get(order.getPower());
                 list.add(order);
 
                 results.addAll(njo.getResults());
@@ -941,14 +942,14 @@ public final class JudgeImportHistory {
 
             // create orderMap, which maps powers to their respective order list
             final Power[] powers = map.getPowers().toArray(new Power[0]);
-            final HashMap<Power, LinkedList<dip.order.Orderable>> orderMap = new HashMap<>(powers.length);
+            final HashMap<Power, LinkedList<dip.order.Order>> orderMap = new HashMap<>(powers.length);
             for (final Power power1 : powers) {
                 orderMap.put(power1, new LinkedList<>());
             }
 
             // parse all orders
             for (final NJudgeOrder njo : nJudgeOrders) {
-                final Orderable order = njo.getOrder();
+                final Order order = njo.getOrder();
 
                 // all adjustment orders produced by NJudgeOrderParser should
                 // have only 1 result
@@ -973,7 +974,7 @@ public final class JudgeImportHistory {
                 } else {
                     // NOTE: everything in this block should use newOrder,
                     // not order, from here on!!
-                    Orderable newOrder = order;
+                    Order newOrder = order;
 
                     if (isDefaulted) {
                         newOrder = ((SubstitutedResult) result)
@@ -988,7 +989,7 @@ public final class JudgeImportHistory {
                         newOrder.validate(ts, valOpts, ruleOpts);
 
                         if (!isDefaulted) {
-                            final List<Orderable> list = orderMap
+                            final LinkedList<Order> list = orderMap
                                     .get(newOrder.getPower());
                             list.add(newOrder);
                         }
