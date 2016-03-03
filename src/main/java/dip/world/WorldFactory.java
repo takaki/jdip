@@ -38,7 +38,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -86,8 +85,7 @@ public class WorldFactory {
     /**
      * Generates a World given the supplied Variant information
      */
-    public static World createWorld(
-            final Variant variant) throws InvalidWorldException {
+    public static World createWorld(final Variant variant) {
         Objects.requireNonNull(variant);
 
         Log.println("WorldFactory.createWorld(): " + variant.getName());
@@ -155,12 +153,11 @@ public class WorldFactory {
                 // provinces must be seperated by " " or "," or ";" or ":"
                 final String input = adjProvinceNames.get(adjIdx).trim()
                         .toLowerCase();
-                final List<Location> locs = Arrays
-                        .stream(input.split("[ ,;:\t\n\r]"))
-                        .map(st -> makeLocation(provNameMap, st, coast))
-                        .collect(Collectors.toList());
                 // add data to adjacency table after unwrapping collection
-                adjacency.setLocations(coast, locs);
+                adjacency.setLocations(coast,
+                        Arrays.stream(input.split("[ ,;:\t\n\r]+"))
+                                .map(st -> makeLocation(provNameMap, st, coast))
+                                .collect(Collectors.toList()));
             });
 
 
@@ -215,10 +212,6 @@ public class WorldFactory {
 
         // create the World object as well, now that we have the Map
         final World world = new World(map);
-
-        // set variables to null that we don't need (just a safety check)
-        borderMap.clear();
-
 
         // create the Position object, as we will need it for various game state
         final Position pos = new Position(map);
@@ -334,13 +327,8 @@ public class WorldFactory {
      * a zero-length array.
      */
     private static List<Location> makeBorderLocations(final String in,
-                                                      final Map<String, Province> provNameMap) throws InvalidWorldException {
-        final List<Location> al = new ArrayList<>(6);
-
-        final StringTokenizer st = new StringTokenizer(in.trim(), ";, ");
-        while (st.hasMoreTokens()) {
-            final String tok = st.nextToken();
-
+                                                      final Map<String, Province> provNameMap) {
+        return Arrays.stream(in.trim().split("[;, ]+")).map(tok -> {
             final Coast coast = Coast.parse(tok);
             final Province province = provNameMap
                     .get(Coast.getProvinceName(tok).toLowerCase());
@@ -348,11 +336,8 @@ public class WorldFactory {
                 throw new InvalidWorldException(
                         Utils.getLocalString(WF_BAD_BORDER_LOCATION, tok));
             }
-
-            al.add(new Location(province, coast));
-        }
-
-        return al;
+            return new Location(province, coast);
+        }).collect(Collectors.toList());
     }// makeBorderLocation()
 
 
@@ -383,25 +368,25 @@ public class WorldFactory {
      */
     private static Location makeLocation(
             final Map<String, Province> provNameMap, final String name,
-            final Coast theDefaultCoast) throws InvalidWorldException {
-        Coast defaultCoast = theDefaultCoast;
-
-        if (defaultCoast == Coast.UNDEFINED) {
+            final Coast theDefaultCoast) {
+        if (theDefaultCoast == Coast.UNDEFINED) {
             throw new InvalidWorldException(
                     Utils.getLocalString(WF_ADJ_BAD_TYPE, name));
         }
-        if (defaultCoast == Coast.NORTH || defaultCoast == Coast.WEST || defaultCoast == Coast.SOUTH || defaultCoast == Coast.EAST) {
-            defaultCoast = Coast.SINGLE;
-        }
+
+        final Coast defaultCoast = theDefaultCoast == Coast.NORTH ||
+                theDefaultCoast == Coast.WEST ||
+                theDefaultCoast == Coast.SOUTH ||
+                theDefaultCoast == Coast.EAST ? Coast.SINGLE : theDefaultCoast;
 
         Coast coast = Coast.parse(name);
-        final String provinceName = Coast.getProvinceName(name);
 
         if (coast == Coast.UNDEFINED) {
             coast = defaultCoast;
         }
 
         // name lookup
+        final String provinceName = Coast.getProvinceName(name);
         final Province province = provNameMap.get(provinceName.toLowerCase());
         if (province == null) {
             throw new InvalidWorldException(
@@ -417,18 +402,10 @@ public class WorldFactory {
     // verify all names are unique. (hasn't yet been added to the map)
     private static boolean isUnique(final Map<String, Province> provNameMap,
                                     final String fullname,
-                                    final Iterable<String> shortnames) {
-        if (provNameMap.get(fullname.toLowerCase()) != null) {
-            return false;
-        }
-
-        for (final String shortname : shortnames) {
-            if (provNameMap.get(shortname.toLowerCase()) != null) {
-                return false;
-            }
-        }
-
-        return true;
+                                    final List<String> shortnames) {
+        return !(provNameMap.containsKey(fullname.toLowerCase()) || shortnames
+                .stream().anyMatch(shortname -> provNameMap
+                        .containsKey(shortname.toLowerCase())));
     }// isUnique()
 
 }// class MapFactory
