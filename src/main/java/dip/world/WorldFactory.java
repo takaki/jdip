@@ -179,26 +179,22 @@ public class WorldFactory {
 
         // Process BorderData. This requires the Provinces to be known and
         // successfully parsed. They are mapped to the ID name, stored in the borderMap.
-        final Map<String, Border> borderMap = new HashMap<>(11);
+        final Map<String, Border> borderMap;
         try {
-            final List<BorderData> borderDataArray = variant.getBorderData();
-            for (final BorderData bd : borderDataArray) {
-                final List<Location> fromLocs = makeBorderLocations(
-                        bd.getFrom(), provNameMap);
-
-                final Border border = new Border(bd.getID(),
-                        bd.getDescription(), bd.getUnitTypes(), fromLocs,
-                        bd.getOrderTypes(), bd.getBaseMoveModifier(),
-                        bd.getSeason(), bd.getPhase(), bd.getYear());
-
-                borderMap.put(bd.getID(), border);
-            }
+            borderMap = variant.getBorderData().stream().collect(Collectors
+                    .toMap(BorderData::getID,
+                            bd -> new Border(bd.getID(), bd.getDescription(),
+                                    bd.getUnitTypes(),
+                                    makeBorderLocations(bd.getFrom(),
+                                            provNameMap), bd.getOrderTypes(),
+                                    bd.getBaseMoveModifier(), bd.getSeason(),
+                                    bd.getPhase(), bd.getYear())));
         } catch (final InvalidBorderException ibe) {
-            throw new InvalidWorldException(ibe.getMessage());
+            throw new InvalidWorldException(ibe);
         }
 
         // set the Border data (if any) for each province.
-        final ArrayList<Border> list = new ArrayList<>(10);
+        final List<Border> list = new ArrayList<>(10);
 
         for (final ProvinceData aProvinceDataArray : provinceDataArray) {
             list.clear();

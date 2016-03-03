@@ -39,4 +39,8 @@ public class InvalidWorldException extends RuntimeException {
     public InvalidWorldException(final String message, final Throwable e) {
         super(message, e);
     }
+
+    public InvalidWorldException(final Throwable ibe) {
+        super(ibe);
+    }
 }// InvalidWorldException
