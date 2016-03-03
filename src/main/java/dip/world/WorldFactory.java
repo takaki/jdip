@@ -30,7 +30,6 @@ import dip.world.Unit.Type;
 import dip.world.variant.data.BorderData;
 import dip.world.variant.data.InitialState;
 import dip.world.variant.data.ProvinceData;
-import dip.world.variant.data.SupplyCenter;
 import dip.world.variant.data.Variant;
 
 import java.util.ArrayList;
@@ -193,30 +192,22 @@ public class WorldFactory {
         }
 
         // set the Border data (if any) for each province.
-        final List<Border> list = new ArrayList<>(10);
-
-        for (final ProvinceData aProvinceDataArray : provinceDataArray) {
-            list.clear();
-            final ProvinceData provinceData = aProvinceDataArray;
+        provinceDataArray.stream().forEach(aProvinceDataArray -> {
             final Province province = provNameMap
-                    .get(provinceData.getFullName().toLowerCase());
+                    .get(aProvinceDataArray.getFullName().toLowerCase());
 
-            final List<String> borderNames = provinceData.getBorders();
-            for (final String borderName : borderNames) {
-                final Border border = borderMap.get(borderName);
-                if (border == null) {
-                    throw new InvalidWorldException(
-                            Utils.getLocalString(WF_BAD_BORDER_NAME,
-                                    province.getShortName(), borderName));
-                }
-
-                list.add(border);
-            }
-
-            if (!list.isEmpty()) {
-                province.setBorders(list);
-            }
-        }
+            province.setBorders(
+                    aProvinceDataArray.getBorders().stream().map(borderName -> {
+                        final Border border = borderMap.get(borderName);
+                        if (border == null) {
+                            throw new InvalidWorldException(
+                                    Utils.getLocalString(WF_BAD_BORDER_NAME,
+                                            province.getShortName(),
+                                            borderName));
+                        }
+                        return border;
+                    }).collect(Collectors.toList()));
+        });
 
         // Now that we know the variant, we know the powers, and can
         // create the Map.
@@ -228,19 +219,12 @@ public class WorldFactory {
         // set variables to null that we don't need (just a safety check)
         borderMap.clear();
 
-        // create initial turn state based on starting game time
-        final Phase phase = variant.getStartingPhase();
-        if (phase == null) {
-            throw new InvalidWorldException(
-                    Utils.getLocalString(WF_BAD_STARTINGTIME));
-        }
 
         // create the Position object, as we will need it for various game state
         final Position pos = new Position(map);
 
         // define supply centers
-        final List<SupplyCenter> supplyCenters = variant.getSupplyCenters();
-        for (final SupplyCenter supplyCenter : supplyCenters) {
+        variant.getSupplyCenters().stream().forEach(supplyCenter -> {
             final Province province = map
                     .getProvince(supplyCenter.getProvinceName());
             if (province == null) {
@@ -273,8 +257,7 @@ public class WorldFactory {
 
                 pos.setSupplyCenterOwner(province, power);
             }
-        }
-
+        });
 
         // set initial state [derived from INITIALSTATE elements in XML file]
         final List<InitialState> initStates = variant.getInitialStates();
@@ -318,12 +301,16 @@ public class WorldFactory {
             }
         }
 
-
-
-        final VictoryConditions vc = new VictoryConditions(
-                variant.getNumSCForVictory(), variant.getMaxYearsNoSCChange(),
-                variant.getMaxGameTimeYears(), phase);
-        world.setVictoryConditions(vc);
+        // create initial turn state based on starting game time
+        final Phase phase = variant.getStartingPhase();
+        if (phase == null) {
+            throw new InvalidWorldException(
+                    Utils.getLocalString(WF_BAD_STARTINGTIME));
+        }
+        world.setVictoryConditions(
+                new VictoryConditions(variant.getNumSCForVictory(),
+                        variant.getMaxYearsNoSCChange(),
+                        variant.getMaxGameTimeYears(), phase));
 
         // set TurnState / Map / complete World creation.
         final TurnState turnState = new TurnState(phase);
