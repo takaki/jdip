@@ -60,7 +60,6 @@ public class WorldFactory {
     private static final String WF_BAD_IS_PROVINCE = "WF_BAD_IS_PROVINCE";
     private static final String WF_BAD_IS_UNIT_LOC = "WF_BAD_IS_UNIT_LOC";
     private static final String WF_BAD_IS_UNIT = "WF_BAD_IS_UNIT";
-    private static final String WF_BAD_VC = "WF_BAD_VC";
     private static final String WF_ADJ_BAD_TYPE = "WF_ADJ_BAD_TYPE";
     private static final String WF_ADJ_BAD_PROVINCE = "WF_ADJ_BAD_PROVINCE";
     private static final String WF_ADJ_INVALID = "WF_ADJ_INVALID";
@@ -310,7 +309,7 @@ public class WorldFactory {
                     throw new InvalidWorldException(
                             Utils.getLocalString(WF_BAD_IS_UNIT_LOC,
                                     initState.getProvinceName(),
-                                    e.getMessage()));
+                                    e.getMessage()), e);
                 }
             } else {
                 throw new InvalidWorldException(
@@ -320,13 +319,6 @@ public class WorldFactory {
         }
 
 
-        // set the victory conditions
-        // make sure we have at least one victory condition!
-        if (variant.getNumSCForVictory() <= 0 && variant
-                .getMaxYearsNoSCChange() <= 0 && variant
-                .getMaxGameTimeYears() <= 0) {
-            throw new InvalidWorldException(Utils.getLocalString(WF_BAD_VC));
-        }
 
         final VictoryConditions vc = new VictoryConditions(
                 variant.getNumSCForVictory(), variant.getMaxYearsNoSCChange(),

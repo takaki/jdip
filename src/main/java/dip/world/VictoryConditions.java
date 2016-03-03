@@ -50,6 +50,9 @@ public class VictoryConditions implements Serializable {
     private static final String VC_WIN_SINGLE = "VC_WIN_SINGLE";
     private static final String VC_MAX_NO_SC_CHANGE = "VC_MAX_NO_SC_CHANGE";
 
+    private static final String WF_BAD_VC = "WF_BAD_VC";
+
+
     // class variables
     protected final int numSCForVictory;        // SCs required for victory; 0 if ignored
     protected final int maxYearsNoSCChange;        // max years w/o supply-center chaning hands; 0 if ignored
@@ -70,11 +73,15 @@ public class VictoryConditions implements Serializable {
             throw new IllegalArgumentException("arg: < 0; use 0 to disable");
         }
 
-        Objects.requireNonNull(initialPhase);
-
-        if (maxGameTimeYears == 0 && numSCForVictory == 0 && maxYearsNoSCChange == 0) {
-            throw new IllegalArgumentException("no conditions set!");
+        // make sure we have at least one victory condition!
+        if (numSCForVictory <= 0 &&
+                maxYearsNoSCChange <= 0 &&
+                maxGameTimeYears <= 0) {
+            throw new IllegalArgumentException(Utils.getLocalString(WF_BAD_VC));
         }
+
+
+        Objects.requireNonNull(initialPhase);
 
         this.numSCForVictory = numSCForVictory;
         this.maxYearsNoSCChange = maxYearsNoSCChange;

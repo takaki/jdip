@@ -46,7 +46,7 @@ class VictoryConditionsTest extends Specification {
         thrown(NullPointerException)
         where:
         sc | ncyear | gtyear | init
-        0  | 0      | 0      | null
+        0  | 0      | 1      | null
     }
 
 }
