@@ -135,7 +135,7 @@ public class Move extends Order {
      * Each entry in routes must be a single-dimensional Province array.
      */
     protected Move(Power power, Location src, Unit.Type srcUnitType,
-                   Location dest, List routes) {
+                   Location dest, List<Province> routes) {
         this(power, src, srcUnitType, dest, true);
 
         if (routes == null) {
@@ -143,7 +143,7 @@ public class Move extends Order {
         }
 
         // TODO: we don't check the routes very strictly.
-        convoyRoutes = new ArrayList<>(routes);
+        convoyRoutes.add(routes.toArray(new Province[0]));
     }// Move()
 
 

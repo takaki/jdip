@@ -295,7 +295,7 @@ public class Path {
      * See getConvoyRouteEvaluation() for return values.
      */
     public static Tristate evaluateRoutes(final Adjudicator adj,
-                                          final List routes,
+                                          final List<Province[]> routes,
                                           final Location invalid) {
         final Province invalidProvince = invalid == null ? null : invalid
                 .getProvince();
