@@ -24,7 +24,6 @@ package dip.world;
 
 import dip.misc.Utils;
 import dip.world.variant.data.Variant;
-import dip.world.variant.data.Variant.NameValuePair;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -322,25 +321,20 @@ public final class RuleOptions implements Serializable {
      * An InvalidWorldException is thrown if the passed data
      * is invalid.
      */
-    public static RuleOptions createFromVariant(
-            final Variant variant) throws InvalidWorldException {
+    public static RuleOptions createFromVariant(final Variant variant) {
         // create ruleoptions
         // set rule options
         final RuleOptions ruleOpts = new RuleOptions();
 
         // set default rule options
-        for (final Option option : DEFAULT_RULE_OPTIONS) {
-            ruleOpts.setOption(option, option.getDefault());
-        }
+        DEFAULT_RULE_OPTIONS.stream().forEach(
+                option -> ruleOpts.setOption(option, option.getDefault()));
 
         // look up all name-value pairs via reflection.
-        final List<NameValuePair> nvps = variant.getRuleOptionNVPs();
-        for (final NameValuePair nvp : nvps) {
-
+        variant.getRuleOptionNVPs().stream().forEach(nvp -> {
             // first, check the name
             final Option option = Option.valueOf(nvp.getName());
             final OptionValue optionValue = OptionValue.valueOf(nvp.getValue());
-
 
             // ensure that optionValue is valid for option
             if (!option.isAllowed(optionValue)) {
@@ -351,7 +345,7 @@ public final class RuleOptions implements Serializable {
 
             // set option
             ruleOpts.setOption(option, optionValue);
-        }
+        });
 
         // done.
         return ruleOpts;
