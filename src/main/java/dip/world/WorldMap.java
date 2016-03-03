@@ -122,15 +122,22 @@ public final class WorldMap implements Serializable {
                 .toMap(province -> province.getFullName().toLowerCase(),
                         Function.identity())));
         provinces.stream().forEach(province -> nameMap
-                .putAll(province.getShortNames().stream().collect(
-                        Collectors.toMap(String::toLowerCase,
-                                lcShortName -> province))));
+                .putAll(province.getShortNames().stream().collect(Collectors
+                        .toMap(String::toLowerCase, lcShortName -> province))));
         // add to List
         names = new ArrayList<>(provinces.stream().map(Province::getFullName)
                 .map(String::toLowerCase).collect(Collectors.toList()));
         names.addAll(provinces.stream()
                 .flatMap(province -> province.getShortNames().stream())
                 .map(String::toLowerCase).collect(Collectors.toList()));
+
+        // sort array from longest entries to shortest. This
+        // eliminates errors in partial replacements.
+        wsNames = names.stream().filter(name -> name.indexOf(' ') >= 0 || name
+                .indexOf('-') >= 0).map(String::toLowerCase)
+                .sorted(Comparator.comparing(String::length).reversed())
+                .collect(Collectors.toList());
+
 
     }// createMappings()
 
@@ -440,17 +447,6 @@ public final class WorldMap implements Serializable {
      */
     public void replaceProvinceNames(final StringBuffer sb) {
         // create the whitespace list, if it doesn't exist.
-        // TODO: delayed initialize
-        if (wsNames == null) {
-            // sort array from longest entries to shortest. This
-            // eliminates errors in partial replacements.
-            wsNames = names.stream()
-                    .filter(name -> name.indexOf(' ') != -1 || name
-                            .indexOf('-') != -1).map(String::toLowerCase)
-                    .sorted(Comparator.comparing(String::length).reversed())
-                    .collect(Collectors.toList());
-        }
-
         // search & replace.
         for (final String currentName : wsNames) {
             int idx = 0;
@@ -605,9 +601,9 @@ public final class WorldMap implements Serializable {
      * Includes power adjectives.
      */
     private List<String> createLCPowerNameList() {
-        final List<String> tmpNames = new ArrayList<>(powers.stream()
-                .flatMap(power -> power.getNames().stream())
-                .map(String::toLowerCase).collect(Collectors.toList()));
+        final List<String> tmpNames = new ArrayList<>(
+                powers.stream().flatMap(power -> power.getNames().stream())
+                        .map(String::toLowerCase).collect(Collectors.toList()));
         tmpNames.addAll(
                 powers.stream().map(power -> power.getAdjective().toLowerCase())
                         .collect(Collectors.toList()));
