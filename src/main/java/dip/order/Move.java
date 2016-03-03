@@ -232,7 +232,7 @@ public class Move extends Order {
      * <code>isConvoyIntent()</code>.
      */
     public boolean isConvoying() {
-        return isConvoyIntent();
+        return _isConvoyIntent;
     }// isConvoying()
 
 
@@ -299,7 +299,7 @@ public class Move extends Order {
             sb.append('-');
             dest.appendBrief(sb);
 
-            if (isViaConvoy()) {
+            if (_isViaConvoy) {
                 sb.append(" by convoy");
             }
         }
@@ -333,7 +333,7 @@ public class Move extends Order {
             sb.append(" -> ");
             dest.appendFull(sb);
 
-            if (isViaConvoy()) {
+            if (_isViaConvoy) {
                 sb.append(" by convoy");
             }
         }
@@ -346,7 +346,7 @@ public class Move extends Order {
         if (obj instanceof Move) {
             final Move move = (Move) obj;
             if (super.equals(move) && dest
-                    .equals(move.dest) && isViaConvoy() == move.isViaConvoy()) {
+                    .equals(move.dest) && _isViaConvoy == move._isViaConvoy) {
                 return true;
             }
         }
@@ -434,7 +434,7 @@ public class Move extends Order {
                 validateTheoreticalConvoyRoute(position);
 
                 // we didn't fail; thus, we intend to convoy (because it is at least possible).
-                if (!isViaConvoy()) {
+                if (!_isViaConvoy) {
                     _isConvoyIntent = true;
                 }
             } else {
@@ -447,7 +447,7 @@ public class Move extends Order {
                 // (isViaConvoy() == true); in that case, the convoy is preferred
                 // and will be used despite the land route.
                 //
-                if (!isViaConvoy() && srcUnitType == Type.ARMY) {
+                if (!_isViaConvoy && srcUnitType == Type.ARMY) {
                     final Path path = new Path(position);
                     _isAdjWithPossibleConvoy = path
                             .isPossibleConvoyRoute(src, dest);
@@ -457,7 +457,7 @@ public class Move extends Order {
                 // set _fmtIsAdjWithConvoy iff we are EXPLICITLY ordered to convoy,
                 // and we are an adjacent move (we are an adjacent move if we
                 // reached this point in the code)
-                _fmtIsAdjWithConvoy = isViaConvoy();
+                _fmtIsAdjWithConvoy = _isViaConvoy;
 
                 // set if we can move via a land route.
                 _hasLandRoute = true;
@@ -592,8 +592,8 @@ public class Move extends Order {
         if (!thisOS.isVerified()) {
             // if we have already failed, do not evaluate.
             if (thisOS.getEvalState() == Tristate.UNCERTAIN) {
-                if (isConvoying())    // intent to convoy already determined (e.g., _isViaConvoy is true, so _isConvoyIntent initiall is true)
-                {
+                // intent to convoy already determined (e.g., _isViaConvoy is true, so _isConvoyIntent initiall is true)
+                if (_isConvoyIntent) {
                     if (convoyRoutes != null) // static (explicit) paths
                     {
                         // if we have multiple routes, we don't fail until *all* paths fail.
@@ -606,7 +606,7 @@ public class Move extends Order {
                             // if we are explicitly being convoyed, and there is a land route,
                             // but no convoy route, we use the land route.
                             //
-                            if (isViaConvoy() && _hasLandRoute) {
+                            if (_isViaConvoy && _hasLandRoute) {
                                 // we don't fail, but mention that there is no convoy route. (text order result)
                                 _isConvoyIntent = false;
                                 adjudicator.addResult(thisOS,
@@ -624,12 +624,12 @@ public class Move extends Order {
                     } else    // implicit path
                     {
                         final Path path = new Path(adjudicator);
-                        if (!path.isLegalConvoyRoute(getSource(), getDest())) {
+                        if (!path.isLegalConvoyRoute(getSource(), dest)) {
                             // As for static (explicit) paths, if we are explicitly
                             // ordered to convoy ("by convoy") and there is a land route,
                             // but no convoy route, we use the land route.
                             //
-                            if (isViaConvoy() && _hasLandRoute) {
+                            if (_isViaConvoy && _hasLandRoute) {
                                 _isConvoyIntent = false;
                                 adjudicator.addResult(thisOS,
                                         Utils.getLocalString(
@@ -643,7 +643,7 @@ public class Move extends Order {
                             }
                         }
                     }
-                } else if (isAdjWithPossibleConvoy())    // intent must be determined
+                } else if (_isAdjWithPossibleConvoy)    // intent must be determined
                 {
                     // first, we need to find all paths with possible convoy orders
                     // between src and dest. If we have an order, by the same power,
@@ -654,7 +654,7 @@ public class Move extends Order {
                     // makes more sense here.
                     //
                     final Province srcProv = getSource().getProvince();
-                    final Province destProv = getDest().getProvince();
+                    final Province destProv = dest.getProvince();
                     final Position pos = adjudicator.getTurnState()
                             .getPosition();
                     final FAPEvaluator evaluator = new FleetFAPEvaluator(pos);
@@ -736,7 +736,7 @@ public class Move extends Order {
                         final Convoy convoy = (Convoy) order;
                         if (convoy.getConvoySrc()
                                 .isProvinceEqual(getSource()) && convoy
-                                .getConvoyDest().isProvinceEqual(getDest())) {
+                                .getConvoyDest().isProvinceEqual(dest)) {
                             return prov;
                         }
                     }
@@ -803,7 +803,7 @@ public class Move extends Order {
                 final Move move = (Move) order;
 
                 // move to *destination* space (that are not this order)
-                if (move.getDest().isProvinceEqual(getDest())) {
+                if (move.dest.isProvinceEqual(dest)) {
                     if (depMTDest == null) {
                         depMTDest = new ArrayList<>(5);
                     }
@@ -814,10 +814,9 @@ public class Move extends Order {
                 // note that isConvoying() may not yet be properly set, so the
                 // "headToHeadness" will have to be re-evaluated sometime AFTER
                 // order verification (via verify()) has been performed.
-                if (move.getDest().isProvinceEqual(getSource()) && move
-                        .getSource()
-                        .isProvinceEqual(getDest()) && !isConvoying() && !move
-                        .isConvoying()) {
+                if (move.dest.isProvinceEqual(getSource()) && move.getSource()
+                        .isProvinceEqual(
+                                dest) && !_isConvoyIntent && !move._isConvoyIntent) {
                     Log.println("Head2Head possible between: ", this, ", ",
                             dependentOS.getOrder());
                     thisOS.setHeadToHead(dependentOS);
@@ -826,7 +825,7 @@ public class Move extends Order {
                 final Support support = (Support) order;
                 if (support.getSupportedSrc()
                         .isProvinceEqual(getSource()) && support
-                        .getSupportedDest().isProvinceEqual(getDest())) {
+                        .getSupportedDest().isProvinceEqual(dest)) {
                     if (adjudicator.isSelfSupportedMove(dependentOS)) {
                         if (depSelfSup == null) {
                             depSelfSup = new ArrayList<>(5);
@@ -966,10 +965,10 @@ public class Move extends Order {
 
         // 1) calculate support of this Move
         final Move order = (Move) thisOS.getOrder();
-        final int mod = order.getDest().getProvince()
+        final int mod = order.dest.getProvince()
                 .getBaseMoveModifier(getSource());
         // If the move isn't by convoy, perhaps there are border issues to deal with.
-        if (!isConvoying()) {
+        if (!_isConvoyIntent) {
             thisOS.setAtkMax(thisOS.getSupport(false));
             thisOS.setAtkCertain(thisOS.getSupport(true));
         } else {
@@ -1006,7 +1005,7 @@ public class Move extends Order {
             //
             if (thisOS.isHeadToHead()) {
                 final Move h2hMove = (Move) thisOS.getHeadToHead().getOrder();
-                if (isConvoying() || h2hMove.isConvoying()) {
+                if (_isConvoyIntent || h2hMove._isConvoyIntent) {
                     // we need to change h2h status!
                     Log.println("     HeadToHead removed (convoy detected)");
                     thisOS.setHeadToHead(null);
@@ -1015,7 +1014,7 @@ public class Move extends Order {
 
 
             // 2.a-c
-            if (isConvoying()) {
+            if (_isConvoyIntent) {
                 // NOTE: convoy path result may return 'false' if we are uncertain.
                 final Path path = new Path(adjudicator);
                 final Tristate convoyPathResult = path
@@ -1049,8 +1048,7 @@ public class Move extends Order {
             // handled. To use the same basic logic, we must determine some things up front.
             boolean isDestAMove = false;
             boolean isDestEmpty = false;
-            final OrderState destOS = adjudicator
-                    .findOrderStateBySrc(getDest());
+            final OrderState destOS = adjudicator.findOrderStateBySrc(dest);
 
             if (destOS != null) {
                 if (destOS.getOrder() instanceof Move) {
@@ -1151,7 +1149,7 @@ public class Move extends Order {
 								remember: with logical and (&&) we only evaluate the
 								second argument if the first is true.
 							*/
-                            if (((Move) os.getOrder()).isConvoying() && !os
+                            if (((Move) os.getOrder())._isConvoyIntent && !os
                                     .hasFoundConvoyPath()) {
                                 Log.println(
                                         "      however, no convoy route for dependent move exists (or exists yet).");
@@ -1176,7 +1174,7 @@ public class Move extends Order {
 								and no convoy route was found.
 								(isconvoying == true, hasFoundConvoyPath == false, and evalstate == false)
 							*/
-                            if (((Move) os.getOrder()).isConvoying() && !os
+                            if (((Move) os.getOrder())._isConvoyIntent && !os
                                     .hasFoundConvoyPath() && os
                                     .getEvalState() == Tristate.FAILURE) {
                                 Log.println(
