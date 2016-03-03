@@ -136,7 +136,7 @@ public class StdAdjudicator implements Adjudicator {
     private final Position position;
     private final World world;
     private final RuleOptions ruleOpts;
-    private final List resultList;
+    private final List<Result> resultList;
     private final Map<Province, OrderState> osMap;
     private final List<OrderState> substOrders;
 
@@ -361,9 +361,9 @@ public class StdAdjudicator implements Adjudicator {
         final List<Power> powers = world.getMap().getPowers();
 
         for (final Power power : powers) {
-            final Iterator iter = turnState.getOrders(power).iterator();
+            final Iterator<Order> iter = turnState.getOrders(power).iterator();
             while (iter.hasNext()) {
-                final Orderable order = (Orderable) iter.next();
+                final Orderable order = iter.next();
                 if (order.getPower() != power) {
                     // remove order: it is invalid (and
                     // likely a bug or a cheat attempt)
@@ -393,7 +393,7 @@ public class StdAdjudicator implements Adjudicator {
         //
         // make sure that each location in the OrderState mapping has a corresponding unit,
         // If an order exists for a province without a unit, the order is deleted.
-        final List orderList = turnState.getAllOrders();
+        final List<Orderable> orderList = turnState.getAllOrders();
         // temporary list for holding orders; ASSUME that we won't be adding too many orders.
         final ArrayList<OrderState> osList = new ArrayList<>(orderList.size());
 
@@ -750,7 +750,7 @@ public class StdAdjudicator implements Adjudicator {
             nextTurnState.setEnded(true);
             nextTurnState.setResolved(true);
 
-            final List nextResults = nextTurnState.getResultList();
+            final List<Result> nextResults = nextTurnState.getResultList();
             nextResults.addAll(vc.getEvaluationResults());
             nextResults.add(completed);
 
@@ -1095,7 +1095,7 @@ public class StdAdjudicator implements Adjudicator {
         // ensure that each dislodged unit has one, and only one, order.
         //
         // during the retreat phase, we are only concerned with dislodged units.
-        final List orderList = turnState.getAllOrders();
+        final List<Orderable> orderList = turnState.getAllOrders();
         final ArrayList<OrderState> osList = new ArrayList<>(orderList.size());
 
         for (final Object anOrderList : orderList) {

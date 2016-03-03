@@ -107,7 +107,7 @@ public class Path {
                                              final List actualPath) {
         Objects.requireNonNull(move);
 
-        final List explicitRoutes = move.getConvoyRoutes();
+        final List<Province[]> explicitRoutes = move.getConvoyRoutes();
 
         if (explicitRoutes == null) {
             // implicit paths.
@@ -124,9 +124,9 @@ public class Path {
 
             boolean hasUncertainRoute = false;        // true if >= 1 route is uncertain, but not failed.
 
-            final Iterator iter = explicitRoutes.iterator();
+            final Iterator<Province[]> iter = explicitRoutes.iterator();
             while (iter.hasNext()) {
-                final Province[] route = (Province[]) iter.next();
+                final Province[] route = iter.next();
                 boolean isFailed = true;
                 boolean isUncertain = false;
 

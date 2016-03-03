@@ -195,8 +195,8 @@ public abstract class Order extends Object implements Orderable, java.io.Seriali
     protected final void addSupportsOfAndMovesToSource(
             Adjudicator adjudicator) {
         OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
-        ArrayList depMTS = null;
-        ArrayList depSup = null;
+        ArrayList<OrderState> depMTS = null;
+        ArrayList<OrderState> depSup = null;
 
         List<OrderState> orderStates = adjudicator.getOrderStates();
         for (int osIdx = 0; osIdx < orderStates.size(); osIdx++) {
@@ -208,7 +208,7 @@ public abstract class Order extends Object implements Orderable, java.io.Seriali
                 if (order instanceof Move && ((Move) order).getDest()
                         .isProvinceEqual(this.getSource())) {
                     if (depMTS == null) {
-                        depMTS = new ArrayList(5);
+                        depMTS = new ArrayList<OrderState>(5);
                     }
                     depMTS.add(dependentOS);
                 } else if (order instanceof Support) {
@@ -219,7 +219,7 @@ public abstract class Order extends Object implements Orderable, java.io.Seriali
                     if (support.isSupportingHold() && support.getSupportedSrc()
                             .isProvinceEqual(this.getSource())) {
                         if (depSup == null) {
-                            depSup = new ArrayList(5);
+                            depSup = new ArrayList<OrderState>(5);
                         }
                         depSup.add(dependentOS);
                     }

@@ -125,7 +125,7 @@ public class Move extends Order {
             throw new IllegalArgumentException("bad or missing route");
         }
 
-        convoyRoutes = new ArrayList(1);
+        convoyRoutes = new ArrayList<Province[]>(1);
         convoyRoutes.add(convoyRoute);
     }// Move()
 
@@ -143,7 +143,7 @@ public class Move extends Order {
         }
 
         // TODO: we don't check the routes very strictly.
-        convoyRoutes = new ArrayList(routes);
+        convoyRoutes = new ArrayList<>(routes);
     }// Move()
 
 
@@ -234,7 +234,7 @@ public class Move extends Order {
      * Returns, if set, all explicit convoy routes as an unmodifiable List.
      * Returns null if not convoying or no explicit route(s) were defined.
      */
-    public List getConvoyRoutes() {
+    public List<Province[]> getConvoyRoutes() {
         return (convoyRoutes != null) ? Collections
                 .unmodifiableList(convoyRoutes) : null;
     }// getConvoyRoute()
@@ -775,9 +775,9 @@ public class Move extends Order {
         // add moves to destination space, and supports of this space
         OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
 
-        ArrayList depMTDest = null;
-        ArrayList depSup = null;
-        ArrayList depSelfSup = null;
+        ArrayList<OrderState> depMTDest = null;
+        ArrayList<OrderState> depSup = null;
+        ArrayList<OrderState> depSelfSup = null;
 
         List<OrderState> orderStates = adjudicator.getOrderStates();
         for (int osIdx = 0; osIdx < orderStates.size(); osIdx++) {
@@ -790,7 +790,7 @@ public class Move extends Order {
                 // move to *destination* space (that are not this order)
                 if (move.getDest().isProvinceEqual(this.getDest())) {
                     if (depMTDest == null) {
-                        depMTDest = new ArrayList(5);
+                        depMTDest = new ArrayList<OrderState>(5);
                     }
                     depMTDest.add(dependentOS);
                 }
@@ -813,12 +813,12 @@ public class Move extends Order {
                         .getSupportedDest().isProvinceEqual(this.getDest())) {
                     if (adjudicator.isSelfSupportedMove(dependentOS)) {
                         if (depSelfSup == null) {
-                            depSelfSup = new ArrayList(5);
+                            depSelfSup = new ArrayList<OrderState>(5);
                         }
                         depSelfSup.add(dependentOS);
                     } else {
                         if (depSup == null) {
-                            depSup = new ArrayList(5);
+                            depSup = new ArrayList<OrderState>(5);
                         }
                         depSup.add(dependentOS);
                     }

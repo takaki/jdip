@@ -57,7 +57,7 @@ public class ValidationOptions implements Serializable, Cloneable {
 
 
     // instance variables
-    protected Hashtable map = new Hashtable(5);
+    protected Hashtable<String, Object> map = new Hashtable<String, Object>(5);
     protected Option[] options = null;            // subclasses should modify as appropriate in constructor
 
 
@@ -80,7 +80,7 @@ public class ValidationOptions implements Serializable, Cloneable {
      */
     public Object clone() throws CloneNotSupportedException {
         ValidationOptions vopt = (ValidationOptions) super.clone();
-        vopt.map = (Hashtable) this.map.clone();
+        vopt.map = (Hashtable<String, Object>) this.map.clone();
         return vopt;
     }// clone()
 
