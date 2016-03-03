@@ -216,14 +216,14 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
 
         // setup object maps
         trackerMap = new HashMap<Province, Tracker>(113);
-        renderSettings = new HashMap(11);
+        renderSettings = new HashMap<>(11);
         layerMap = new HashMap<String, SVGGElement>(11);
         locMap = new HashMap<String, Location>(17);
 
         // power order hashmap (now with z-axis) setup
         powerOrderMap = new HashMap[Z_LAYER_NAMES.length];
         for (int i = 0; i < powerOrderMap.length; i++) {
-            powerOrderMap[i] = new HashMap(11);
+            powerOrderMap[i] = new HashMap<>(11);
         }
 
         // set default render settings

@@ -266,7 +266,7 @@ public class AboutDialog extends HeaderDialog {
     /**
      * inner class to create a sorted system property list
      */
-    private class SortProp implements Comparable {
+    private class SortProp implements Comparable<SortProp> {
         private String name;
         private String value;
 
@@ -283,7 +283,7 @@ public class AboutDialog extends HeaderDialog {
             return value;
         }
 
-        public int compareTo(Object obj) {
+        public int compareTo(SortProp obj) {
             return name.compareTo(((SortProp) obj).name);
         }// compareTo()
     }// inner class SortProp

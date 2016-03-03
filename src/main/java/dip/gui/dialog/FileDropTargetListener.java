@@ -58,9 +58,9 @@ public abstract class FileDropTargetListener extends DropTargetAdapter {
                 if (obj instanceof java.util.List) {
                     java.util.List list = (java.util.List) obj;
                     if (!list.isEmpty()) {
-                        ArrayList fileList = new ArrayList(list.size());
+                        ArrayList<File> fileList = new ArrayList<>(list.size());
 
-                        Iterator iter = list.iterator();
+                        final Iterator<File> iter = list.iterator();
                         while (iter.hasNext()) {
                             File originalFile = (File) iter.next();
                             File file = convertFile(originalFile);

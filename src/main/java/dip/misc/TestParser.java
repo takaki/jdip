@@ -692,7 +692,7 @@ public class TestParser {
         try {
             boolean setupDone = false;
             List<String> accum = null;
-            cases = new ArrayList(200);
+            cases = new ArrayList<ORPair>(200);
             ORPair currentCase = null;
             List<String> posList = null;
             List<String> dislodgedPosList = null;
