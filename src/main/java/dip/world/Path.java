@@ -104,7 +104,7 @@ public class Path {
      */
     public Tristate getConvoyRouteEvaluation(final Move move,
                                              final Location invalidLoc,
-                                             final List actualPath) {
+                                             final List<Province> actualPath) {
         Objects.requireNonNull(move);
 
         final List<Province[]> explicitRoutes = move.getConvoyRoutes();

@@ -153,7 +153,7 @@ public class SymbolInjector {
         // find all <g> or <symbol> under defs with same tag names.
         // if found, replace with our own symbols. If not found, add them.
         //
-        HashMap defsElementMap = elementMapper(defs, ID_ATTRIBUTE);
+        HashMap<String, Element> defsElementMap = elementMapper(defs, ID_ATTRIBUTE);
 
         final List<Symbol> symbols = sp.getSymbols();
         assert (symbols != null);
@@ -161,7 +161,7 @@ public class SymbolInjector {
 
         for (int i = 0; i < symbols.size(); i++) {
             Symbol symbol = symbols.get(i);
-            Element element = (Element) defsElementMap.get(symbol.getName());
+            Element element = defsElementMap.get(symbol.getName());
             if (element == null) {
                 // does not exist! add
                 defs.appendChild(getSymbolElement(symbol));
@@ -201,9 +201,9 @@ public class SymbolInjector {
      * an org.w3c.Element. An Exception is thrown if an element with a
      * duplicate attribute value (case-sensitive) is found.
      */
-    private HashMap elementMapper(Element start,
-                                  String attrName) throws IOException {
-        HashMap map = new HashMap(31);
+    private HashMap<String, Element> elementMapper(Element start,
+                                                   String attrName) throws IOException {
+        HashMap<String, Element> map = new HashMap<String, Element>(31);
         elementMapperWalker(map, start, attrName);
         return map;
     }// elementMapper()
@@ -212,7 +212,7 @@ public class SymbolInjector {
     /**
      * Recursive portion of elementMapper
      */
-    private void elementMapperWalker(final HashMap map, final Node node,
+    private void elementMapperWalker(final HashMap<String, Element> map, final Node node,
                                      final String attrName) throws IOException {
         if (node.getNodeType() == Node.ELEMENT_NODE) {
             if (node.hasAttributes()) {

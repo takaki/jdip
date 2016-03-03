@@ -145,8 +145,8 @@ public class ResultWriter {
 
         // we want only results with a 'null' power.
         // these results are addressed to all.
-        List generalResults = new ArrayList(32);
-        Iterator iter = resultList.iterator();
+        List<Result> generalResults = new ArrayList(32);
+        Iterator<Result> iter = resultList.iterator();
         while (iter.hasNext()) {
             Result r = (Result) iter.next();
             if (r.getPower() == null) {
@@ -184,12 +184,12 @@ public class ResultWriter {
     private String getPerPowerResults() {
         // Seperate results into OrderResults and 'regular' Results
         List orderResults = new ArrayList(128);
-        List otherResults = new ArrayList(64);
+        List<Result> otherResults = new ArrayList<Result>(64);
 
-        List resultList = turnState.getResultList();
-        Iterator iter = resultList.iterator();
+        List<Result> resultList = turnState.getResultList();
+        Iterator<Result> iter = resultList.iterator();
         while (iter.hasNext()) {
-            Result r = (Result) iter.next();
+            Result r = iter.next();
             if (r.getPower() != null) {
                 if (r instanceof OrderResult) {
                     orderResults.add(r);
@@ -233,13 +233,13 @@ public class ResultWriter {
      * Print non order results for a power.
      */
     private void printNonOrderResultsForPower(StringBuffer sb, Power power,
-                                              List results) {
+                                              List<Result> results) {
         StringBuffer text = new StringBuffer(1024);
 
         boolean foundAnOtherResult = false;
-        Iterator iter = results.iterator();
+        Iterator<Result> iter = results.iterator();
         while (iter.hasNext()) {
-            Result result = (Result) iter.next();
+            Result result = iter.next();
             if (power.equals(result.getPower())) {
                 text.append(result.getMessage(ofo));
                 text.append("<br>\n");

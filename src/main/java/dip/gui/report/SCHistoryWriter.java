@@ -108,7 +108,7 @@ public class SCHistoryWriter {
         }
 
         // find all provinces w/supply centers
-        List scList = new ArrayList();
+        List<Province> scList = new ArrayList();
         final Province[] provs = w.getMap().getProvinces().toArray(new Province[0]);
         for (int i = 0; i < provs.length; i++) {
             if (provs[i].hasSupplyCenter()) {
@@ -223,22 +223,22 @@ public class SCHistoryWriter {
     private Object[][] makeSummaryTable() {
         // cols: # of appropriate turns + 1 (first column is the province name)
         //
-        ArrayList turnList = new ArrayList(100);    // array of TurnStates
+        ArrayList<TurnState> turnList = new ArrayList<TurnState>(100);    // array of TurnStates
 
         // add initial phase
         turnList.add(world.getInitialTurnState());
 
-        Iterator iter = world.getAllTurnStates().iterator();
+        Iterator<TurnState> iter = world.getAllTurnStates().iterator();
         while (iter.hasNext()) {
             // we want the RETREAT or MOVE phase for a fall season,
             // but not both (a unit could retreat into a SC; thus we need to check)
             //
-            TurnState ts = (TurnState) iter.next();
+            TurnState ts = iter.next();
             Phase phase = ts.getPhase();
             if (phase.getSeasonType() == Phase.SeasonType.FALL) {
                 if (phase.getPhaseType() == Phase.PhaseType.MOVEMENT) {
                     if (iter.hasNext()) {
-                        TurnState nextTS = (TurnState) iter.next();
+                        TurnState nextTS = iter.next();
                         if (nextTS.getPhase()
                                 .getPhaseType() == Phase.PhaseType.RETREAT) {
                             ts = nextTS;
@@ -267,14 +267,14 @@ public class SCHistoryWriter {
         // row 0: yeartypes; HOWEVER, first 'yeartype' is really "Initial" ("Start")
         array[0][1] = Utils.getLocalString(LABEL_INITIAL);
         for (int i = 2; i < cols; i++) {
-            array[0][i] = ((TurnState) turnList.get(i - 1)).getPhase()
+            array[0][i] = (turnList.get(i - 1)).getPhase()
                     .getYearType();
         }
 
         // 'the rest': fill in with power or null (un-owned)
         // we will fill by columns.
         for (int i = 1; i < cols; i++) {
-            final TurnState ts = (TurnState) turnList.get(i - 1);
+            final TurnState ts = turnList.get(i - 1);
             final Position pos = ts.getPosition();
 
             for (int scIdx = 0; scIdx < scProvs.length; scIdx++) {
@@ -319,18 +319,18 @@ public class SCHistoryWriter {
         sb.append(makeSCCountTableRow(world.getInitialTurnState()));
 
         // make all other rows.
-        Iterator iter = world.getAllTurnStates().iterator();
+        Iterator<TurnState> iter = world.getAllTurnStates().iterator();
         while (iter.hasNext()) {
             // we want the RETREAT or MOVE phase for a fall season,
             // but not both.
             // (a unit could retreat into a SC; thus we need to check)
             //
-            TurnState ts = (TurnState) iter.next();
+            TurnState ts = iter.next();
             Phase phase = ts.getPhase();
             if (phase.getSeasonType() == Phase.SeasonType.FALL) {
                 if (phase.getPhaseType() == Phase.PhaseType.MOVEMENT) {
                     if (iter.hasNext()) {
-                        TurnState nextTS = (TurnState) iter.next();
+                        TurnState nextTS = iter.next();
                         if (nextTS.getPhase()
                                 .getPhaseType() == Phase.PhaseType.RETREAT) {
                             ts = nextTS;
