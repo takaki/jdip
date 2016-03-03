@@ -26,7 +26,7 @@ package dip.world;
 /**
  * An exception typically thrown if there is a problem during Border creation.
  */
-class InvalidBorderException extends Exception {
+public class InvalidBorderException extends RuntimeException {
 
     /**
      * Create an InvalidBorderException
