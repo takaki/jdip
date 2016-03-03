@@ -36,7 +36,7 @@ public class ToolProxyImpl implements ToolProxy {
     /**
      * Constructor
      */
-    public ToolProxyImpl(ClientFrame clientFrame) {
+    public ToolProxyImpl(final ClientFrame clientFrame) {
         this.clientFrame = clientFrame;
     }// ToolProxyImpl()
 

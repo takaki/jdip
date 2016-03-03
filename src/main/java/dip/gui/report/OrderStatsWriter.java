@@ -67,9 +67,9 @@ public class OrderStatsWriter {
     /**
      * Gets the order statistics as HTML
      */
-    public static String getOrderStatsAsHTML(World w,
-                                             OrderFormatOptions orderFormatOptions) {
-        OrderStatsWriter osw = new OrderStatsWriter(w, orderFormatOptions);
+    public static String getOrderStatsAsHTML(final World w,
+                                             final OrderFormatOptions orderFormatOptions) {
+        final OrderStatsWriter osw = new OrderStatsWriter(w, orderFormatOptions);
         return osw.getResultsAsHTML();
     }// getOrderStatsAsHTML()
 
@@ -81,7 +81,7 @@ public class OrderStatsWriter {
     public static void displayDialog(final ClientFrame clientFrame,
                                      final World w,
                                      final OrderFormatOptions orderFormat) {
-        TextViewer tv = new TextViewer(clientFrame);
+        final TextViewer tv = new TextViewer(clientFrame);
         tv.setEditable(false);
         tv.addSingleButton(tv.makeOKButton());
         tv.setTitle(Utils.getLocalString(DIALOG_TITLE));
@@ -100,7 +100,7 @@ public class OrderStatsWriter {
     /**
      * OrderStatsWriter constructor.
      */
-    private OrderStatsWriter(World w, OrderFormatOptions ofo) {
+    private OrderStatsWriter(final World w, final OrderFormatOptions ofo) {
         world = w;
         allPowers = w.getMap().getPowers().toArray(new Power[0]);
         this.ofo = ofo;
@@ -122,11 +122,11 @@ public class OrderStatsWriter {
         }
 
         // get template
-        String templateText = Utils
+        final String templateText = Utils
                 .getText(Utils.getLocalString(HTML_TEMPLATE));
 
         // get template objects
-        Object[] templateData = new Object[]{makeTable(mptd, 0),    // {0} :
+        final Object[] templateData = new Object[]{makeTable(mptd, 0),    // {0} :
                 makeTable(mptd, 3),    // {1} :
                 makeTable(mptd, 1),        // {2} :
                 makeTable(mptd, 2)        // {3} :
@@ -137,8 +137,8 @@ public class OrderStatsWriter {
     }// getResultsAsHTML()
 
 
-    private String makeTable(final MovePhaseTurnData[] mptds, int type) {
-        StringBuffer sb = new StringBuffer(4096);
+    private String makeTable(final MovePhaseTurnData[] mptds, final int type) {
+        final StringBuffer sb = new StringBuffer(4096);
 
         sb.append("<table cellspacing=\"3\" cellpadding=\"1\" border=\"0\">");
 
@@ -159,7 +159,7 @@ public class OrderStatsWriter {
 
 
         for (int row = 0; row < mptds.length; row++) {
-            MovePhaseTurnData mptd = mptds[row];
+            final MovePhaseTurnData mptd = mptds[row];
 
             // by-year row
             // [year] [%] [%] ... [%} [avg-%]
@@ -224,13 +224,13 @@ public class OrderStatsWriter {
     }// makeOrderSuccessRateTable()
 
     private String makeSupportRateTable(final MovePhaseTurnData[] mptds) {
-        StringBuffer sb = new StringBuffer(4096);
+        final StringBuffer sb = new StringBuffer(4096);
         return sb.toString();
     }// makeSupportRateTable()
 
     private String makeNonSelfSupportRateTable(
             final MovePhaseTurnData[] mptds) {
-        StringBuffer sb = new StringBuffer(4096);
+        final StringBuffer sb = new StringBuffer(4096);
         return sb.toString();
     }// makeNonSelfSupportRateTable()
 
@@ -240,13 +240,13 @@ public class OrderStatsWriter {
      * ONLY Movement TURNS are used to create statistical data.
      */
     public MovePhaseTurnData[] collectData() {
-        List<TurnState> turns = world.getAllTurnStates();
-        ArrayList<MovePhaseTurnData> data = new ArrayList<MovePhaseTurnData>(
+        final List<TurnState> turns = world.getAllTurnStates();
+        final ArrayList<MovePhaseTurnData> data = new ArrayList<MovePhaseTurnData>(
                 turns.size());
 
-        Iterator<TurnState> iter = turns.iterator();
+        final Iterator<TurnState> iter = turns.iterator();
         while (iter.hasNext()) {
-            TurnState ts = iter.next();
+            final TurnState ts = iter.next();
             if (ts.isResolved() && Phase.PhaseType.MOVEMENT
                     .equals(ts.getPhase().getPhaseType())) {
                 data.add(new MovePhaseTurnData(ts));
@@ -265,7 +265,7 @@ public class OrderStatsWriter {
         private final Phase phase;
         private final Stats[] stats;
 
-        public MovePhaseTurnData(TurnState ts) {
+        public MovePhaseTurnData(final TurnState ts) {
             if (!ts.getPhase().getPhaseType()
                     .equals(Phase.PhaseType.MOVEMENT)) {
                 throw new IllegalArgumentException();
@@ -288,7 +288,7 @@ public class OrderStatsWriter {
             return stats;
         }// getStats()
 
-        public Stats getStats(Power p) {
+        public Stats getStats(final Power p) {
             if (p == null) {
                 throw new IllegalArgumentException();
             }
@@ -303,15 +303,15 @@ public class OrderStatsWriter {
         }// getStats()
 
 
-        private void collectStats(TurnState ts) {
+        private void collectStats(final TurnState ts) {
             // create order-result mapping
-            HashMap<Orderable, Boolean> resultMap = new HashMap<Orderable, Boolean>(
+            final HashMap<Orderable, Boolean> resultMap = new HashMap<Orderable, Boolean>(
                     53);
             Iterator iter = ts.getResultList().iterator();
             while (iter.hasNext()) {
-                Object obj = iter.next();
+                final Object obj = iter.next();
                 if (obj instanceof OrderResult) {
-                    OrderResult ordRes = (OrderResult) obj;
+                    final OrderResult ordRes = (OrderResult) obj;
 
                     // we only map SUCCESSFULL orders.
                     if (ordRes
@@ -323,7 +323,7 @@ public class OrderStatsWriter {
 
             // create statistics
             for (int i = 0; i < allPowers.length; i++) {
-                Stats s = new Stats(allPowers[i]);
+                final Stats s = new Stats(allPowers[i]);
 
                 s.isEliminated = ts.getPosition().isEliminated(allPowers[i]);
 
@@ -398,7 +398,7 @@ public class OrderStatsWriter {
         // # of units moving?
         // # of units dislodged?
         //
-        public Stats(Power p) {
+        public Stats(final Power p) {
             if (p == null) {
                 throw new IllegalArgumentException();
             }

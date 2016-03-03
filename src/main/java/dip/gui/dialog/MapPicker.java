@@ -56,12 +56,12 @@ public class MapPicker extends HeaderDialog {
      * Returns a boolean indicating if the displayed map was
      * changed.
      */
-    public static boolean displayDialog(ClientFrame cf, World world) {
+    public static boolean displayDialog(final ClientFrame cf, final World world) {
         if (cf == null || world == null) {
             throw new IllegalArgumentException();
         }
 
-        MapPicker mp = new MapPicker(cf, world);
+        final MapPicker mp = new MapPicker(cf, world);
         mp.pack();
         mp.setSize(Utils.getScreenSize(0.60f, 0.75f));
         Utils.centerInScreen(mp);
@@ -73,13 +73,13 @@ public class MapPicker extends HeaderDialog {
     /**
      * Create a MapPicker dialog
      */
-    private MapPicker(ClientFrame clientFrame, World world) {
+    private MapPicker(final ClientFrame clientFrame, final World world) {
         super(clientFrame, Utils.getLocalString(TITLE), true);
         this.clientFrame = clientFrame;
         this.world = world;
 
-        World.VariantInfo vi = world.getVariantInfo();
-        Variant variant = new VariantManager()
+        final World.VariantInfo vi = world.getVariantInfo();
+        final Variant variant = new VariantManager()
                 .getVariant(vi.getVariantName(), vi.getVariantVersion()).orElse(null);
         mauSelector = new NGDMapAndUnits();
         mauSelector.variantChanged(variant);
@@ -111,7 +111,7 @@ public class MapPicker extends HeaderDialog {
             if (!mg.getName().equalsIgnoreCase(originalMapName) || !sp.getName()
                     .equalsIgnoreCase(originalSymbolPackName)) {
                 // set the new URI in World object.
-                World.VariantInfo vi = world.getVariantInfo();
+                final World.VariantInfo vi = world.getVariantInfo();
                 vi.setMapName(mg.getName());
 
                 vi.setSymbolPackName(sp.getName());

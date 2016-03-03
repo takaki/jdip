@@ -518,7 +518,7 @@ public final class JudgeImportHistory {
             // We must first check for a 'dislodged' indicator.
             boolean isUnitDislodged = false;
             if (isRetreatMoveProcessing) {
-                for (Object o : njo.getResults()) {
+                for (final Object o : njo.getResults()) {
                     final Result r = (Result) o;
                     if (r instanceof OrderResult) {
                         if (((OrderResult) r).getResultType()
@@ -642,7 +642,7 @@ public final class JudgeImportHistory {
 
         // now that all orders are parsed, and all units are cleared, put
         // unit in the proper place.
-        for (Object result1 : results) {
+        for (final Object result1 : results) {
             final Result result = (Result) result1;
             if (result instanceof OrderResult) {
                 final OrderResult ordResult = (OrderResult) result;
@@ -822,7 +822,7 @@ public final class JudgeImportHistory {
         // now that all orders are parsed, and all units are cleared, put
         // unit in the proper place.
         //
-        for (Object result1 : results) {
+        for (final Object result1 : results) {
             final Result result = (Result) result1;
             if (result instanceof OrderResult) {
                 final OrderResult ordResult = (OrderResult) result;

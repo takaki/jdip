@@ -86,48 +86,48 @@ public class XJSVGCanvas extends JSVGCanvas {
      *                       key events.
      * @param selectableText Whether the text should be selectable.
      */
-    public XJSVGCanvas(final MapPanel mapPanel, StatusBar statusBar,
-                       SVGUserAgent ua, boolean eventsEnabled,
-                       boolean selectableText) {
+    public XJSVGCanvas(final MapPanel mapPanel, final StatusBar statusBar,
+                       final SVGUserAgent ua, final boolean eventsEnabled,
+                       final boolean selectableText) {
         super(ua, eventsEnabled, selectableText);
         this.statusBar = statusBar;
         setMaximumSize(screenSize);
 
         // fix for incorrect setting of initial SVG size by JSVGScrollPane
         addGVTTreeRendererListener(new GVTTreeRendererListener() {
-            public void gvtRenderingCompleted(GVTTreeRendererEvent e) {
-                AffineTransform iat = getInitialTransform();
-                SVGSVGElement elt = getSVGDocument().getRootElement();
+            public void gvtRenderingCompleted(final GVTTreeRendererEvent e) {
+                final AffineTransform iat = getInitialTransform();
+                final SVGSVGElement elt = getSVGDocument().getRootElement();
                 if (iat != null || elt == null) // very very defensive... but iat null check is important
                 {
                     // rescale viewbox transform to reflect viewbox size
-                    Dimension vbSize = mapPanel
+                    final Dimension vbSize = mapPanel
                             .getScrollerSize();    // size of the canvas' scrolling container (don't include scroll bars)
-                    CanvasGraphicsNode cgn = getCanvasGraphicsNode();
+                    final CanvasGraphicsNode cgn = getCanvasGraphicsNode();
 
                     // ViewBox.getViewTransform is essential for calculating the correct transform,
                     // AND accounting for any viewBox attribute of the root SVG element, if present.
-                    AffineTransform vt = ViewBox
+                    final AffineTransform vt = ViewBox
                             .getViewTransform(getFragmentIdentifier(), elt,
                                     vbSize.width, vbSize.height);
                     cgn.setViewingTransform(vt);
 
                     // set rendering transform to 'unscaled'
-                    AffineTransform t = AffineTransform.getScaleInstance(1, 1);
+                    final AffineTransform t = AffineTransform.getScaleInstance(1, 1);
                     XJSVGCanvas.super.setRenderingTransform(t);
                 }
             }// gvtRenderingCompleted()
 
-            public void gvtRenderingCancelled(GVTTreeRendererEvent e) {
+            public void gvtRenderingCancelled(final GVTTreeRendererEvent e) {
             }
 
-            public void gvtRenderingFailed(GVTTreeRendererEvent e) {
+            public void gvtRenderingFailed(final GVTTreeRendererEvent e) {
             }
 
-            public void gvtRenderingPrepare(GVTTreeRendererEvent e) {
+            public void gvtRenderingPrepare(final GVTTreeRendererEvent e) {
             }
 
-            public void gvtRenderingStarted(GVTTreeRendererEvent e) {
+            public void gvtRenderingStarted(final GVTTreeRendererEvent e) {
             }
         });
 
@@ -137,7 +137,7 @@ public class XJSVGCanvas extends JSVGCanvas {
     /**
      * Sets if this is we should validate SVG or not
      */
-    public void setValidating(boolean value) {
+    public void setValidating(final boolean value) {
         isValidating = value;
     }// setValidating()
 
@@ -163,7 +163,7 @@ public class XJSVGCanvas extends JSVGCanvas {
     /**
      * Sets the parent component, to which key events are sent.
      */
-    public void setParent(Component c) {
+    public void setParent(final Component c) {
         ((XJSVGCanvasListener) listener).setParent(c);
     }// setParent()
 
@@ -188,13 +188,13 @@ public class XJSVGCanvas extends JSVGCanvas {
         }// XJSVGCanvasListener()
 
 
-        public void mouseDragged(MouseEvent e) {
+        public void mouseDragged(final MouseEvent e) {
             inDrag = true;
             super.mouseDragged(e);
         }// mouseDragged()
 
 
-        public void mousePressed(java.awt.event.MouseEvent e) {
+        public void mousePressed(final java.awt.event.MouseEvent e) {
             // set drag start coordinates
             dragX = e.getX();
             dragY = e.getY();
@@ -202,15 +202,15 @@ public class XJSVGCanvas extends JSVGCanvas {
         }// mousePressed()
 
 
-        public void mouseReleased(java.awt.event.MouseEvent e) {
+        public void mouseReleased(final java.awt.event.MouseEvent e) {
             if (inDrag) {
-                int dx = Math.abs(e.getX() - dragX);
-                int dy = Math.abs(e.getY() - dragY);
+                final int dx = Math.abs(e.getX() - dragX);
+                final int dy = Math.abs(e.getY() - dragY);
 
                 if (dx < MIN_DRAG_DELTA && dy < MIN_DRAG_DELTA) {
                     // our drag was short! dispatch a CLICK event.
                     //
-                    MouseEvent click = new MouseEvent(e.getComponent(),
+                    final MouseEvent click = new MouseEvent(e.getComponent(),
                             MouseEvent.MOUSE_CLICKED, e.getWhen(),
                             e.getModifiersEx(),        // modifiers
                             e.getX(), e.getY(), e.getClickCount(),
@@ -228,7 +228,7 @@ public class XJSVGCanvas extends JSVGCanvas {
         }// mouseReleased()
 
 
-        public void keyPressed(java.awt.event.KeyEvent e) {
+        public void keyPressed(final java.awt.event.KeyEvent e) {
             if (parent != null) {
                 parent.dispatchEvent(e);
             }
@@ -237,7 +237,7 @@ public class XJSVGCanvas extends JSVGCanvas {
         }// keyPressed()
 
 
-        public void keyReleased(java.awt.event.KeyEvent e) {
+        public void keyReleased(final java.awt.event.KeyEvent e) {
             if (parent != null) {
                 parent.dispatchEvent(e);
             }
@@ -246,7 +246,7 @@ public class XJSVGCanvas extends JSVGCanvas {
         }// keyReleased()
 
 
-        public void keyTyped(java.awt.event.KeyEvent e) {
+        public void keyTyped(final java.awt.event.KeyEvent e) {
             if (parent != null) {
                 parent.dispatchEvent(e);
             }
@@ -258,7 +258,7 @@ public class XJSVGCanvas extends JSVGCanvas {
         /**
          * Set parent to receive key events; null if none.
          */
-        public void setParent(Component c) {
+        public void setParent(final Component c) {
             parent = c;
         }// setParent()
 
@@ -282,7 +282,7 @@ public class XJSVGCanvas extends JSVGCanvas {
          * Do nothing. We don't want the Batik
          * CursorManager updating our cursor.
          */
-        public void setSVGCursor(Cursor c) {
+        public void setSVGCursor(final Cursor c) {
             // do nothing.
         }// setSVGCursor()
 
@@ -290,7 +290,7 @@ public class XJSVGCanvas extends JSVGCanvas {
         /**
          * Displays an SVG error Exception using an ErrorDialog
          */
-        public void displayError(Exception ex) {
+        public void displayError(final Exception ex) {
             ErrorDialog.displaySerious(findParent(), ex);
         }// displayError()
 
@@ -298,7 +298,7 @@ public class XJSVGCanvas extends JSVGCanvas {
         /**
          * Displays an SVG error String using an ErrorDialog
          */
-        public void displayError(String message) {
+        public void displayError(final String message) {
             ErrorDialog.displaySerious(findParent(), new Exception(message));
         }// message()
 
@@ -329,7 +329,7 @@ public class XJSVGCanvas extends JSVGCanvas {
      *
      * @param at an AffineTransform.
      */
-    public void setRenderingTransform(AffineTransform at) {
+    public void setRenderingTransform(final AffineTransform at) {
         // check to see that we are not zooming too little
         if (minScale > 0.0 && (at.getScaleX() < minScale || at
                 .getScaleY() < minScale)) {
@@ -361,7 +361,7 @@ public class XJSVGCanvas extends JSVGCanvas {
     /**
      * Sets the minimum allowable scale size. 1.0 == no scaling. any negative value or 0 disables.
      */
-    public void setMinimumScale(double value) {
+    public void setMinimumScale(final double value) {
         minScale = value;
     }// setMinimumScale()
 
@@ -369,7 +369,7 @@ public class XJSVGCanvas extends JSVGCanvas {
     /**
      * Sets the maximum allowable scale size. 1.0 == no scaling. any negative value or 0 disables.
      */
-    public void setMaximumScale(double value) {
+    public void setMaximumScale(final double value) {
         maxScale = value;
     }// setMaximumScale()
 
@@ -377,7 +377,7 @@ public class XJSVGCanvas extends JSVGCanvas {
      * Sets the zoom in/out scale factor to that given. For example, if
      * set to 2.0, zoom in will be x2 and zoom out will be 0.5 (1/2).
      */
-    public void setZoomScaleFactor(float scaleFactor) {
+    public void setZoomScaleFactor(final float scaleFactor) {
         final ActionMap actionMap = getActionMap();
         actionMap.put(JSVGCanvas.ZOOM_IN_ACTION, new ZoomAction(scaleFactor));
         actionMap.put(JSVGCanvas.ZOOM_OUT_ACTION,
@@ -388,7 +388,7 @@ public class XJSVGCanvas extends JSVGCanvas {
     /**
      * Test for floating-point "equivalence"
      */
-    private boolean isEquivalent(double a, double b) {
+    private boolean isEquivalent(final double a, final double b) {
         return (Math.abs(a - b) <= 0.0001);
     }// isEquivalent()
 

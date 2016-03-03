@@ -86,7 +86,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
     /**
      * Creates an F2FOrderDisplayPanel
      */
-    public F2FOrderDisplayPanel(ClientFrame clientFrame) {
+    public F2FOrderDisplayPanel(final ClientFrame clientFrame) {
         super(clientFrame);
         entryState = new F2FState();
         makeF2FLayout();
@@ -104,7 +104,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
      * Handle the Submit button events
      */
     private class SubmissionListener implements ActionListener {
-        public void actionPerformed(ActionEvent e) {
+        public void actionPerformed(final ActionEvent e) {
             // confirm submission
             final int result = JOptionPane.showConfirmDialog(clientFrame,
                     Utils.getLocalString(CONFIRM_TEXT),
@@ -138,7 +138,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
             // we do this by checking which tabs are (or are not) enabled.
             // when all tabs have been disabled, resolution takes place. Since
             // eliminated powers don't have tabs, this works nicely.
-            TabComponent nextAvailable = selectNextRandomTab();
+            final TabComponent nextAvailable = selectNextRandomTab();
 
             if (nextAvailable == null) {
                 saveEntryState();
@@ -157,7 +157,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
      * Handle the "Enter Orders" button event
      */
     private class EnterOrdersListener implements ActionListener {
-        public void actionPerformed(ActionEvent e) {
+        public void actionPerformed(final ActionEvent e) {
             isReviewingResolvedTS = false;
             resolvedTS = null;
             final TurnState tmpTS = nextTS;
@@ -176,7 +176,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
     private class TabListener implements ChangeListener {
         private boolean isEnabled = true;
 
-        public synchronized void setEnabled(boolean value) {
+        public synchronized void setEnabled(final boolean value) {
             isEnabled = value;
         }// setEnabled()
 
@@ -186,7 +186,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
             }
         }// forceUpdate()
 
-        public synchronized void stateChanged(ChangeEvent e) {
+        public synchronized void stateChanged(final ChangeEvent e) {
             if (isEnabled) {
                 update();
             }
@@ -214,7 +214,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
      * Extended F2FPropertyListener
      */
     protected class F2FPropertyListener extends ODPPropertyListener {
-        public void actionTurnstateChanged(TurnState ts) {
+        public void actionTurnstateChanged(final TurnState ts) {
             if (resolvedTS != null && !isReviewingResolvedTS) {
                 isReviewingResolvedTS = true;
                 changeButton(enterOrders);
@@ -253,28 +253,28 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
             }
         }// actionTurnstateChanged()
 
-        public void actionTurnstateResolved(TurnState ts) {
+        public void actionTurnstateResolved(final TurnState ts) {
             super.actionTurnstateResolved(ts);
             resolvedTS = ts;
         }// actionTurnstateResolved()
 
-        public void actionTurnstateAdded(TurnState ts) {
+        public void actionTurnstateAdded(final TurnState ts) {
             super.actionTurnstateAdded(ts);
             nextTS = ts;
         }// actionTurnstateAdded()
 
-        public void actionMMDReady(MapMetadata mmd) {
+        public void actionMMDReady(final MapMetadata mmd) {
             super.actionMMDReady(mmd);
             F2FOrderDisplayPanel.this.mmd = mmd;
             setTabIcons();
         }// actionMMDReady()
 
-        public void actionModeChanged(String mode) {
+        public void actionModeChanged(final String mode) {
             super.actionModeChanged(mode);
             if (mode == ClientFrame.MODE_ORDER) {
                 // disable some menu options
                 // when in order mode.
-                ClientMenu cm = clientFrame.getClientMenu();
+                final ClientMenu cm = clientFrame.getClientMenu();
                 cm.setEnabled(ClientMenu.ORDERS_RESOLVE, false);
             }
         }// actionModeChanged()
@@ -313,7 +313,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
         // if a tab is selected that is enabled and
         // not the 'all' tab, submit should be enabled.
         if (!turnState.isResolved()) {
-            int idx = tabPane.getSelectedIndex();
+            final int idx = tabPane.getSelectedIndex();
             if (idx > 0 && tabPane.isEnabledAt(idx)) {
                 submit.setEnabled(true);
             }
@@ -324,7 +324,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
     /**
      * Change the Button in the ButtonPanel
      */
-    private void changeButton(JButton button) {
+    private void changeButton(final JButton button) {
         buttonPanel.removeAll();
         buttonPanel.add(button);
         buttonPanel.validate();
@@ -390,7 +390,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
         final Position pos = turnState.getPosition();
         final List<Power> powers = world.getMap().getPowers();
 
-        Adjustment.AdjustmentInfoMap f2fAdjMap = Adjustment
+        final Adjustment.AdjustmentInfoMap f2fAdjMap = Adjustment
                 .getAdjustmentInfo(turnState, world.getRuleOptions(), powers);
 
         for (int i = 0; i < powers.size(); i++) {
@@ -399,7 +399,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
                 // create icon, if possible
                 Icon icon = null;
                 if (mmd != null) {
-                    Color color = SVGColorParser
+                    final Color color = SVGColorParser
                             .parseColor(mmd.getPowerColor(power));
                     icon = new ColorRectIcon(12, 12, color);
                 }
@@ -409,7 +409,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
                         "");
 
                 // disable tabs if appropriate
-                Adjustment.AdjustmentInfo adjInfo = f2fAdjMap.get(power);
+                final Adjustment.AdjustmentInfo adjInfo = f2fAdjMap.get(power);
                 if (turnState.getPhase()
                         .getPhaseType() == Phase.PhaseType.ADJUSTMENT) {
                     if (adjInfo.getAdjustmentAmount() == 0) {
@@ -461,10 +461,10 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
     private TabComponent selectNextRandomTab() {
         // find Power tabs that are not disabled
         final Power[] powers = world.getMap().getPowers().toArray(new Power[0]);
-        List<TabComponent> tabSelectionOrderList = new ArrayList<TabComponent>(powers.length);
+        final List<TabComponent> tabSelectionOrderList = new ArrayList<TabComponent>(powers.length);
 
         for (int i = 0; i < powers.length; i++) {
-            TabComponent tc = getTabComponent(powers[i]);
+            final TabComponent tc = getTabComponent(powers[i]);
             if (tabPane.isEnabledAt(tabPane.indexOfComponent(tc))) {
                 tabSelectionOrderList.add(tc);
             }
@@ -508,15 +508,15 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
         // we want to share the main panel between all tabs
         // main panel layout
         main = new JPanel();
-        int w1[] = {0};
-        int h1[] = {0, 5, 0, 10, 0};
+        final int[] w1 = {0};
+        final int[] h1 = {0, 5, 0, 10, 0};
 
-        HIGLayout hl = new HIGLayout(w1, h1);
+        final HIGLayout hl = new HIGLayout(w1, h1);
         hl.setColumnWeight(1, 1);
         hl.setRowWeight(1, 1);
         main.setLayout(hl);
 
-        HIGConstraints c = new HIGConstraints();
+        final HIGConstraints c = new HIGConstraints();
 
         main.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         main.add(orderListScrollPane, c.rc(1, 1, "lrtb"));
@@ -567,7 +567,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
      */
     private TabComponent getTabComponent(final Power p) {
         for (int i = 0; i < tabPane.getTabCount(); i++) {
-            TabComponent tc = (TabComponent) tabPane.getComponentAt(i);
+            final TabComponent tc = (TabComponent) tabPane.getComponentAt(i);
             if (tc == null) {
                 throw new IllegalStateException(
                         "null TabComponent set for power: " + p);
@@ -584,14 +584,14 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
     /**
      * Actually setup the state.
      */
-    private void setupState(F2FState state) {
+    private void setupState(final F2FState state) {
         if (turnState != null) {
             // set enabled tabs (submitted == disabled)
             boolean aSubmit = false;
             final Power[] powers = world.getMap().getPowers().toArray(new Power[0]);
             for (int i = 0; i < powers.length; i++) {
                 final Power power = powers[i];
-                boolean value = state.getSubmitted(power);
+                final boolean value = state.getSubmitted(power);
                 aSubmit = (value) ? true : aSubmit;
                 setTabEnabled(power, !value);
             }
@@ -649,7 +649,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
     /**
      * Restore the state
      */
-    public void restoreState(F2FState state) {
+    public void restoreState(final F2FState state) {
         if (turnState != null) {
             setupState(state);
         } else {
@@ -687,7 +687,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
         /**
          * Create an F2FState object from an existing F2FState object
          */
-        public F2FState(F2FState f2fs) {
+        public F2FState(final F2FState f2fs) {
             if (f2fs == null) {
                 throw new IllegalArgumentException();
             }
@@ -708,14 +708,14 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
         /**
          * Set the current power (or null) who is entering orders.
          */
-        public synchronized void setCurrentPower(Power power) {
+        public synchronized void setCurrentPower(final Power power) {
             currentPower = power;
         }// setCurrentPower()
 
         /**
          * Get if the Power has submitted orders.
          */
-        public synchronized boolean getSubmitted(Power power) {
+        public synchronized boolean getSubmitted(final Power power) {
             if (power == null) {
                 throw new IllegalArgumentException();
             }
@@ -725,7 +725,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
         /**
          * Set if a power has submitted orders
          */
-        public synchronized void setSubmitted(Power power, boolean value) {
+        public synchronized void setSubmitted(final Power power, final boolean value) {
             if (power == null) {
                 throw new IllegalArgumentException();
             }
@@ -756,7 +756,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
     class TabComponent extends JPanel {
         private final Power power;
 
-        public TabComponent(Power power) {
+        public TabComponent(final Power power) {
             super();
             this.power = power;
             setLayout(new BorderLayout());

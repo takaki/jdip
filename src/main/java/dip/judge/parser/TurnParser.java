@@ -70,7 +70,7 @@ public class TurnParser {
     /**
      * Create the TurnParser and perform parsing.
      */
-    public TurnParser(String input) throws IOException, PatternSyntaxException {
+    public TurnParser(final String input) throws IOException, PatternSyntaxException {
         parseTurns(input);
     }// TurnParser()
 
@@ -87,15 +87,15 @@ public class TurnParser {
      * Creates Turn objects.
      */
     private void parseTurns(
-            String input) throws IOException, PatternSyntaxException {
+            final String input) throws IOException, PatternSyntaxException {
         // patterns
-        Pattern subjPhasePattern = Pattern.compile(SUBJ_PHASE_REGEX);
-        Pattern subjPhasePatternOld = Pattern.compile(SUBJ_PHASE_REGEX_OLD);
-        Pattern isResultsPattern = Pattern.compile(RESULT_SUBJ_REGEX);
+        final Pattern subjPhasePattern = Pattern.compile(SUBJ_PHASE_REGEX);
+        final Pattern subjPhasePatternOld = Pattern.compile(SUBJ_PHASE_REGEX_OLD);
+        final Pattern isResultsPattern = Pattern.compile(RESULT_SUBJ_REGEX);
 
 
-        LinkedList<Turn> turnList = new LinkedList<Turn>();
-        BufferedReader reader = new BufferedReader(new StringReader(input));
+        final LinkedList<Turn> turnList = new LinkedList<Turn>();
+        final BufferedReader reader = new BufferedReader(new StringReader(input));
 
         String line = reader.readLine();
         StringBuffer sb = null;
@@ -103,22 +103,22 @@ public class TurnParser {
         Turn lastTurn = null;            // previous turn
 
         while (line != null) {
-            int pos = line.toLowerCase().indexOf("date:");
+            final int pos = line.toLowerCase().indexOf("date:");
             if (pos >= 0 && pos < 10) {
                 turn.setDateLine(line);
 
                 // set the subject line; if not present, throw an error (shouldn't occur)
-                String nextLine = reader.readLine();
+                final String nextLine = reader.readLine();
                 if (nextLine.toLowerCase().indexOf("subject:") == -1) {
                     throw new IOException(Utils.getLocalString(TP_NO_SUBJECT));
                 } else if (isResultsPattern.matcher(nextLine).find()) {
                     turn.setSubjectLine(nextLine);
 
                     // regex parse the subject line
-                    Matcher m = subjPhasePattern.matcher(nextLine);
-                    Matcher m_o = subjPhasePatternOld.matcher(nextLine);
+                    final Matcher m = subjPhasePattern.matcher(nextLine);
+                    final Matcher m_o = subjPhasePatternOld.matcher(nextLine);
                     if (m.find()) {
-                        Phase phase = Phase.parse(m.group(0).trim()).orElse(null);
+                        final Phase phase = Phase.parse(m.group(0).trim()).orElse(null);
                         if (phase == null) {
                             throw new IOException(
                                     Utils.getLocalString(TP_BAD_PHASE,
@@ -127,7 +127,7 @@ public class TurnParser {
 
                         turn.setPhase(phase);
                     } else if (m_o.find()) {
-                        Phase phase = Phase.parse(m_o.group(0).trim()).orElse(null);
+                        final Phase phase = Phase.parse(m_o.group(0).trim()).orElse(null);
                         if (phase == null) {
                             throw new IOException(
                                     Utils.getLocalString(TP_BAD_PHASE,
@@ -186,28 +186,28 @@ public class TurnParser {
         /**
          * Sets the unparsed Date: line
          */
-        public void setDateLine(String value) {
+        public void setDateLine(final String value) {
             dateLine = value;
         }
 
         /**
          * Sets the unparsed Subject: line
          */
-        public void setSubjectLine(String value) {
+        public void setSubjectLine(final String value) {
             subjectLine = value;
         }
 
         /**
          * Sets the PhaseType
          */
-        public void setPhase(Phase value) {
+        public void setPhase(final Phase value) {
             phase = value;
         }
 
         /**
          * Sets the text between Subject: and upto (but not including) the next Date: line
          */
-        public void setText(String value) {
+        public void setText(final String value) {
             text = value;
         }
 

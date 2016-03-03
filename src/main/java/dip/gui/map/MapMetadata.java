@@ -260,15 +260,15 @@ public class MapMetadata {
      * will be replaced with 0 values. Display and Order Drawing
      * metadata parsing is unaffected by this flag.
      */
-    public MapMetadata(MapPanel mp, SymbolPack sp,
-                       boolean supressPlacementErrors) throws MapException {
+    public MapMetadata(final MapPanel mp, final SymbolPack sp,
+                       final boolean supressPlacementErrors) throws MapException {
         this.mp = mp;
         this.sp = sp;
         this.supressPlacementErrors = supressPlacementErrors;
         infoMap = new HashMap<Province, InfoEntry>(113);
         displayProps = new HashMap(47);
 
-        Element root = mp.getSVGDocument().getRootElement();
+        final Element root = mp.getSVGDocument().getRootElement();
         parseDisplayMetadata(root);
         parsePlacements(root);
         parseOrderDrawingData(root);
@@ -288,7 +288,7 @@ public class MapMetadata {
     /**
      * Get an InfoEntry
      */
-    public InfoEntry getInfoEntry(Province key) {
+    public InfoEntry getInfoEntry(final Province key) {
         return infoMap.get(key);
     }// getInfoEntry()
 
@@ -298,7 +298,7 @@ public class MapMetadata {
      * This generally should NOT be used. It is intended for map editors
      * and what not.
      */
-    public void setInfoEntry(Province key, InfoEntry value) {
+    public void setInfoEntry(final Province key, final InfoEntry value) {
         infoMap.put(key, value);
     }// setInfoEntry()
 
@@ -306,21 +306,21 @@ public class MapMetadata {
     /**
      * Convenience method: get Unit placement point for this Province
      */
-    public Point2D.Float getUnitPt(Province key, Coast coast) {
+    public Point2D.Float getUnitPt(final Province key, final Coast coast) {
         return getInfoEntry(key).getUnitPt(coast);
     }
 
     /**
      * Convenience method: get Dislodged Unit placement point for this Province
      */
-    public Point2D.Float getDislodgedUnitPt(Province key, Coast coast) {
+    public Point2D.Float getDislodgedUnitPt(final Province key, final Coast coast) {
         return getInfoEntry(key).getDislodgedUnitPt(coast);
     }
 
     /**
      * Convenience method: get Supply Center placement point for this Province
      */
-    public Point2D.Float getSCPt(Province key) {
+    public Point2D.Float getSCPt(final Province key) {
         return getInfoEntry(key).getSCPt();
     }
 
@@ -341,8 +341,8 @@ public class MapMetadata {
         /**
          * Create an InfoEntry object; if directional coasts, use setCoastMapings as well.
          */
-        public InfoEntry(Point2D.Float unit, Point2D.Float dislodgedUnit,
-                         Point2D.Float sc) {
+        public InfoEntry(final Point2D.Float unit, final Point2D.Float dislodgedUnit,
+                         final Point2D.Float sc) {
             // safety-check
             if (unit == null || dislodgedUnit == null || sc == null) {
                 throw new IllegalArgumentException();
@@ -357,7 +357,7 @@ public class MapMetadata {
         /**
          * Sets coast data maps for multi-coastal provinces; if not set, default placement data is used.
          */
-        public void setCoastMappings(Map<Coast, Point2D.Float> unitCoasts, Map<Coast, Point2D.Float> dislodgedUnitCoasts) {
+        public void setCoastMappings(final Map<Coast, Point2D.Float> unitCoasts, final Map<Coast, Point2D.Float> dislodgedUnitCoasts) {
             this.unitCoasts = unitCoasts;
             this.dislodgedUnitCoasts = dislodgedUnitCoasts;
         }// setCoastData()
@@ -366,8 +366,8 @@ public class MapMetadata {
         /**
          * Adds data to coast mapping
          */
-        public void addCoastMapping(Coast coast, Point2D.Float unitPt,
-                                    Point2D.Float dislodgedPt) {
+        public void addCoastMapping(final Coast coast, final Point2D.Float unitPt,
+                                    final Point2D.Float dislodgedPt) {
             if (unitPt == null || dislodgedPt == null) {
                 throw new IllegalArgumentException();
             }
@@ -387,24 +387,24 @@ public class MapMetadata {
         /**
          * Location where units are placed
          */
-        public Point2D.Float getUnitPt(Coast coast) {
+        public Point2D.Float getUnitPt(final Coast coast) {
             if (unitCoasts == null) {
                 return makePt(unit);
             }
 
-            Point2D.Float pt = unitCoasts.get(coast);
+            final Point2D.Float pt = unitCoasts.get(coast);
             return (pt == null) ? makePt(unit) : makePt(pt);
         }// getUnitPt()
 
         /**
          * Location where dislodged units are placed
          */
-        public Point2D.Float getDislodgedUnitPt(Coast coast) {
+        public Point2D.Float getDislodgedUnitPt(final Coast coast) {
             if (dislodgedUnitCoasts == null) {
                 return makePt(dislodgedUnit);
             }
 
-            Point2D.Float pt = dislodgedUnitCoasts.get(coast);
+            final Point2D.Float pt = dislodgedUnitCoasts.get(coast);
             return (pt == null) ? makePt(dislodgedUnit) : makePt(pt);
         }// getDislodgedUnitPt()
 
@@ -418,7 +418,7 @@ public class MapMetadata {
         /**
          * Makes a new point from an existing point, since Point2D objects are mutable.
          */
-        private final Point2D.Float makePt(Point2D.Float p) {
+        private final Point2D.Float makePt(final Point2D.Float p) {
             return new Point2D.Float(p.x, p.y);
         }// makePt()
     }// nested class InfoEntry
@@ -428,8 +428,8 @@ public class MapMetadata {
      * Gets the SymbolSize for a symbol; null if symbol
      * is not recognized. Case sensitive.
      */
-    public SymbolSize getSymbolSize(String symbolName) {
-        StringBuffer sbKey = new StringBuffer(64);
+    public SymbolSize getSymbolSize(final String symbolName) {
+        final StringBuffer sbKey = new StringBuffer(64);
         sbKey.append(EL_SYMBOLSIZE);
         sbKey.append(symbolName);
         return (SymbolSize) displayProps.get(sbKey.toString());
@@ -439,12 +439,12 @@ public class MapMetadata {
     /**
      * Gets a float metadata value
      */
-    public float getDisplayParamFloat(String key, float defaultValue) {
-        String value = (String) displayProps.get(key);
+    public float getDisplayParamFloat(final String key, final float defaultValue) {
+        final String value = (String) displayProps.get(key);
         if (value != null) {
             try {
                 return Float.parseFloat(value.trim());
-            } catch (NumberFormatException e) {
+            } catch (final NumberFormatException e) {
             }
         }
 
@@ -454,12 +454,12 @@ public class MapMetadata {
     /**
      * Gets an int metadata value
      */
-    public int getDisplayParamInt(String key, int defaultValue) {
-        String value = (String) displayProps.get(key);
+    public int getDisplayParamInt(final String key, final int defaultValue) {
+        final String value = (String) displayProps.get(key);
         if (value != null) {
             try {
                 return Integer.parseInt(value.trim());
-            } catch (NumberFormatException e) {
+            } catch (final NumberFormatException e) {
             }
         }
 
@@ -470,7 +470,7 @@ public class MapMetadata {
     /**
      * Gets a boolean display metadata value
      */
-    public boolean getDisplayParamBoolean(String key, boolean defaultValue) {
+    public boolean getDisplayParamBoolean(final String key, final boolean defaultValue) {
         String value = (String) displayProps.get(key);
         if (value != null) {
             value = value.trim();
@@ -493,7 +493,7 @@ public class MapMetadata {
      * Example usage:
      * String id = getOrderParamString(EL_BUILD, ATT_FILTERID);
      */
-    public String getOrderParamString(String orderElement, String attribute) {
+    public String getOrderParamString(final String orderElement, final String attribute) {
         return (String) getOrderParam(orderElement, attribute);
     }// getOrderParamString()
 
@@ -501,7 +501,7 @@ public class MapMetadata {
      * Gets the float version of a parameter.
      * Throws an IllegalArgumentException if parameter is not found.
      */
-    public float getOrderParamFloat(String orderElement, String attribute) {
+    public float getOrderParamFloat(final String orderElement, final String attribute) {
         return ((Float) getOrderParam(orderElement, attribute)).floatValue();
     }// getOrderParamFloat()
 
@@ -514,7 +514,7 @@ public class MapMetadata {
      * symbolName is typically a Unit symbol name (e.g., "Wing", "Army", "DislodgedFleet", etc.).<br>
      * orderElement is a order element constant (e.g., EL_HOLD, EL_MOVE).<br>
      */
-    public float getOrderRadius(String orderElement, String symbolName) {
+    public float getOrderRadius(final String orderElement, final String symbolName) {
         final float deltaRadius = ((Float) getOrderParam(orderElement,
                 ATT_DELTA_RADIUS)).floatValue();
         return getSymbolSize(symbolName).getRadius(deltaRadius);
@@ -525,8 +525,8 @@ public class MapMetadata {
      * Gets the float array version of a parameter.
      * Throws an IllegalArgumentException if parameter is not found.
      */
-    public float[] getOrderParamFloatArray(String orderElement,
-                                           String attribute) {
+    public float[] getOrderParamFloatArray(final String orderElement,
+                                           final String attribute) {
         return ((float[]) getOrderParam(orderElement, attribute));
     }// getOrderParamFloat()
 
@@ -535,11 +535,11 @@ public class MapMetadata {
      * <p>
      * For filter parameter, if no filter is supplied, returns an empty string.
      */
-    private Object getOrderParam(String el, String att) {
-        StringBuffer sb = new StringBuffer(64);
+    private Object getOrderParam(final String el, final String att) {
+        final StringBuffer sb = new StringBuffer(64);
         sb.append(el);
         sb.append(att);
-        Object value = displayProps.get(sb.toString());
+        final Object value = displayProps.get(sb.toString());
 
         if (value == null) {
             throw new IllegalArgumentException(
@@ -553,7 +553,7 @@ public class MapMetadata {
     /**
      * Get power color (the color of orders associated w/a power
      */
-    public String getPowerColor(Power power) {
+    public String getPowerColor(final Power power) {
         if (power == null) {
             throw new IllegalArgumentException("null power");
         }
@@ -568,8 +568,8 @@ public class MapMetadata {
      * <p>
      * the root element's namespace is used automatically.
      */
-    private Element getElement(Element root, String elementName) {
-        NodeList nl = root
+    private Element getElement(final Element root, final String elementName) {
+        final NodeList nl = root
                 .getElementsByTagNameNS(root.getNamespaceURI(), elementName);
         if (nl.getLength() == 0) {
             return null;
@@ -585,18 +585,18 @@ public class MapMetadata {
      * parent namespace is assumed. An Exception is thrown if bad coordinate values
      * are passed.
      */
-    private Point2D.Float parseCoordElement(Element root,
-                                            String elementName) throws MapException {
+    private Point2D.Float parseCoordElement(final Element root,
+                                            final String elementName) throws MapException {
         Node child = root.getFirstChild();
         while (child != null) {
             if (elementName.equals(child.getLocalName()) && child
                     .getNodeType() == Node.ELEMENT_NODE) {
                 try {
-                    Element el = (Element) child;
-                    float x = Float.parseFloat(el.getAttribute(ATT_X).trim());
-                    float y = Float.parseFloat(el.getAttribute(ATT_Y).trim());
+                    final Element el = (Element) child;
+                    final float x = Float.parseFloat(el.getAttribute(ATT_X).trim());
+                    final float y = Float.parseFloat(el.getAttribute(ATT_Y).trim());
                     return new Point2D.Float(x, y);
-                } catch (NumberFormatException e) {
+                } catch (final NumberFormatException e) {
                     throw new MapException(
                             "Bad coordinate value for element " + elementName + "; must be a decimal value. " + e
                                     .getMessage());
@@ -612,7 +612,7 @@ public class MapMetadata {
     /**
      * Converts PROVINCE element & sub-element data to parsed placement information.
      */
-    private void parsePlacements(Element root) throws MapException {
+    private void parsePlacements(final Element root) throws MapException {
         // get the PROVINCE_DATA element, to see if a ATT_DISLODGED_OFFSET
         // was specified. If so, we will use that offset.
         NodeList nl = root
@@ -621,7 +621,7 @@ public class MapMetadata {
             throw new MapException("Missing " + EL_PROVINCE_DATA + " element.");
         }
 
-        Element elProvData = (Element) nl.item(0);
+        final Element elProvData = (Element) nl.item(0);
         if (!"".equals(elProvData.getAttribute(ATT_DISLODGED_OFFSET))) {
             dislodgedUnitOffset = parseCoord(EL_PROVINCE_DATA,
                     ATT_DISLODGED_OFFSET,
@@ -633,11 +633,11 @@ public class MapMetadata {
         nl = root.getElementsByTagNameNS(JDIP_NAMESPACE, EL_PROVINCE);
         for (int i = 0; i < nl.getLength(); i++) {
             try {
-                Element elProvince = (Element) nl.item(i);
-                String provinceName = elProvince.getAttribute(ATT_NAME);
+                final Element elProvince = (Element) nl.item(i);
+                final String provinceName = elProvince.getAttribute(ATT_NAME);
 
                 // Strip of coast text, and lookup Province
-                Province province = mp.getWorld().getMap()
+                final Province province = mp.getWorld().getMap()
                         .getProvince(Coast.getProvinceName(provinceName));
                 if (province == null) {
                     throw new MapException(
@@ -646,14 +646,14 @@ public class MapMetadata {
 
                 // parse coast; if no directional coast is present, the coast will be
                 // UNDEFINED and isCoastSpecified == false
-                Coast coast = Coast.parse(provinceName);
-                boolean isCoastSpecified = coast.isDirectional();
+                final Coast coast = Coast.parse(provinceName);
+                final boolean isCoastSpecified = coast.isDirectional();
 
                 // parse coordinate data elements
-                Point2D.Float unit = parseCoordElement(elProvince, EL_UNIT);
-                Point2D.Float dislodged = parseCoordElement(elProvince,
+                final Point2D.Float unit = parseCoordElement(elProvince, EL_UNIT);
+                final Point2D.Float dislodged = parseCoordElement(elProvince,
                         EL_DISLODGED_UNIT);
-                Point2D.Float sc = parseCoordElement(elProvince, EL_SC);
+                final Point2D.Float sc = parseCoordElement(elProvince, EL_SC);
 
                 // fix unset dislodged units to use dislodgedUnitOffset, if present.
                 if (dislodgedUnitOffset != null && POINT_ZERO
@@ -664,10 +664,10 @@ public class MapMetadata {
 
                 // create InfoMap
                 if (!isCoastSpecified) {
-                    InfoEntry ie = new InfoEntry(unit, dislodged, sc);
+                    final InfoEntry ie = new InfoEntry(unit, dislodged, sc);
                     infoMap.put(province, ie);
                 } else {
-                    InfoEntry ie = infoMap.get(province);
+                    final InfoEntry ie = infoMap.get(province);
                     if (ie == null) {
                         throw new MapException(
                                 "Error in PROVINCE: " + provinceName + "; province metadata with coast must succeed those without; e.g., stp-sc must come AFTER stp");
@@ -675,7 +675,7 @@ public class MapMetadata {
 
                     ie.addCoastMapping(coast, unit, dislodged);
                 }
-            } catch (MapException me) {
+            } catch (final MapException me) {
                 // do not throw an exception if we are suppressing errors.
                 if (!supressPlacementErrors) {
                     throw me;
@@ -685,11 +685,11 @@ public class MapMetadata {
 
         // verify: make sure each province has at least one InfoEntry.
         // if we are supressing errors, fill in with empty data.
-        Province[] provinces = mp.getWorld().getMap().getProvinces().toArray(new Province[0]);
+        final Province[] provinces = mp.getWorld().getMap().getProvinces().toArray(new Province[0]);
         for (int i = 0; i < provinces.length; i++) {
             if (infoMap.get(provinces[i]) == null) {
                 if (supressPlacementErrors) {
-                    InfoEntry ie = new InfoEntry(new Point2D.Float(0, 0),
+                    final InfoEntry ie = new InfoEntry(new Point2D.Float(0, 0),
                             new Point2D.Float(0, 0), new Point2D.Float(0, 0));
                     infoMap.put(provinces[i], ie);
                     Log.println("MMD: added empty entry for province ",
@@ -709,14 +709,14 @@ public class MapMetadata {
      * root: the top-level tag from which to start parsing. We put these in a
      * HashMap. the HashMap is indexed by ATTRIBUTE (ATT_*).
      */
-    private void parseDisplayMetadata(Element root) throws MapException {
-        NodeList nl = root.getElementsByTagNameNS(JDIP_NAMESPACE, EL_DISPLAY);
+    private void parseDisplayMetadata(final Element root) throws MapException {
+        final NodeList nl = root.getElementsByTagNameNS(JDIP_NAMESPACE, EL_DISPLAY);
         if (nl.getLength() != 1) {
             throw new MapException("There are " + nl
                     .getLength() + " DISPLAY elements in the SVG file; a single DISPLAY group is required.");
         }
 
-        Element displayRoot = (Element) nl.item(0);
+        final Element displayRoot = (Element) nl.item(0);
 
         Element el = getElement(displayRoot, EL_ZOOM);
         if (el != null) {
@@ -743,7 +743,7 @@ public class MapMetadata {
      * root: the top-level tag from which to start parsing. We put these in a
      * HashMap. the HashMap is indexed by ELEMENT+ATTRIBUTE
      */
-    private void parseOrderDrawingData(Element root) throws MapException {
+    private void parseOrderDrawingData(final Element root) throws MapException {
         // get ORDERDRAWING element
         NodeList nl = root
                 .getElementsByTagNameNS(JDIP_NAMESPACE, EL_ORDERDRAWING);
@@ -752,10 +752,10 @@ public class MapMetadata {
                     .getLength() + " " + EL_ORDERDRAWING + " elements in the SVG file; a single element is required.");
         }
 
-        Element orderRoot = (Element) nl.item(0);
+        final Element orderRoot = (Element) nl.item(0);
 
         // parse SYMBOLSIZE info
-        NodeList ssnl = orderRoot
+        final NodeList ssnl = orderRoot
                 .getElementsByTagNameNS(JDIP_NAMESPACE, EL_SYMBOLSIZE);
         for (int i = 0; i < ssnl.getLength(); i++) {
             parseAndAddSymbolSize((Element) ssnl.item(i));
@@ -890,16 +890,16 @@ public class MapMetadata {
         // POWERCOLOR(S)
         el = getElement(orderRoot, EL_POWERCOLORS);
         checkElement(EL_POWERCOLORS, el);
-        WorldMap map = mp.getWorld().getMap();
+        final WorldMap map = mp.getWorld().getMap();
         nl = el.getChildNodes();
         for (int i = 0; i < nl.getLength(); i++) {
-            Node node = nl.item(i);
+            final Node node = nl.item(i);
             if (node.getNodeType() == Node.ELEMENT_NODE) {
                 el = (Element) nl.item(i);
 
-                Power power = map.getPower(el.getAttribute(ATT_POWER).trim());
+                final Power power = map.getPower(el.getAttribute(ATT_POWER).trim());
                 if (power != null) {
-                    String color = el.getAttribute(ATT_COLOR).trim();
+                    final String color = el.getAttribute(ATT_COLOR).trim();
                     if (color == null) {
                         throw new MapException(EL_POWERCOLOR + " color \"" + el
                                 .getAttribute(ATT_COLOR) + "\" not specified.");
@@ -911,7 +911,7 @@ public class MapMetadata {
         }
 
         // verify all powers have a color
-        Power[] powers = map.getPowers().toArray(new Power[0]);
+        final Power[] powers = map.getPowers().toArray(new Power[0]);
         for (int i = 0; i < powers.length; i++) {
             if (displayProps.get(powers[i]) == null) {
                 throw new MapException(
@@ -925,7 +925,7 @@ public class MapMetadata {
     /**
      * Check element method; checks if element is null.
      */
-    private void checkElement(String name, Element el) throws MapException {
+    private void checkElement(final String name, final Element el) throws MapException {
         if (el == null) {
             throw new MapException("Missing required element: " + name);
         }
@@ -934,8 +934,8 @@ public class MapMetadata {
     /**
      * Helper method: set an order parameter
      */
-    private void putOrderParam(String el, String att,
-                               Object value) throws MapException {
+    private void putOrderParam(final String el, final String att,
+                               final Object value) throws MapException {
         if (el == null || att == null) {
             throw new IllegalArgumentException();
         }
@@ -944,7 +944,7 @@ public class MapMetadata {
             throw new MapException(el + " attribute " + att + " is missing!");
         }
 
-        StringBuffer sb = new StringBuffer(64);
+        final StringBuffer sb = new StringBuffer(64);
         sb.append(el);
         sb.append(att);
         displayProps.put(sb.toString(), value);
@@ -954,13 +954,13 @@ public class MapMetadata {
     /**
      * Helper method: set an order parameter, but if it doesn't exist, don't complain.
      */
-    private void putOptionalOrderParam(String el, String att,
-                                       Object value) throws MapException {
+    private void putOptionalOrderParam(final String el, final String att,
+                                       final Object value) throws MapException {
         if (el == null || att == null) {
             throw new IllegalArgumentException();
         }
 
-        StringBuffer sb = new StringBuffer(64);
+        final StringBuffer sb = new StringBuffer(64);
         sb.append(el);
         sb.append(att);
         displayProps.put(sb.toString(), value);
@@ -976,18 +976,18 @@ public class MapMetadata {
      * Furthermore, this method also ensures that the given symbol is
      * in fact defined in the SymbolPack, and scales it appropriately.
      */
-    private void parseAndAddSymbolSize(Element el) throws MapException {
-        String name = el.getAttribute(ATT_NAME).trim();
-        String w = el.getAttribute(ATT_WIDTH).trim();
-        String h = el.getAttribute(ATT_HEIGHT).trim();
+    private void parseAndAddSymbolSize(final Element el) throws MapException {
+        final String name = el.getAttribute(ATT_NAME).trim();
+        final String w = el.getAttribute(ATT_WIDTH).trim();
+        final String h = el.getAttribute(ATT_HEIGHT).trim();
 
-        Symbol symbol = sp.getSymbol(name).orElse(null);
+        final Symbol symbol = sp.getSymbol(name).orElse(null);
         if (symbol == null) {
             throw new MapException("Element " + el
                     .getTagName() + " symbol named \"" + name + "\" not found in symbol pack! Case sensitive.");
         }
 
-        StringBuffer sbKey = new StringBuffer(64);
+        final StringBuffer sbKey = new StringBuffer(64);
         sbKey.append(EL_SYMBOLSIZE);
         sbKey.append(name);
 
@@ -1013,9 +1013,9 @@ public class MapMetadata {
          * are different between the width and height attributes (e.g.,
          * "px" and "cm"). And numbers cannot be negative, either.
          */
-        public SymbolSize(String w, String h, double scale,
-                          Element element) throws MapException {
-            Object[] tmp = makeValues(w, h, scale, element);
+        public SymbolSize(final String w, final String h, final double scale,
+                          final Element element) throws MapException {
+            final Object[] tmp = makeValues(w, h, scale, element);
 
             this.w = (String) tmp[0];
             this.h = (String) tmp[1];
@@ -1058,14 +1058,14 @@ public class MapMetadata {
          * delta (smaller/larger). Delta and Radius are
          * assumed to have the	same units.
          */
-        public float getRadius(float delta) {
+        public float getRadius(final float delta) {
             return (rFloat + delta);
         }// getRadius()
 
         /**
          * Returns the Radius as a String (formatted float + units)
          */
-        public String getRadiusString(float delta) {
+        public String getRadiusString(final float delta) {
             return (SVGUtils.floatToString(rFloat + delta) + getUnits());
         }// getRadiusString()
 
@@ -1075,15 +1075,15 @@ public class MapMetadata {
          * 0:width, 1:height, 2:radius, 3:radius (as a float),
          * 4: units ("" if none)
          */
-        private Object[] makeValues(String w, String h, double scale,
-                                    Element el) throws MapException {
+        private Object[] makeValues(final String w, final String h, final double scale,
+                                    final Element el) throws MapException {
             Object[] obj = parseDim(w, el, ATT_WIDTH);
             float width = ((Float) obj[0]).floatValue();
-            String widthUnits = (String) obj[1];
+            final String widthUnits = (String) obj[1];
 
             obj = parseDim(h, el, ATT_HEIGHT);
             float height = ((Float) obj[0]).floatValue();
-            String heightUnits = (String) obj[1];
+            final String heightUnits = (String) obj[1];
 
             // check that units are identical
             if (!widthUnits.equals(heightUnits)) {
@@ -1096,11 +1096,11 @@ public class MapMetadata {
             height *= scale;
 
             // get radius (1/2 of diagonal)
-            float radius = (float) (Math
+            final float radius = (float) (Math
                     .sqrt((width * width) + (height * height)) / 2.0);
 
             // return strings
-            Object[] values = new Object[5];
+            final Object[] values = new Object[5];
             values[0] = (SVGUtils.floatToString(width) + widthUnits);
             values[1] = (SVGUtils.floatToString(height) + widthUnits);
             values[2] = (SVGUtils.floatToString(radius) + widthUnits);
@@ -1114,8 +1114,8 @@ public class MapMetadata {
          * Parse a Dimension into a Float and Unit specifier (empty if not present);
          * Object[0] : Float, Object[1] : String. Neither value will be null.
          */
-        private Object[] parseDim(String in, Element el,
-                                  String attributeName) throws MapException {
+        private Object[] parseDim(final String in, final Element el,
+                                  final String attributeName) throws MapException {
             if (in.length() == 0 || in.indexOf('%') >= 0 || in
                     .indexOf('-') >= 0) {
                 throw new MapException("Element " + el
@@ -1127,17 +1127,17 @@ public class MapMetadata {
             //
             int idx = 0;
             while (idx < in.length()) {
-                char c = in.charAt(idx);
+                final char c = in.charAt(idx);
                 if (!Character.isDigit(c) && c != '.') {
                     break;
                 }
                 idx++;
             }
 
-            String num = in.substring(0, idx);
-            String units = in.substring(idx);
+            final String num = in.substring(0, idx);
+            final String units = in.substring(idx);
 
-            Object[] obj = new Object[2];
+            final Object[] obj = new Object[2];
             obj[0] = parseFloat(el.getTagName(), attributeName, num);
             obj[1] = units;
             return obj;
@@ -1148,11 +1148,11 @@ public class MapMetadata {
     /**
      * Parse a float; if fails, returns a MapException
      */
-    private static Float parseFloat(String el, String att,
-                                    String value) throws MapException {
+    private static Float parseFloat(final String el, final String att,
+                                    final String value) throws MapException {
         try {
             return new Float(value.trim());
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             throw new MapException(
                     el + " attribute " + att + " value \"" + value + "\" is not specified or not a valid floating point value.");
         }
@@ -1161,11 +1161,11 @@ public class MapMetadata {
     /**
      * Parse a coordinate: e.g. n n or n,n format.
      */
-    private Point2D.Float parseCoord(String el, String att,
-                                     String in) throws MapException {
+    private Point2D.Float parseCoord(final String el, final String att,
+                                     final String in) throws MapException {
         try {
-            Point2D.Float val = new Point2D.Float();
-            StringTokenizer st = new StringTokenizer(in, ", )(;");
+            final Point2D.Float val = new Point2D.Float();
+            final StringTokenizer st = new StringTokenizer(in, ", )(;");
             if (st.hasMoreTokens()) {
                 val.x = (Float.parseFloat(st.nextToken().trim()));
             } else {
@@ -1179,7 +1179,7 @@ public class MapMetadata {
             }
 
             return val;
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
         }
 
         throw new MapException(
@@ -1190,9 +1190,9 @@ public class MapMetadata {
     /**
      * Parse a float array; if fails, returns a MapException
      */
-    private float[] parseFloatArray(String el, String att,
-                                    String value) throws MapException {
-        StringTokenizer st = new StringTokenizer(value, ",; \n\r\t");
+    private float[] parseFloatArray(final String el, final String att,
+                                    final String value) throws MapException {
+        final StringTokenizer st = new StringTokenizer(value, ",; \n\r\t");
         final float[] arr = new float[st.countTokens()];
 
         if (arr.length == 0) {
@@ -1203,7 +1203,7 @@ public class MapMetadata {
         int count = 0;
         while (st.hasMoreTokens()) {
             try {
-                float fVal = Float.parseFloat(st.nextToken().trim());
+                final float fVal = Float.parseFloat(st.nextToken().trim());
                 if (fVal <= 0.0f) {
                     throw new MapException(
                             el + " attribute " + att + " value \"" + value + "\" only values > 0 are valid.");
@@ -1211,7 +1211,7 @@ public class MapMetadata {
 
                 arr[count] = fVal;
                 count++;
-            } catch (NumberFormatException e) {
+            } catch (final NumberFormatException e) {
                 throw new MapException(
                         el + " attribute " + att + " value \"" + value + "\" is not a valid postive floating point value.");
             }

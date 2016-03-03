@@ -66,13 +66,13 @@ public class ResultWriter {
      * If the TurnState has not yet been resolved, an
      * appropriate message is displayed.
      */
-    public static String resultsToHTML(TurnState ts,
-                                       OrderFormatOptions orderFormatOptions) {
+    public static String resultsToHTML(final TurnState ts,
+                                       final OrderFormatOptions orderFormatOptions) {
         if (!ts.isResolved()) {
             return Utils.getText(Utils.getLocalString(HTML_NO_RESULTS));
         }
 
-        ResultWriter rw = new ResultWriter(ts, orderFormatOptions);
+        final ResultWriter rw = new ResultWriter(ts, orderFormatOptions);
         return rw.getResultsAsHTML();
     }// resultsToHTML()
 
@@ -88,7 +88,7 @@ public class ResultWriter {
         title.append(": ");
         title.append(ts.getPhase());
 
-        TextViewer tv = new TextViewer(clientFrame);
+        final TextViewer tv = new TextViewer(clientFrame);
         tv.setEditable(false);
         tv.addSingleButton(tv.makeOKButton());
         tv.setTitle(title.toString());
@@ -108,7 +108,7 @@ public class ResultWriter {
     /**
      * ResultWriter constructor.
      */
-    private ResultWriter(TurnState ts, OrderFormatOptions ofo) {
+    private ResultWriter(final TurnState ts, final OrderFormatOptions ofo) {
         turnState = ts;
         world = ts.getWorld();
         allPowers = world.getMap().getPowers().toArray(new Power[0]);
@@ -122,11 +122,11 @@ public class ResultWriter {
      */
     private String getResultsAsHTML() {
         // get template
-        String templateText = Utils
+        final String templateText = Utils
                 .getText(Utils.getLocalString(HTML_TEMPLATE));
 
         // get template objects
-        Object[] templateData = new Object[]{turnState.getPhase(),    // {0} : Phase
+        final Object[] templateData = new Object[]{turnState.getPhase(),    // {0} : Phase
                 getGeneralResults(),    // {1} : General Results
                 getPerPowerResults(),    // {2} : Per-Power results (combined)
         };
@@ -141,14 +141,14 @@ public class ResultWriter {
      * a specific power).
      */
     private String getGeneralResults() {
-        List<Result> resultList = turnState.getResultList();
+        final List<Result> resultList = turnState.getResultList();
 
         // we want only results with a 'null' power.
         // these results are addressed to all.
-        List<Result> generalResults = new ArrayList<>(32);
+        final List<Result> generalResults = new ArrayList<>(32);
         Iterator<Result> iter = resultList.iterator();
         while (iter.hasNext()) {
-            Result r = (Result) iter.next();
+            final Result r = (Result) iter.next();
             if (r.getPower() == null) {
                 generalResults.add(r);
             }
@@ -164,10 +164,10 @@ public class ResultWriter {
         }
 
 
-        StringBuffer sb = new StringBuffer(2048);
+        final StringBuffer sb = new StringBuffer(2048);
         iter = generalResults.iterator();
         while (iter.hasNext()) {
-            Result r = (Result) iter.next();
+            final Result r = (Result) iter.next();
             sb.append(r.getMessage(ofo));
             sb.append("<br>\n");
         }
@@ -183,13 +183,13 @@ public class ResultWriter {
      */
     private String getPerPowerResults() {
         // Seperate results into OrderResults and 'regular' Results
-        List orderResults = new ArrayList(128);
-        List<Result> otherResults = new ArrayList<>(64);
+        final List orderResults = new ArrayList(128);
+        final List<Result> otherResults = new ArrayList<>(64);
 
         List<Result> resultList = turnState.getResultList();
-        Iterator<Result> iter = resultList.iterator();
+        final Iterator<Result> iter = resultList.iterator();
         while (iter.hasNext()) {
-            Result r = iter.next();
+            final Result r = iter.next();
             if (r.getPower() != null) {
                 if (r instanceof OrderResult) {
                     orderResults.add(r);
@@ -205,7 +205,7 @@ public class ResultWriter {
         resultList = null;
 
         // Print results, by power.
-        StringBuffer sb = new StringBuffer(4096);
+        final StringBuffer sb = new StringBuffer(4096);
         for (int i = 0; i < allPowers.length; i++) {
             // SKIP power if eliminated.
             if (!position.isEliminated(allPowers[i])) {
@@ -232,14 +232,14 @@ public class ResultWriter {
     /**
      * Print non order results for a power.
      */
-    private void printNonOrderResultsForPower(StringBuffer sb, Power power,
-                                              List<Result> results) {
-        StringBuffer text = new StringBuffer(1024);
+    private void printNonOrderResultsForPower(final StringBuffer sb, final Power power,
+                                              final List<Result> results) {
+        final StringBuffer text = new StringBuffer(1024);
 
         boolean foundAnOtherResult = false;
-        Iterator<Result> iter = results.iterator();
+        final Iterator<Result> iter = results.iterator();
         while (iter.hasNext()) {
-            Result result = iter.next();
+            final Result result = iter.next();
             if (power.equals(result.getPower())) {
                 text.append(result.getMessage(ofo));
                 text.append("<br>\n");
@@ -264,17 +264,17 @@ public class ResultWriter {
      * there are multiple failure reasons, they are indented underneath
      * the order.
      */
-    private void printOrderResultsForPower(StringBuffer sb, Power power,
-                                           List<OrderResult> results) {
+    private void printOrderResultsForPower(final StringBuffer sb, final Power power,
+                                           final List<OrderResult> results) {
         // create a mapping of orders -> a list of results. As we find results, add
         // it to the map.
-        LinkedHashMap ordMap = new LinkedHashMap(17);
-        ArrayList<OrderResult> substList = new ArrayList<>();
+        final LinkedHashMap ordMap = new LinkedHashMap(17);
+        final ArrayList<OrderResult> substList = new ArrayList<>();
 
         Iterator<OrderResult> iter = results.iterator();
         while (iter.hasNext()) {
-            OrderResult or = (OrderResult) iter.next();
-            Orderable order = or.getOrder();
+            final OrderResult or = (OrderResult) iter.next();
+            final Orderable order = or.getOrder();
 
             // only use orders for the given power.
             if (power == or.getPower()) {
@@ -284,12 +284,12 @@ public class ResultWriter {
                 } else {
                     if (!ordMap.containsKey(order)) {
                         // create the entry
-                        List<OrderResult> list = new ArrayList<>();
+                        final List<OrderResult> list = new ArrayList<>();
                         list.add(or);
                         ordMap.put(order, list);
                     } else {
                         // add to the list
-                        List<OrderResult> list = (List) ordMap.get(order);
+                        final List<OrderResult> list = (List) ordMap.get(order);
                         list.add(or);
                     }
                 }
@@ -306,7 +306,7 @@ public class ResultWriter {
         while (iter.hasNext()) {
             substOrderFound = true;
 
-            OrderResult or = (OrderResult) iter.next();
+            final OrderResult or = (OrderResult) iter.next();
 
             if (or.getOrder() != null) {
                 sb.append(or.getOrder()
@@ -329,13 +329,13 @@ public class ResultWriter {
         while (iter.hasNext()) {
             Orderable order = null;
             boolean hasFailed = false;
-            List list = (List) iter.next();
+            final List list = (List) iter.next();
 
             // find if we have failed or not
             Iterator it = list.iterator();
             while (it.hasNext()) {
-                OrderResult or = (OrderResult) it.next();
-                ResultType rt = or.getResultType();
+                final OrderResult or = (OrderResult) it.next();
+                final ResultType rt = or.getResultType();
 
                 order = or.getOrder();
 
@@ -362,10 +362,10 @@ public class ResultWriter {
             //
             // make a list of non-empty messages. (strings)
             //
-            List nonEmptyList = new ArrayList(list.size());
+            final List nonEmptyList = new ArrayList(list.size());
             it = list.iterator();
             while (it.hasNext()) {
-                OrderResult or = (OrderResult) it.next();
+                final OrderResult or = (OrderResult) it.next();
                 final String msg = or.getMessage(ofo);
                 if (msg.length() > 0) {
                     nonEmptyList.add(msg);

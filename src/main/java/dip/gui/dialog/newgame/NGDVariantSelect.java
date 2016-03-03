@@ -73,7 +73,7 @@ public class NGDVariantSelect extends JPanel implements NewGameDialog.NGDTabPane
     /**
      * Create a Variant Selection panel
      */
-    protected NGDVariantSelect(ClientFrame parent, NewGameDialog ngd) {
+    protected NGDVariantSelect(final ClientFrame parent, final NewGameDialog ngd) {
         this.parent = parent;
         this.ngd = ngd;
 
@@ -97,7 +97,7 @@ public class NGDVariantSelect extends JPanel implements NewGameDialog.NGDTabPane
         variantList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         variantList.setPrototypeCellValue("MMMMMMMMMMMMMM");
         variantList.addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e) {
+            public void valueChanged(final ListSelectionEvent e) {
                 doVariantListSelection();
             }
         });
@@ -112,7 +112,7 @@ public class NGDVariantSelect extends JPanel implements NewGameDialog.NGDTabPane
         if (!listModel.isEmpty()) {
             // search and find the (last) default
             // if no default exists, select the first variant.
-            Variant[] variants = new VariantManager().getVariants()
+            final Variant[] variants = new VariantManager().getVariants()
                     .toArray(new Variant[0]);
             defaultVariant = null;
             for (int i = 0; i < variants.length; i++) {
@@ -143,7 +143,7 @@ public class NGDVariantSelect extends JPanel implements NewGameDialog.NGDTabPane
      */
     protected World getWorld() {
         // check parameters
-        int idx = variantList.getSelectedIndex();
+        final int idx = variantList.getSelectedIndex();
         if (isLoading || idx < 0) {
             return null;
         }
@@ -151,29 +151,29 @@ public class NGDVariantSelect extends JPanel implements NewGameDialog.NGDTabPane
         // create world, based on selected variant
         World world = null;
         try {
-            WorldFactory wf = WorldFactory.getInstance();
-            Variant variant = ngd.getStartOptionsPanel().getVariant();
+            final WorldFactory wf = WorldFactory.getInstance();
+            final Variant variant = ngd.getStartOptionsPanel().getVariant();
             world = WorldFactory.createWorld(variant);
 
             // set basic variant parameters
-            World.VariantInfo variantInfo = world.getVariantInfo();
+            final World.VariantInfo variantInfo = world.getVariantInfo();
             variantInfo.setVariantName(variant.getName());
             variantInfo.setVariantVersion(variant.getVersion());
 
             // set map/symbols (from Map-Symbol panel)
-            NGDMapAndUnits ngdMAU = ngd.getMAUPanel();
+            final NGDMapAndUnits ngdMAU = ngd.getMAUPanel();
 
-            SymbolPack sp = ngdMAU.getSelectedSymbolPack();
+            final SymbolPack sp = ngdMAU.getSelectedSymbolPack();
             variantInfo.setSymbolPackName(sp.getName());
             variantInfo.setSymbolPackVersion(sp.getVersion());
 
-            MapGraphic mg = ngdMAU.getSelectedMap();
+            final MapGraphic mg = ngdMAU.getSelectedMap();
             variantInfo.setMapName(mg.getName());
 
             // set RuleOptions
-            RuleOptions ruleOpts = ngd.getRuleOptionsPanel().getRuleOptions();
+            final RuleOptions ruleOpts = ngd.getRuleOptionsPanel().getRuleOptions();
             world.setRuleOptions(ruleOpts);
-        } catch (InvalidWorldException iwe) {
+        } catch (final InvalidWorldException iwe) {
             world = null;
             ErrorDialog.displayGeneral(parent, iwe);
         }
@@ -186,7 +186,7 @@ public class NGDVariantSelect extends JPanel implements NewGameDialog.NGDTabPane
      * Initializes the variant list
      */
     private void makeVariantList() {
-        Variant[] variants = new VariantManager().getVariants()
+        final Variant[] variants = new VariantManager().getVariants()
                 .toArray(new Variant[0]);
         listModel.clear();
         for (int i = 0; i < variants.length; i++) {
@@ -208,7 +208,7 @@ public class NGDVariantSelect extends JPanel implements NewGameDialog.NGDTabPane
             return;
         }
 
-        int idx = variantList.getSelectedIndex();
+        final int idx = variantList.getSelectedIndex();
         if (idx < 0) {
             textPanel.setText(Utils.getLocalString(INITIAL_TEXT));
             ngd.getStartOptionsPanel().setEnabled(false);
@@ -217,7 +217,7 @@ public class NGDVariantSelect extends JPanel implements NewGameDialog.NGDTabPane
             variantList.ensureIndexIsVisible(idx);
         }
 
-        Variant selectedVariant = new VariantManager().getVariants()
+        final Variant selectedVariant = new VariantManager().getVariants()
                 .get(idx);
 
         // set text, depending upon selection
@@ -243,14 +243,14 @@ public class NGDVariantSelect extends JPanel implements NewGameDialog.NGDTabPane
     /**
      * The Variant has Changed.
      */
-    public void variantChanged(Variant variant) {
+    public void variantChanged(final Variant variant) {
         // DO NOTHING
     }// variantChanged()
 
     /**
      * The Enabled status has Changed. We do nothing for this tab.
      */
-    public void enablingChanged(boolean enabled) {
+    public void enablingChanged(final boolean enabled) {
         // DO NOTHING
     }// enablingChanged()
 
@@ -259,23 +259,23 @@ public class NGDVariantSelect extends JPanel implements NewGameDialog.NGDTabPane
      * Layout the panel
      */
     private void makeLayout() {
-        JScrollPane descSP = new XJScrollPane(textPanel);
+        final JScrollPane descSP = new XJScrollPane(textPanel);
         descSP.setHorizontalScrollBarPolicy(
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-        JScrollPane varSP = new XJScrollPane(variantList);
+        final JScrollPane varSP = new XJScrollPane(variantList);
         varSP.setHorizontalScrollBarPolicy(
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-        int w1[] = {BORDER, 0, 15, 0, BORDER};    // cols
-        int h1[] = {2 * BORDER, 0, 5, 0, BORDER};    // rows
+        final int[] w1 = {BORDER, 0, 15, 0, BORDER};    // cols
+        final int[] h1 = {2 * BORDER, 0, 5, 0, BORDER};    // rows
 
-        HIGLayout l1 = new HIGLayout(w1, h1);
+        final HIGLayout l1 = new HIGLayout(w1, h1);
         l1.setColumnWeight(4, 1);
         l1.setRowWeight(4, 1);
 
         setLayout(l1);
-        HIGConstraints c = new HIGConstraints();
+        final HIGConstraints c = new HIGConstraints();
 
         add(new GradientJLabel(Utils.getLocalString(LABEL_LIST)),
                 c.rcwh(2, 2, 1, 1, "lr"));

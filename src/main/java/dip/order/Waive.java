@@ -46,7 +46,7 @@ public class Waive extends Order {
     /**
      * Creates a Waive order
      */
-    protected Waive(Power power, Location src) {
+    protected Waive(final Power power, final Location src) {
         super(power, src, Unit.Type.UNDEFINED);
     }// Waive()
 
@@ -73,7 +73,7 @@ public class Waive extends Order {
 
 
     public String toBriefString() {
-        StringBuffer sb = new StringBuffer(64);
+        final StringBuffer sb = new StringBuffer(64);
 
         sb.append(power);
         sb.append(": ");
@@ -86,7 +86,7 @@ public class Waive extends Order {
 
 
     public String toFullString() {
-        StringBuffer sb = new StringBuffer(128);
+        final StringBuffer sb = new StringBuffer(128);
 
         sb.append(power);
         sb.append(": ");
@@ -98,7 +98,7 @@ public class Waive extends Order {
     }// toFullString()
 
 
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (obj instanceof Waive) {
             if (super.equals(obj)) {
                 return true;
@@ -113,8 +113,8 @@ public class Waive extends Order {
      * and season. The adjudicator must check tricky situations, such as too
      * many or too few build orders.
      */
-    public void validate(TurnState state, ValidationOptions valOpts,
-                         RuleOptions ruleOpts) throws OrderException {
+    public void validate(final TurnState state, final ValidationOptions valOpts,
+                         final RuleOptions ruleOpts) throws OrderException {
         checkSeasonAdjustment(state, orderNameFull);
         checkPower(power, state, true);
 
@@ -126,15 +126,15 @@ public class Waive extends Order {
     /**
      * Waive orders do not require verification.
      */
-    public void verify(Adjudicator adjudicator) {
-        OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
+    public void verify(final Adjudicator adjudicator) {
+        final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
         thisOS.setVerified(true);
     }// verify()
 
     /**
      * Empty method: Waive orders do not require dependency determination.
      */
-    public void determineDependencies(Adjudicator adjudicator) {
+    public void determineDependencies(final Adjudicator adjudicator) {
     }
 
 
@@ -149,11 +149,11 @@ public class Waive extends Order {
      * <p>
      * Extra build orders are NOT considered in the evaluate() method here.
      */
-    public void evaluate(Adjudicator adjudicator) {
+    public void evaluate(final Adjudicator adjudicator) {
         Log.println("--- evaluate() dip.order.Waive ---");
         Log.println("   order: ", this);
 
-        OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
+        final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
 
         if (thisOS.getEvalState() == Tristate.UNCERTAIN) {
             thisOS.setEvalState(Tristate.SUCCESS);

@@ -122,7 +122,7 @@ public class TextViewer extends HeaderDialog {
     /**
      * Create a non-modal TextViewer
      */
-    public TextViewer(JFrame parent) {
+    public TextViewer(final JFrame parent) {
         this(parent, false);
     }// TextViewer()
 
@@ -130,7 +130,7 @@ public class TextViewer extends HeaderDialog {
     /**
      * Create a TextViewer
      */
-    public TextViewer(final JFrame parent, boolean isModal) {
+    public TextViewer(final JFrame parent, final boolean isModal) {
         super(parent, "", isModal);
 
         // text pane
@@ -143,11 +143,11 @@ public class TextViewer extends HeaderDialog {
         textPane.setFont(tvFont);
 
         new java.awt.dnd.DropTarget(textPane, new FileDropTargetListener() {
-            public void processDroppedFiles(File[] files) {
+            public void processDroppedFiles(final File[] files) {
                 final Document doc = textPane.getDocument();
 
                 for (int i = 0; i < files.length; i++) {
-                    StringBuffer sb = new StringBuffer();
+                    final StringBuffer sb = new StringBuffer();
                     BufferedReader br = null;
 
                     try {
@@ -158,7 +158,7 @@ public class TextViewer extends HeaderDialog {
                             sb.append('\n');
                             line = br.readLine();
                         }
-                    } catch (IOException e) {
+                    } catch (final IOException e) {
                         ErrorDialog
                                 .displayFileIO(parent, e, files[i].getName());
                     } finally {
@@ -166,7 +166,7 @@ public class TextViewer extends HeaderDialog {
                             if (br != null) {
                                 br.close();
                             }
-                        } catch (IOException e) {
+                        } catch (final IOException e) {
                             ErrorDialog.displayFileIO(parent, e,
                                     files[i].getName());
                         }
@@ -174,7 +174,7 @@ public class TextViewer extends HeaderDialog {
 
                     try {
                         doc.insertString(0, sb.toString(), null);
-                    } catch (BadLocationException ble) {
+                    } catch (final BadLocationException ble) {
                         Log.println("TextViewer error: ", ble);
                     }
                 }
@@ -183,15 +183,15 @@ public class TextViewer extends HeaderDialog {
 
         // allow a modifiable transfer handler
         textPane.setTransferHandler(new javax.swing.TransferHandler() {
-            public void exportToClipboard(JComponent comp, Clipboard clip,
-                                          int action) {
+            public void exportToClipboard(final JComponent comp, final Clipboard clip,
+                                          final int action) {
                 if (comp instanceof JTextComponent) {
                     try {
-                        JEditorPane textPane = (JEditorPane) comp;
+                        final JEditorPane textPane = (JEditorPane) comp;
                         final int selStart = textPane.getSelectionStart();
                         final int selEnd = textPane.getSelectionEnd();
 
-                        Document doc = textPane.getDocument();
+                        final Document doc = textPane.getDocument();
                         String text = null;
 
                         // don't export as HTML (if we are text/html). Export as filtered text.
@@ -199,14 +199,14 @@ public class TextViewer extends HeaderDialog {
                         //
                         if (doc instanceof HTMLDocument) {
                             try {
-                                StringWriter sw = new StringWriter();
-                                HTMLWriter hw = new HTMLWriter(sw,
+                                final StringWriter sw = new StringWriter();
+                                final HTMLWriter hw = new HTMLWriter(sw,
                                         (HTMLDocument) doc, selStart,
                                         (selEnd - selStart));
                                 hw.write();
                                 text = filterHTML(
                                         filterExportedText(sw.toString()));
-                            } catch (Exception hwe) {
+                            } catch (final Exception hwe) {
                                 text = null;
                             }
                         }
@@ -218,7 +218,7 @@ public class TextViewer extends HeaderDialog {
                             text = TextViewer.this.filterExportedText(text);
                         }
 
-                        StringSelection contents = new StringSelection(text);
+                        final StringSelection contents = new StringSelection(text);
                         clip.setContents(contents, null);
 
                         // support for move
@@ -226,9 +226,9 @@ public class TextViewer extends HeaderDialog {
                             doc.remove(selStart, selEnd - selStart);
                         }
 
-                    } catch (BadLocationException ble) {
+                    } catch (final BadLocationException ble) {
                         // do nothing
-                    } catch (IllegalStateException ise) {
+                    } catch (final IllegalStateException ise) {
                         // could happen, say, if the clipboard is unavailable
                         Log.println("TextViewer::exportToClipboard(): " + ise);
                     }
@@ -236,14 +236,14 @@ public class TextViewer extends HeaderDialog {
             }
 
 
-            public boolean importData(JComponent comp, Transferable t) {
+            public boolean importData(final JComponent comp, final Transferable t) {
                 if (comp instanceof JTextComponent && textPane.isEditable()) {
                     // we don't want the BEST flavor, we want the Java String
                     // flavor. If that doesn't exist, we'll use the "best"
                     // text flavor.
                     DataFlavor stringDF = null;
 
-                    DataFlavor[] dfs = t.getTransferDataFlavors();
+                    final DataFlavor[] dfs = t.getTransferDataFlavors();
                     for (int i = 0; i < dfs.length; i++) {
                         if (dfs[i].equals(DataFlavor.stringFlavor)) {
                             stringDF = dfs[i];
@@ -256,19 +256,19 @@ public class TextViewer extends HeaderDialog {
                     //
                     if (stringDF != null) {
                         try {
-                            Object obj = t.getTransferData(stringDF);
+                            final Object obj = t.getTransferData(stringDF);
                             if (obj instanceof String) {
-                                String importText = (String) obj;
+                                final String importText = (String) obj;
                                 textPane.replaceSelection(importText);
                                 return true;
                             }
-                        } catch (Exception e) {
+                        } catch (final Exception e) {
                         }    // do nothing
                     } else {
                         //	Plan "B". I'm not sure if this is
                         //	really nescessary.
                         //
-                        DataFlavor bestTextFlavor = DataFlavor
+                        final DataFlavor bestTextFlavor = DataFlavor
                                 .selectBestTextFlavor(
                                         t.getTransferDataFlavors());
                         if (bestTextFlavor != null) {
@@ -276,8 +276,8 @@ public class TextViewer extends HeaderDialog {
                             Reader reader = null;
                             try {
                                 reader = bestTextFlavor.getReaderForText(t);
-                                char[] buffer = new char[128];
-                                StringBuffer sb = new StringBuffer(2048);
+                                final char[] buffer = new char[128];
+                                final StringBuffer sb = new StringBuffer(2048);
 
                                 int nRead = reader.read(buffer);
                                 while (nRead != -1) {
@@ -286,13 +286,13 @@ public class TextViewer extends HeaderDialog {
                                 }
                                 textPane.replaceSelection(sb.toString());
                                 return true;
-                            } catch (Exception e) {
+                            } catch (final Exception e) {
                             } // do nothing
                             finally {
                                 if (reader != null) {
                                     try {
                                         reader.close();
-                                    } catch (IOException e) {
+                                    } catch (final IOException e) {
                                     }
                                 }
                             }
@@ -302,8 +302,8 @@ public class TextViewer extends HeaderDialog {
                 return false;
             }// importData()
 
-            public boolean canImport(JComponent comp,
-                                     DataFlavor[] transferFlavors) {
+            public boolean canImport(final JComponent comp,
+                                     final DataFlavor[] transferFlavors) {
                 if (comp instanceof JTextComponent && textPane.isEditable()) {
                     // any text type is acceptable.
                     return (DataFlavor
@@ -336,7 +336,7 @@ public class TextViewer extends HeaderDialog {
      * By default, this method will search for unicode arrow \u2192
      * and replace it with "->".
      */
-    protected String filterExportedText(String in) {
+    protected String filterExportedText(final String in) {
         return Utils.replaceAll(in, "\u2192", "->");
     }// filterExportedText()
 
@@ -346,8 +346,8 @@ public class TextViewer extends HeaderDialog {
      * a "text/html" MIME type. All this does is exclude
      * content between angle brackets.
      */
-    protected String filterHTML(String in) {
-        StringBuffer out = new StringBuffer(in.length());
+    protected String filterHTML(final String in) {
+        final StringBuffer out = new StringBuffer(in.length());
 
         boolean noCopy = false;
         final int len = in.length();
@@ -374,7 +374,7 @@ public class TextViewer extends HeaderDialog {
      * <p>
      * This only works for non-modal dialogs!
      */
-    public void lazyLoadDisplayDialog(TVRunnable r) {
+    public void lazyLoadDisplayDialog(final TVRunnable r) {
         if (r == null) {
             throw new IllegalArgumentException();
         }
@@ -388,7 +388,7 @@ public class TextViewer extends HeaderDialog {
         setText(Utils.getLocalString(WAIT_MESSAGE));
         displayDialog();
         r.setTV(this);
-        Thread t = new Thread(r);
+        final Thread t = new Thread(r);
         t.start();
     }// lazyLoad()
 
@@ -413,14 +413,14 @@ public class TextViewer extends HeaderDialog {
         /**
          * Used internally by lazyLoadDisplayDialog
          */
-        private void setTV(TextViewer tv) {
+        private void setTV(final TextViewer tv) {
             this.tv = tv;
         }// setTV()
 
         /**
          * Set the text
          */
-        protected final void setText(String text) {
+        protected final void setText(final String text) {
             if (tv == null) {
                 throw new IllegalStateException();
             }
@@ -433,7 +433,7 @@ public class TextViewer extends HeaderDialog {
     /**
      * Change how Horizontal scrolling is handled.
      */
-    public void setHorizontalScrollBarPolicy(int policy) {
+    public void setHorizontalScrollBarPolicy(final int policy) {
         jsp.setHorizontalScrollBarPolicy(policy);
     }// setHorizontalScrollBarPolicy()
 
@@ -441,9 +441,9 @@ public class TextViewer extends HeaderDialog {
     /**
      * Set the Content Type (e.g., "text/html", or "text/plain") of the TextViewer
      */
-    public void setContentType(String text) {
+    public void setContentType(final String text) {
         textPane.setContentType(text);
-        Document doc = textPane.getDocument();
+        final Document doc = textPane.getDocument();
         if (doc instanceof HTMLDocument) {
             ((HTMLDocument) doc).setBase(Utils.getResourceBase());
         }
@@ -452,7 +452,7 @@ public class TextViewer extends HeaderDialog {
     /**
      * Set Font. Use is not recommended if content type is "text/html".
      */
-    public void setFont(Font font) {
+    public void setFont(final Font font) {
         textPane.setFont(font);
     }// setFont()
 
@@ -468,7 +468,7 @@ public class TextViewer extends HeaderDialog {
      * Set the AcceptListener. If no AcceptListener is desired,
      * the AcceptListener may be set to null.
      */
-    public void setAcceptListener(AcceptListener value) {
+    public void setAcceptListener(final AcceptListener value) {
         acceptListener = value;
     }// setAcceptListener()
 
@@ -476,14 +476,14 @@ public class TextViewer extends HeaderDialog {
     /**
      * Set if this TextViewer is editable
      */
-    public void setEditable(boolean value) {
+    public void setEditable(final boolean value) {
         textPane.setEditable(value);
     }// setEditable()
 
     /**
      * Set if this TextViewer is highlightable
      */
-    public void setHighlightable(boolean value) {
+    public void setHighlightable(final boolean value) {
         if (!value) {
             textPane.setHighlighter(null);
         } else {
@@ -494,7 +494,7 @@ public class TextViewer extends HeaderDialog {
     /**
      * Set the TextViewer text. Note: setContentType() should be called first.
      */
-    public void setText(String value) {
+    public void setText(final String value) {
         textPane.setText(value);
         textPane.setCaretPosition(0); // scroll to top
     }// setText()
@@ -532,7 +532,7 @@ public class TextViewer extends HeaderDialog {
     /**
      * Close() override. Calls AcceptListener (if any) on OK or Close actions.
      */
-    protected void close(String actionCommand) {
+    protected void close(final String actionCommand) {
         if (isOKorAccept(actionCommand)) {
             // if no accept() handler, assume accepted.
             _isAccepted = true;
@@ -608,13 +608,13 @@ public class TextViewer extends HeaderDialog {
 
         // add a listener to enable/disable 'paste'
         menu.addMenuListener(new MenuListener() {
-            public void menuCanceled(MenuEvent e) {
+            public void menuCanceled(final MenuEvent e) {
             }
 
-            public void menuDeselected(MenuEvent e) {
+            public void menuDeselected(final MenuEvent e) {
             }
 
-            public void menuSelected(MenuEvent e) {
+            public void menuSelected(final MenuEvent e) {
                 cutMenuItem.setEnabled(textPane.isEditable());
                 pasteMenuItem.setEnabled(textPane.isEditable());
             }
@@ -632,16 +632,16 @@ public class TextViewer extends HeaderDialog {
     private class JTextComponentMenuListener implements ActionListener {
         private final JTextComponent textComponent;
 
-        public JTextComponentMenuListener(JTextComponent component) {
+        public JTextComponentMenuListener(final JTextComponent component) {
             if (component == null) {
                 throw new IllegalArgumentException();
             }
             textComponent = component;
         }// JTextComponentMenuListener()
 
-        public void actionPerformed(ActionEvent e) {
+        public void actionPerformed(final ActionEvent e) {
             final String action = (String) e.getActionCommand();
-            Action a = textComponent.getActionMap().get(action);
+            final Action a = textComponent.getActionMap().get(action);
             if (a != null) {
                 a.actionPerformed(new ActionEvent(textComponent,
                         ActionEvent.ACTION_PERFORMED, null));
@@ -670,20 +670,20 @@ public class TextViewer extends HeaderDialog {
             FileWriter fw = null;
 
             try {
-                StringWriter sw = new StringWriter();
+                final StringWriter sw = new StringWriter();
                 textPane.write(sw);
-                String output = inlineStyleSheet(sw.toString());
+                final String output = inlineStyleSheet(sw.toString());
 
                 fw = new FileWriter(file);
                 fw.write(output);
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 ErrorDialog.displayFileIO((JFrame) getParent(), e,
                         file.toString());
             } finally {
                 if (fw != null) {
                     try {
                         fw.close();
-                    } catch (IOException ioe) {
+                    } catch (final IOException ioe) {
                     }
                 }
             }
@@ -694,23 +694,23 @@ public class TextViewer extends HeaderDialog {
     /**
      * Insert (inline) the CSS style sheet (if any)
      */
-    private String inlineStyleSheet(String text) {
+    private String inlineStyleSheet(final String text) {
         if (!textPane.getContentType().equals("text/html")) {
             return text;
         }
 
         // setup a regex; our capture group is the css link HREF
         //
-        Pattern link = Pattern.compile(
+        final Pattern link = Pattern.compile(
                 "(?i)<link\\s+rel=\"stylesheet\"\\s+href=\"([^\"]+)\">");
-        Matcher m = link.matcher(text);
+        final Matcher m = link.matcher(text);
         if (m.find()) {
             // load the link line.
-            String cssText = Utils
+            final String cssText = Utils
                     .getText(Utils.getResourceBasePrefix() + m.group(1));
 
             if (cssText != null) {
-                StringBuffer sb = new StringBuffer(text.length() + 4096);
+                final StringBuffer sb = new StringBuffer(text.length() + 4096);
                 sb.append(text.substring(0, m.start()));
                 sb.append(
                         "<style type=\"text/css\" media=\"screen\">\n\t<!--\n");
@@ -735,7 +735,7 @@ public class TextViewer extends HeaderDialog {
         }
 
         // JFileChooser setup
-        XJFileChooser chooser = XJFileChooser.getXJFileChooser();
+        final XJFileChooser chooser = XJFileChooser.getXJFileChooser();
         chooser.addFileFilter(sff);
         chooser.setFileFilter(sff);
 
@@ -754,7 +754,7 @@ public class TextViewer extends HeaderDialog {
         }
 
         // show dialog
-        File file = chooser.displaySaveAs(parentFrame);
+        final File file = chooser.displaySaveAs(parentFrame);
         XJFileChooser.dispose();
 
         return file;

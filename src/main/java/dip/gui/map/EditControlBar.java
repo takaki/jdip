@@ -117,7 +117,7 @@ public class EditControlBar extends ViewControlBar {
     /**
      * Create an EditControlBar
      */
-    public EditControlBar(MapPanel mp) {
+    public EditControlBar(final MapPanel mp) {
         super(mp);
         defaultCursor = java.awt.Cursor.getDefaultCursor();
         position = mapPanel.getPosition();
@@ -143,7 +143,7 @@ public class EditControlBar extends ViewControlBar {
         powerBox.insertItemAt(POWER_NONE, 0);
         powerBox.setEditable(false);
         powerBox.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
+            public void itemStateChanged(final ItemEvent e) {
                 currentPower = getSelectedPower();
 
                 if (currentPower == null) {
@@ -163,7 +163,7 @@ public class EditControlBar extends ViewControlBar {
         add(powerBox);
 
         // Toggle-Button Listener
-        ToggleListener tl = new ToggleListener();
+        final ToggleListener tl = new ToggleListener();
 
         // button group
         bg = new ButtonGroup();
@@ -183,7 +183,7 @@ public class EditControlBar extends ViewControlBar {
         bg.add(bFleet);
 
         // if WING units enabled, add a WING unit button
-        RuleOptions ro = mapPanel.getWorld().getRuleOptions();
+        final RuleOptions ro = mapPanel.getWorld().getRuleOptions();
         if (ro.getOptionValue(
                 RuleOptions.Option.OPTION_WINGS) == RuleOptions.OptionValue.VALUE_WINGS_ENABLED) {
             bWing = new JToggleButton(Utils.getLocalString(BUTTON_TEXT_WING));
@@ -228,7 +228,7 @@ public class EditControlBar extends ViewControlBar {
      * Get the selected power from the combo box, null if "none" selected.
      */
     private Power getSelectedPower() {
-        Object obj = powerBox.getSelectedItem();
+        final Object obj = powerBox.getSelectedItem();
         if (obj == POWER_NONE) {
             return null;
         } else {
@@ -242,7 +242,7 @@ public class EditControlBar extends ViewControlBar {
      * <p>
      * Adds a brief status bar message as to why a click will or will not be accepted.
      */
-    public void mouseOver(MouseEvent me, Location loc) {
+    public void mouseOver(final MouseEvent me, final Location loc) {
         // by default, can't accept
         mapPanel.getJSVGCanvas().setCursor(MapPanel.BAD_ACTION);
 
@@ -269,7 +269,7 @@ public class EditControlBar extends ViewControlBar {
     /**
      * Handles mouseOut()
      */
-    public void mouseOut(MouseEvent me, Location loc) {
+    public void mouseOut(final MouseEvent me, final Location loc) {
         mapPanel.getStatusBar().clearText();
         mapPanel.getJSVGCanvas().setCursor(defaultCursor);
     }// mouseOver()
@@ -278,7 +278,7 @@ public class EditControlBar extends ViewControlBar {
     /**
      * Handle mouse clicks on the map
      */
-    public void mouseClicked(MouseEvent me, Location loc) {
+    public void mouseClicked(final MouseEvent me, final Location loc) {
         if (loc != null) {
             if (DOMUIEventListener.isRMBorMetaLMB(me)) {
                 // make RMB add the 'other unit' that is selected,
@@ -302,7 +302,7 @@ public class EditControlBar extends ViewControlBar {
     }// mouseClicked()
 
 
-    public void doAction(MouseEvent me, Location loc) {
+    public void doAction(final MouseEvent me, final Location loc) {
         // bad location
         if (loc == null) {
             mapPanel.getStatusBarUtils()
@@ -311,7 +311,7 @@ public class EditControlBar extends ViewControlBar {
         }
 
         if (checkValidity(loc)) {
-            Province province = loc.getProvince();
+            final Province province = loc.getProvince();
             // Removes first
             if (currentAction == CLICK_TO_ADD_FLEET ||
                     currentAction == CLICK_TO_ADD_ARMY ||
@@ -319,7 +319,7 @@ public class EditControlBar extends ViewControlBar {
                     currentAction == CLICK_TO_REMOVE) {
                 if (hasUnit(loc.getProvince())) {
                     // get old unit
-                    Unit oldUnit = (isDislodged()) ? position
+                    final Unit oldUnit = (isDislodged()) ? position
                             .getDislodgedUnit(province).orElse(null) : position
                             .getUnit(province).orElse(null);
 
@@ -332,7 +332,7 @@ public class EditControlBar extends ViewControlBar {
             }
             if (currentAction == CLICK_TO_ADD_ARMY) {
                 // add an army
-                Unit army = new Unit(currentPower, Unit.Type.ARMY);
+                final Unit army = new Unit(currentPower, Unit.Type.ARMY);
                 army.setCoast(Coast.NONE);
                 addUnit(province, army, isDislodged());
 
@@ -342,9 +342,9 @@ public class EditControlBar extends ViewControlBar {
             }
             if (currentAction == CLICK_TO_ADD_FLEET) {
                 // add a fleet
-                Unit fleet = new Unit(currentPower, Unit.Type.FLEET);
+                final Unit fleet = new Unit(currentPower, Unit.Type.FLEET);
                 if (province.isMultiCoastal()) {
-                    Coast coast = loc.getCoast();
+                    final Coast coast = loc.getCoast();
                     if (coast.isDirectional()) {
                         fleet.setCoast(coast);
                     } else {
@@ -361,7 +361,7 @@ public class EditControlBar extends ViewControlBar {
             }
             if (currentAction == CLICK_TO_ADD_WING) {
                 // add a Wing
-                Unit wing = new Unit(currentPower, Unit.Type.WING);
+                final Unit wing = new Unit(currentPower, Unit.Type.WING);
                 wing.setCoast(Coast.WING);
                 addUnit(province, wing, isDislodged());
 
@@ -371,7 +371,7 @@ public class EditControlBar extends ViewControlBar {
             }
             if (currentAction == CLICK_TO_SET_SC) {
                 // change supply center ownership
-                Power oldPower = position.getSupplyCenterOwner(province).orElse(null);
+                final Power oldPower = position.getSupplyCenterOwner(province).orElse(null);
                 changeSCOwner(province, currentPower);
                 undoManager.addEdit(
                         new UndoEditSCOwner(undoManager, position, province,
@@ -392,7 +392,7 @@ public class EditControlBar extends ViewControlBar {
     /**
      * Add a unit to a province; does not generate an undo/redo event. Revalidates orders.
      */
-    public void addUnit(Province province, Unit unit, boolean isDislodged) {
+    public void addUnit(final Province province, final Unit unit, final boolean isDislodged) {
         if (isDislodged) {
             position.setDislodgedUnit(province, unit);
         } else {
@@ -407,7 +407,7 @@ public class EditControlBar extends ViewControlBar {
     /**
      * Remove a unit from a province; does not generate an undo/redo event. Revalidates orders.
      */
-    public void removeUnit(Province province, boolean isDislodged) {
+    public void removeUnit(final Province province, final boolean isDislodged) {
         if (isDislodged) {
             position.setDislodgedUnit(province, null);
         } else {
@@ -422,7 +422,7 @@ public class EditControlBar extends ViewControlBar {
     /**
      * Change the supply center owner of a province; does not generate an undo/redo event. Revalidates orders.
      */
-    public void changeSCOwner(Province province, Power newPower) {
+    public void changeSCOwner(final Province province, final Power newPower) {
         position.setSupplyCenterOwner(province, newPower);
 
         update(province);
@@ -433,7 +433,7 @@ public class EditControlBar extends ViewControlBar {
     /**
      * re-render SVG, set changed flag on game state
      */
-    private void update(Province province) {
+    private void update(final Province province) {
         mapPanel.getClientFrame().fireStateModified();
         mapPanel.updateProvince(province);
     }// update()
@@ -450,7 +450,7 @@ public class EditControlBar extends ViewControlBar {
     /**
      * convenience method to check if a Province has a unit (or dislodged unit, if isDislodged()==true)
      */
-    private boolean hasUnit(Province p) {
+    private boolean hasUnit(final Province p) {
         if (isDislodged()) {
             return position.hasDislodgedUnit(p);
         } else {
@@ -463,7 +463,7 @@ public class EditControlBar extends ViewControlBar {
      * Listens for toggle events; sets which button is selected
      */
     private class ToggleListener implements ActionListener {
-        public void actionPerformed(ActionEvent e) {
+        public void actionPerformed(final ActionEvent e) {
             selectedButton = (JToggleButton) e.getSource();
             if (selectedButton == bArmy) {
                 defaultAction = CLICK_TO_ADD_ARMY;
@@ -491,9 +491,9 @@ public class EditControlBar extends ViewControlBar {
     }// inner class ToggleListener
 
 
-    public boolean checkValidity(Location loc) {
+    public boolean checkValidity(final Location loc) {
         // determine validity
-        Province province = loc.getProvince();
+        final Province province = loc.getProvince();
         if (currentAction == CLICK_TO_ADD_ARMY && currentPower != null) {
             if (province.isSea()) {
                 mapPanel.statusBarUtils.displayProvinceInfo(loc,

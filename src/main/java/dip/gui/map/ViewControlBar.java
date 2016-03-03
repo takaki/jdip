@@ -73,7 +73,7 @@ public class ViewControlBar extends ControlBar {
     /**
      * Creates the View control bar.
      */
-    public ViewControlBar(MapPanel mp) {
+    public ViewControlBar(final MapPanel mp) {
         super(mp);
         makeLayout();
 
@@ -86,7 +86,7 @@ public class ViewControlBar extends ControlBar {
     /**
      * Called when the mouse pointer enters a province
      */
-    public void mouseOver(MouseEvent me, Location loc) {
+    public void mouseOver(final MouseEvent me, final Location loc) {
         if (loc == null) {
             mapPanel.statusBarUtils
                     .setText(Utils.getLocalString(GUIOrder.NOT_IN_PROVINCE));
@@ -98,7 +98,7 @@ public class ViewControlBar extends ControlBar {
     /**
      * Called when the mouse pointer leaves a province
      */
-    public void mouseOut(MouseEvent me, Location loc) {
+    public void mouseOut(final MouseEvent me, final Location loc) {
         mapPanel.statusBarUtils.clearText();
     }// mouseOut()
 
@@ -106,8 +106,8 @@ public class ViewControlBar extends ControlBar {
     /**
      * Handles ZoomIn / ZoomOut / Revert key functionality.
      */
-    public void keyPressed(DOMKeyEvent ke, Location loc) {
-        int charCode = ke.getCharCode();    // note: getKeyCode() DOES NOT WORK
+    public void keyPressed(final DOMKeyEvent ke, final Location loc) {
+        final int charCode = ke.getCharCode();    // note: getKeyCode() DOES NOT WORK
         if (charCode == keyZoomIn) {
             zoomIn.doClick();
         } else if (charCode == keyZoomOut) {
@@ -129,29 +129,29 @@ public class ViewControlBar extends ControlBar {
         // for everything, and will never fail (famous last words)
         //
         fit = add(new AbstractAction() {
-            public void actionPerformed(ActionEvent evt) {
-                JSVGCanvas canvas = mapPanel.getJSVGCanvas();
+            public void actionPerformed(final ActionEvent evt) {
+                final JSVGCanvas canvas = mapPanel.getJSVGCanvas();
                 if (canvas != null)    // we are being very defensive
                 {
-                    AffineTransform iat = canvas.getInitialTransform();
-                    SVGSVGElement elt = canvas.getSVGDocument()
+                    final AffineTransform iat = canvas.getInitialTransform();
+                    final SVGSVGElement elt = canvas.getSVGDocument()
                             .getRootElement();
                     if (iat != null || elt == null) // very very defensive... but iat null check is important
                     {
                         // rescale viewbox transform to reflect viewbox size
-                        Dimension vbSize = mapPanel
+                        final Dimension vbSize = mapPanel
                                 .getScrollerSize();    // size of the canvas' scrolling container (don't include scroll bars)
-                        CanvasGraphicsNode cgn = canvas.getCanvasGraphicsNode();
+                        final CanvasGraphicsNode cgn = canvas.getCanvasGraphicsNode();
 
                         // ViewBox.getViewTransform is essential for calculating the correct transform,
                         // AND accounting for any viewBox attribute of the root SVG element, if present.
-                        AffineTransform vt = ViewBox.getViewTransform(
+                        final AffineTransform vt = ViewBox.getViewTransform(
                                 canvas.getFragmentIdentifier(), elt,
                                 vbSize.width, vbSize.height);
                         cgn.setViewingTransform(vt);
 
                         // set rendering transform to 'unscaled'
-                        AffineTransform t = AffineTransform
+                        final AffineTransform t = AffineTransform
                                 .getScaleInstance(1, 1);
                         mapPanel.getJSVGCanvas().setRenderingTransform(t);
                     }

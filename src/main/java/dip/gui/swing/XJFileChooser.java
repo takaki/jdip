@@ -150,7 +150,7 @@ public class XJFileChooser {
      * Adds a SimpleFileFilter to the list of available
      * file filters.
      */
-    public void addFileFilter(SimpleFileFilter filter) {
+    public void addFileFilter(final SimpleFileFilter filter) {
         chooser.addFileFilter(filter);
     }// addFileFilter()
 
@@ -158,14 +158,14 @@ public class XJFileChooser {
      * Sets the default file filter. If null, sets the
      * 'accept all' file filter.
      */
-    public void setFileFilter(SimpleFileFilter filter) {
+    public void setFileFilter(final SimpleFileFilter filter) {
         chooser.setFileFilter(filter);
     }// addFileFilter()
 
     /**
      * Set the current directory. May be set to null ('home' directory)
      */
-    public void setCurrentDirectory(File file) {
+    public void setCurrentDirectory(final File file) {
         chooser.setCurrentDirectory(file);
     }// setCurrentDirectory()
 
@@ -173,7 +173,7 @@ public class XJFileChooser {
      * Sets the suggested file name. By default, no file name
      * is suggested.
      */
-    public void setSelectedFile(File file) {
+    public void setSelectedFile(final File file) {
         chooser.setSelectedFile(file);
     }// setSuggestedFileName()
 
@@ -185,8 +185,8 @@ public class XJFileChooser {
      *
      * @return the selected File, or null
      */
-    public File display(Frame parent, String title, String acceptButtonText,
-                        int type, int mode) {
+    public File display(final Frame parent, final String title, final String acceptButtonText,
+                        final int type, final int mode) {
         if (parent == null) {
             // this could lead to nonmodal behavior, and possibly we could
             // increment the refcount since we are not locked here...
@@ -201,7 +201,7 @@ public class XJFileChooser {
     /**
      * Appends an extension, if appropriate
      */
-    private static File fixFileExtension(FileFilter ff, File file) {
+    private static File fixFileExtension(final FileFilter ff, final File file) {
         if (ff instanceof SimpleFileFilter) {
             return ((SimpleFileFilter) ff).appendExtension(file);
         }
@@ -215,7 +215,7 @@ public class XJFileChooser {
      *
      * @return the selected File, or null
      */
-    public File displayOpen(Frame parent) {
+    public File displayOpen(final Frame parent) {
         return display(parent, null, null, JFileChooser.OPEN_DIALOG,
                 JFileChooser.FILES_ONLY);
     }// displayOpen()
@@ -226,7 +226,7 @@ public class XJFileChooser {
      *
      * @return the selected File, or null
      */
-    public File displayOpen(Frame parent, String title) {
+    public File displayOpen(final Frame parent, final String title) {
         return display(parent, title, null, JFileChooser.OPEN_DIALOG,
                 JFileChooser.FILES_ONLY);
     }// displayOpen()
@@ -237,7 +237,7 @@ public class XJFileChooser {
      *
      * @return the selected File, or null
      */
-    public File displaySave(Frame parent) {
+    public File displaySave(final Frame parent) {
         return display(parent, null, null, JFileChooser.SAVE_DIALOG,
                 JFileChooser.FILES_ONLY);
     }// displaySave()
@@ -248,7 +248,7 @@ public class XJFileChooser {
      *
      * @return the selected File, or null
      */
-    public File displaySave(Frame parent, String title) {
+    public File displaySave(final Frame parent, final String title) {
         return display(parent, title, null, JFileChooser.SAVE_DIALOG,
                 JFileChooser.FILES_ONLY);
     }// displaySave()
@@ -259,7 +259,7 @@ public class XJFileChooser {
      *
      * @return the selected File, or null
      */
-    public File displaySaveAs(Frame parent) {
+    public File displaySaveAs(final Frame parent) {
         final String title = Utils.getLocalString(TITLE_SAVE_AS);
         return display(parent, title, null, JFileChooser.SAVE_DIALOG,
                 JFileChooser.FILES_ONLY);
@@ -379,26 +379,26 @@ public class XJFileChooser {
         }// reset()
 
         // LIMITATION: we can have only 1 file filter
-        public void addFileFilter(SimpleFileFilter filter) {
+        public void addFileFilter(final SimpleFileFilter filter) {
             awtFilter = filter;
         }// addFileFilter()
 
-        public void setFileFilter(SimpleFileFilter filter) {
+        public void setFileFilter(final SimpleFileFilter filter) {
             awtFilter = filter;
         }// setFileFilter()
 
-        public void setCurrentDirectory(File file) {
+        public void setCurrentDirectory(final File file) {
             selectedDir = (file.isDirectory()) ? file.toString() : file
                     .getPath().toString();
         }// setCurrentDirectory()
 
-        public void setSelectedFile(File file) {
+        public void setSelectedFile(final File file) {
             selectedFile = (file == null) ? null : file.getName();
         }// setSelectedFile()
 
-        public File display(Frame parent, String title, String acceptButtonText,
-                            int type, int mode) {
-            FileDialog fd = new FileDialog(parent);
+        public File display(final Frame parent, final String title, final String acceptButtonText,
+                            final int type, final int mode) {
+            final FileDialog fd = new FileDialog(parent);
             fd.setModal(true);
             fd.setResizable(true);
 
@@ -430,7 +430,7 @@ public class XJFileChooser {
             fd.dispose();
 
             if (fd.getFile() != null) {
-                File file = new File(fd.getDirectory(), fd.getFile());
+                final File file = new File(fd.getDirectory(), fd.getFile());
 
                 // wfix filename if we can/should (adds appropriate extension if it is missing)
                 if (type == JFileChooser.SAVE_DIALOG && (fd
@@ -460,15 +460,15 @@ public class XJFileChooser {
         // Override to check for overwrite confirmation
         public void approveSelection() {
             if (getDialogType() != JFileChooser.OPEN_DIALOG) {
-                File selectedFile = fixFileExtension(this.getFileFilter(),
+                final File selectedFile = fixFileExtension(this.getFileFilter(),
                         this.getSelectedFile());
                 if (selectedFile != null) {
                     if (selectedFile.exists()) {
-                        String message = Utils
+                        final String message = Utils
                                 .getText(Utils.getLocalString(OVERWRITE_TEXT),
                                         selectedFile.getName());
 
-                        int result = JOptionPane
+                        final int result = JOptionPane
                                 .showConfirmDialog(getParent(), message,
                                         Utils.getLocalString(OVERWRITE_TITLE),
                                         JOptionPane.YES_NO_OPTION);
@@ -493,11 +493,11 @@ public class XJFileChooser {
             this.setCurrentDirectory(null);
         }// reset()
 
-        public void addFileFilter(SimpleFileFilter filter) {
+        public void addFileFilter(final SimpleFileFilter filter) {
             this.addChoosableFileFilter(filter);
         }// addFileFilter()
 
-        public void setFileFilter(SimpleFileFilter filter) {
+        public void setFileFilter(final SimpleFileFilter filter) {
             if (filter != null) {
                 super.setFileFilter(filter);
             } else {
@@ -505,11 +505,11 @@ public class XJFileChooser {
             }
         }// setFileFilter()
 
-        public void setCurrentDirectory(File file) {
+        public void setCurrentDirectory(final File file) {
             super.setCurrentDirectory(file);
         }// setCurrentDirectory()
 
-        public void setSelectedFile(File file) {
+        public void setSelectedFile(final File file) {
             if (file == null) {
                 super.setSelectedFile(new File(""));
             } else {
@@ -517,8 +517,8 @@ public class XJFileChooser {
             }
         }// setSelectedFile()
 
-        public File display(Frame parent, String title, String acceptButtonText,
-                            int type, int mode) {
+        public File display(final Frame parent, final String title, final String acceptButtonText,
+                            final int type, final int mode) {
             if (type != JFileChooser.OPEN_DIALOG && type != JFileChooser.SAVE_DIALOG) {
                 throw new IllegalArgumentException("invalid type");
             }

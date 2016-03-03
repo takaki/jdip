@@ -61,8 +61,8 @@ public class FlocImporter implements Runnable {
     /**
      * Create a floc.net importer. Null parameters are not accepted.
      */
-    public FlocImporter(String gameName, String judgeName,
-                        OrderFactory orderFactory, FlocImportCallback fic) {
+    public FlocImporter(final String gameName, final String judgeName,
+                        final OrderFactory orderFactory, final FlocImportCallback fic) {
         if (gameName == null || judgeName == null || fic == null || orderFactory == null) {
             throw new IllegalArgumentException();
         }
@@ -164,7 +164,7 @@ public class FlocImporter implements Runnable {
                 // now, process into a World object
                 fic.flocImportMessage(Utils.getLocalString(CREATING_WORLD));
 
-                JudgeImport ji = new JudgeImport(orderFactory,
+                final JudgeImport ji = new JudgeImport(orderFactory,
                         new StringReader(text), null);
 
                 if (!isInProgress) {
@@ -173,9 +173,9 @@ public class FlocImporter implements Runnable {
 
                 fic.flocWorldImportComplete(ji.getWorld());
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             fic.flocImportException(e);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             // do nothing (catches any thread-abort errors)
         }
     }// run()
@@ -206,9 +206,9 @@ public class FlocImporter implements Runnable {
                 return "";
             }
 
-            ParserDelegator parser = new ParserDelegator();
+            final ParserDelegator parser = new ParserDelegator();
             parser.parse(reader, new HTMLEditorKit.ParserCallback() {
-                public void handleText(char[] text, int pos) {
+                public void handleText(final char[] text, final int pos) {
                     if (!isInProgress) {
                         gameInformation.setLength(0);    // abort!
                         return;

@@ -48,8 +48,8 @@ public class UndoResolve extends XAbstractUndoableEdit {
     /**
      * Create an UndoResolve object.
      */
-    public UndoResolve(UndoRedoManager urm, TurnState resolved,
-                       TurnState next) {
+    public UndoResolve(final UndoRedoManager urm, final TurnState resolved,
+                       final TurnState next) {
         super(urm);
 
         if (resolved == null) {
@@ -70,7 +70,7 @@ public class UndoResolve extends XAbstractUndoableEdit {
     public void redo() throws CannotRedoException {
         super.redo();
 
-        World world = resolvedTS.getWorld();
+        final World world = resolvedTS.getWorld();
         synchronized (world) {
             // resolvedTS:
             //
@@ -99,7 +99,7 @@ public class UndoResolve extends XAbstractUndoableEdit {
     public void undo() throws CannotUndoException {
         super.undo();
 
-        World world = resolvedTS.getWorld();
+        final World world = resolvedTS.getWorld();
         synchronized (world) {
             // resolvedTS:
             //

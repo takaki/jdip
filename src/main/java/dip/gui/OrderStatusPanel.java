@@ -56,7 +56,7 @@ public class OrderStatusPanel extends XJPanel {
     /**
      * Creates an OrderStatusPanel object.
      */
-    public OrderStatusPanel(ClientFrame clientFrame) {
+    public OrderStatusPanel(final ClientFrame clientFrame) {
         this.cf = clientFrame;
 
         // setup labels
@@ -67,8 +67,8 @@ public class OrderStatusPanel extends XJPanel {
         // setup text field
         orderField = new dip.gui.swing.XJTextField();
         orderField.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                String text = orderField.getText();
+            public void actionPerformed(final ActionEvent e) {
+                final String text = orderField.getText();
 
                 if (text.equals(EMPTY)) {
                     return;
@@ -108,7 +108,7 @@ public class OrderStatusPanel extends XJPanel {
      * Note that this does not parse the text;
      * however this text is "live", and the user may edit it.
      */
-    public void setOrderText(String value) {
+    public void setOrderText(final String value) {
         orderField.setText(value);
     }// setOrderText()
 
@@ -125,23 +125,23 @@ public class OrderStatusPanel extends XJPanel {
      * Property change event listener
      */
     private class OSPPropertyListener extends AbstractCFPListener {
-        public void actionOrderCreated(Orderable order) {
+        public void actionOrderCreated(final Orderable order) {
             clearOrderText();
         }
 
-        public void actionOrderDeleted(Orderable order) {
+        public void actionOrderDeleted(final Orderable order) {
             clearOrderText();
         }
 
-        public void actionOrdersCreated(Orderable[] orders) {
+        public void actionOrdersCreated(final Orderable[] orders) {
             clearOrderText();
         }
 
-        public void actionOrdersDeleted(Orderable[] orders) {
+        public void actionOrdersDeleted(final Orderable[] orders) {
             clearOrderText();
         }
 
-        public void actionModeChanged(String mode) {
+        public void actionModeChanged(final String mode) {
             if (mode == ClientFrame.MODE_ORDER) {
                 orderField.setVisible(true);
                 orderFieldLabel.setVisible(true);
@@ -151,11 +151,11 @@ public class OrderStatusPanel extends XJPanel {
             }
         }// actionModeChanged()
 
-        public void actionTurnstateChanged(TurnState turnState) {
-            Phase tsPhase = turnState.getPhase();
+        public void actionTurnstateChanged(final TurnState turnState) {
+            final Phase tsPhase = turnState.getPhase();
 
             // set game time
-            StringBuffer sb = new StringBuffer(32);
+            final StringBuffer sb = new StringBuffer(32);
             sb.append("<html><h2>");
             sb.append(tsPhase.toString());
             sb.append("</h2></html>");
@@ -163,11 +163,11 @@ public class OrderStatusPanel extends XJPanel {
         }// actionTurnstateChanged()
 
 
-        public void actionWorldCreated(World w) {
+        public void actionWorldCreated(final World w) {
             phase.setText(EMPTY);
         }
 
-        public void actionWorldDestroyed(World w) {
+        public void actionWorldDestroyed(final World w) {
             phase.setText(EMPTY);
         }
     }// inner class OSPPropertyListener
@@ -177,15 +177,15 @@ public class OrderStatusPanel extends XJPanel {
      */
     private void makeLayout() {
         // start layout
-        int w1[] = {0, 5, 0};
-        int h1[] = {5, 0, 25, 0, 10};
+        final int[] w1 = {0, 5, 0};
+        final int[] h1 = {5, 0, 25, 0, 10};
 
-        HIGLayout hl = new HIGLayout(w1, h1);
+        final HIGLayout hl = new HIGLayout(w1, h1);
         hl.setColumnWeight(3, 1);
         hl.setRowWeight(2, 1);
         setLayout(hl);
 
-        HIGConstraints c = new HIGConstraints();
+        final HIGConstraints c = new HIGConstraints();
 
         add(phase, c.rcwh(2, 1, 3, 1, "lr"));
         add(orderFieldLabel, c.rc(4, 1, "l"));

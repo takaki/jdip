@@ -60,7 +60,7 @@ public class GUIHold extends Hold implements GUIOrder {
     /**
      * Creates a GUIHold
      */
-    protected GUIHold(Power power, Location source, Unit.Type sourceUnitType) {
+    protected GUIHold(final Power power, final Location source, final Unit.Type sourceUnitType) {
         super(power, source, sourceUnitType);
     }// GUIHold()
 
@@ -68,12 +68,12 @@ public class GUIHold extends Hold implements GUIOrder {
     /**
      * This only accepts Hold orders. All others will throw an IllegalArgumentException.
      */
-    public void deriveFrom(Orderable order) {
+    public void deriveFrom(final Orderable order) {
         if (!(order instanceof Hold)) {
             throw new IllegalArgumentException();
         }
 
-        Hold hold = (Hold) order;
+        final Hold hold = (Hold) order;
         power = hold.getPower();
         src = hold.getSource();
         srcUnitType = hold.getSourceUnitType();
@@ -82,8 +82,8 @@ public class GUIHold extends Hold implements GUIOrder {
         currentLocNum = REQ_LOC;
     }// deriveFrom()
 
-    public boolean testLocation(StateInfo stateInfo, Location location,
-                                StringBuffer sb) {
+    public boolean testLocation(final StateInfo stateInfo, final Location location,
+                                final StringBuffer sb) {
         sb.setLength(0);
 
         if (isComplete()) {
@@ -92,9 +92,9 @@ public class GUIHold extends Hold implements GUIOrder {
         }
 
 
-        Position position = stateInfo.getPosition();
-        Province province = location.getProvince();
-        Unit unit = position.getUnit(province).orElse(null);
+        final Position position = stateInfo.getPosition();
+        final Province province = location.getProvince();
+        final Unit unit = position.getUnit(province).orElse(null);
 
         if (unit != null) {
             if (!stateInfo.canIssueOrder(unit.getPower())) {
@@ -133,11 +133,11 @@ public class GUIHold extends Hold implements GUIOrder {
         return true;
     }// clearLocations()
 
-    public boolean setLocation(StateInfo stateInfo, Location location,
-                               StringBuffer sb) {
+    public boolean setLocation(final StateInfo stateInfo, final Location location,
+                               final StringBuffer sb) {
         if (testLocation(stateInfo, location, sb)) {
             currentLocNum++;
-            Unit unit = stateInfo.getPosition().getUnit(location.getProvince()).orElse(null);
+            final Unit unit = stateInfo.getPosition().getUnit(location.getProvince()).orElse(null);
             src = new Location(location.getProvince(), unit.getCoast());
             power = unit.getPower();
             srcUnitType = unit.getType();
@@ -166,22 +166,22 @@ public class GUIHold extends Hold implements GUIOrder {
     /**
      * Always throws an IllegalArgumentException
      */
-    public void setParam(Parameter param, Object value) {
+    public void setParam(final Parameter param, final Object value) {
         throw new IllegalArgumentException();
     }
 
     /**
      * Always throws an IllegalArgumentException
      */
-    public Object getParam(Parameter param) {
+    public Object getParam(final Parameter param) {
         throw new IllegalArgumentException();
     }
 
 
-    public void removeFromDOM(MapInfo mapInfo) {
+    public void removeFromDOM(final MapInfo mapInfo) {
         if (group != null) {
             Log.println("GUIHold: removeFromDOM(): group=", group);
-            SVGGElement powerGroup = mapInfo
+            final SVGGElement powerGroup = mapInfo
                     .getPowerSVGGElement(power, LAYER_TYPICAL);
             GUIOrderUtils.removeChild(powerGroup, group);
             group = null;
@@ -190,7 +190,7 @@ public class GUIHold extends Hold implements GUIOrder {
     }// removeFromDOM()
 
 
-    public void updateDOM(MapInfo mapInfo) {
+    public void updateDOM(final MapInfo mapInfo) {
         Log.println("GUIHold::updateDOM(): group,support: ", group,
                 String.valueOf(numSupports));
 
@@ -206,7 +206,7 @@ public class GUIHold extends Hold implements GUIOrder {
         // we will not change the DOM.
         //
         // check supports
-        int support = GUIOrderUtils
+        final int support = GUIOrderUtils
                 .getMatchingSupportCount(mapInfo, src.getProvince(),
                         src.getProvince());
         if (numSupports == support && group != null) {
@@ -244,14 +244,14 @@ public class GUIHold extends Hold implements GUIOrder {
         SVGElement element = null;
 
         // create hilight line
-        String cssStyle = mapInfo.getMapMetadata()
+        final String cssStyle = mapInfo.getMapMetadata()
                 .getOrderParamString(MapMetadata.EL_HOLD,
                         MapMetadata.ATT_HILIGHT_CLASS);
         if (!cssStyle.equalsIgnoreCase("none")) {
-            float offset = mapInfo.getMapMetadata()
+            final float offset = mapInfo.getMapMetadata()
                     .getOrderParamFloat(MapMetadata.EL_HOLD,
                             MapMetadata.ATT_HILIGHT_OFFSET);
-            float width = GUIOrderUtils
+            final float width = GUIOrderUtils
                     .getLineWidth(mapInfo, MapMetadata.EL_HOLD,
                             MapMetadata.ATT_SHADOW_WIDTHS, numSupports);
 
@@ -266,7 +266,7 @@ public class GUIHold extends Hold implements GUIOrder {
         }
 
         // create hold polygon
-        float width = GUIOrderUtils.getLineWidth(mapInfo, MapMetadata.EL_HOLD,
+        final float width = GUIOrderUtils.getLineWidth(mapInfo, MapMetadata.EL_HOLD,
                 MapMetadata.ATT_WIDTHS, numSupports);
 
         element = drawOrder(mapInfo, 0);
@@ -279,23 +279,23 @@ public class GUIHold extends Hold implements GUIOrder {
 
         // draw 'failed' marker, if appropriate.
         if (!mapInfo.getTurnState().isOrderSuccessful(this)) {
-            SVGElement useElement = GUIOrderUtils
+            final SVGElement useElement = GUIOrderUtils
                     .createFailedOrderSymbol(mapInfo, failPt.x, failPt.y);
             group.appendChild(useElement);
         }
     }// updateDOM()
 
 
-    private SVGElement drawOrder(MapInfo mi, float offset) {
-        MapMetadata mmd = mi.getMapMetadata();
+    private SVGElement drawOrder(final MapInfo mi, final float offset) {
+        final MapMetadata mmd = mi.getMapMetadata();
 
         // attributes
-        Point2D.Float center = mmd.getUnitPt(src.getProvince(), src.getCoast());
-        float radius = mmd.getOrderRadius(MapMetadata.EL_HOLD,
+        final Point2D.Float center = mmd.getUnitPt(src.getProvince(), src.getCoast());
+        final float radius = mmd.getOrderRadius(MapMetadata.EL_HOLD,
                 mi.getSymbolName(srcUnitType));
 
         // create the polygon
-        SVGElement elem = (SVGPolygonElement) mi.getDocument()
+        final SVGElement elem = (SVGPolygonElement) mi.getDocument()
                 .createElementNS(SVGDOMImplementation.SVG_NAMESPACE_URI,
                         SVGConstants.SVG_POLYGON_TAG);
 
@@ -303,9 +303,9 @@ public class GUIHold extends Hold implements GUIOrder {
         center.x += offset;
         center.y += offset;
 
-        Point2D.Float[] pts = GUIOrderUtils.makeOctagon(center, radius);
+        final Point2D.Float[] pts = GUIOrderUtils.makeOctagon(center, radius);
 
-        StringBuffer sb = new StringBuffer(160);
+        final StringBuffer sb = new StringBuffer(160);
         for (int ptsIdx = 0; ptsIdx < pts.length; ptsIdx++) {
             GUIOrderUtils.appendFloat(sb, pts[ptsIdx].x);
             sb.append(',');

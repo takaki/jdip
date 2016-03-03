@@ -120,7 +120,7 @@ public final class OrderState {
      * this and adjudicators should be able to create new OrderState objects,
      * although other classes can definately use them.
      */
-    protected OrderState(Orderable order) {
+    protected OrderState(final Orderable order) {
         if (order == null) {
             throw new IllegalArgumentException("null order");
         }
@@ -288,91 +288,91 @@ public final class OrderState {
     /**
      * Set the Order. NOTE: this may be eliminated/deprecated, as it must be used with extreme care.
      */
-    protected void setOrder(Order value) {
+    protected void setOrder(final Order value) {
         order = value;
     }    // consider eliminating
 
     /**
      * Set if this is part of a chain of circular movements.
      */
-    public void setCircular(boolean value) {
+    public void setCircular(final boolean value) {
         isCircular = value;
     }
 
     /**
      * Set the dislodged state.
      */
-    public void setDislodgedState(Tristate value) {
+    public void setDislodgedState(final Tristate value) {
         dislodged = value;
     }
 
     /**
      * Set the maximum defense.
      */
-    public void setDefMax(int value) {
+    public void setDefMax(final int value) {
         defense_max = value;
     }
 
     /**
      * Set the certain defense.
      */
-    public void setDefCertain(int value) {
+    public void setDefCertain(final int value) {
         defense_certain = value;
     }
 
     /**
      * Set the maximum attack value.
      */
-    public void setAtkMax(int value) {
+    public void setAtkMax(final int value) {
         attack_max = value;
     }
 
     /**
      * Set the certain attack value.
      */
-    public void setAtkCertain(int value) {
+    public void setAtkCertain(final int value) {
         attack_certain = value;
     }
 
     /**
      * Set the attack max including self-support
      */
-    public void setAtkSelfSupportMax(int value) {
+    public void setAtkSelfSupportMax(final int value) {
         selfsupport_atk_max = value;
     }
 
     /**
      * Set the attack certain including self-support
      */
-    public void setAtkSelfSupportCertain(int value) {
+    public void setAtkSelfSupportCertain(final int value) {
         selfsupport_atk_certain = value;
     }
 
     /**
      * Set if we have found a convoy path
      */
-    public void setFoundConvoyPath(boolean value) {
+    public void setFoundConvoyPath(final boolean value) {
         foundConvoyPath = value;
     }
 
     /**
      * Set the retreat strength
      */
-    public void setRetreatStrength(int value) {
+    public void setRetreatStrength(final int value) {
         retreatStr = value;
     }
 
     /**
      * Sets if an Order is legal. By default, orders are legal.
      */
-    public void setLegal(boolean value) {
+    public void setLegal(final boolean value) {
         isLegal = value;
     }
 
     /**
      * Set if an order has been verified. Once set to true, cannot be set to false.
      */
-    public void setVerified(boolean value) {
+    public void setVerified(final boolean value) {
         if (!value && isVerified) {
             throw new IllegalStateException(
                     "setVerified() is irreversible, once set to true.");
@@ -385,7 +385,7 @@ public final class OrderState {
      * Set the evaluation state. Note that once set (e.g., value != UNCERTAIN),
      * it cannot be altered.
      */
-    public void setEvalState(Tristate value) {
+    public void setEvalState(final Tristate value) {
         // ENSURE irreversibility
         if (evalState != Tristate.UNCERTAIN) {
             throw new IllegalStateException(
@@ -398,7 +398,7 @@ public final class OrderState {
     /**
      * if move is a head-to-head move, set which move we are moving head-to-head against here.
      */
-    public void setHeadToHead(OrderState os) {
+    public void setHeadToHead(final OrderState os) {
         if (os != null && !(os.order instanceof Move)) {
             throw new IllegalArgumentException(
                     "h2h orderstate must be set with a Move order");
@@ -411,7 +411,7 @@ public final class OrderState {
      * be set if dislodged == MAYBE or YES. Furthermore, dislodger
      * must be a Move order.
      */
-    public void setDislodger(OrderState os) {
+    public void setDislodger(final OrderState os) {
         assert (os.order instanceof Move && dislodged != Tristate.NO);
         dislodgedBy = os;
     }// setDislodger()
@@ -423,7 +423,7 @@ public final class OrderState {
      * If assertions are enabled, the list is verified to contain only Support
      * OrderStates
      */
-    public void setDependentSupports(List<OrderState> osList) {
+    public void setDependentSupports(final List<OrderState> osList) {
         assert (verifyListSupport(osList));
         dependentSupports = (OrderState[]) osList
                 .toArray(new OrderState[osList.size()]);
@@ -440,7 +440,7 @@ public final class OrderState {
      * <b>NOTE:</b> OrderState only checks criteria #1 and #2, and only if
      * asserts are enabled.
      */
-    public void setDependentSelfSupports(List<OrderState> osList) {
+    public void setDependentSelfSupports(final List<OrderState> osList) {
         assert (verifyListSelfSupport(osList));
         dependentSelfSupports = (OrderState[]) osList
                 .toArray(new OrderState[osList.size()]);
@@ -451,7 +451,7 @@ public final class OrderState {
      * Adds a List of the Dependent Move Orderstates to the Source Province of this Orderstate.
      * <p>If asserts are enabled, all OrderStates are verified to contain only Move orders.
      */
-    public void setDependentMovesToSource(List<OrderState> osList) {
+    public void setDependentMovesToSource(final List<OrderState> osList) {
         assert (verifyListMove(osList));
         dependentMovesToSource = (OrderState[]) osList
                 .toArray(new OrderState[osList.size()]);
@@ -462,7 +462,7 @@ public final class OrderState {
      * Adds a List of the Dependent Move Orderstates to the Destination Province of this Orderstate
      * <p>If asserts are enabled, all OrderStates are verified to contain only Move orders.
      */
-    public void setDependentMovesToDestination(List<OrderState> osList) {
+    public void setDependentMovesToDestination(final List<OrderState> osList) {
         assert (verifyListMove(osList));
         dependentMovesToDestination = (OrderState[]) osList
                 .toArray(new OrderState[osList.size()]);
@@ -516,17 +516,17 @@ public final class OrderState {
      * If there is NO support, we return 1 (since all units have a default strength of 1),
      * unless the base move modifier (due to a difficult passable border) changes this amount.
      */
-    public int getSupport(boolean isCertain) {
+    public int getSupport(final boolean isCertain) {
         // Determine support, but based on the fact that provinces could have special borders
-        int mod;
+        final int mod;
 
         // Just figuring out how to get each border, and what its BaseMoveModifier is.
         if (this.getOrder() instanceof Move) {
-            Move order = (Move) this.getOrder();
+            final Move order = (Move) this.getOrder();
             mod = order.getDest().getProvince()
                     .getBaseMoveModifier(order.getSource());
         } else if (this.getOrder() instanceof Support) {
-            Support order = (Support) this.getOrder();
+            final Support order = (Support) this.getOrder();
             mod = order.getSupportedDest().getProvince()
                     .getBaseMoveModifier(order.getSource());
             // If the order is a convoy, hold,etc there is not BaseMoveModifier
@@ -535,7 +535,7 @@ public final class OrderState {
         }
 
         // Get the strength
-        int strength = getSupport(isCertain, dependentSupports, 1 + mod);
+        final int strength = getSupport(isCertain, dependentSupports, 1 + mod);
         // if it is 0 or above, great! If not, make it 0!
         if (strength >= 0) {
             return strength;
@@ -549,7 +549,7 @@ public final class OrderState {
      * Similar to getSupport(), but, determines self-support (if any).
      * If there is no self support, returns '0'.
      */
-    public int getSelfSupport(boolean isCertain) {
+    public int getSelfSupport(final boolean isCertain) {
         return getSupport(isCertain, dependentSelfSupports, 0);
     }// getSelfSupport()
 
@@ -557,12 +557,12 @@ public final class OrderState {
     /**
      * Helper method, used by other getSupport() and getSelfSupport() methods.
      */
-    protected int getSupport(boolean isCertain, OrderState[] supportList,
-                             int defaultStrength) {
+    protected int getSupport(final boolean isCertain, final OrderState[] supportList,
+                             final int defaultStrength) {
         int strength = defaultStrength;
 
         for (int i = 0; i < supportList.length; i++) {
-            OrderState os = supportList[i];
+            final OrderState os = supportList[i];
             if (os.getEvalState() == Tristate.SUCCESS || (!isCertain && os
                     .getEvalState() == Tristate.UNCERTAIN)) {
                 strength++;
@@ -577,10 +577,10 @@ public final class OrderState {
     /**
      * Verifies that given list ONLY contains Move orderstates
      */
-    private boolean verifyListMove(List<OrderState> list) {
-        Iterator<OrderState> iter = list.iterator();
+    private boolean verifyListMove(final List<OrderState> list) {
+        final Iterator<OrderState> iter = list.iterator();
         while (iter.hasNext()) {
-            OrderState os = (OrderState) iter.next();
+            final OrderState os = (OrderState) iter.next();
             if (!(os.getOrder() instanceof Move)) {
                 return false;
             }
@@ -593,10 +593,10 @@ public final class OrderState {
     /**
      * Verifies that given list ONLY contains Support orderstates
      */
-    private boolean verifyListSupport(List<OrderState> list) {
-        Iterator<OrderState> iter = list.iterator();
+    private boolean verifyListSupport(final List<OrderState> list) {
+        final Iterator<OrderState> iter = list.iterator();
         while (iter.hasNext()) {
-            OrderState os = (OrderState) iter.next();
+            final OrderState os = (OrderState) iter.next();
             if (!(os.getOrder() instanceof Support)) {
                 return false;
             }
@@ -609,12 +609,12 @@ public final class OrderState {
     /**
      * Verifies that given list ONLY contains Self Support orderstates
      */
-    private boolean verifyListSelfSupport(List<OrderState> list) {
-        Iterator<OrderState> iter = list.iterator();
+    private boolean verifyListSelfSupport(final List<OrderState> list) {
+        final Iterator<OrderState> iter = list.iterator();
         while (iter.hasNext()) {
-            OrderState os = (OrderState) iter.next();
+            final OrderState os = (OrderState) iter.next();
             if (os.getOrder() instanceof Support) {
-                Support support = (Support) os.getOrder();
+                final Support support = (Support) os.getOrder();
                 if (support.isSupportingHold()) {
                     return false;
                 }

@@ -45,13 +45,13 @@ public class DislodgedResult extends OrderResult {
     private int defStrength = -1;
 
 
-    public DislodgedResult(Orderable order, Location[] retreatLocations) {
+    public DislodgedResult(final Orderable order, final Location[] retreatLocations) {
         this(order, null, retreatLocations);
     }// DislodgedResult()
 
 
-    public DislodgedResult(Orderable order, String message,
-                           Location[] retreatLocations) {
+    public DislodgedResult(final Orderable order, final String message,
+                           final Location[] retreatLocations) {
         super();
         if (order == null) {
             throw new IllegalArgumentException("null order");
@@ -104,7 +104,7 @@ public class DislodgedResult extends OrderResult {
      * Set the attack strength. A value of -1 indicates
      * that this has not been set.
      */
-    public void setAttackStrength(int value) {
+    public void setAttackStrength(final int value) {
         if (value < -1) {
             throw new IllegalArgumentException();
         }
@@ -117,7 +117,7 @@ public class DislodgedResult extends OrderResult {
      * Set the defense strength. A value of -1 indicates
      * that this has not been set.
      */
-    public void setDefenseStrength(int value) {
+    public void setDefenseStrength(final int value) {
         if (value < -1) {
             throw new IllegalArgumentException();
         }
@@ -130,7 +130,7 @@ public class DislodgedResult extends OrderResult {
      * Set the dislodger. A value of <code>null</code>
      * indicates that this has not been set.
      */
-    public void setDislodger(Province value) {
+    public void setDislodger(final Province value) {
         dislodger = value;
     }// setDislodger()
 
@@ -139,7 +139,7 @@ public class DislodgedResult extends OrderResult {
      * Creates an appropriate internationalized text message given the
      * set and unset parameters.
      */
-    public String getMessage(OrderFormatOptions ofo) {
+    public String getMessage(final OrderFormatOptions ofo) {
         /*
         0 : province not specified
 		1 : province specified
@@ -159,7 +159,7 @@ public class DislodgedResult extends OrderResult {
         }
 
         // create retreat list
-        StringBuffer retreats = new StringBuffer(128);
+        final StringBuffer retreats = new StringBuffer(128);
         if (retreatLocations != null) {
             for (int i = 0; i < retreatLocations.length; i++) {
                 retreats.append(' ');
@@ -173,7 +173,7 @@ public class DislodgedResult extends OrderResult {
         }
 
         // create messageformat arguments
-        Object[] args = {((dislodger == null) ? new Integer(0) : new Integer(
+        final Object[] args = {((dislodger == null) ? new Integer(0) : new Integer(
                 1)),    // {0}; 0 if no province specified
                 fmtDislodger,                                                // {1}
                 new Integer(
@@ -194,7 +194,7 @@ public class DislodgedResult extends OrderResult {
      * Primarily for debugging.
      */
     public String toString() {
-        StringBuffer sb = new StringBuffer(256);
+        final StringBuffer sb = new StringBuffer(256);
         sb.append(super.toString());
 
         // add retreats

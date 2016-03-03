@@ -51,8 +51,8 @@ public class GUIDefineState extends DefineState implements GUIOrder {
     /**
      * Creates a GUIDefineState
      */
-    protected GUIDefineState(Power power, Location source,
-                             Unit.Type sourceUnitType) throws OrderException {
+    protected GUIDefineState(final Power power, final Location source,
+                             final Unit.Type sourceUnitType) throws OrderException {
         super(power, source, sourceUnitType);
     }// GUIDefineState()
 
@@ -60,12 +60,12 @@ public class GUIDefineState extends DefineState implements GUIOrder {
     /**
      * This only accepts DefineState orders. All others will throw an IllegalArgumentException.
      */
-    public void deriveFrom(Orderable order) {
+    public void deriveFrom(final Orderable order) {
         if (!(order instanceof DefineState)) {
             throw new IllegalArgumentException();
         }
 
-        DefineState defState = (DefineState) order;
+        final DefineState defState = (DefineState) order;
         power = defState.getPower();
         src = defState.getSource();
         srcUnitType = defState.getSourceUnitType();
@@ -74,8 +74,8 @@ public class GUIDefineState extends DefineState implements GUIOrder {
     /**
      * Always returns false.
      */
-    public boolean testLocation(StateInfo stateInfo, Location location,
-                                StringBuffer sb) {
+    public boolean testLocation(final StateInfo stateInfo, final Location location,
+                                final StringBuffer sb) {
         sb.setLength(0);
         sb.append(Utils.getLocalString(GUIOrder.COMPLETE, getFullName()));
         return false;
@@ -91,8 +91,8 @@ public class GUIDefineState extends DefineState implements GUIOrder {
     /**
      * Always returns false.
      */
-    public boolean setLocation(StateInfo stateInfo, Location location,
-                               StringBuffer sb) {
+    public boolean setLocation(final StateInfo stateInfo, final Location location,
+                               final StringBuffer sb) {
         sb.setLength(0);
         sb.append(Utils.getLocalString(GUIOrder.COMPLETE, getFullName()));
         return false;
@@ -123,23 +123,23 @@ public class GUIDefineState extends DefineState implements GUIOrder {
     /**
      * Always throws an IllegalArgumentException
      */
-    public void setParam(Parameter param, Object value) {
+    public void setParam(final Parameter param, final Object value) {
         throw new IllegalArgumentException();
     }
 
     /**
      * Always throws an IllegalArgumentException
      */
-    public Object getParam(Parameter param) {
+    public Object getParam(final Parameter param) {
         throw new IllegalArgumentException();
     }
 
 
-    public void removeFromDOM(MapInfo mapInfo) {
+    public void removeFromDOM(final MapInfo mapInfo) {
     }// removeFromDOM()
 
 
-    public void updateDOM(MapInfo mapInfo) {
+    public void updateDOM(final MapInfo mapInfo) {
     }// updateDOM()
 
     public boolean isDependent() {

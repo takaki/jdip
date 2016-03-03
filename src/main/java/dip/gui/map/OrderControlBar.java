@@ -124,7 +124,7 @@ public class OrderControlBar extends ViewControlBar {
      *
      * @param mp MapPanel object
      */
-    public OrderControlBar(MapPanel mp) {
+    public OrderControlBar(final MapPanel mp) {
         super(mp);
 
         // init
@@ -143,16 +143,16 @@ public class OrderControlBar extends ViewControlBar {
         // add to StateInfo object
         if (stateInfo.getTurnState().getPhase()
                 .getPhaseType() == Phase.PhaseType.ADJUSTMENT) {
-            List<Power> powers = stateInfo.getTurnState().getWorld().getMap()
+            final List<Power> powers = stateInfo.getTurnState().getWorld().getMap()
                     .getPowers();
-            Adjustment.AdjustmentInfoMap adjMap = Adjustment
+            final Adjustment.AdjustmentInfoMap adjMap = Adjustment
                     .getAdjustmentInfo(stateInfo.getTurnState(),
                             stateInfo.getRuleOptions(), powers);
 
             stateInfo.setAdjustmenInfoMap(adjMap);
         }
 
-        RuleOptions ro = mapPanel.getWorld().getRuleOptions();
+        final RuleOptions ro = mapPanel.getWorld().getRuleOptions();
         useExplicitGUIMove = RuleOptions.OptionValue.VALUE_PATHS_EXPLICIT
                 .equals(ro.getOptionValue(RuleOptions.Option.OPTION_CONVOYED_MOVES));
 
@@ -166,7 +166,7 @@ public class OrderControlBar extends ViewControlBar {
      *
      * @param valOpts The new validationOptions value
      */
-    public void setValidationOptions(ValidationOptions valOpts) {
+    public void setValidationOptions(final ValidationOptions valOpts) {
         stateInfo.setValidationOptions(valOpts);
     }
     // setValidationOptions()
@@ -178,7 +178,7 @@ public class OrderControlBar extends ViewControlBar {
      * @param loc current Location
      * @since me    mouseEvent (<b>may be null</b>)
      */
-    public void mouseOver(MouseEvent me, Location loc) {
+    public void mouseOver(final MouseEvent me, final Location loc) {
         lastLoc = loc;
 
         if (currentOrder != null) {
@@ -262,7 +262,7 @@ public class OrderControlBar extends ViewControlBar {
      *
      * @param loc current Location
      */
-    public void mouseOut(MouseEvent me, Location loc) {
+    public void mouseOut(final MouseEvent me, final Location loc) {
         lastLoc = loc;
 
         if (currentOrder == null) {
@@ -280,7 +280,7 @@ public class OrderControlBar extends ViewControlBar {
     /**
      * Dispatch mouse click events
      */
-    public void mouseClicked(MouseEvent me, Location loc) {
+    public void mouseClicked(final MouseEvent me, final Location loc) {
         inDrag = false;
         dragLoc = null;
         dragSupportLoc = null;
@@ -294,7 +294,7 @@ public class OrderControlBar extends ViewControlBar {
      *
      * @param loc The location where the mouse event took place.
      */
-    public void doOrder(MouseEvent me, Location loc) {
+    public void doOrder(final MouseEvent me, Location loc) {
         if (currentOrder != null) {
             // cancel if we are in a null location
             if (loc == null) {
@@ -355,7 +355,7 @@ public class OrderControlBar extends ViewControlBar {
      * @param loc current Location
      * @param me  mouse event
      */
-    public void mouseDown(MouseEvent me, Location loc) {
+    public void mouseDown(final MouseEvent me, final Location loc) {
         if (loc != null) {
             inDrag = true;
             dragLoc = loc;
@@ -392,7 +392,7 @@ public class OrderControlBar extends ViewControlBar {
      *
      * @param loc current Location
      */
-    public void mouseUp(MouseEvent me, Location loc) {
+    public void mouseUp(final MouseEvent me, final Location loc) {
         currentAction = defaultAction;
         if (inDrag) {
             doOrder(me, loc);
@@ -411,7 +411,7 @@ public class OrderControlBar extends ViewControlBar {
      * @param dke DOMKeyEvent
      * @param loc current mouse Location
      */
-    public void keyPressed(DOMKeyEvent dke, Location loc) {
+    public void keyPressed(final DOMKeyEvent dke, final Location loc) {
         super.keyPressed(dke, loc);
 
         // ignore modifier keys
@@ -447,7 +447,7 @@ public class OrderControlBar extends ViewControlBar {
      *
      * @param loc current mouse Location
      */
-    protected void setGUIOrder(Location loc) {
+    protected void setGUIOrder(final Location loc) {
         mapPanel.getClientFrame().getOrderStatusPanel().clearOrderText();
 
 		/*
@@ -496,7 +496,7 @@ public class OrderControlBar extends ViewControlBar {
 
     // If there's an order in progress, set the cursor to show which type of unit you're
     // ordering and/or show that the current status is invalid for that unit.
-    private void setUnitCursor(boolean ok) {
+    private void setUnitCursor(final boolean ok) {
         if (ok) {
             if (Unit.Type.ARMY == currentOrder.getSourceUnitType()) {
                 mapPanel.setMapCursor(MapPanel.CURSOR_DRAG_ARMY);
@@ -572,7 +572,7 @@ public class OrderControlBar extends ViewControlBar {
         String[] cmd = null;
         String defaultButton = null;
 
-        Phase.PhaseType phaseType = stateInfo.getTurnState().getPhase()
+        final Phase.PhaseType phaseType = stateInfo.getTurnState().getPhase()
                 .getPhaseType();
         Log.println("OCB:phase: ", stateInfo.getTurnState().getPhase());
 
@@ -593,7 +593,7 @@ public class OrderControlBar extends ViewControlBar {
             defaultButton = GROUP_ADJUSTMENT_DEFAULT_BUTTON;
 
             // filter out 'wing' button, if wings are NOT enabled.
-            RuleOptions ro = mapPanel.getWorld().getRuleOptions();
+            final RuleOptions ro = mapPanel.getWorld().getRuleOptions();
 
             if (ro.getOptionValue(
                     RuleOptions.Option.OPTION_WINGS) != RuleOptions.OptionValue.VALUE_WINGS_ENABLED) {
@@ -620,13 +620,13 @@ public class OrderControlBar extends ViewControlBar {
         addSeparator();
 
         // listener
-        ToggleListener tl = new ToggleListener();
+        final ToggleListener tl = new ToggleListener();
 
         // create toggle buttons.
         // set the default button as selected
         buttons = new JToggleButton[text.length];
 
-        ButtonGroup bg = new ButtonGroup();
+        final ButtonGroup bg = new ButtonGroup();
 
         for (int i = 0; i < text.length; i++) {
             buttons[i] = new JToggleButton(text[i], false);
@@ -649,7 +649,7 @@ public class OrderControlBar extends ViewControlBar {
      * Listens for toggle events; sets which button is selected
      */
     private class ToggleListener implements ActionListener {
-        public void actionPerformed(ActionEvent e) {
+        public void actionPerformed(final ActionEvent e) {
             defaultAction = ((JToggleButton) e.getSource()).getActionCommand();
             currentAction = defaultAction;
             setGUIOrder(null);

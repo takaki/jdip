@@ -79,7 +79,7 @@ public class ValidationOptions implements Serializable, Cloneable {
      * only data in the hashtable changes between objects for a given validationOptions
      */
     public Object clone() throws CloneNotSupportedException {
-        ValidationOptions vopt = (ValidationOptions) super.clone();
+        final ValidationOptions vopt = (ValidationOptions) super.clone();
         vopt.map = (Hashtable<String, Object>) this.map.clone();
         return vopt;
     }// clone()
@@ -89,19 +89,19 @@ public class ValidationOptions implements Serializable, Cloneable {
     // get options descriptions, internationilzed; used by GUI to
     // display settings.
     public DescriptiveOption[] getOptions() {
-        DescriptiveOption[] dopts = new DescriptiveOption[options.length];
+        final DescriptiveOption[] dopts = new DescriptiveOption[options.length];
         for (int i = 0; i < dopts.length; i++) {
             dopts[i] = new DescriptiveOption(options[i]);
-            DescriptiveOption opt = dopts[i];    // current option
+            final DescriptiveOption opt = dopts[i];    // current option
 
             opt.setDisplayName(Utils.getLocalString(opt.getKey()));
             opt.setDescription(
                     Utils.getLocalString(opt.getKey() + DESCRIPTION));
 
-            String optionValues[] = opt.getValues();
-            int nOpts = optionValues.length;
-            String[] names = new String[nOpts];
-            String[] descriptions = new String[nOpts];
+            final String[] optionValues = opt.getValues();
+            final int nOpts = optionValues.length;
+            final String[] names = new String[nOpts];
+            final String[] descriptions = new String[nOpts];
             for (int j = 0; j < nOpts; j++) {
                 names[j] = Utils.getLocalString(optionValues[j]);
                 descriptions[j] = Utils
@@ -116,15 +116,15 @@ public class ValidationOptions implements Serializable, Cloneable {
 
 
     // Set/Get methods
-    public void setOption(String key, Object value) {
+    public void setOption(final String key, final Object value) {
         map.put(key, value);
     }// setOption()
 
-    public Object getOption(String key) {
+    public Object getOption(final String key) {
         return map.get(key);
     }// getOption()
 
-    public boolean isOption(String key, Object value) {
+    public boolean isOption(final String key, final Object value) {
         return value.equals(map.get(key));
     }// isOption()
 
@@ -145,7 +145,7 @@ public class ValidationOptions implements Serializable, Cloneable {
         private final String values[];            // allowable values (to set)
         private final String defaultValue;        // default value
 
-        protected Option(String key, String[] values, String defaultValue) {
+        protected Option(final String key, final String[] values, final String defaultValue) {
             this.key = key;
             this.values = values;
             this.defaultValue = defaultValue;
@@ -170,19 +170,19 @@ public class ValidationOptions implements Serializable, Cloneable {
         private String displayValues[];        // il8n value name
         private String valueDescriptions[]; // il8n value description (optional)
 
-        protected DescriptiveOption(ValidationOptions.Option option) {
+        protected DescriptiveOption(final ValidationOptions.Option option) {
             super(option.key, option.values, option.defaultValue);
         }// DescriptiveOption
 
-        protected void setDisplayName(String value) {
+        protected void setDisplayName(final String value) {
             displayName = value;
         }
 
-        protected void setDescription(String value) {
+        protected void setDescription(final String value) {
             description = value;
         }
 
-        protected void setDisplayValues(String[] value) {
+        protected void setDisplayValues(final String[] value) {
             if (value.length != getValues().length) {
                 throw new IllegalArgumentException(
                         "Number of value names != Number of values");
@@ -191,7 +191,7 @@ public class ValidationOptions implements Serializable, Cloneable {
             displayValues = value;
         }// setDisplayValues()
 
-        protected void setValueDescriptions(String[] value) {
+        protected void setValueDescriptions(final String[] value) {
             if (value.length != getValues().length) {
                 throw new IllegalArgumentException(
                         "Number of value descriptions != Number of values");

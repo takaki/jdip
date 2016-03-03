@@ -34,7 +34,7 @@ public class OrderException extends Exception implements Cloneable {
     /**
      * Create an OrderException, with a Message only.
      */
-    public OrderException(String text) {
+    public OrderException(final String text) {
         super(text);
     }// OrderException()
 
@@ -42,7 +42,7 @@ public class OrderException extends Exception implements Cloneable {
     /**
      * Create an OrderException, with the given Order and Message.
      */
-    public OrderException(Order order, String text) {
+    public OrderException(final Order order, final String text) {
         super(text);
         this.order = order;
     }// OrderException()

@@ -61,8 +61,8 @@ public class GUIRemove extends Remove implements GUIOrder {
     /**
      * Creates a GUIRemove
      */
-    protected GUIRemove(Power power, Location source,
-                        Unit.Type sourceUnitType) {
+    protected GUIRemove(final Power power, final Location source,
+                        final Unit.Type sourceUnitType) {
         super(power, source, sourceUnitType);
     }// GUIRemove()
 
@@ -70,12 +70,12 @@ public class GUIRemove extends Remove implements GUIOrder {
     /**
      * This only accepts Remove orders. All others will throw an IllegalArgumentException.
      */
-    public void deriveFrom(Orderable order) {
+    public void deriveFrom(final Orderable order) {
         if (!(order instanceof Remove)) {
             throw new IllegalArgumentException();
         }
 
-        Remove remove = (Remove) order;
+        final Remove remove = (Remove) order;
         power = remove.getPower();
         src = remove.getSource();
         srcUnitType = remove.getSourceUnitType();
@@ -85,8 +85,8 @@ public class GUIRemove extends Remove implements GUIOrder {
     }// deriveFrom()
 
 
-    public boolean testLocation(StateInfo stateInfo, Location location,
-                                StringBuffer sb) {
+    public boolean testLocation(final StateInfo stateInfo, final Location location,
+                                final StringBuffer sb) {
         sb.setLength(0);
 
         if (isComplete()) {
@@ -94,9 +94,9 @@ public class GUIRemove extends Remove implements GUIOrder {
             return false;
         }
 
-        Position position = stateInfo.getPosition();
-        Province province = location.getProvince();
-        Unit unit = position.getUnit(province).orElse(null);
+        final Position position = stateInfo.getPosition();
+        final Province province = location.getProvince();
+        final Unit unit = position.getUnit(province).orElse(null);
 
         if (unit != null) {
             if (!stateInfo.canIssueOrder(unit.getPower())) {
@@ -106,7 +106,7 @@ public class GUIRemove extends Remove implements GUIOrder {
             }
 
             // check that we actually have units to remove
-            Adjustment.AdjustmentInfo adjInfo = stateInfo.getAdjustmenInfoMap()
+            final Adjustment.AdjustmentInfo adjInfo = stateInfo.getAdjustmenInfoMap()
                     .get(unit.getPower());
             if (adjInfo.getAdjustmentAmount() < 0) {
                 sb.append(Utils.getLocalString(GUIOrder.CLICK_TO_ISSUE,
@@ -140,12 +140,12 @@ public class GUIRemove extends Remove implements GUIOrder {
     }// clearLocations()
 
 
-    public boolean setLocation(StateInfo stateInfo, Location location,
-                               StringBuffer sb) {
+    public boolean setLocation(final StateInfo stateInfo, final Location location,
+                               final StringBuffer sb) {
         if (testLocation(stateInfo, location, sb)) {
             currentLocNum++;
 
-            Unit unit = stateInfo.getPosition().getUnit(location.getProvince()).orElse(null);
+            final Unit unit = stateInfo.getPosition().getUnit(location.getProvince()).orElse(null);
             src = new Location(location.getProvince(), unit.getCoast());
             power = unit.getPower();
             srcUnitType = unit.getType();
@@ -176,21 +176,21 @@ public class GUIRemove extends Remove implements GUIOrder {
     /**
      * Always throws an IllegalArgumentException
      */
-    public void setParam(Parameter param, Object value) {
+    public void setParam(final Parameter param, final Object value) {
         throw new IllegalArgumentException();
     }
 
     /**
      * Always throws an IllegalArgumentException
      */
-    public Object getParam(Parameter param) {
+    public Object getParam(final Parameter param) {
         throw new IllegalArgumentException();
     }
 
 
-    public void removeFromDOM(MapInfo mapInfo) {
+    public void removeFromDOM(final MapInfo mapInfo) {
         if (group != null) {
-            SVGGElement powerGroup = mapInfo
+            final SVGGElement powerGroup = mapInfo
                     .getPowerSVGGElement(power, LAYER_HIGHEST);
             GUIOrderUtils.removeChild(powerGroup, group);
             group = null;
@@ -201,7 +201,7 @@ public class GUIRemove extends Remove implements GUIOrder {
     /**
      * Draws a circle with an X in it
      */
-    public void updateDOM(MapInfo mapInfo) {
+    public void updateDOM(final MapInfo mapInfo) {
         // if we are not displayable, we exit, after remove the order (if
         // it was created)
         if (!GUIOrderUtils.isDisplayable(power, mapInfo)) {
@@ -245,17 +245,17 @@ public class GUIRemove extends Remove implements GUIOrder {
 
         // draw 'failed' marker, if appropriate.
         if (!mapInfo.getTurnState().isOrderSuccessful(this)) {
-            SVGElement useElement = GUIOrderUtils
+            final SVGElement useElement = GUIOrderUtils
                     .createFailedOrderSymbol(mapInfo, failPt.x, failPt.y);
             group.appendChild(useElement);
         }
     }// updateDOM()
 
-    private SVGElement drawOrder(MapInfo mapInfo) {
-        MapMetadata mmd = mapInfo.getMapMetadata();
+    private SVGElement drawOrder(final MapInfo mapInfo) {
+        final MapMetadata mmd = mapInfo.getMapMetadata();
         // Note: Remove orders use unit; Disband orders use the dislodged unit coordinates.
-        Point2D.Float srcPt = mmd.getUnitPt(src.getProvince(), src.getCoast());
-        float radius = mmd.getOrderRadius(MapMetadata.EL_REMOVE,
+        final Point2D.Float srcPt = mmd.getUnitPt(src.getProvince(), src.getCoast());
+        final float radius = mmd.getOrderRadius(MapMetadata.EL_REMOVE,
                 mapInfo.getSymbolName(srcUnitType));
 
         // calculate (but don't yet use) failPt
@@ -263,11 +263,11 @@ public class GUIRemove extends Remove implements GUIOrder {
         failPt = new Point2D.Float(srcPt.x + radius, srcPt.y);
 
         // get symbolsize
-        MapMetadata.SymbolSize symbolSize = mmd
+        final MapMetadata.SymbolSize symbolSize = mmd
                 .getSymbolSize(DefaultMapRenderer2.SYMBOL_REMOVEUNIT);
 
         // create RemoveUnit symbol via a USE element
-        SVGElement useElement = SVGUtils.createUseElement(mapInfo.getDocument(),
+        final SVGElement useElement = SVGUtils.createUseElement(mapInfo.getDocument(),
                 "#" + DefaultMapRenderer2.SYMBOL_REMOVEUNIT, null,    // no ID
                 null,    // no special style
                 srcPt.x, srcPt.y, symbolSize);

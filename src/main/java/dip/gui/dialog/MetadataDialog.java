@@ -94,8 +94,8 @@ public class MetadataDialog extends HeaderDialog {
      * Display the dialog. <br>
      * Editable by default. Null metadata arguments are not permissable
      */
-    public static void displayDialog(ClientFrame parent) {
-        MetadataDialog md = new MetadataDialog(parent);
+    public static void displayDialog(final ClientFrame parent) {
+        final MetadataDialog md = new MetadataDialog(parent);
         md.pack();
         md.setSize(Utils.getScreenSize(0.65f, 0.85f));
         Utils.centerInScreen(md);
@@ -107,7 +107,7 @@ public class MetadataDialog extends HeaderDialog {
     /**
      * Creates the dialog
      */
-    private MetadataDialog(ClientFrame parent) {
+    private MetadataDialog(final ClientFrame parent) {
         super(parent, Utils.getLocalString(TITLE), true);
         this.clientFrame = parent;
 
@@ -131,22 +131,22 @@ public class MetadataDialog extends HeaderDialog {
     /**
      * Handle OK/Cancel selections
      */
-    public void close(String actionCommand) {
+    public void close(final String actionCommand) {
         super.close(actionCommand);
 
         if (isOKorAccept(actionCommand)) {
-            World world = clientFrame.getWorld();
+            final World world = clientFrame.getWorld();
 
             // this isn't really the way to do it
-            GamePanel gp = (GamePanel) tabPane.getComponentAt(0);
-            GameMetadata gmd = new GameMetadata();
+            final GamePanel gp = (GamePanel) tabPane.getComponentAt(0);
+            final GameMetadata gmd = new GameMetadata();
             gp.write(gmd);
             world.setGameMetadata(gmd);
 
             // assume panels 1-n are all player panels
             for (int i = 1; i < tabPane.getTabCount(); i++) {
-                PlayerPanel pp = (PlayerPanel) tabPane.getComponentAt(i);
-                PlayerMetadata pmd = new PlayerMetadata();
+                final PlayerPanel pp = (PlayerPanel) tabPane.getComponentAt(i);
+                final PlayerMetadata pmd = new PlayerMetadata();
                 pp.write(pmd);
                 world.setPlayerMetadata(pp.getPower(), pmd);
             }
@@ -169,12 +169,12 @@ public class MetadataDialog extends HeaderDialog {
         tabPane = new JTabbedPane();
 
         // first tab is Game info
-        World world = clientFrame.getWorld();
+        final World world = clientFrame.getWorld();
         tabPane.add(Utils.getLocalString(TAB_GAME_PANEL),
                 makeGamePanel(world.getGameMetadata()));
 
         // all other tabs are by Power name
-        Power[] powers = world.getMap().getPowers().toArray(new Power[0]);
+        final Power[] powers = world.getMap().getPowers().toArray(new Power[0]);
         for (int i = 0; i < powers.length; i++) {
             tabPane.add(powers[i].getName(), makePlayerPanel(powers[i],
                     world.getPlayerMetadata(powers[i])));
@@ -184,8 +184,8 @@ public class MetadataDialog extends HeaderDialog {
     /**
      * Make a GameMetadata display
      */
-    private GamePanel makeGamePanel(GameMetadata gmd) {
-        GamePanel panel = new GamePanel();
+    private GamePanel makeGamePanel(final GameMetadata gmd) {
+        final GamePanel panel = new GamePanel();
         panel.read(gmd);
         panel.revalidate();
         return panel;
@@ -195,8 +195,8 @@ public class MetadataDialog extends HeaderDialog {
     /**
      * Make a PlayerMetadata display
      */
-    private JPanel makePlayerPanel(Power power, PlayerMetadata pmd) {
-        PlayerPanel panel = new PlayerPanel(power);
+    private JPanel makePlayerPanel(final Power power, final PlayerMetadata pmd) {
+        final PlayerPanel panel = new PlayerPanel(power);
         panel.read(pmd);
         panel.revalidate();
         return panel;
@@ -207,7 +207,7 @@ public class MetadataDialog extends HeaderDialog {
      * n2e = null-to-empty; If field may be null, allow field to be empty.
      * Converts all objects to strings.
      */
-    private String n2e(Object in) {
+    private String n2e(final Object in) {
         if (in == null) {
             return "";
         }
@@ -232,14 +232,14 @@ public class MetadataDialog extends HeaderDialog {
             notes.setBorder(new EtchedBorder());
 
             // layout
-            int w1[] = {BORDER, 10, 0, 5, 0, 10, 5, 0, BORDER};
-            int h1[] = {BORDER, 0, 20, 0, 5, 0, 10, 0, 10, 0, 10, 0, 30, 0, 10, 0, 10, 0, BORDER};
+            final int[] w1 = {BORDER, 10, 0, 5, 0, 10, 5, 0, BORDER};
+            final int[] h1 = {BORDER, 0, 20, 0, 5, 0, 10, 0, 10, 0, 10, 0, 30, 0, 10, 0, 10, 0, BORDER};
 
-            HIGLayout layout = new HIGLayout(w1, h1);
+            final HIGLayout layout = new HIGLayout(w1, h1);
             layout.setColumnWeight(8, 1);
             this.setLayout(layout);
 
-            HIGConstraints c = new HIGConstraints();
+            final HIGConstraints c = new HIGConstraints();
 
             this.add(new JLabel(Utils.getLocalString(GDF_GAME_NAME)),
                     c.rcwh(2, 3, 1, 1, "r"));
@@ -283,7 +283,7 @@ public class MetadataDialog extends HeaderDialog {
         /**
          * Get the panel values from the given GameMetadata object.
          */
-        public void read(GameMetadata gmd) {
+        public void read(final GameMetadata gmd) {
             notes.setText(gmd.getNotes());
             comment.setText(gmd.getComment());
             gameName.setText(gmd.getGameName());
@@ -299,7 +299,7 @@ public class MetadataDialog extends HeaderDialog {
         /**
          * Set GameMetadata object from the entered panel values.
          */
-        public void write(GameMetadata gmd) {
+        public void write(final GameMetadata gmd) {
             gmd.setNotes(notes.getText());
             gmd.setComment(comment.getText());
             gmd.setGameName(gameName.getText());
@@ -328,7 +328,7 @@ public class MetadataDialog extends HeaderDialog {
         private JTextField[] email = new JTextField[4];
         private Power power = null;
 
-        public PlayerPanel(Power power) {
+        public PlayerPanel(final Power power) {
             this.power = power;
 
             notes.setBorder(new EtchedBorder());
@@ -338,15 +338,15 @@ public class MetadataDialog extends HeaderDialog {
             }
 
             // layout
-            int w1[] = {BORDER, 0, 5, 0, 15, 0, 5, 0, BORDER};
-            int h1[] = {BORDER, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 10, 0, 5, 0, BORDER};
+            final int[] w1 = {BORDER, 0, 5, 0, 15, 0, 5, 0, BORDER};
+            final int[] h1 = {BORDER, 0, 5, 0, 5, 0, 5, 0, 5, 0, 5, 10, 0, 5, 0, BORDER};
 
-            HIGLayout layout = new HIGLayout(w1, h1);
+            final HIGLayout layout = new HIGLayout(w1, h1);
             layout.setColumnWeight(5, 1);
             layout.setRowWeight(12, 1);
             this.setLayout(layout);
 
-            HIGConstraints c = new HIGConstraints();
+            final HIGConstraints c = new HIGConstraints();
 
             this.add(new JLabel(Utils.getLocalString(PDF_NAME)),
                     c.rcwh(2, 2, 1, 1, "r"));
@@ -361,7 +361,7 @@ public class MetadataDialog extends HeaderDialog {
             this.add(makeScrollPane(notes), c.rcwh(12, 2, 7, 1, "lrtb"));
 
             for (int i = 0; i < email.length; i++) {
-                int row = 2 + (i * 2);
+                final int row = 2 + (i * 2);
                 this.add(new JLabel(
                         Utils.getLocalString(PDF_EMAIL) + " " + String
                                 .valueOf(i + 1)), c.rcwh(row, 6, 1, 1, "r"));
@@ -380,12 +380,12 @@ public class MetadataDialog extends HeaderDialog {
         /**
          * Get the panel values from the given PlayerMetadata object.
          */
-        public void read(PlayerMetadata pmd) {
+        public void read(final PlayerMetadata pmd) {
             notes.setText(pmd.getNotes());
             name.setText(pmd.getName());
             uri.setText(n2e(pmd.getURI()));
 
-            String[] tmpEmail = pmd.getEmailAddresses().toArray(new String[0]);
+            final String[] tmpEmail = pmd.getEmailAddresses().toArray(new String[0]);
             for (int i = 0; i < email.length; i++) {
                 if (i < tmpEmail.length) {
                     email[i].setText(n2e(tmpEmail[i]));
@@ -398,12 +398,12 @@ public class MetadataDialog extends HeaderDialog {
         /**
          * Write the panel values to the given PlayerMetadata object.
          */
-        public void write(PlayerMetadata pmd) {
+        public void write(final PlayerMetadata pmd) {
             pmd.setName(name.getText());
             pmd.setURI(convertURI(uri.getText()));
             pmd.setNotes(notes.getText());
 
-            String[] tmpEmail = new String[email.length];
+            final String[] tmpEmail = new String[email.length];
             for (int i = 0; i < email.length; i++) {
                 tmpEmail[i] = email[i].getText().trim();
             }
@@ -416,10 +416,10 @@ public class MetadataDialog extends HeaderDialog {
     /**
      * If can convert to URI, do it; otherwise returns null
      */
-    private static URI convertURI(String in) {
+    private static URI convertURI(final String in) {
         try {
             return new URI(in);
-        } catch (URISyntaxException e) {
+        } catch (final URISyntaxException e) {
         }
 
         return null;
@@ -429,8 +429,8 @@ public class MetadataDialog extends HeaderDialog {
     /**
      * Creates a JScrollPane that can only scroll vertically.
      */
-    private JScrollPane makeScrollPane(JComponent c) {
-        JScrollPane jsp = new XJScrollPane(c);
+    private JScrollPane makeScrollPane(final JComponent c) {
+        final JScrollPane jsp = new XJScrollPane(c);
         jsp.setHorizontalScrollBarPolicy(
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         return jsp;
@@ -441,7 +441,7 @@ public class MetadataDialog extends HeaderDialog {
      * Listener to get Tab Icon colors
      */
     private class IconColorListener extends AbstractCFPListener {
-        public void actionMMDReady(MapMetadata mmd) {
+        public void actionMMDReady(final MapMetadata mmd) {
             MetadataDialog.this.mmd = mmd;
             setTabIcons();
         }// actionMMDReady()
@@ -457,10 +457,10 @@ public class MetadataDialog extends HeaderDialog {
             final int tabCount = tabPane.getTabCount();
             for (int i = 1; i < tabCount; i++)    // no icon for 'game' info
             {
-                Power power = world.getMap().getPower(tabPane.getTitleAt(i));
+                final Power power = world.getMap().getPower(tabPane.getTitleAt(i));
                 assert (power != null);
-                String colorName = mmd.getPowerColor(power);
-                Color color = SVGColorParser.parseColor(colorName);
+                final String colorName = mmd.getPowerColor(power);
+                final Color color = SVGColorParser.parseColor(colorName);
                 tabPane.setIconAt(i, new ColorRectIcon(12, 12, color));
             }
         }

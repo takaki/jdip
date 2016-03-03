@@ -62,7 +62,7 @@ public class AIDemo {
      * Command-line entry point
      */
     public static void main(
-            String[] args) throws Exception    // allow any exceptions through
+            final String[] args) throws Exception    // allow any exceptions through
     {
         new AIDemo();
     }// main()
@@ -73,10 +73,10 @@ public class AIDemo {
      */
     public AIDemo() throws Exception {
         // create the World
-        World world = createStandardWorld();
+        final World world = createStandardWorld();
 
         // create a position to evaluate
-        Position position = createPosition(world);
+        final Position position = createPosition(world);
 
         // create order sets
         createOrders(world.getMap(), position);
@@ -114,7 +114,7 @@ public class AIDemo {
         // Load the variant (VARIANT_NAME) that we want.
         // Throw an error if it isn't found!
         //
-        Variant variant = new VariantManager()
+        final Variant variant = new VariantManager()
                 .getVariant(VARIANT_NAME, VariantManager.VERSION_NEWEST).orElse(null);
         if (variant == null) {
             throw new IOException("Cannot find variant " + VARIANT_NAME);
@@ -125,7 +125,7 @@ public class AIDemo {
         // which contains Province and Power information, as well as TurnStates,
         // which hold turn and Position information.
         //
-        World newWorld = WorldFactory.createWorld(variant);
+        final World newWorld = WorldFactory.createWorld(variant);
         System.out.println("World created!");
 
         // Set the RuleOptions in the World. This sets the RuleOptions to their
@@ -135,8 +135,8 @@ public class AIDemo {
 
         // This is to illustrate some features of the dip.world.Map object.
         //
-        WorldMap map = newWorld.getMap();
-        Power[] powers = map.getPowers().toArray(new Power[0]);
+        final WorldMap map = newWorld.getMap();
+        final Power[] powers = map.getPowers().toArray(new Power[0]);
         System.out.println("\nPowers in this game:");
         for (int i = 0; i < powers.length; i++) {
             System.out.println("  " + powers[i]);
@@ -144,19 +144,19 @@ public class AIDemo {
 
         // how do we get a specific power?
         //
-        Power aPower = map.getPower("france");
+        final Power aPower = map.getPower("france");
         System.out.println("\ngetPower(): " + aPower);
         System.out.println("People from " + aPower + " are called " + aPower
                 .getAdjective());
 
         // what about a province?
         //
-        Province prov = map.getProvince("spa");
+        final Province prov = map.getProvince("spa");
         System.out.println("\nProvince testing:");
         System.out.println("  prov full name: " + prov.getFullName());
         System.out.println("  prov abbreviation: " + prov.getShortName());
         System.out.println("  all TOUCHING provinces:");
-        Location[] touchLocs = prov.getAdjacentLocations(Coast.TOUCHING).toArray(new Location[0]);
+        final Location[] touchLocs = prov.getAdjacentLocations(Coast.TOUCHING).toArray(new Location[0]);
         for (int i = 0; i < touchLocs.length; i++) {
             System.out.println("    " + touchLocs[i].getProvince());
         }
@@ -164,8 +164,8 @@ public class AIDemo {
 
         // what about a Location? (A Location is a Province + a Coast)
         //
-        Location loc1 = map.parseLocation("spa/sc").orElse(null);    // South Coast of Spain
-        Location loc2 = map.parseLocation("spa/nc").orElse(null);    // North Coast of Spain
+        final Location loc1 = map.parseLocation("spa/sc").orElse(null);    // South Coast of Spain
+        final Location loc2 = map.parseLocation("spa/nc").orElse(null);    // North Coast of Spain
         System.out.println("\nLocation testing:");
         System.out.println(
                 "  " + loc1.toLongString() + " and " + loc2.toLongString());
@@ -173,7 +173,7 @@ public class AIDemo {
         System.out.println("  same province?: " + loc1.isProvinceEqual(loc2));
         System.out.println("  adjacent? " + loc1.isAdjacent(loc2));
         System.out.println("  adjacent Locations to " + loc1.toString() + ":");
-        Location[] adjLocs = loc1.getProvince()
+        final Location[] adjLocs = loc1.getProvince()
                 .getAdjacentLocations(loc1.getCoast()).toArray(new Location[0]);
         for (int i = 0; i < adjLocs.length; i++) {
             System.out.println("    " + adjLocs[i]);
@@ -207,9 +207,9 @@ public class AIDemo {
      * <li>No powers have been eliminated</li>
      * </ul>
      */
-    private Position createPosition(World w) {
+    private Position createPosition(final World w) {
         // get the initial position
-        Position pos = w.getLastTurnState().getPosition();
+        final Position pos = w.getLastTurnState().getPosition();
 
         // a Map reference, for convenience
         final WorldMap map = w.getMap();
@@ -220,7 +220,7 @@ public class AIDemo {
         // add some extra units
         // set extra German units
         //
-        Power germany = map.getPower("germany");
+        final Power germany = map.getPower("germany");
         Unit u = new Unit(germany, Unit.Type.ARMY);
         u.setCoast(
                 Coast.LAND);        // Army units always must be in Coast.LAND (== Coast.NONE)
@@ -240,7 +240,7 @@ public class AIDemo {
 
         // set extra Russian units
         //
-        Power russia = map.getPower("russia");
+        final Power russia = map.getPower("russia");
         u = new Unit(russia, Unit.Type.ARMY);
         u.setCoast(Coast.LAND);
         pos.setUnit(map.getProvince("lvn"), u);
@@ -259,9 +259,9 @@ public class AIDemo {
      * <p>
      * We return an Array of Lists (a somewhat unusual construct...)
      */
-    private List[] createOrders(WorldMap map, Position pos) {
+    private List[] createOrders(final WorldMap map, final Position pos) {
         // get the OrderFactory. The default order factory is OrderFactory.getDefault().
-        OrderFactory orderFactory = OrderFactory.getDefault();
+        final OrderFactory orderFactory = OrderFactory.getDefault();
 
         // power constants (note: we could have set these globally, as they
         // are the same, referentially, as when we obtained them in
@@ -275,7 +275,7 @@ public class AIDemo {
         // 	A war S lvn-pru
         // 	A lvn-pru
         //	A mos-lvn
-        List<dip.order.Order> russianOrders = new ArrayList<dip.order.Order>();
+        final List<dip.order.Order> russianOrders = new ArrayList<dip.order.Order>();
         russianOrders.add(orderFactory.createSupport(russia,
                 makeLocation(pos, map.getProvince("war")), Unit.Type.ARMY,
                 makeLocation(pos, map.getProvince("lvn")), russia,
@@ -292,7 +292,7 @@ public class AIDemo {
 
         // we're just making 2 sets of german orders
         //
-        List[] germanOrders = new List[2];
+        final List[] germanOrders = new List[2];
 
         // German Orders: 1
         // ================
@@ -336,7 +336,7 @@ public class AIDemo {
 
         // create combined orders sets for all powers
         //
-        List[] orderLists = new List[2];
+        final List[] orderLists = new List[2];
         for (int i = 0; i < orderLists.length; i++) {
             orderLists[i] = new ArrayList();
             orderLists[i].addAll(russianOrders);
@@ -353,7 +353,7 @@ public class AIDemo {
     /**
      * Make a Location for a Unit
      */
-    private Location makeLocation(Position pos, Province prov) {
+    private Location makeLocation(final Position pos, final Province prov) {
         return new Location(prov, pos.getUnit(prov).orElse(null).getCoast());
     }// makeLocation()
 
@@ -369,8 +369,8 @@ public class AIDemo {
      * successful and (if adjudicator statistical reporting is enabled) the
      * attack:defense statistics involved).
      */
-    private void evaluateOrders(World world, Position position,
-                                List[] orderSets) {
+    private void evaluateOrders(final World world, final Position position,
+                                final List[] orderSets) {
         /*
             we will evaluate by finding the BEST order that takes the sc
 			(first check via hasUnit())

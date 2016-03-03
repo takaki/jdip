@@ -204,13 +204,13 @@ public class ClientMenu {
          * Mac OS X: for accelerator keys, "control" will be changed
          * to use the platform default (Command).
          */
-        public Item(String name) {
+        public Item(final String name) {
             // read from il8n file
             this.name = Utils.getLocalString(name);
 
             String text = Utils.getLocalStringNoEx(name + "_mnemonic");
             if (text != null) {
-                KeyStroke ks = KeyStroke.getKeyStroke(text);
+                final KeyStroke ks = KeyStroke.getKeyStroke(text);
                 this.mnemonic = ks.getKeyCode();
             }
 
@@ -265,8 +265,8 @@ public class ClientMenu {
          * and Icon for a given MenuItem. If indent is false, and
          * there is no icon assigned, no 'blank' icon is used.
          */
-        public JMenuItem makeMenuItem(boolean indent) {
-            JMenuItem menuItem = new JMenuItem(getName());
+        public JMenuItem makeMenuItem(final boolean indent) {
+            final JMenuItem menuItem = new JMenuItem(getName());
             if (indent) {
                 menuItem.setIcon(getIcon());
             }
@@ -278,7 +278,7 @@ public class ClientMenu {
 
 
     // constructor
-    public ClientMenu(ClientFrame parent) {
+    public ClientMenu(final ClientFrame parent) {
         this.clientFrame = parent;
 
         // create menu bar
@@ -364,7 +364,7 @@ public class ClientMenu {
         // View
         menu = makeMenu(VIEW);
 
-        ButtonGroup nbg = new ButtonGroup();
+        final ButtonGroup nbg = new ButtonGroup();
         subMenu = makeMenu(VIEW_NAMES, true);
         subMenu.add(makeRBMenuItem(VIEW_NAMES_NONE, nbg, true, false));
         subMenu.add(makeRBMenuItem(VIEW_NAMES_SHORT, nbg, false, false));
@@ -419,15 +419,15 @@ public class ClientMenu {
     /**
      * Make a Menu (or submenu) from an Item object.
      */
-    public JMenu makeMenu(Item item) {
+    public JMenu makeMenu(final Item item) {
         return makeMenu(item, false);
     }// makeMenu()
 
     /**
      * Make a Menu (or submenu) from an Item object, indenting if required
      */
-    public JMenu makeMenu(Item item, boolean indent) {
-        JMenu menu = new JMenu(item.getName());
+    public JMenu makeMenu(final Item item, final boolean indent) {
+        final JMenu menu = new JMenu(item.getName());
         //menu.setFont(menuFont);
 
         if (indent) {
@@ -442,15 +442,15 @@ public class ClientMenu {
     /**
      * Make a menu item from an Item object
      */
-    public JMenuItem makeMenuItem(Item item) {
+    public JMenuItem makeMenuItem(final Item item) {
         return makeMenuItem(item, true);
     }// makeMenuItem()
 
     /**
      * Make a menu item from an Item object, indenting if required
      */
-    public JMenuItem makeMenuItem(Item item, boolean indent) {
-        JMenuItem menuItem = new JMenuItem(item.getName());
+    public JMenuItem makeMenuItem(final Item item, final boolean indent) {
+        final JMenuItem menuItem = new JMenuItem(item.getName());
         //menuItem.setFont(menuFont);
 
         if (indent) {
@@ -467,9 +467,9 @@ public class ClientMenu {
     /**
      * Make a JCheckBox menu item
      */
-    public JCheckBoxMenuItem makeCBMenuItem(Item item, boolean defaultState,
-                                            boolean indent) {
-        JCheckBoxMenuItem menuItem = new JCheckBoxMenuItem(item.getName(),
+    public JCheckBoxMenuItem makeCBMenuItem(final Item item, final boolean defaultState,
+                                            final boolean indent) {
+        final JCheckBoxMenuItem menuItem = new JCheckBoxMenuItem(item.getName(),
                 defaultState);
         //menuItem.setFont(menuFont);
         menuItem.setMnemonic(item.getMnemonic());
@@ -485,10 +485,10 @@ public class ClientMenu {
     /**
      * Make a JRadioButton menu item
      */
-    private JRadioButtonMenuItem makeRBMenuItem(Item item, ButtonGroup bg,
-                                                boolean defaultState,
-                                                boolean indent) {
-        JRadioButtonMenuItem menuItem = new JRadioButtonMenuItem(item.getName(),
+    private JRadioButtonMenuItem makeRBMenuItem(final Item item, final ButtonGroup bg,
+                                                final boolean defaultState,
+                                                final boolean indent) {
+        final JRadioButtonMenuItem menuItem = new JRadioButtonMenuItem(item.getName(),
                 defaultState);
         bg.add(menuItem);
         //menuItem.setFont(menuFont);
@@ -505,8 +505,8 @@ public class ClientMenu {
     /**
      * Get a JMenuItem given an Item (usually a specified constant)
      */
-    public JMenuItem getMenuItem(Item item) {
-        JMenuItem menuItem = (JMenuItem) menuMap.get(item);
+    public JMenuItem getMenuItem(final Item item) {
+        final JMenuItem menuItem = (JMenuItem) menuMap.get(item);
         if (menuItem != null) {
             return menuItem;
         }
@@ -516,8 +516,8 @@ public class ClientMenu {
     /**
      * Via Power
      */
-    private JMenuItem getMenuItem(Power power) {
-        JMenuItem menuItem = (JMenuItem) menuMap.get(power);
+    private JMenuItem getMenuItem(final Power power) {
+        final JMenuItem menuItem = (JMenuItem) menuMap.get(power);
         if (menuItem != null) {
             return menuItem;
         }
@@ -532,54 +532,54 @@ public class ClientMenu {
     }// getJMenuBar()
 
 
-    public boolean isEnabled(Item item) {
-        JMenuItem menuItem = getMenuItem(item);
+    public boolean isEnabled(final Item item) {
+        final JMenuItem menuItem = getMenuItem(item);
         return menuItem.isEnabled();
     }// isEnabled()
 
     // NOTE: this WILL NOT WORK on RB menu items!!
-    public void setEnabled(Item item, boolean value) {
-        JMenuItem menuItem = getMenuItem(item);
+    public void setEnabled(final Item item, final boolean value) {
+        final JMenuItem menuItem = getMenuItem(item);
         menuItem.setEnabled(value);
     }// setEnabled()
 
 
-    public boolean isVisible(Item item) {
-        JMenuItem menuItem = getMenuItem(item);
+    public boolean isVisible(final Item item) {
+        final JMenuItem menuItem = getMenuItem(item);
         return menuItem.isVisible();
     }// isVisible()
 
-    public void setVisible(Item item, boolean value) {
-        JMenuItem menuItem = getMenuItem(item);
+    public void setVisible(final Item item, final boolean value) {
+        final JMenuItem menuItem = getMenuItem(item);
         menuItem.setVisible(value);
     }// setVisible()
 
 
     // WARNING: this could break il8n
-    public void setText(Item item, String text) {
-        JMenuItem menuItem = getMenuItem(item);
+    public void setText(final Item item, final String text) {
+        final JMenuItem menuItem = getMenuItem(item);
         menuItem.setText(text);
     }// setText()
 
 
     // 'checkbox' state
-    public boolean getSelected(Item item) {
-        JCheckBoxMenuItem cbMenuItem = (JCheckBoxMenuItem) getMenuItem(item);
+    public boolean getSelected(final Item item) {
+        final JCheckBoxMenuItem cbMenuItem = (JCheckBoxMenuItem) getMenuItem(item);
         return cbMenuItem.getState();
     }// getSelected()
 
     // for internal use only
-    private boolean getSelected(Power power) {
-        JCheckBoxMenuItem cbMenuItem = (JCheckBoxMenuItem) getMenuItem(power);
+    private boolean getSelected(final Power power) {
+        final JCheckBoxMenuItem cbMenuItem = (JCheckBoxMenuItem) getMenuItem(power);
         return cbMenuItem.getState();
     }// getSelected()
 
-    public void setSelected(Item item, boolean value) {
+    public void setSelected(final Item item, final boolean value) {
         ((JCheckBoxMenuItem) getMenuItem(item)).setState(value);
     }// setSelected()
 
     // for internal use only
-    public void setSelected(Power power, boolean value) {
+    public void setSelected(final Power power, final boolean value) {
         ((JCheckBoxMenuItem) getMenuItem(power)).setState(value);
     }// setSelected()
 
@@ -588,10 +588,10 @@ public class ClientMenu {
      * Updates the recent file menu, if enabled.
      */
     public void updateRecentFiles() {
-        JMenu fileMenu = (JMenu) menuMap.get(FILE);
+        final JMenu fileMenu = (JMenu) menuMap.get(FILE);
 
         // remove all items inserted, decouple from listeners
-        JMenuItem[] toRemove = new JMenuItem[numItems];
+        final JMenuItem[] toRemove = new JMenuItem[numItems];
         for (int i = 0; i < numItems; i++) {
             toRemove[i] = fileMenu.getItem(i + RI_INSERT_POINT);
             toRemove[i].removeActionListener(rfListener);
@@ -613,10 +613,10 @@ public class ClientMenu {
      * Item names have a number preceding, which is the mnemonic.
      * Items are indexed by the mnemonic.
      */
-    private void createRecentFileList(JMenu menu) {
+    private void createRecentFileList(final JMenu menu) {
         rfListener = new RecentFileListener();
 
-        int nItems = createItemsFromArray(menu,
+        final int nItems = createItemsFromArray(menu,
                 GeneralPreferencePanel.getRecentFileNamesFromPrefs());
 
         // add bottom separator
@@ -629,7 +629,7 @@ public class ClientMenu {
     /**
      * Creates items from a string array; sets numItems, too. Returns the number of items created.
      */
-    private int createItemsFromArray(JMenu menu, String[] array) {
+    private int createItemsFromArray(final JMenu menu, final String[] array) {
         // we only handle single-digits; otherwise substring() in RecentFileListner.actionPerformed()
         // could fail. Although > 9 would be too many recent files anyway. But this is a safety check.
         if (array.length > 9) {
@@ -638,13 +638,13 @@ public class ClientMenu {
 
         numItems = array.length;
         for (int i = 0; i < array.length; i++) {
-            String mnemonic = String.valueOf(i + 1);
-            StringBuffer sb = new StringBuffer(32);
+            final String mnemonic = String.valueOf(i + 1);
+            final StringBuffer sb = new StringBuffer(32);
             sb.append(mnemonic);
             sb.append(' ');
             sb.append(array[i]);
 
-            JMenuItem menuItem = new JMenuItem(sb.toString());
+            final JMenuItem menuItem = new JMenuItem(sb.toString());
             menuItem.setMnemonic(KeyStroke.getKeyStroke(mnemonic).getKeyCode());
             menuItem.setIcon(blankIcon);
             menuItem.addActionListener(rfListener);
@@ -658,13 +658,13 @@ public class ClientMenu {
 
 
     private class RecentFileListener implements ActionListener {
-        public void actionPerformed(ActionEvent e) {
-            JMenuItem jmi = (JMenuItem) e.getSource();
-            File file = GeneralPreferencePanel
+        public void actionPerformed(final ActionEvent e) {
+            final JMenuItem jmi = (JMenuItem) e.getSource();
+            final File file = GeneralPreferencePanel
                     .getFileFromName(jmi.getText().substring(2));
             if (file != null) {
                 // attempt to open file, with PersistenceManager
-                World world = clientFrame.getPM().open(file);
+                final World world = clientFrame.getPM().open(file);
                 if (world != null) {
                     clientFrame.createWorld(world);
                 }
@@ -676,8 +676,8 @@ public class ClientMenu {
     /**
      * Make the Tools menu. This is only called if at least 1 tool exists.
      */
-    private void makeToolMenu(JMenu menu) {
-        Tool[] tools = ToolManager.getTools();
+    private void makeToolMenu(final JMenu menu) {
+        final Tool[] tools = ToolManager.getTools();
         for (int i = 0; i < tools.length; i++) {
             menu.add(tools[i].registerJMenuItem());
         }
@@ -688,7 +688,7 @@ public class ClientMenu {
      * This is a specialized item group that is used internally and
      * by OrderPanel.java.
      */
-    public void setEditItemsEnabled(boolean value) {
+    public void setEditItemsEnabled(final boolean value) {
         setEnabled(EDIT_SELECT_ALL, value);
         setEnabled(EDIT_SELECT_NONE, value);
         setEnabled(EDIT_DELETE, value);
@@ -704,7 +704,7 @@ public class ClientMenu {
      * instances when items may need to be disabled despite the
      * particular mode setting.
      */
-    public void setViewRenderItemsEnabled(boolean value) {
+    public void setViewRenderItemsEnabled(final boolean value) {
         setEnabled(VIEW_NAMES, value);
         setEnabled(VIEW_ORDERS, value);
         setEnabled(VIEW_UNITS, value);
@@ -947,7 +947,7 @@ public class ClientMenu {
     /**
      * Updates the Power menu.
      */
-    private void updatePowers(Power[] newPowers) {
+    private void updatePowers(final Power[] newPowers) {
         // check
         if (newPowers == null) {
             throw new IllegalArgumentException("null powers");
@@ -972,7 +972,7 @@ public class ClientMenu {
 
         // remove all item's listeners
         for (int i = 0; i < orderMenu.getItemCount(); i++) {
-            JMenuItem jmi = orderMenu.getItem(i);
+            final JMenuItem jmi = orderMenu.getItem(i);
             if (jmi != null)    // separators are returned as 'null'
             {
                 jmi.removeActionListener(orderMenuListener);
@@ -994,15 +994,15 @@ public class ClientMenu {
         getMenuItem(VIEW_ORDERS_NOPOWERS).addActionListener(orderMenuListener);
 
         // create power items
-        int startAccel = KeyEvent.VK_F1;    // NOTE: this is, technically, dangerous
-        int maxAccel = 12;                    // only go upto VK_F12 (pc/mac/unix usually have 12 Fn keys)
+        final int startAccel = KeyEvent.VK_F1;    // NOTE: this is, technically, dangerous
+        final int maxAccel = 12;                    // only go upto VK_F12 (pc/mac/unix usually have 12 Fn keys)
         for (int i = 0; i < powers.length; i++) {
-            String mnemonic = String.valueOf(i + 1);
-            StringBuffer sb = new StringBuffer(32);
+            final String mnemonic = String.valueOf(i + 1);
+            final StringBuffer sb = new StringBuffer(32);
             sb.append(mnemonic);
             sb.append(' ');
             sb.append(powers[i].getName());
-            JCheckBoxMenuItem menuItem = new JCheckBoxMenuItem(sb.toString(),
+            final JCheckBoxMenuItem menuItem = new JCheckBoxMenuItem(sb.toString(),
                     true);
             //menuItem.setFont(menuFont);
 
@@ -1032,7 +1032,7 @@ public class ClientMenu {
      */
     public Power[] getOrderDrawingPowers() {
         // some powers are selected. determine which.
-        ArrayList<Power> list = new ArrayList<Power>(powers.length);
+        final ArrayList<Power> list = new ArrayList<Power>(powers.length);
 
         for (int i = 0; i < powers.length; i++) {
             if (getSelected(powers[i])) {
@@ -1048,8 +1048,8 @@ public class ClientMenu {
      * Order menu listener
      */
     private class OrderMenuListener implements ActionListener {
-        public void actionPerformed(ActionEvent e) {
-            JMenuItem jmi = (JMenuItem) e.getSource();
+        public void actionPerformed(final ActionEvent e) {
+            final JMenuItem jmi = (JMenuItem) e.getSource();
 
             if (jmi == getMenuItem(ClientMenu.VIEW_ORDERS_ALLPOWERS)) {
                 for (int i = 0; i < powers.length; i++) {
@@ -1064,8 +1064,8 @@ public class ClientMenu {
 
             // change order rendering settings
             if (clientFrame.getMapPanel() != null) {
-                Power[] visiblePowers = getOrderDrawingPowers();
-                MapRenderer2 mr2 = clientFrame.getMapPanel().getMapRenderer();
+                final Power[] visiblePowers = getOrderDrawingPowers();
+                final MapRenderer2 mr2 = clientFrame.getMapPanel().getMapRenderer();
                 mr2.execRenderCommand(mr2.getRenderCommandFactory()
                         .createRCSetPowerOrdersDisplayed(mr2, visiblePowers));
             }
@@ -1077,12 +1077,12 @@ public class ClientMenu {
      * Mode Change Listener.
      */
     private class ModeListener extends AbstractCFPListener {
-        public void actionWorldCreated(World w) {
-            Power[] thePowers = w.getMap().getPowers().toArray(new Power[0]);
+        public void actionWorldCreated(final World w) {
+            final Power[] thePowers = w.getMap().getPowers().toArray(new Power[0]);
             updatePowers(thePowers);
         }// actionWorldCreated()
 
-        public void actionModeChanged(String mode) {
+        public void actionModeChanged(final String mode) {
             if (mode == ClientFrame.MODE_NONE) {
                 setModeNone();
             } else if (mode == ClientFrame.MODE_ORDER) {
@@ -1103,7 +1103,7 @@ public class ClientMenu {
      * <p>
      * Null arguments are not permitted.
      */
-    public void setActionMethod(Item item, Object target, String methodName) {
+    public void setActionMethod(final Item item, final Object target, final String methodName) {
         // disallow null args
         if (target == null || methodName == null || item == null) {
             System.err.println("setActionMethod()");
@@ -1114,20 +1114,20 @@ public class ClientMenu {
         }
 
         // find our item
-        JMenuItem menuItem = getMenuItem(item);
+        final JMenuItem menuItem = getMenuItem(item);
 
         // get our method
         Method method = null;
         try {
             method = target.getClass().getMethod(methodName, null);
-        } catch (NoSuchMethodException e) {
+        } catch (final NoSuchMethodException e) {
             throw new IllegalArgumentException(
                     "NoSuchMethodException: " + methodName);
         }
 
 
         // remove any existing listeners
-        ActionListener[] listeners = menuItem.getActionListeners();
+        final ActionListener[] listeners = menuItem.getActionListeners();
         for (int i = 0; i < listeners.length; i++) {
             menuItem.removeActionListener(listeners[i]);
         }
@@ -1148,7 +1148,7 @@ public class ClientMenu {
         /**
          * Create a ReflexiveActionListener
          */
-        public ReflexiveActionListener(Object target, Method targetMethod) {
+        public ReflexiveActionListener(final Object target, final Method targetMethod) {
             this.target = target;
             this.targetMethod = targetMethod;
         }// ReflexiveActionListener
@@ -1156,16 +1156,16 @@ public class ClientMenu {
         /**
          * Call the target method
          */
-        public void actionPerformed(ActionEvent evt) {
+        public void actionPerformed(final ActionEvent evt) {
             try {
                 targetMethod.invoke(target, null);
-            } catch (InvocationTargetException e) {
+            } catch (final InvocationTargetException e) {
                 debugOut(e);
                 if (e.getCause() != null) {
                     ErrorDialog.displaySerious(null, e);
                     e.getCause().printStackTrace();
                 }
-            } catch (IllegalAccessException e2) {
+            } catch (final IllegalAccessException e2) {
                 debugOut(e2);
                 throw new IllegalStateException(
                         "Menu: IllegalAccessException: " + e2.getMessage());
@@ -1175,7 +1175,7 @@ public class ClientMenu {
         /**
          * debugging
          */
-        private void debugOut(Exception e) {
+        private void debugOut(final Exception e) {
             System.out.println("ReflexiveActionListener:");
             System.out.println("   target: " + target);
             System.out.println("   targetMethod: " + targetMethod);

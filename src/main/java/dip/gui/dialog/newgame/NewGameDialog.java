@@ -69,7 +69,7 @@ public class NewGameDialog extends HeaderDialog {
      * Returns a valid World or <code>null</code>
      * depending upon selections.
      */
-    public static World displayDialog(ClientFrame parent) {
+    public static World displayDialog(final ClientFrame parent) {
         return displayDialog(parent, Utils.getLocalString(TITLE),
                 dip.misc.Help.HelpID.NewGame);
     }// displayDialog()
@@ -84,8 +84,8 @@ public class NewGameDialog extends HeaderDialog {
      * <code>null</code> title is not allowed. A null
      * helpID will use the default NGD help.
      */
-    public static World displayDialog(ClientFrame parent, String title,
-                                      Help.HelpID helpID) {
+    public static World displayDialog(final ClientFrame parent, final String title,
+                                      final Help.HelpID helpID) {
         if (title == null) {
             throw new IllegalArgumentException();
         }
@@ -119,7 +119,7 @@ public class NewGameDialog extends HeaderDialog {
             if (loader == null) {
                 loader = new SwingWorker() {
                     public Object construct() {
-                        long time = System.currentTimeMillis();
+                        final long time = System.currentTimeMillis();
                         NewGameDialog ngd = new NewGameDialog(parent);
                         ngd = new NewGameDialog(parent);
                         ngd.pack();
@@ -142,7 +142,7 @@ public class NewGameDialog extends HeaderDialog {
     /**
      * Create a NewGameDialog
      */
-    private NewGameDialog(ClientFrame parent) {
+    private NewGameDialog(final ClientFrame parent) {
         super(parent, Utils.getLocalString(TITLE), true);
         this.clientFrame = parent;
 
@@ -176,7 +176,7 @@ public class NewGameDialog extends HeaderDialog {
 
         // ensure list selection is visible
         addWindowListener(new WindowAdapter() {
-            public void windowOpened(WindowEvent e) {
+            public void windowOpened(final WindowEvent e) {
                 tabVariant.ensureSelectionIsVisible();
             }
         });
@@ -186,7 +186,7 @@ public class NewGameDialog extends HeaderDialog {
     /**
      * Handle dialog closing
      */
-    public void close(String actionCommand) {
+    public void close(final String actionCommand) {
         if (isOKorAccept(actionCommand)) {
             doOK();
         } else {
@@ -229,7 +229,7 @@ public class NewGameDialog extends HeaderDialog {
     /**
      * Adds a tab
      */
-    synchronized void addTab(NGDTabPane tab) {
+    synchronized void addTab(final NGDTabPane tab) {
         if (!(tab instanceof Component)) {
             throw new IllegalArgumentException();
         }
@@ -240,7 +240,7 @@ public class NewGameDialog extends HeaderDialog {
     /**
      * Set the variant for all tabs.
      */
-    synchronized void setTabsVariant(Variant variant) {
+    synchronized void setTabsVariant(final Variant variant) {
         for (int i = 0; i < tabPane.getTabCount(); i++) {
             ((NGDTabPane) tabPane.getComponentAt(i)).variantChanged(variant);
         }
@@ -250,9 +250,9 @@ public class NewGameDialog extends HeaderDialog {
     /**
      * set the enabled status for all tabs
      */
-    synchronized void setTabsEnabled(boolean value) {
+    synchronized void setTabsEnabled(final boolean value) {
         for (int i = 0; i < tabPane.getTabCount(); i++) {
-            NGDTabPane tp = (NGDTabPane) tabPane.getComponentAt(i);
+            final NGDTabPane tp = (NGDTabPane) tabPane.getComponentAt(i);
             tp.enablingChanged(value);
         }
     }// setTabsEnabled()

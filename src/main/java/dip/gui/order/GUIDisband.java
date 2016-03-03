@@ -57,20 +57,20 @@ public class GUIDisband extends Disband implements GUIOrder {
     /**
      * Creates a GUIDisband
      */
-    protected GUIDisband(Power power, Location source,
-                         Unit.Type sourceUnitType) {
+    protected GUIDisband(final Power power, final Location source,
+                         final Unit.Type sourceUnitType) {
         super(power, source, sourceUnitType);
     }// GUIDisband()
 
     /**
      * This only accepts Disband orders. All others will throw an IllegalArgumentException.
      */
-    public void deriveFrom(Orderable order) {
+    public void deriveFrom(final Orderable order) {
         if (!(order instanceof Disband)) {
             throw new IllegalArgumentException();
         }
 
-        Disband disband = (Disband) order;
+        final Disband disband = (Disband) order;
         power = disband.getPower();
         src = disband.getSource();
         srcUnitType = disband.getSourceUnitType();
@@ -80,8 +80,8 @@ public class GUIDisband extends Disband implements GUIOrder {
     }// deriveFrom()
 
 
-    public boolean testLocation(StateInfo stateInfo, Location location,
-                                StringBuffer sb) {
+    public boolean testLocation(final StateInfo stateInfo, final Location location,
+                                final StringBuffer sb) {
         sb.setLength(0);
 
         if (isComplete()) {
@@ -90,9 +90,9 @@ public class GUIDisband extends Disband implements GUIOrder {
         }
 
 
-        Position position = stateInfo.getPosition();
-        Province province = location.getProvince();
-        Unit unit = position.getDislodgedUnit(province).orElse(null);
+        final Position position = stateInfo.getPosition();
+        final Province province = location.getProvince();
+        final Unit unit = position.getDislodgedUnit(province).orElse(null);
 
         if (unit != null) {
             if (!stateInfo.canIssueOrder(unit.getPower())) {
@@ -128,12 +128,12 @@ public class GUIDisband extends Disband implements GUIOrder {
     }// clearLocations()
 
 
-    public boolean setLocation(StateInfo stateInfo, Location location,
-                               StringBuffer sb) {
+    public boolean setLocation(final StateInfo stateInfo, final Location location,
+                               final StringBuffer sb) {
         if (testLocation(stateInfo, location, sb)) {
             currentLocNum++;
 
-            Unit unit = stateInfo.getPosition()
+            final Unit unit = stateInfo.getPosition()
                     .getDislodgedUnit(location.getProvince()).orElse(null);
             src = new Location(location.getProvince(), unit.getCoast());
             power = unit.getPower();
@@ -164,21 +164,21 @@ public class GUIDisband extends Disband implements GUIOrder {
     /**
      * Always throws an IllegalArgumentException
      */
-    public void setParam(Parameter param, Object value) {
+    public void setParam(final Parameter param, final Object value) {
         throw new IllegalArgumentException();
     }
 
     /**
      * Always throws an IllegalArgumentException
      */
-    public Object getParam(Parameter param) {
+    public Object getParam(final Parameter param) {
         throw new IllegalArgumentException();
     }
 
 
-    public void removeFromDOM(MapInfo mapInfo) {
+    public void removeFromDOM(final MapInfo mapInfo) {
         if (group != null) {
-            SVGGElement powerGroup = mapInfo
+            final SVGGElement powerGroup = mapInfo
                     .getPowerSVGGElement(power, LAYER_HIGHEST);
             GUIOrderUtils.removeChild(powerGroup, group);
             group = null;
@@ -189,7 +189,7 @@ public class GUIDisband extends Disband implements GUIOrder {
     /**
      * Draws a circle with an X in it
      */
-    public void updateDOM(MapInfo mapInfo) {
+    public void updateDOM(final MapInfo mapInfo) {
         // if we are not displayable, we exit, after remove the order (if
         // it was created)
         if (!GUIOrderUtils.isDisplayable(power, mapInfo)) {
@@ -231,18 +231,18 @@ public class GUIDisband extends Disband implements GUIOrder {
 
         // draw 'failed' marker, if appropriate.
         if (!mapInfo.getTurnState().isOrderSuccessful(this)) {
-            SVGElement useElement = GUIOrderUtils
+            final SVGElement useElement = GUIOrderUtils
                     .createFailedOrderSymbol(mapInfo, failPt.x, failPt.y);
             group.appendChild(useElement);
         }
     }// updateDOM()
 
 
-    private SVGElement drawOrder(MapInfo mapInfo) {
-        MapMetadata mmd = mapInfo.getMapMetadata();
-        Point2D.Float srcPt = mmd.getDislodgedUnitPt(src.getProvince(),
+    private SVGElement drawOrder(final MapInfo mapInfo) {
+        final MapMetadata mmd = mapInfo.getMapMetadata();
+        final Point2D.Float srcPt = mmd.getDislodgedUnitPt(src.getProvince(),
                 src.getCoast());    // dislodged unit!
-        float radius = mmd.getOrderRadius(MapMetadata.EL_DISBAND,
+        final float radius = mmd.getOrderRadius(MapMetadata.EL_DISBAND,
                 mapInfo.getSymbolName(srcUnitType));
 
         // calculate (but don't yet use) failPt
@@ -250,11 +250,11 @@ public class GUIDisband extends Disband implements GUIOrder {
         failPt = new Point2D.Float(srcPt.x + radius, srcPt.y);
 
         // get symbolsize
-        MapMetadata.SymbolSize symbolSize = mmd
+        final MapMetadata.SymbolSize symbolSize = mmd
                 .getSymbolSize(DefaultMapRenderer2.SYMBOL_REMOVEUNIT);
 
         // create RemoveUnit symbol via a USE element
-        SVGElement useElement = SVGUtils.createUseElement(mapInfo.getDocument(),
+        final SVGElement useElement = SVGUtils.createUseElement(mapInfo.getDocument(),
                 "#" + DefaultMapRenderer2.SYMBOL_REMOVEUNIT, null,    // no ID
                 null,    // no special style
                 srcPt.x, srcPt.y, symbolSize);

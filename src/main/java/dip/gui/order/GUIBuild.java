@@ -79,7 +79,7 @@ public class GUIBuild extends Build implements GUIOrder {
     /**
      * Creates a GUIBuild
      */
-    protected GUIBuild(Power power, Location source, Unit.Type sourceUnitType) {
+    protected GUIBuild(final Power power, final Location source, final Unit.Type sourceUnitType) {
         super(power, source, sourceUnitType);
     }// GUIBuild()
 
@@ -87,12 +87,12 @@ public class GUIBuild extends Build implements GUIOrder {
     /**
      * This only accepts Build orders. All others will throw an IllegalArgumentException.
      */
-    public void deriveFrom(Orderable order) {
+    public void deriveFrom(final Orderable order) {
         if (!(order instanceof Build)) {
             throw new IllegalArgumentException();
         }
 
-        Build build = (Build) order;
+        final Build build = (Build) order;
         power = build.getPower();
         src = build.getSource();
         srcUnitType = build.getSourceUnitType();
@@ -102,8 +102,8 @@ public class GUIBuild extends Build implements GUIOrder {
     }// deriveFrom()
 
 
-    public boolean testLocation(StateInfo stateInfo, Location location,
-                                StringBuffer sb) {
+    public boolean testLocation(final StateInfo stateInfo, final Location location,
+                                final StringBuffer sb) {
         sb.setLength(0);
 
         if (isComplete()) {
@@ -112,11 +112,11 @@ public class GUIBuild extends Build implements GUIOrder {
         }
 
 
-        Position position = stateInfo.getPosition();
-        Province province = location.getProvince();
+        final Position position = stateInfo.getPosition();
+        final Province province = location.getProvince();
 
         if (province.hasSupplyCenter()) {
-            Power SCOwner = position.getSupplyCenterOwner(province).orElse(null);
+            final Power SCOwner = position.getSupplyCenterOwner(province).orElse(null);
 
             // general screening, applicable to all build options
             //
@@ -137,7 +137,7 @@ public class GUIBuild extends Build implements GUIOrder {
 
             // indicate if we have no builds available
             //
-            Adjustment.AdjustmentInfo adjInfo = stateInfo.getAdjustmenInfoMap()
+            final Adjustment.AdjustmentInfo adjInfo = stateInfo.getAdjustmenInfoMap()
                     .get(SCOwner);
             if (adjInfo.getAdjustmentAmount() <= 0) {
                 sb.append(Utils.getLocalString(NOBUILD_NO_BUILDS_AVAILABLE,
@@ -148,7 +148,7 @@ public class GUIBuild extends Build implements GUIOrder {
 
             // build-option-specific, based upon RuleOptions
             //
-            RuleOptions ruleOpts = stateInfo.getRuleOptions();
+            final RuleOptions ruleOpts = stateInfo.getRuleOptions();
             if (ruleOpts.getOptionValue(
                     RuleOptions.Option.OPTION_BUILDS) == RuleOptions.OptionValue.VALUE_BUILDS_ANY_OWNED) {
                 return checkBuildUnit(stateInfo, province, location, sb);
@@ -201,8 +201,8 @@ public class GUIBuild extends Build implements GUIOrder {
     }// clearLocations()
 
 
-    public boolean setLocation(StateInfo stateInfo, Location location,
-                               StringBuffer sb) {
+    public boolean setLocation(final StateInfo stateInfo, final Location location,
+                               final StringBuffer sb) {
         if (testLocation(stateInfo, location, sb)) {
             currentLocNum++;
 
@@ -238,7 +238,7 @@ public class GUIBuild extends Build implements GUIOrder {
     /**
      * Used to set what type of Unit we are building. Value must be a Unit.Type
      */
-    public void setParam(Parameter param, Object value) {
+    public void setParam(final Parameter param, final Object value) {
         if (param != BUILD_UNIT || !(value instanceof Unit.Type)) {
             throw new IllegalArgumentException();
         }
@@ -250,7 +250,7 @@ public class GUIBuild extends Build implements GUIOrder {
     /**
      * Used to set what type of Unit we are building.
      */
-    public Object getParam(Parameter param) {
+    public Object getParam(final Parameter param) {
         if (param != BUILD_UNIT) {
             throw new IllegalArgumentException();
         }
@@ -259,9 +259,9 @@ public class GUIBuild extends Build implements GUIOrder {
     }// getParam()
 
 
-    public void removeFromDOM(MapInfo mapInfo) {
+    public void removeFromDOM(final MapInfo mapInfo) {
         if (group != null) {
-            SVGGElement powerGroup = mapInfo
+            final SVGGElement powerGroup = mapInfo
                     .getPowerSVGGElement(power, LAYER_HIGHEST);
             GUIOrderUtils.removeChild(powerGroup, group);
             group = null;
@@ -272,7 +272,7 @@ public class GUIBuild extends Build implements GUIOrder {
     /**
      * Places a unit in the desired area.
      */
-    public void updateDOM(MapInfo mapInfo) {
+    public void updateDOM(final MapInfo mapInfo) {
         // if we are not displayable, we exit, after remove the order (if
         // it was created)
         if (!GUIOrderUtils.isDisplayable(power, mapInfo)) {
@@ -312,26 +312,26 @@ public class GUIBuild extends Build implements GUIOrder {
         // (no highlight + shadow required here)
         // no offset required
         //
-        SVGElement[] elements = drawOrder(mapInfo);
+        final SVGElement[] elements = drawOrder(mapInfo);
         for (int i = 0; i < elements.length; i++) {
             group.appendChild(elements[i]);
         }
 
         // draw 'failed' marker, if appropriate.
         if (!mapInfo.getTurnState().isOrderSuccessful(this)) {
-            SVGElement useElement = GUIOrderUtils
+            final SVGElement useElement = GUIOrderUtils
                     .createFailedOrderSymbol(mapInfo, failPt.x, failPt.y);
             group.appendChild(useElement);
         }
     }// updateDOM()
 
 
-    private SVGElement[] drawOrder(MapInfo mapInfo) {
-        MapMetadata mmd = mapInfo.getMapMetadata();
-        Point2D.Float center = mmd.getUnitPt(src.getProvince(), src.getCoast());
+    private SVGElement[] drawOrder(final MapInfo mapInfo) {
+        final MapMetadata mmd = mapInfo.getMapMetadata();
+        final Point2D.Float center = mmd.getUnitPt(src.getProvince(), src.getCoast());
 
         // get 'integer' and float data
-        float radius = mmd.getOrderRadius(MapMetadata.EL_BUILD,
+        final float radius = mmd.getOrderRadius(MapMetadata.EL_BUILD,
                 mapInfo.getSymbolName(srcUnitType));
 
         // calculate failPt.
@@ -342,7 +342,7 @@ public class GUIBuild extends Build implements GUIOrder {
         // elements added in drawing order (thus BuildUnit must come first,
         // otherwise the unit built will be obscured by the BuilUnit symbol).
         //
-        SVGElement[] elements = new SVGElement[2];
+        final SVGElement[] elements = new SVGElement[2];
 
         // BuildUnit symbol
         MapMetadata.SymbolSize symbolSize = mmd
@@ -380,8 +380,8 @@ public class GUIBuild extends Build implements GUIOrder {
      * <p>
      * returns false if we cannot build here.
      */
-    private boolean checkBuildUnit(StateInfo stateInfo, Province province,
-                                   Location loc, StringBuffer sb) {
+    private boolean checkBuildUnit(final StateInfo stateInfo, final Province province,
+                                   final Location loc, final StringBuffer sb) {
         if (srcUnitType == null) {
             sb.append(Utils.getLocalString(NOBUILD_NO_UNIT_SELECTED));
             return false;
@@ -441,7 +441,7 @@ public class GUIBuild extends Build implements GUIOrder {
         /**
          * Creates a BuildParameter
          */
-        public BuildParameter(String name) {
+        public BuildParameter(final String name) {
             super(name);
         }// BuildParameter()
     }// nested class BuildParameter

@@ -40,9 +40,9 @@ public class ParserUtils {
      * Starts with first non-short line, adds text until we get a blank line, returns
      * text in-between. Lines are trimmed.
      */
-    public static String parseBlock(BufferedReader br) throws IOException {
+    public static String parseBlock(final BufferedReader br) throws IOException {
         // create first block: the ownership block
-        StringBuffer accum = new StringBuffer(2048);
+        final StringBuffer accum = new StringBuffer(2048);
         boolean inBlock = false;
 
         String line = br.readLine();
@@ -69,10 +69,10 @@ public class ParserUtils {
     /**
      * Coalesces whitespace, and ensures that it's only spaces and not any other type
      */
-    public static String filter(String in) {
-        StringBuffer sb = new StringBuffer(in.length());
+    public static String filter(final String in) {
+        final StringBuffer sb = new StringBuffer(in.length());
         for (int i = 0; i < in.length(); i++) {
-            char c = in.charAt(i);
+            final char c = in.charAt(i);
             if (Character.isWhitespace(c)) {
                 if (i > 1 && !Character.isWhitespace(in.charAt(i - 1))) {
                     sb.append(' ');    // space
@@ -88,7 +88,7 @@ public class ParserUtils {
     /**
      * Gets the next non-short line from a buffered reader. Trims it as well. Returns null if EOF.
      */
-    public static String getNextLongLine(BufferedReader br) throws IOException {
+    public static String getNextLongLine(final BufferedReader br) throws IOException {
         String line = br.readLine();
         while (line != null) {
             if (line.length() > SHORT_LINE) {

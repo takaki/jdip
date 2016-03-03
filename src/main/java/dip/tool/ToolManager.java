@@ -52,14 +52,14 @@ public class ToolManager {
      * Initialize the ToolManager. No other methods are guaranteed to work
      * until the ToolManager singleton has been initialized.
      */
-    public static synchronized void init(File[] searchPaths) {
+    public static synchronized void init(final File[] searchPaths) {
         tm = new ToolManager();
 
         // search for Tools
         final File[] foundToolFiles = tm
                 .searchForFiles(searchPaths);    // no null entries
-        URL[] foundToolURLs = new URL[foundToolFiles.length];            // entries will be null if invalid
-        String[] mainClassNames = new String[foundToolURLs.length];        // entries will be null if invalid
+        final URL[] foundToolURLs = new URL[foundToolFiles.length];            // entries will be null if invalid
+        final String[] mainClassNames = new String[foundToolURLs.length];        // entries will be null if invalid
 
         for (int i = 0; i < foundToolFiles.length; i++) {
             // defaults
@@ -69,7 +69,7 @@ public class ToolManager {
             // attempt file-to-URL conversion
             try {
                 foundToolURLs[i] = foundToolFiles[i].toURL();
-            } catch (java.net.MalformedURLException e) {
+            } catch (final java.net.MalformedURLException e) {
                 Log.println("ERROR: ToolManager: could not convert to URL: ",
                         foundToolFiles[i]);
             }
@@ -77,14 +77,14 @@ public class ToolManager {
             // do not attempt if URL is null.
             if (foundToolURLs[i] != null) {
                 try {
-                    JarFile jarFile = new JarFile(foundToolFiles[i], true,
+                    final JarFile jarFile = new JarFile(foundToolFiles[i], true,
                             JarFile.OPEN_READ);
-                    Manifest manifest = jarFile.getManifest();
-                    Attributes attr = manifest.getMainAttributes();
+                    final Manifest manifest = jarFile.getManifest();
+                    final Attributes attr = manifest.getMainAttributes();
                     mainClassNames[i] = attr
                             .getValue(Attributes.Name.MAIN_CLASS);
                     jarFile.close();
-                } catch (IOException e) {
+                } catch (final IOException e) {
                     mainClassNames[i] = null;
                     Log.println(
                             "ERROR: ToolManager: could not find main-class attribute in manifest for tool: ",
@@ -98,14 +98,14 @@ public class ToolManager {
 
         // for each Tool, attempt to load its main class (same as the file name, without the
         // file extension) and add it to the Tool array
-        ArrayList<Tool> list = new ArrayList<Tool>();
+        final ArrayList<Tool> list = new ArrayList<Tool>();
         for (int i = 0; i < foundToolURLs.length; i++) {
             if (mainClassNames[i] != null && foundToolURLs[i] != null) {
                 try {
-                    Tool tool = (Tool) tm.toolClassLoader
+                    final Tool tool = (Tool) tm.toolClassLoader
                             .loadClass(mainClassNames[i]).newInstance();
                     list.add(tool);
-                } catch (Throwable e) {
+                } catch (final Throwable e) {
                     Log.println("ERROR: loading Tool: " + e);
                 }
             }
@@ -137,16 +137,16 @@ public class ToolManager {
     /**
      * Searches the paths for plugins, and returns the URL to each.
      */
-    private File[] searchForFiles(File[] searchPaths) {
-        List<File> fileList = new ArrayList<File>();
+    private File[] searchForFiles(final File[] searchPaths) {
+        final List<File> fileList = new ArrayList<File>();
 
         for (int spIdx = 0; spIdx < searchPaths.length; spIdx++) {
             Log.println("Searching for tools on: ", searchPaths[spIdx]);
-            File[] list = searchPaths[spIdx].listFiles();
+            final File[] list = searchPaths[spIdx].listFiles();
             if (list != null) {
                 for (int i = 0; i < list.length; i++) {
                     if (list[i].isFile()) {
-                        String fileName = list[i].getPath();
+                        final String fileName = list[i].getPath();
                         if (fileName.endsWith(TOOL_EXT_JAR)) {
                             Log.println("found tool: ", list[i]);
                             fileList.add(list[i]);

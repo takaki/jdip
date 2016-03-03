@@ -237,9 +237,9 @@ public class OrderParser {
      * 	(defined)	true	true	illegal
      * 	</pre>
      */
-    public Order parse(OrderFactory orderFactory, String text, Power power,
-                       TurnState turnState, boolean locked,
-                       boolean guess) throws OrderException {
+    public Order parse(final OrderFactory orderFactory, final String text, final Power power,
+                       final TurnState turnState, final boolean locked,
+                       final boolean guess) throws OrderException {
         if (orderFactory == null) {
             throw new IllegalArgumentException("null OrderFactory");
         }
@@ -254,9 +254,9 @@ public class OrderParser {
                     "if guess == true, conditions: turnState != null, power == null, and !locked must all be true");
         }
 
-        Position position = turnState.getPosition();
-        WorldMap map = turnState.getWorld().getMap();
-        String preText = preprocess(text, map);
+        final Position position = turnState.getPosition();
+        final WorldMap map = turnState.getWorld().getMap();
+        final String preText = preprocess(text, map);
 
         Log.println("OP: Input:", text);
         Log.println("OP: preprocessed:", preText);
@@ -270,10 +270,10 @@ public class OrderParser {
      * The preprocessor normalizes the orders, converting various order entry
      * formats to a single order entry format that is more easily parsed.
      */
-    private String preprocess(String ord, WorldMap map) throws OrderException {
+    private String preprocess(final String ord, final WorldMap map) throws OrderException {
         // create StringBuffer, after filtering the input string.
         // note that this step includes lower-case conversion.
-        StringBuffer sb = filterInput(ord);
+        final StringBuffer sb = filterInput(ord);
 
         // replace any long (2-word, via space or hyphen) province names
         // with shorter version.
@@ -289,10 +289,10 @@ public class OrderParser {
         //Log.println("OP: pre-coast normalization:", sb);
 
         try {
-            String ncOrd = Coast.normalize(sb.toString());
+            final String ncOrd = Coast.normalize(sb.toString());
             sb.setLength(0);
             sb.append(ncOrd);
-        } catch (OrderException e) {
+        } catch (final OrderException e) {
             Log.println("OrderException: order: ", sb);
             throw new OrderException(
                     Utils.getLocalString(OF_COAST_INVALID, e.getMessage()));
@@ -304,7 +304,7 @@ public class OrderParser {
         // get the 'power token' (or null).
         // this is so if a power name has odd characters in it (e.g., chaos map)
         // they do not undergo replacement.
-        String ptok = map.getFirstPowerToken(sb).get();
+        final String ptok = map.getFirstPowerToken(sb).get();
         final int startIdx = (ptok == null) ? 0 : ptok.length();
 
         // string replacement
@@ -313,7 +313,7 @@ public class OrderParser {
             int start = sb.indexOf(REPLACEMENTS[i][0], idx);
 
             while (start != -1) {
-                int end = start + REPLACEMENTS[i][0].length();
+                final int end = start + REPLACEMENTS[i][0].length();
                 sb.replace(start, end, REPLACEMENTS[i][1]);
 
                 // repeat search
@@ -339,19 +339,19 @@ public class OrderParser {
     }// preprocess()
 
 
-    private Order parse(String ord, Position position, WorldMap map,
-                        Power defaultPower, TurnState turnState,
-                        OrderFactory orderFactory, boolean locked,
-                        boolean guessing) throws OrderException {
+    private Order parse(final String ord, final Position position, final WorldMap map,
+                        final Power defaultPower, final TurnState turnState,
+                        final OrderFactory orderFactory, final boolean locked,
+                        final boolean guessing) throws OrderException {
         // Objects common to ALL order types.
-        String srcName;
+        final String srcName;
         String srcUnitTypeName = null;
         Power power;
 
         // current token for parsing
         String token;
 
-        StringTokenizer st = new StringTokenizer(ord, WHITESPACE, false);
+        final StringTokenizer st = new StringTokenizer(ord, WHITESPACE, false);
 
 
         // Power parsing
@@ -371,7 +371,7 @@ public class OrderParser {
         // if we're not allowed to guess, and power is null, error.
         if (!guessing && power == null) {
             Log.println("OrderException: order: ", ord);
-            String pTok = getToken(st);
+            final String pTok = getToken(st);
             throw new OrderException(
                     Utils.getLocalString(OF_POWER_NOT_RECOGNIZED, pTok));
         }
@@ -412,7 +412,7 @@ public class OrderParser {
 
         // parse the order type -- if this is missing, we
         // have a 'defineState' order type
-        String orderType;
+        final String orderType;
         if (st.hasMoreTokens()) {
             orderType = getToken(st, Utils.getLocalString(OF_NO_ORDER_TYPE));
         } else {
@@ -422,8 +422,8 @@ public class OrderParser {
 
         // create objects for Source, and SourceUnit which
         // occur for all orders.
-        Unit.Type srcUnitType = parseUnitType(srcUnitTypeName);
-        Location src = parseLocation(map, srcName);
+        final Unit.Type srcUnitType = parseUnitType(srcUnitTypeName);
+        final Location src = parseLocation(map, srcName);
         assert (src != null);
         assert (srcUnitType != null);
 
@@ -434,7 +434,7 @@ public class OrderParser {
         // and the guessed power != specified, throw an exception.
         if (guessing) {
             // getPowerFromLocation() should throw an exception if no unit present.
-            Power tempPower = getPowerFromLocation(false, position, turnState,
+            final Power tempPower = getPowerFromLocation(false, position, turnState,
                     src);
             if (power != null) {
                 if (!tempPower.equals(power)) {
@@ -466,11 +466,11 @@ public class OrderParser {
             // <power>: <type> <s-prov> s <type> <s-prov> m <d-prov>
             //
             // get type and/or support source names
-            TypeAndSource tas = getTypeAndSource(st);
+            final TypeAndSource tas = getTypeAndSource(st);
 
             // parse supSrc / supUnit
-            Unit.Type supUnitType = parseUnitType(tas.type);
-            Location supSrc = parseLocation(map, tas.src);
+            final Unit.Type supUnitType = parseUnitType(tas.type);
+            final Location supSrc = parseLocation(map, tas.src);
 
             assert (supUnitType != null);
             assert (supSrc != null);
@@ -486,9 +486,9 @@ public class OrderParser {
                 token = st.nextToken();
 
                 if (token.equals("m")) {
-                    String supDestName = getToken(st,
+                    final String supDestName = getToken(st,
                             Utils.getLocalString(OF_SUPPORT_NO_DEST));
-                    Location supDest = parseLocation(map, supDestName);
+                    final Location supDest = parseLocation(map, supDestName);
                     assert (supDest != null);
                     return orderFactory
                             .createSupport(power, src, srcUnitType, supSrc,
@@ -509,9 +509,9 @@ public class OrderParser {
             // CONVOY order
             // <power>: <type> <s-prov> c <type> <s-prov> m <d-prov>
             // get type and/or support source
-            TypeAndSource tas = getTypeAndSource(st);
-            String conSrcName = tas.src;
-            String conUnitName = tas.type;
+            final TypeAndSource tas = getTypeAndSource(st);
+            final String conSrcName = tas.src;
+            final String conUnitName = tas.type;
 
             // verify that there is an "m"
             token = getToken(st,
@@ -523,13 +523,13 @@ public class OrderParser {
             }
 
             // get the destination
-            String conDestName = getToken(st,
+            final String conDestName = getToken(st,
                     Utils.getLocalString(OF_CONVOY_NO_DEST));
 
             // parse convoy src/dest/type
-            Location conSrc = parseLocation(map, conSrcName);
-            Location conDest = parseLocation(map, conDestName);
-            Unit.Type conUnitType = parseUnitType(conUnitName);
+            final Location conSrc = parseLocation(map, conSrcName);
+            final Location conDest = parseLocation(map, conDestName);
+            final Unit.Type conUnitType = parseUnitType(conUnitName);
 
             // get power, from unit
             Power conPower = null;
@@ -565,11 +565,11 @@ public class OrderParser {
      * <p>
      * This will return a Move or Retreat order, or throw an OrderException.
      */
-    private Order parseMoveOrder(WorldMap map, TurnState turnState,
-                                 Position position, OrderFactory orderFactory,
-                                 StringTokenizer st, Power srcPower,
-                                 Location srcLoc, Unit.Type srcUnitType,
-                                 boolean ignoreFirstM) throws OrderException {
+    private Order parseMoveOrder(final WorldMap map, final TurnState turnState,
+                                 final Position position, final OrderFactory orderFactory,
+                                 final StringTokenizer st, final Power srcPower,
+                                 final Location srcLoc, final Unit.Type srcUnitType,
+                                 final boolean ignoreFirstM) throws OrderException {
         // MOVE order, or RETREAT order, if we are in RETREAT phase. If so, we can ignore the convoy stuff.
         // <power>: <type> <s-prov> m <d-prov>
         //
@@ -603,7 +603,7 @@ public class OrderParser {
             String token = st.nextToken();
             if (token.equals("m")) {
                 destName = getToken(st, Utils.getLocalString(OF_MISSING_DEST));
-                Location pathLoc = parseLocation(map, destName);
+                final Location pathLoc = parseLocation(map, destName);
                 assert (pathLoc != null);
                 al.add(pathLoc.getProvince());
                 isConvoyedMove = true;
@@ -617,7 +617,7 @@ public class OrderParser {
         }
 
         // final destination
-        Location dest = parseLocation(map, destName);
+        final Location dest = parseLocation(map, destName);
         assert (dest != null);
 
         if (turnState.getPhase().getPhaseType() == Phase.PhaseType.RETREAT) {
@@ -627,7 +627,7 @@ public class OrderParser {
             if (isConvoyedMove)    // MUST test this first -- it overrides isExplicitConvoy
             {
                 assert (al != null);
-                Province[] convoyRoute = (Province[]) al
+                final Province[] convoyRoute = (Province[]) al
                         .toArray(new Province[al.size()]);
                 return orderFactory
                         .createMove(srcPower, srcLoc, srcUnitType, dest,
@@ -650,19 +650,19 @@ public class OrderParser {
      * applies to adjustment orders, however, we also allow Move orders to be
      * specified this way.
      */
-    private Order parseCommandPrefixedOrders(OrderFactory orderFactory,
-                                             Position position, WorldMap map,
-                                             Power power, String orderType,
-                                             StringTokenizer st,
-                                             boolean guessing,
-                                             TurnState turnState) throws OrderException {
+    private Order parseCommandPrefixedOrders(final OrderFactory orderFactory,
+                                             final Position position, final WorldMap map,
+                                             Power power, final String orderType,
+                                             final StringTokenizer st,
+                                             final boolean guessing,
+                                             final TurnState turnState) throws OrderException {
         // these orders have a command-specifier BEFORE unit/src information
         if (orderType.equals("waive")) {
             // WAIVE order
             // <power>: <waive> <province>
-            TypeAndSource tas = getTypeAndSource(
+            final TypeAndSource tas = getTypeAndSource(
                     st);    // we ignore 'type', but let it be specified
-            Location src = parseLocation(map, tas.src);
+            final Location src = parseLocation(map, tas.src);
             if (guessing) {
                 power = getPowerFromLocation(true, position, turnState, src);
             }
@@ -670,9 +670,9 @@ public class OrderParser {
         } else if (orderType.equals("b")) {
             // BUILD order
             // <power>: BUILD <type> <s-prov>
-            TypeAndSource tas = getTypeAndSource(st);
-            Location src = parseLocation(map, tas.src);
-            Unit.Type unitType = parseUnitType(tas.type);
+            final TypeAndSource tas = getTypeAndSource(st);
+            final Location src = parseLocation(map, tas.src);
+            final Unit.Type unitType = parseUnitType(tas.type);
             if (guessing) {
                 power = getPowerFromLocation(true, position, turnState, src);
             }
@@ -681,9 +681,9 @@ public class OrderParser {
         } else if (orderType.equals("r")) {
             // REMOVE order
             // <power>: REMOVE <type> <s-prov>
-            TypeAndSource tas = getTypeAndSource(st);
-            Location src = parseLocation(map, tas.src);
-            Unit.Type unitType = parseUnitType(tas.type);
+            final TypeAndSource tas = getTypeAndSource(st);
+            final Location src = parseLocation(map, tas.src);
+            final Unit.Type unitType = parseUnitType(tas.type);
             if (guessing) {
                 power = getPowerFromLocation(true, position, turnState, src);
             }
@@ -695,9 +695,9 @@ public class OrderParser {
             // <power>: m <unit> <location> m <location>
             // example: "france: move army paris to gascony"
             // or: "move army paris-gascony"
-            TypeAndSource srcTas = getTypeAndSource(st);
-            Location src = parseLocation(map, srcTas.src);
-            Unit.Type srcUnitType = parseUnitType(srcTas.type);
+            final TypeAndSource srcTas = getTypeAndSource(st);
+            final Location src = parseLocation(map, srcTas.src);
+            final Unit.Type srcUnitType = parseUnitType(srcTas.type);
             if (guessing) {
                 power = getPowerFromLocation(true, position, turnState, src);
             }
@@ -707,9 +707,9 @@ public class OrderParser {
         } else if (orderType.equals("d")) {
             // DISBAND: command-first version
             // <power>: DISBAND <type> <s-prov>
-            TypeAndSource tas = getTypeAndSource(st);
-            Location src = parseLocation(map, tas.src);
-            Unit.Type unitType = parseUnitType(tas.type);
+            final TypeAndSource tas = getTypeAndSource(st);
+            final Location src = parseLocation(map, tas.src);
+            final Unit.Type unitType = parseUnitType(tas.type);
             if (guessing) {
                 power = getPowerFromLocation(true, position, turnState, src);
             }
@@ -722,8 +722,8 @@ public class OrderParser {
     }// parseCommandPrefixedOrders()
 
 
-    private String getToken(StringTokenizer st,
-                            String error) throws OrderException {
+    private String getToken(final StringTokenizer st,
+                            final String error) throws OrderException {
         if (st.hasMoreTokens()) {
             return st.nextToken();
         } else {
@@ -732,7 +732,7 @@ public class OrderParser {
     }// getToken()
 
 
-    private String getToken(StringTokenizer st) throws OrderException {
+    private String getToken(final StringTokenizer st) throws OrderException {
         return getToken(st, Utils.getLocalString(OF_TOO_SHORT));
     }// getToken()}
 
@@ -742,11 +742,11 @@ public class OrderParser {
      * special flag (isAdjToken) which should be set to TRUE if we are parsing
      * an adjustment-phase order, and false otherwise.
      */
-    private Power getPowerFromLocation(boolean isAdjToken, Position position,
-                                       TurnState turnState,
-                                       Location source) throws OrderException {
-        Province province = source.getProvince();
-        Phase phase = turnState.getPhase();
+    private Power getPowerFromLocation(final boolean isAdjToken, final Position position,
+                                       final TurnState turnState,
+                                       final Location source) throws OrderException {
+        final Province province = source.getProvince();
+        final Phase phase = turnState.getPhase();
 
         if (phase.getPhaseType() == Phase.PhaseType.ADJUSTMENT && isAdjToken) {
             // adjustment phase
@@ -764,7 +764,7 @@ public class OrderParser {
             }
         } else {
             // retreat / movement phases:
-            Unit unit = (phase
+            final Unit unit = (phase
                     .getPhaseType() == Phase.PhaseType.RETREAT) ? position
                     .getDislodgedUnit(province).orElse(null) : position.getUnit(province).orElse(null);
             if (unit != null) {
@@ -780,7 +780,7 @@ public class OrderParser {
     /**
      * Determine if a Token is a Unit.Type token
      */
-    private boolean isTypeToken(String s) {
+    private boolean isTypeToken(final String s) {
         if (s.equals("f") || s.equals("a") || s.equals("w")) {
             return true;
         }
@@ -790,7 +790,7 @@ public class OrderParser {
 
     // deletes any strings in the stringBuffer that match
     // strings specified in toDelete
-    private void delChars(StringBuffer sb, String[] toDelete) {
+    private void delChars(final StringBuffer sb, final String[] toDelete) {
         for (int i = 0; i < toDelete.length; i++) {
             int idx = sb.indexOf(toDelete[i]);
             while (idx != -1) {
@@ -811,7 +811,7 @@ public class OrderParser {
     private StringBuffer filterInput(String input) {
         input = input.trim();
 
-        StringBuffer sb = new StringBuffer(input.length());
+        final StringBuffer sb = new StringBuffer(input.length());
 
         // delete control chars and whitespace conversion
         for (int i = 0; i < input.length(); i++) {
@@ -833,7 +833,7 @@ public class OrderParser {
      * to be specified this way, but most commonly
      * adjustment orders are specified this way.
      */
-    private boolean isCommandPrefixed(String s) {
+    private boolean isCommandPrefixed(final String s) {
         // b,r,w = build, remove, waive
         // m = move
         if (s.equalsIgnoreCase("b") || s.equalsIgnoreCase("r") || s
@@ -846,13 +846,13 @@ public class OrderParser {
     }// isCommandPrefixed
 
     private TypeAndSource getTypeAndSource(
-            StringTokenizer st) throws OrderException {
+            final StringTokenizer st) throws OrderException {
         // given a StringTokenize, parse the next token
         // to determine if it is a type (Army or Fleet).
         // if it is missing, sets token to null, and sets
         // source token.
-        TypeAndSource tas = new TypeAndSource();
-        String token = getToken(st);
+        final TypeAndSource tas = new TypeAndSource();
+        final String token = getToken(st);
 
         if (isTypeToken(token)) {
             tas.type = token;
@@ -879,10 +879,10 @@ public class OrderParser {
      * <b>THIS ASSUMES COASTS HAVE ALREADY BEEN NORMALIZED WITH
      * Coast.normalize()</b>
      */
-    private Location parseLocation(WorldMap map,
-                                   String locName) throws OrderException {
+    private Location parseLocation(final WorldMap map,
+                                   final String locName) throws OrderException {
         // parse the coast
-        Coast coast = Coast
+        final Coast coast = Coast
                 .parse(locName);    // will return Coast.UNDEFINED at worst
 
         // parse the province. if there are 'ties', we return the result.
@@ -905,7 +905,7 @@ public class OrderParser {
         } else {
             // multiple matches! unclear. give a more detailed error message.
             // create a comma-separated list of all but the last.
-            StringBuffer sb = new StringBuffer(128);
+            final StringBuffer sb = new StringBuffer(128);
             for (int i = 0; i < (provinces.length - 1); i++) {
                 sb.append(provinces[i]);
                 sb.append(", ");
@@ -926,12 +926,12 @@ public class OrderParser {
     //	null -> UNDEFINED
     //	any other	-> null
     //
-    private Unit.Type parseUnitType(String unitName) {
+    private Unit.Type parseUnitType(final String unitName) {
         return Type.parse(unitName);
     }// parseUnitType()
 
-    private Power parsePower(WorldMap map, String powerName) throws OrderException {
-        Power power = map.getPowerMatching(powerName).orElse(null);
+    private Power parsePower(final WorldMap map, final String powerName) throws OrderException {
+        final Power power = map.getPowerMatching(powerName).orElse(null);
         if (power == null) {
             throw new OrderException(
                     Utils.getLocalString(OF_POWER_NOT_RECOGNIZED, powerName));
@@ -949,10 +949,10 @@ public class OrderParser {
      * adjustment or retreat, we create the 'desired' order, so that
      * the error message is correct.
      */
-    private Order createDisbandOrRemove(OrderFactory orderFactory, TurnState ts,
-                                        boolean disbandPreferred, Power power,
-                                        Location src,
-                                        Unit.Type unitType) throws OrderException {
+    private Order createDisbandOrRemove(final OrderFactory orderFactory, final TurnState ts,
+                                        final boolean disbandPreferred, final Power power,
+                                        final Location src,
+                                        final Unit.Type unitType) throws OrderException {
         if (ts.getPhase().getPhaseType() == Phase.PhaseType.RETREAT) {
             return orderFactory.createDisband(power, src, unitType);
         } else if (ts.getPhase().getPhaseType() == Phase.PhaseType.ADJUSTMENT) {

@@ -24,7 +24,7 @@ public abstract class SwingWorker {
     private static class ThreadVar {
         private Thread thread;
 
-        ThreadVar(Thread t) {
+        ThreadVar(final Thread t) {
             thread = t;
         }
 
@@ -50,7 +50,7 @@ public abstract class SwingWorker {
     /**
      * Set the value produced by worker thread
      */
-    private synchronized void setValue(Object x) {
+    private synchronized void setValue(final Object x) {
         value = x;
     }
 
@@ -71,7 +71,7 @@ public abstract class SwingWorker {
      * to force the worker to stop what it's doing.
      */
     public void interrupt() {
-        Thread t = threadVar.get();
+        final Thread t = threadVar.get();
         if (t != null) {
             t.interrupt();
         }
@@ -87,13 +87,13 @@ public abstract class SwingWorker {
      */
     public Object get() {
         while (true) {
-            Thread t = threadVar.get();
+            final Thread t = threadVar.get();
             if (t == null) {
                 return getValue();
             }
             try {
                 t.join();
-            } catch (InterruptedException e) {
+            } catch (final InterruptedException e) {
                 Thread.currentThread().interrupt(); // propagate
                 return null;
             }
@@ -112,7 +112,7 @@ public abstract class SwingWorker {
             }
         };
 
-        Runnable doConstruct = new Runnable() {
+        final Runnable doConstruct = new Runnable() {
             public void run() {
                 try {
                     setValue(construct());
@@ -124,7 +124,7 @@ public abstract class SwingWorker {
             }
         };
 
-        Thread t = new Thread(doConstruct);
+        final Thread t = new Thread(doConstruct);
         threadVar = new ThreadVar(t);
     }
 
@@ -141,7 +141,7 @@ public abstract class SwingWorker {
     /**
      * Start with a given priority
      */
-    public void start(int priority) {
+    public void start(final int priority) {
         final Thread t = threadVar.get();
         if (t != null) {
             t.setPriority(priority);

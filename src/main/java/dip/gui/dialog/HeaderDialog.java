@@ -98,7 +98,7 @@ public class HeaderDialog extends XDialog {
     /**
      * Create a Dialog with a HTML-aware Header
      */
-    public HeaderDialog(JFrame parent, String title, boolean isModal) {
+    public HeaderDialog(final JFrame parent, final String title, final boolean isModal) {
         super(parent, title, isModal);
 
         // create main components
@@ -120,12 +120,12 @@ public class HeaderDialog extends XDialog {
      * Set the dialog content; this may be
      * called at any time.
      */
-    public void setContentPane(Container container) {
+    public void setContentPane(final Container container) {
         if (container == null) {
             throw new IllegalArgumentException();
         }
 
-        Container contentPanel = super.getContentPane();
+        final Container contentPanel = super.getContentPane();
 
         // remove old content
         contentPanel.remove(content);
@@ -147,7 +147,7 @@ public class HeaderDialog extends XDialog {
     /**
      * Add a component to the button bar (left to right)
      */
-    public void addToButtonPanel(Component component) {
+    public void addToButtonPanel(final Component component) {
         btnPanel.add(component);
 
         if (component instanceof JButton) {
@@ -160,7 +160,7 @@ public class HeaderDialog extends XDialog {
     /**
      * Set the button that is focus-selected by default
      */
-    public void setDefaultButton(JButton btn) {
+    public void setDefaultButton(final JButton btn) {
         if (btn == null) {
             throw new IllegalArgumentException();
         }
@@ -181,7 +181,7 @@ public class HeaderDialog extends XDialog {
      * <p>
      * Index 0 is the leftmost button.
      */
-    public JButton getButton(int i) {
+    public JButton getButton(final int i) {
         return (JButton) btnList.get(i);
     }// getButton()
 
@@ -189,7 +189,7 @@ public class HeaderDialog extends XDialog {
      * Sets the JButton that the close(actionCommand)
      * method will have as its argument.
      */
-    public void setDefaultCloseButton(JButton btn) {
+    public void setDefaultCloseButton(final JButton btn) {
         if (btn == null) {
             throw new IllegalArgumentException();
         }
@@ -202,7 +202,7 @@ public class HeaderDialog extends XDialog {
      * subclass this method instead of close(); to close
      * the dialog, subclasses
      */
-    protected void close(String actionCommand) {
+    protected void close(final String actionCommand) {
         returnedAction = actionCommand;
         super.close();
     }// close()
@@ -251,7 +251,7 @@ public class HeaderDialog extends XDialog {
     /**
      * Convenience method: check if action command is OK or Accept
      */
-    public boolean isOKorAccept(String actionCommand) {
+    public boolean isOKorAccept(final String actionCommand) {
         if (actionCommand.equals(ACTION_OK) || actionCommand
                 .equals(ACTION_ACCEPT)) {
             return true;
@@ -263,7 +263,7 @@ public class HeaderDialog extends XDialog {
     /**
      * Convenience method: check if action command is Close or Cancel
      */
-    public boolean isCloseOrCancel(String actionCommand) {
+    public boolean isCloseOrCancel(final String actionCommand) {
         if (actionCommand.equals(ACTION_CLOSE) || actionCommand
                 .equals(ACTION_CANCEL)) {
             return true;
@@ -277,15 +277,15 @@ public class HeaderDialog extends XDialog {
      * Make a button with the given text; calls close() with self
      * if boolean flag is set to 'true'.
      */
-    public JButton makeButton(String text, String actionCommand,
-                              boolean doClose) {
+    public JButton makeButton(final String text, final String actionCommand,
+                              final boolean doClose) {
         final JButton btn = new JButton(text);
         btn.setMinimumSize(btn.getPreferredSize());
         btn.setActionCommand(actionCommand);
 
         if (doClose) {
             btn.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
+                public void actionPerformed(final ActionEvent e) {
                     close(btn.getActionCommand());
                 }
             });
@@ -300,14 +300,14 @@ public class HeaderDialog extends XDialog {
      * Button must have been added to the button panel.
      * ActionCommand CANNOT be null.
      */
-    public void setButtonEnabled(String actionCommand, boolean enabled) {
+    public void setButtonEnabled(final String actionCommand, final boolean enabled) {
         if (actionCommand == null) {
             throw new IllegalArgumentException();
         }
 
-        Iterator iter = btnList.iterator();
+        final Iterator iter = btnList.iterator();
         while (iter.hasNext()) {
-            JButton b = (JButton) iter.next();
+            final JButton b = (JButton) iter.next();
             if (actionCommand.equals(b.getActionCommand())) {
                 b.setEnabled(enabled);
                 break;
@@ -319,7 +319,7 @@ public class HeaderDialog extends XDialog {
     /**
      * Make a spacer of the desired width in pixels
      */
-    public static Component makeSpacer(int width) {
+    public static Component makeSpacer(final int width) {
         return Box.createHorizontalStrut(width);
     }// makeSpacer()
 
@@ -338,7 +338,7 @@ public class HeaderDialog extends XDialog {
      * spacing. It also sets it as the default and default close
      * button.
      */
-    public void addSingleButton(JButton button) {
+    public void addSingleButton(final JButton button) {
         addToButtonPanel(makeGlue());
         addToButtonPanel(button);
         setDefaultButton(button);
@@ -355,8 +355,8 @@ public class HeaderDialog extends XDialog {
      * Typically, the "cancel" button is the rightmost, and is
      * the same as the default dialog close button.
      */
-    public void addTwoButtons(JButton rightMost, JButton leftMost,
-                              boolean rightDefault, boolean rightClose) {
+    public void addTwoButtons(final JButton rightMost, final JButton leftMost,
+                              final boolean rightDefault, final boolean rightClose) {
         addToButtonPanel(makeGlue());
         addToButtonPanel(leftMost);
         addToButtonPanel(makeSpacer(BTN_BAR_BETWEEN));
@@ -372,8 +372,8 @@ public class HeaderDialog extends XDialog {
      * Left	(left-aligned)<br>
      * Default and Default Close actions are also settable.
      */
-    public void addThreeButtons(JButton left, JButton center, JButton right,
-                                JButton defaultButton, JButton closeButton) {
+    public void addThreeButtons(final JButton left, final JButton center, final JButton right,
+                                final JButton defaultButton, final JButton closeButton) {
         addToButtonPanel(left);
         addToButtonPanel(makeGlue());
         addToButtonPanel(makeSpacer(BTN_BAR_BETWEEN));
@@ -388,7 +388,7 @@ public class HeaderDialog extends XDialog {
      * Creates a default border around the given component,
      * of BTN_BAR_EDGE size, except at bottom.
      */
-    public void createDefaultContentBorder(JComponent comp) {
+    public void createDefaultContentBorder(final JComponent comp) {
         comp.setBorder(BorderFactory
                 .createEmptyBorder(BTN_BAR_EDGE, BTN_BAR_EDGE, 0,
                         BTN_BAR_EDGE));
@@ -399,8 +399,8 @@ public class HeaderDialog extends XDialog {
      * No separator is shown by default. Margin values must be 0 or
      * greater.
      */
-    public void setSeparatorVisible(boolean value, int horizontalMargin,
-                                    int verticalMargin) {
+    public void setSeparatorVisible(final boolean value, final int horizontalMargin,
+                                    final int verticalMargin) {
         if (horizontalMargin < 0 || verticalMargin < 0) {
             throw new IllegalArgumentException();
         }
@@ -430,8 +430,8 @@ public class HeaderDialog extends XDialog {
     /**
      * Show or hide the header. By default, the header is visible.
      */
-    public void setHeaderVisible(boolean value) {
-        Container contentPanel = super.getContentPane();
+    public void setHeaderVisible(final boolean value) {
+        final Container contentPanel = super.getContentPane();
 
         if (value) {
             contentPanel.add(header, BorderLayout.NORTH);
@@ -452,7 +452,7 @@ public class HeaderDialog extends XDialog {
     /**
      * Set the header text
      */
-    public void setHeaderText(String text) {
+    public void setHeaderText(final String text) {
         header.setText(text);
         header.setCaretPosition(0);
     }// setText()
@@ -464,7 +464,7 @@ public class HeaderDialog extends XDialog {
     private void makeLayout() {
         btnPanelHolder.add(btnPanel, BorderLayout.CENTER);
 
-        Container contentPanel = super.getContentPane();
+        final Container contentPanel = super.getContentPane();
         contentPanel.setLayout(new BorderLayout());
         contentPanel.add(header, BorderLayout.NORTH);
         contentPanel.add(content, BorderLayout.CENTER);
@@ -476,19 +476,19 @@ public class HeaderDialog extends XDialog {
      * Equalize the size of the buttons; at least as big as 'Cancel' button.
      */
     private void equalizeButtons() {
-        Dimension maxPref = sizerButton.getPreferredSize();
+        final Dimension maxPref = sizerButton.getPreferredSize();
 
         Iterator iter = btnList.iterator();
         while (iter.hasNext()) {
-            JButton btn = (JButton) iter.next();
-            Dimension size = btn.getPreferredSize();
+            final JButton btn = (JButton) iter.next();
+            final Dimension size = btn.getPreferredSize();
             maxPref.width = (size.width > maxPref.width) ? size.width : maxPref.width;
             maxPref.height = (size.height > maxPref.height) ? size.height : maxPref.height;
         }
 
         iter = btnList.iterator();
         while (iter.hasNext()) {
-            JButton btn = (JButton) iter.next();
+            final JButton btn = (JButton) iter.next();
             btn.setPreferredSize(maxPref);
         }
     }// equalizeButtons()
@@ -531,14 +531,14 @@ public class HeaderDialog extends XDialog {
         /**
          * Overridden to provide painting functionality.
          */
-        protected void paintComponent(Graphics g) {
+        protected void paintComponent(final Graphics g) {
             final int width = getWidth();
             final int height = getHeight();
 
-            Graphics2D g2d = (Graphics2D) g;
+            final Graphics2D g2d = (Graphics2D) g;
 
             // save old paint.
-            Paint oldPaint = g2d.getPaint();
+            final Paint oldPaint = g2d.getPaint();
 
             // paint the gradient.
             g2d.setPaint(new GradientPaint(0, 0,
@@ -566,7 +566,7 @@ public class HeaderDialog extends XDialog {
          */
         private void customize() {
             setContentType("text/html");
-            Document doc = getDocument();
+            final Document doc = getDocument();
             if (doc instanceof HTMLDocument) {
                 ((HTMLDocument) doc).setBase(Utils.getResourceBase());
             }

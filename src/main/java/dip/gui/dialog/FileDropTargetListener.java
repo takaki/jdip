@@ -47,23 +47,23 @@ import java.util.Iterator;
  */
 public abstract class FileDropTargetListener extends DropTargetAdapter {
 
-    public void drop(DropTargetDropEvent dtde) {
+    public void drop(final DropTargetDropEvent dtde) {
         if (dtde.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
             try {
                 dtde.acceptDrop(DnDConstants.ACTION_COPY);
-                Transferable xfer = dtde.getTransferable();
-                Object obj = xfer
+                final Transferable xfer = dtde.getTransferable();
+                final Object obj = xfer
                         .getTransferData(DataFlavor.javaFileListFlavor);
 
                 if (obj instanceof java.util.List) {
-                    java.util.List list = (java.util.List) obj;
+                    final java.util.List list = (java.util.List) obj;
                     if (!list.isEmpty()) {
-                        ArrayList<File> fileList = new ArrayList<>(list.size());
+                        final ArrayList<File> fileList = new ArrayList<>(list.size());
 
                         final Iterator<File> iter = list.iterator();
                         while (iter.hasNext()) {
-                            File originalFile = (File) iter.next();
-                            File file = convertFile(originalFile);
+                            final File originalFile = (File) iter.next();
+                            final File file = convertFile(originalFile);
                             if (file != null) {
                                 fileList.add(file);
                             }
@@ -76,10 +76,10 @@ public abstract class FileDropTargetListener extends DropTargetAdapter {
                     dtde.dropComplete(true);
                     return;
                 }
-            } catch (UnsupportedFlavorException e) {
+            } catch (final UnsupportedFlavorException e) {
                 // fail silently
                 System.out.println(e);
-            } catch (IOException e2) {
+            } catch (final IOException e2) {
                 // fail silently
                 System.out.println(e2);
             }
@@ -95,7 +95,7 @@ public abstract class FileDropTargetListener extends DropTargetAdapter {
      * as the sun.awt.shell.ShellFolder.getShellFolder(File).getLinkLocation()
      * method does not work correctly. Instead, it will return 'null' for links.
      */
-    protected File convertFile(File file) {
+    protected File convertFile(final File file) {
         if (Utils.isWindows() && file.getPath().toLowerCase()
                 .endsWith(".lnk")) {
             /*

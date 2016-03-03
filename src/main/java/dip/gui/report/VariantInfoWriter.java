@@ -52,8 +52,8 @@ public class VariantInfoWriter {
      * Gets information about the variant and current rule
      * options. Result is in HTML.
      */
-    public static String variantInfoToHTML(World w) {
-        VariantInfoWriter viw = new VariantInfoWriter(w);
+    public static String variantInfoToHTML(final World w) {
+        final VariantInfoWriter viw = new VariantInfoWriter(w);
         return viw.getInfoAsHTML();
     }// stateToHTML()
 
@@ -63,7 +63,7 @@ public class VariantInfoWriter {
      */
     public static void displayDialog(final ClientFrame clientFrame,
                                      final World w) {
-        TextViewer tv = new TextViewer(clientFrame);
+        final TextViewer tv = new TextViewer(clientFrame);
         tv.setEditable(false);
         tv.addSingleButton(tv.makeOKButton());
         tv.setTitle(Utils.getLocalString(DIALOG_TITLE));
@@ -82,7 +82,7 @@ public class VariantInfoWriter {
     /**
      * StateWriter constructor
      */
-    private VariantInfoWriter(World w) {
+    private VariantInfoWriter(final World w) {
         this.world = w;
     }// VariantInfoWriter()
 
@@ -100,26 +100,26 @@ public class VariantInfoWriter {
         }
 
         // get selcted variant
-        World.VariantInfo vi = world.getVariantInfo();
-        Variant variant = new VariantManager()
+        final World.VariantInfo vi = world.getVariantInfo();
+        final Variant variant = new VariantManager()
                 .getVariant(vi.getVariantName(), vi.getVariantVersion()).orElse(null);
 
         // get 8 main arguments
-        Object[] oldArgs = variant.getHTMLSummaryArguments().toArray(new Object[0]);
+        final Object[] oldArgs = variant.getHTMLSummaryArguments().toArray(new Object[0]);
 
         // make extra space
-        Object[] newArgs = new Object[oldArgs.length + 1];
+        final Object[] newArgs = new Object[oldArgs.length + 1];
         System.arraycopy(oldArgs, 0, newArgs, 0, oldArgs.length);
 
         // make 9th argument: 'rules settings'
-        StringBuffer sb = new StringBuffer(256);
+        final StringBuffer sb = new StringBuffer(256);
 
-        RuleOptions ro = world.getRuleOptions();
-        Set allOpts = ro.getAllOptions();
-        Iterator iter = allOpts.iterator();
+        final RuleOptions ro = world.getRuleOptions();
+        final Set allOpts = ro.getAllOptions();
+        final Iterator iter = allOpts.iterator();
         while (iter.hasNext()) {
-            RuleOptions.Option opt = (RuleOptions.Option) iter.next();
-            RuleOptions.OptionValue optVal = ro.getOptionValue(opt);
+            final RuleOptions.Option opt = (RuleOptions.Option) iter.next();
+            final RuleOptions.OptionValue optVal = ro.getOptionValue(opt);
 
             sb.append("<p><b>");
             sb.append(opt.getNameI18N());

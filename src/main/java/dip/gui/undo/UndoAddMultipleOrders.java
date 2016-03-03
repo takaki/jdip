@@ -39,7 +39,7 @@ public class UndoAddMultipleOrders extends XAbstractUndoableEdit {
     private Orderable[] orders;
 
 
-    public UndoAddMultipleOrders(UndoRedoManager urm, Orderable[] orders) {
+    public UndoAddMultipleOrders(final UndoRedoManager urm, final Orderable[] orders) {
         super(urm);
         this.orders = orders;
     }// UndoAddMultipleOrders()

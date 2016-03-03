@@ -36,14 +36,14 @@ public class GradientJLabel extends JPanel {
     /**
      * Create a GradientJLabel
      */
-    public GradientJLabel(String text) {
+    public GradientJLabel(final String text) {
         this(text, SwingConstants.LEFT);
     }// GradientJLabel()
 
     /**
      * Create a GradientXJEditorPane
      */
-    public GradientJLabel(String text, int horizontalAlignment) {
+    public GradientJLabel(final String text, final int horizontalAlignment) {
         super(new FlowLayout(FlowLayout.LEFT, 0, 3));
         label = new JLabel(text, horizontalAlignment) {
             public boolean isOpaque() {
@@ -66,7 +66,7 @@ public class GradientJLabel extends JPanel {
     /**
      * Overrides setText()
      */
-    public void setText(String text) {
+    public void setText(final String text) {
         label.setText(text);
     }// setText()
 
@@ -88,14 +88,14 @@ public class GradientJLabel extends JPanel {
     /**
      * Overridden to provide painting functionality.
      */
-    protected void paintComponent(Graphics g) {
+    protected void paintComponent(final Graphics g) {
         final int width = getWidth();
         final int height = getHeight();
 
-        Graphics2D g2d = (Graphics2D) g;
+        final Graphics2D g2d = (Graphics2D) g;
 
         // save old paint.
-        Paint oldPaint = g2d.getPaint();
+        final Paint oldPaint = g2d.getPaint();
 
         // paint the gradient.
         g2d.setPaint(new GradientPaint(0, 0,

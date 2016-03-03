@@ -139,9 +139,9 @@ public class ErrorDialog extends TextViewer {
         Log.println("  message: ", args[1]);
         Log.println("  stack trace:\n", args[2]);
 
-        String text = Utils.getText(Utils.getLocalString(SERIOUS_TEMPLATE));
+        final String text = Utils.getText(Utils.getLocalString(SERIOUS_TEMPLATE));
 
-        ErrorDialog ed = getForcedExitDialog(parent,
+        final ErrorDialog ed = getForcedExitDialog(parent,
                 Utils.getLocalString(SERIOUS_TITLE), Utils.format(text, args),
                 (String) args[2], Utils.getLocalString(SERIOUS_BUTTON_QUIT),
                 Utils.getLocalString(SERIOUS_BUTTON_CONTINUE),
@@ -153,7 +153,7 @@ public class ErrorDialog extends TextViewer {
     /**
      * Convenience Method (no BugReportInfo required)
      */
-    public static void displayFatal(JFrame parent, Throwable t) {
+    public static void displayFatal(final JFrame parent, final Throwable t) {
         ErrorDialog.displayFatal(parent, new BugReportInfo(t));
     }// displayFatal()
 
@@ -164,7 +164,7 @@ public class ErrorDialog extends TextViewer {
      * is impossible. The only option is to exit the program, with
      * error code 1.
      */
-    public static void displayFatal(JFrame parent, BugReportInfo bri) {
+    public static void displayFatal(final JFrame parent, final BugReportInfo bri) {
         final Throwable e = bri.getThrowable();
         final Object[] args = new Object[3];
 
@@ -176,8 +176,8 @@ public class ErrorDialog extends TextViewer {
         Log.println("  message: ", args[1]);
         Log.println("  stack trace:\n", args[2]);
 
-        String text = Utils.getText(Utils.getLocalString(FATAL_TEMPLATE));
-        ErrorDialog ed = ErrorDialog
+        final String text = Utils.getText(Utils.getLocalString(FATAL_TEMPLATE));
+        final ErrorDialog ed = ErrorDialog
                 .getOneButtonDialog(parent, Utils.getLocalString(FATAL_TITLE),
                         Utils.format(text, args), (String) args[2],
                         Utils.getLocalString(FATAL_BUTTON),
@@ -197,9 +197,9 @@ public class ErrorDialog extends TextViewer {
      * Special handling exists FileNotFoundException,
      * which is common and not a program issue.
      */
-    public static void displayFileIO(JFrame parent, Exception e,
-                                     String fileName) {
-        Object[] args = new Object[4];
+    public static void displayFileIO(final JFrame parent, final Exception e,
+                                     final String fileName) {
+        final Object[] args = new Object[4];
 
         args[0] = getCleanName(e.getClass().getName());
         args[1] = getMsg(e);
@@ -219,7 +219,7 @@ public class ErrorDialog extends TextViewer {
         }
 
 
-        ErrorDialog ed = getOneButtonDialog(parent,
+        final ErrorDialog ed = getOneButtonDialog(parent,
                 Utils.getLocalString(FILE_TITLE), Utils.format(text, args),
                 (String) args[2], Utils.getLocalString(FILE_BUTTON),
                 Utils.getScreenSize(0.4f), true, false, null);
@@ -231,8 +231,8 @@ public class ErrorDialog extends TextViewer {
     /**
      * Convenience Method (no BugReportInfo required)
      */
-    public static void displayNetIO(JFrame parent, IOException e,
-                                    String connection) {
+    public static void displayNetIO(final JFrame parent, final IOException e,
+                                    final String connection) {
         ErrorDialog.displayNetIO(parent, connection, new BugReportInfo(e));
     }// displayNetIO()
 
@@ -245,8 +245,8 @@ public class ErrorDialog extends TextViewer {
      * <p>
      * Special handling exists for an UnknownHostException.
      */
-    public static void displayNetIO(JFrame parent, String connection,
-                                    BugReportInfo bri) {
+    public static void displayNetIO(final JFrame parent, final String connection,
+                                    final BugReportInfo bri) {
         final Throwable e = bri.getThrowable();
         final Object[] args = new Object[4];
 
@@ -271,7 +271,7 @@ public class ErrorDialog extends TextViewer {
         }
 
 
-        ErrorDialog ed = getOneButtonDialog(parent,
+        final ErrorDialog ed = getOneButtonDialog(parent,
                 Utils.getLocalString(NET_TITLE), Utils.format(text, args),
                 (String) args[2], Utils.getLocalString(NET_BUTTON),
                 Utils.getScreenSize(0.4f), true, submittable, bri);
@@ -282,7 +282,7 @@ public class ErrorDialog extends TextViewer {
     /**
      * Convenience Method (no BugReportInfo required)
      */
-    public static void displayGeneral(JFrame parent, Exception e) {
+    public static void displayGeneral(final JFrame parent, final Exception e) {
         ErrorDialog.displayGeneral(parent, new BugReportInfo(e));
     }// displayGeneral()
 
@@ -293,7 +293,7 @@ public class ErrorDialog extends TextViewer {
      * A General error is an error that does not fit any of the
      * other categories.
      */
-    public static void displayGeneral(JFrame parent, BugReportInfo bri) {
+    public static void displayGeneral(final JFrame parent, final BugReportInfo bri) {
         final Throwable e = bri.getThrowable();
         final Object[] args = new Object[3];
 
@@ -305,8 +305,8 @@ public class ErrorDialog extends TextViewer {
         Log.println("  message: ", args[1]);
         Log.println("  stack trace:\n", args[2]);
 
-        String text = Utils.getText(Utils.getLocalString(GENERAL_TEMPLATE));
-        ErrorDialog ed = getOneButtonDialog(parent,
+        final String text = Utils.getText(Utils.getLocalString(GENERAL_TEMPLATE));
+        final ErrorDialog ed = getOneButtonDialog(parent,
                 Utils.getLocalString(GENERAL_TITLE), Utils.format(text, args),
                 (String) args[2], Utils.getLocalString(GENERAL_BUTTON),
                 Utils.getScreenSize(0.4f), true, true, bri);
@@ -317,18 +317,18 @@ public class ErrorDialog extends TextViewer {
     /**
      * This should be used whenever there is a Variant version mismatch.
      */
-    public static void displayVariantVersionMismatch(JFrame parent,
-                                                     World.VariantInfo vi,
-                                                     VersionNumber availableVersion) {
-        Object[] args = new Object[3];
+    public static void displayVariantVersionMismatch(final JFrame parent,
+                                                     final World.VariantInfo vi,
+                                                     final VersionNumber availableVersion) {
+        final Object[] args = new Object[3];
 
         args[0] = vi.getVariantName();
         args[1] = vi.getVariantVersion();
         args[2] = availableVersion;
 
-        String text = Utils
+        final String text = Utils
                 .getText(Utils.getLocalString(VERSION_MISMATCH_TEMPLATE));
-        ErrorDialog ed = getOneButtonDialog(parent,
+        final ErrorDialog ed = getOneButtonDialog(parent,
                 Utils.getLocalString(VERSION_MISMATCH_TITLE),
                 Utils.format(text, args), (String) args[2],
                 Utils.getLocalString(VERSION_MISMATCH_BUTTON),
@@ -341,16 +341,16 @@ public class ErrorDialog extends TextViewer {
     /**
      * This should be used whenever a Variant is not available.
      */
-    public static void displayVariantNotAvailable(JFrame parent,
-                                                  World.VariantInfo vi) {
-        Object[] args = new Object[3];
+    public static void displayVariantNotAvailable(final JFrame parent,
+                                                  final World.VariantInfo vi) {
+        final Object[] args = new Object[3];
 
         args[0] = vi.getVariantName();
         args[1] = vi.getVariantVersion();
         args[2] = vi.getVariantName();
 
-        String text = Utils.getText(Utils.getLocalString(NOVARIANT_TEMPLATE));
-        ErrorDialog ed = getOneButtonDialog(parent,
+        final String text = Utils.getText(Utils.getLocalString(NOVARIANT_TEMPLATE));
+        final ErrorDialog ed = getOneButtonDialog(parent,
                 Utils.getLocalString(NOVARIANT_TITLE), Utils.format(text, args),
                 (String) args[2], Utils.getLocalString(NOVARIANT_BUTTON),
                 Utils.getScreenSize(0.4f), true, false, null);
@@ -361,9 +361,9 @@ public class ErrorDialog extends TextViewer {
     /**
      * Prepends the jDip and Java version/etc info to the stack trace
      */
-    private static String getStackTrace(Throwable t) {
-        StringBuffer sb = new StringBuffer(2048);
-        StackTraceElement[] ste = t.getStackTrace();
+    private static String getStackTrace(final Throwable t) {
+        final StringBuffer sb = new StringBuffer(2048);
+        final StackTraceElement[] ste = t.getStackTrace();
 
         sb.append("jDip version: ");
         sb.append(ClientFrame.getVersion());
@@ -383,14 +383,14 @@ public class ErrorDialog extends TextViewer {
             sb.append(System.getProperty("os.arch", "?"));
 
             // some runtime info...
-            Runtime rt = Runtime.getRuntime();
+            final Runtime rt = Runtime.getRuntime();
             sb.append("<br>\nMemory Free: ");
             sb.append(rt.freeMemory());
             sb.append("<br>\nMemory Total: ");
             sb.append(rt.totalMemory());
             sb.append("<br>\nMemory Max: ");
             sb.append(rt.maxMemory());
-        } catch (Exception e) {
+        } catch (final Exception e) {
             sb.append(
                     "<br>\n[Exception occured while getting system/runtime info]");
         }
@@ -403,7 +403,7 @@ public class ErrorDialog extends TextViewer {
 
         appendBatikInfo(sb, t);
 
-        int len = ste.length;
+        final int len = ste.length;
         for (int i = (len - 1); i >= 0; i--) {
             sb.append(ste[i].toString());
             sb.append('\n');
@@ -413,8 +413,8 @@ public class ErrorDialog extends TextViewer {
     }// getStackTrace()
 
 
-    private static String getMsg(Throwable t) {
-        String msg = t.getLocalizedMessage();
+    private static String getMsg(final Throwable t) {
+        final String msg = t.getLocalizedMessage();
         if (msg != null) {
             if (!"".equals(msg)) {
                 return msg;
@@ -427,14 +427,14 @@ public class ErrorDialog extends TextViewer {
     /**
      * given a name like xxx.x.xxx.x.x.x.aaaa returns 'aaaa'
      */
-    private static String getCleanName(String in) {
+    private static String getCleanName(final String in) {
         return in.substring(in.lastIndexOf(".") + 1);
     }
 
     /**
      * Create an ErrorDialog
      */
-    private ErrorDialog(JFrame frame, String title) {
+    private ErrorDialog(final JFrame frame, final String title) {
         super(frame, true);
         setTitle(title);
     }// ErrorDialog()
@@ -445,16 +445,16 @@ public class ErrorDialog extends TextViewer {
      * to send the bug report to the jDip bug report database.
      */
     private static ErrorDialog getOneButtonDialog(final JFrame parent,
-                                                  String title,
+                                                  final String title,
                                                   final String text,
                                                   final String rawText,
-                                                  String buttonText,
-                                                  Dimension size,
-                                                  boolean resizable,
-                                                  boolean submittable,
+                                                  final String buttonText,
+                                                  final Dimension size,
+                                                  final boolean resizable,
+                                                  final boolean submittable,
                                                   final BugReportInfo bri) {
-        ErrorDialog ed = new ErrorDialog(parent, title) {
-            protected void close(String actionCommand) {
+        final ErrorDialog ed = new ErrorDialog(parent, title) {
+            protected void close(final String actionCommand) {
                 if (ACTION_SUBMIT.equals(actionCommand)) {
                     setButtonEnabled(ACTION_SUBMIT, false);
                     if (!submitBug(parent, bri)) {
@@ -497,17 +497,17 @@ public class ErrorDialog extends TextViewer {
      * rawText is the error-message alone (no dialog text)
      */
     private static ErrorDialog getForcedExitDialog(final JFrame parent,
-                                                   String title,
+                                                   final String title,
                                                    final String text,
                                                    final String rawText,
-                                                   String exitText,
-                                                   String continueText,
-                                                   Dimension size,
-                                                   boolean resizable,
-                                                   boolean submittable,
+                                                   final String exitText,
+                                                   final String continueText,
+                                                   final Dimension size,
+                                                   final boolean resizable,
+                                                   final boolean submittable,
                                                    final BugReportInfo bri) {
-        ErrorDialog ed = new ErrorDialog(parent, title) {
-            protected void close(String actionCommand) {
+        final ErrorDialog ed = new ErrorDialog(parent, title) {
+            protected void close(final String actionCommand) {
                 if (ACTION_SUBMIT.equals(actionCommand)) {
                     if (submitBug(parent, bri)) {
                         setButtonEnabled(ACTION_SUBMIT, false);
@@ -528,9 +528,9 @@ public class ErrorDialog extends TextViewer {
         ed.setText(text);
         ed.setHeaderVisible(false);
 
-        JButton bR = ed.makeButton(exitText, ACTION_CANCEL, true);
-        JButton bC = ed.makeButton(continueText, ACTION_OK, true);
-        JButton bL = ed
+        final JButton bR = ed.makeButton(exitText, ACTION_CANCEL, true);
+        final JButton bC = ed.makeButton(continueText, ACTION_OK, true);
+        final JButton bL = ed
                 .makeButton(Utils.getLocalString(SUBMIT_BUTTON), ACTION_SUBMIT,
                         true);
         ed.addThreeButtons(bL, bC, bR, bC, bR);
@@ -549,9 +549,9 @@ public class ErrorDialog extends TextViewer {
     /**
      * If exception is a Batik exception, with line # info, append
      */
-    private static void appendBatikInfo(StringBuffer sb, Throwable e) {
+    private static void appendBatikInfo(final StringBuffer sb, final Throwable e) {
         if (e instanceof org.apache.batik.bridge.BridgeException) {
-            org.apache.batik.bridge.BridgeException be = (org.apache.batik.bridge.BridgeException) e;
+            final org.apache.batik.bridge.BridgeException be = (org.apache.batik.bridge.BridgeException) e;
             sb.append("\nBridgeException:");
             sb.append("\n  Code: ");
             sb.append(be.getCode());
@@ -559,7 +559,7 @@ public class ErrorDialog extends TextViewer {
             sb.append(be.getElement().getTagName());
             sb.append("\n");
         } else if (e instanceof org.w3c.css.sac.CSSParseException) {
-            org.w3c.css.sac.CSSParseException pe = (org.w3c.css.sac.CSSParseException) e;
+            final org.w3c.css.sac.CSSParseException pe = (org.w3c.css.sac.CSSParseException) e;
             sb.append("\nCSSParseException:");
             sb.append("\n  URI: ");
             sb.append(pe.getURI());
@@ -569,7 +569,7 @@ public class ErrorDialog extends TextViewer {
             sb.append(String.valueOf(pe.getColumnNumber()));
             sb.append("\n");
         } else if (e instanceof org.apache.batik.script.InterpreterException) {
-            org.apache.batik.script.InterpreterException ie = (org.apache.batik.script.InterpreterException) e;
+            final org.apache.batik.script.InterpreterException ie = (org.apache.batik.script.InterpreterException) e;
             sb.append("\nInterpreterException:");
             sb.append("\n  Line: ");
             sb.append(String.valueOf(ie.getLineNumber()));
@@ -577,7 +577,7 @@ public class ErrorDialog extends TextViewer {
             sb.append(String.valueOf(ie.getColumnNumber()));
             sb.append("\n");
         } else if (e instanceof org.apache.batik.css.parser.ParseException) {
-            org.apache.batik.css.parser.ParseException pe = (org.apache.batik.css.parser.ParseException) e;
+            final org.apache.batik.css.parser.ParseException pe = (org.apache.batik.css.parser.ParseException) e;
             sb.append("\ncss.ParseException:");
             sb.append("\n  Line Number: ");
             sb.append(String.valueOf(pe.getLineNumber()));
@@ -585,7 +585,7 @@ public class ErrorDialog extends TextViewer {
             sb.append(String.valueOf(pe.getColumnNumber()));
             sb.append("\n");
         } else if (e instanceof org.apache.batik.parser.ParseException) {
-            org.apache.batik.parser.ParseException pe = (org.apache.batik.parser.ParseException) e;
+            final org.apache.batik.parser.ParseException pe = (org.apache.batik.parser.ParseException) e;
             sb.append("\nParseException:");
             sb.append("\n  Line: ");
             sb.append(String.valueOf(pe.getLineNumber()));
@@ -601,7 +601,7 @@ public class ErrorDialog extends TextViewer {
      * Does not enable or disable the submit button. BugReportInfo
      * may be null.
      */
-    private static boolean submitBug(JFrame parent, BugReportInfo bri) {
+    private static boolean submitBug(final JFrame parent, final BugReportInfo bri) {
         if (sendBugReport(bri)) {
             Utils.popupInfo(parent, Utils.getLocalString(SUBMIT_TITLE),
                     Utils.getLocalString(SUBMIT_SUCCESS));
@@ -618,7 +618,7 @@ public class ErrorDialog extends TextViewer {
      * throw further exceptions (unless a null String is passed).
      * BugReportInfo is allowed to be null.
      */
-    private static boolean sendBugReport(BugReportInfo bri) {
+    private static boolean sendBugReport(final BugReportInfo bri) {
         /*
 			Information about:
 			
@@ -643,10 +643,10 @@ public class ErrorDialog extends TextViewer {
         BufferedReader rd = null;
 
         try {
-            URL url = new URL(
+            final URL url = new URL(
                     "http://jdip.sourceforge.net/forms/data/detailedBugFormProc.php");
 
-            HttpURLConnection urlConn = (HttpURLConnection) url
+            final HttpURLConnection urlConn = (HttpURLConnection) url
                     .openConnection();
             urlConn.setRequestMethod("POST");
             urlConn.setDoInput(true);
@@ -695,7 +695,7 @@ public class ErrorDialog extends TextViewer {
                     return true;
                 }
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             Log.println("ERROR: could not send bug report.");
             Log.println(e);
         } finally {
@@ -703,7 +703,7 @@ public class ErrorDialog extends TextViewer {
                 if (wr != null) {
                     wr.close();
                 }
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 Log.println("ErrorDialog: ", e);
             }
 
@@ -711,7 +711,7 @@ public class ErrorDialog extends TextViewer {
                 if (rd != null) {
                     rd.close();
                 }
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 Log.println("ErrorDialog: ", e);
             }
         }
@@ -723,7 +723,7 @@ public class ErrorDialog extends TextViewer {
      * Encode a string into http POST safe-strings.
      */
     private static String encode(
-            String in) throws UnsupportedEncodingException {
+            final String in) throws UnsupportedEncodingException {
         return URLEncoder.encode(in, "UTF-8");
     }// encode()
 
@@ -743,7 +743,7 @@ public class ErrorDialog extends TextViewer {
          * This method also gathers the in-memory log data (if any) at the point
          * of creation.
          */
-        public BugReportInfo(Throwable t) {
+        public BugReportInfo(final Throwable t) {
             if (t == null) {
                 throw new IllegalArgumentException();
             }
@@ -773,8 +773,8 @@ public class ErrorDialog extends TextViewer {
          * <code>name: value</code><br>
          * on a single line.
          */
-        public void add(String name, String value) {
-            StringBuffer sb = new StringBuffer();
+        public void add(final String name, final String value) {
+            final StringBuffer sb = new StringBuffer();
             sb.append(((name == null) ? "" : name));
             sb.append(": ");
             sb.append(value);
@@ -790,12 +790,12 @@ public class ErrorDialog extends TextViewer {
             if (list.isEmpty()) {
                 return "";
             } else {
-                StringBuffer sb = new StringBuffer();
+                final StringBuffer sb = new StringBuffer();
                 sb.append("\n------ Additional Info -------------------");
-                Iterator iter = list.iterator();
+                final Iterator iter = list.iterator();
                 while (iter.hasNext()) {
                     sb.append('\n');
-                    String line = (String) iter.next();
+                    final String line = (String) iter.next();
                     sb.append(line);
                 }
 
@@ -809,7 +809,7 @@ public class ErrorDialog extends TextViewer {
          * Gets a brief description of the throwable
          */
         public String getBriefDescription() {
-            StringBuffer sb = new StringBuffer(128);
+            final StringBuffer sb = new StringBuffer(128);
             sb.append(t.getClass().getName());
             sb.append(": ");
             sb.append(t.getMessage());
@@ -845,7 +845,7 @@ public class ErrorDialog extends TextViewer {
          * Get system information
          */
         public String getSystemInfo() {
-            StringBuffer sb = new StringBuffer(1024);
+            final StringBuffer sb = new StringBuffer(1024);
 
             // memory
             final Runtime rt = Runtime.getRuntime();
@@ -862,14 +862,14 @@ public class ErrorDialog extends TextViewer {
             sb.append(Utils.isInWebstart());
 
             // ArrayList of strings
-            ArrayList list = new ArrayList();
+            final ArrayList list = new ArrayList();
             try {
-                Properties props = System.getProperties();
-                Enumeration propEnum = props.propertyNames();
+                final Properties props = System.getProperties();
+                final Enumeration propEnum = props.propertyNames();
                 while (propEnum.hasMoreElements()) {
                     final String propName = (String) propEnum.nextElement();
                     if (!propName.equals("line.separator")) {
-                        StringBuffer line = new StringBuffer(128);
+                        final StringBuffer line = new StringBuffer(128);
                         line.append(propName);
                         line.append(": ");
                         line.append(props.getProperty(propName));
@@ -878,13 +878,13 @@ public class ErrorDialog extends TextViewer {
                 }
 
                 Collections.sort(list);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 sb.append("\n  Cannot obtain system properties.");
             }
 
 
             // system properties
-            for (Iterator iter = list.iterator(); iter.hasNext(); ) {
+            for (final Iterator iter = list.iterator(); iter.hasNext(); ) {
                 sb.append("\n  ");
                 sb.append(iter.next());
             }

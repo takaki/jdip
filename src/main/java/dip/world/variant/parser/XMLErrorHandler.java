@@ -43,29 +43,29 @@ public final class XMLErrorHandler implements ErrorHandler {
     /**
      * Handle a (recoverable) error
      */
-    public void error(SAXParseException exception) {
+    public void error(final SAXParseException exception) {
         showError(exception, "Error");
     }// error()
 
     /**
      * Handle a non-recoverable error
      */
-    public void fatalError(SAXParseException exception) {
+    public void fatalError(final SAXParseException exception) {
         showError(exception, "Fatal Error");
     }// fatalError()
 
     /**
      * Handle a warning
      */
-    public void warning(SAXParseException exception) {
+    public void warning(final SAXParseException exception) {
         showError(exception, "Warning");
     }// warning()
 
     /**
      * Dialog method for error handling
      */
-    protected void showError(SAXParseException e, String type) {
-        StringBuffer sb = new StringBuffer(256);
+    protected void showError(final SAXParseException e, final String type) {
+        final StringBuffer sb = new StringBuffer(256);
         sb.append("XML Validation ");
         sb.append(type);
         sb.append(":\n");
@@ -77,8 +77,8 @@ public final class XMLErrorHandler implements ErrorHandler {
     /**
      * Gets the error, nicely formatted
      */
-    protected String getLocationString(SAXParseException e) {
-        StringBuffer sb = new StringBuffer(256);
+    protected String getLocationString(final SAXParseException e) {
+        final StringBuffer sb = new StringBuffer(256);
         String systemId = e.getSystemId();
 
         if (systemId != null) {

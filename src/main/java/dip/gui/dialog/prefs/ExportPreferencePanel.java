@@ -110,15 +110,15 @@ public class ExportPreferencePanel extends PreferencePanel {
 
 
         // layout
-        int h1[] = {BORDER, 0, 5, 0, 1, 0, 1, 0, 1, 0, (BORDER * 2), 0, 5, 0, 1, 0, 1, 0, BORDER};
-        int w1[] = {BORDER, INDENT, 0, 0, BORDER};
+        final int[] h1 = {BORDER, 0, 5, 0, 1, 0, 1, 0, 1, 0, (BORDER * 2), 0, 5, 0, 1, 0, 1, 0, BORDER};
+        final int[] w1 = {BORDER, INDENT, 0, 0, BORDER};
 
-        HIGLayout l1 = new HIGLayout(w1, h1);
+        final HIGLayout l1 = new HIGLayout(w1, h1);
         l1.setColumnWeight(4, 1);
         l1.setRowWeight(18, 1);
         setLayout(l1);
 
-        HIGConstraints c = new HIGConstraints();
+        final HIGConstraints c = new HIGConstraints();
 
         // full size
         // add text label to first JRadioButton
@@ -178,17 +178,17 @@ public class ExportPreferencePanel extends PreferencePanel {
      * Create and Initialize the GUI items
      */
     private void makeAndSetGUIItems() {
-        Preferences prefs = SharedPrefs.getUserNode();
+        final Preferences prefs = SharedPrefs.getUserNode();
         try {
             prefs.sync();
-        } catch (BackingStoreException bse) {
+        } catch (final BackingStoreException bse) {
         }
 
         // get hints
         int w = prefs.getInt(NODE_EXPORT_WIDTH, 0);
         int h = prefs.getInt(NODE_EXPORT_HEIGHT, 0);
         float q = prefs.getFloat(NODE_EXPORT_JPG_QUALITY, DEFAULT_JPG_QUALITY);
-        int bpp = prefs.getInt(NODE_PNG_BPP, 0);
+        final int bpp = prefs.getInt(NODE_PNG_BPP, 0);
 
         // check hints
         w = (w < 0 || w > MAX_IMG_SIZE) ? 0 : w;
@@ -206,8 +206,8 @@ public class ExportPreferencePanel extends PreferencePanel {
 
 
         // png BPP combobox
-        Integer[] bppVals = new Integer[ALLOWED_PNG_BPP.length];
-        String[] bppText = new String[ALLOWED_PNG_BPP.length];
+        final Integer[] bppVals = new Integer[ALLOWED_PNG_BPP.length];
+        final String[] bppText = new String[ALLOWED_PNG_BPP.length];
         bppVals[0] = new Integer(0);
         bppText[0] = Utils.getLocalString(I18N_CHOICE_PNG_BPP_UNLIM);
         for (int i = 1; i < bppVals.length; i++) {
@@ -215,7 +215,7 @@ public class ExportPreferencePanel extends PreferencePanel {
             bppText[i] = bppVals[i].toString();
         }
 
-        AssocJComboBox.AssociatedObj[] assocObjs = AssocJComboBox.AssociatedObj
+        final AssocJComboBox.AssociatedObj[] assocObjs = AssocJComboBox.AssociatedObj
                 .createAssociatedObjects(bppVals, bppText, bppVals[0], true);
         pngBPP = new AssocJComboBox(assocObjs);
         pngBPP.reset();
@@ -231,7 +231,7 @@ public class ExportPreferencePanel extends PreferencePanel {
 
 
         // create JRadiobutton group; and set the selected button.
-        ButtonGroup bg = new ButtonGroup();
+        final ButtonGroup bg = new ButtonGroup();
         jrb = new JRadioButton[JRB_ARRAY_LENGTH];
         for (int i = 0; i < jrb.length; i++) {
             jrb[i] = new JRadioButton();
@@ -264,7 +264,7 @@ public class ExportPreferencePanel extends PreferencePanel {
 
 
     public void apply() {
-        Preferences prefs = SharedPrefs.getUserNode();
+        final Preferences prefs = SharedPrefs.getUserNode();
 
         // set preference nodes
         prefs.putInt(NODE_PNG_BPP,
@@ -288,7 +288,7 @@ public class ExportPreferencePanel extends PreferencePanel {
 
         try {
             prefs.flush();
-        } catch (BackingStoreException bse) {
+        } catch (final BackingStoreException bse) {
         }
     }// apply()
 
@@ -310,22 +310,22 @@ public class ExportPreferencePanel extends PreferencePanel {
      * if values are missing or invalid. This takes the passed Transcoder
      * object and adds hints via Transcoder.addTranscodingHint().
      */
-    public static void applyTranscodingHints(Transcoder transcoder) {
+    public static void applyTranscodingHints(final Transcoder transcoder) {
         if (transcoder == null) {
             throw new IllegalArgumentException();
         }
 
-        Preferences prefs = SharedPrefs.getUserNode();
+        final Preferences prefs = SharedPrefs.getUserNode();
         try {
             prefs.sync();
-        } catch (BackingStoreException bse) {
+        } catch (final BackingStoreException bse) {
         }
 
         // get hints
         int w = prefs.getInt(NODE_EXPORT_WIDTH, 0);
         int h = prefs.getInt(NODE_EXPORT_HEIGHT, 0);
         float q = prefs.getFloat(NODE_EXPORT_JPG_QUALITY, DEFAULT_JPG_QUALITY);
-        int bpp = prefs.getInt(NODE_PNG_BPP, 0);
+        final int bpp = prefs.getInt(NODE_PNG_BPP, 0);
 
         // check hints
         w = (w < 0 || w > MAX_IMG_SIZE) ? 0 : w;

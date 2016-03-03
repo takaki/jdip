@@ -41,23 +41,23 @@ public class DefaultGUIGameSetup implements GUIGameSetup {
     /**
      * Setup the game.
      */
-    public void setup(ClientFrame cf, World world) {
+    public void setup(final ClientFrame cf, final World world) {
         // create right-panel components
-        OrderDisplayPanel odp = new OrderDisplayPanel(cf);
-        OrderStatusPanel osp = new OrderStatusPanel(cf);
+        final OrderDisplayPanel odp = new OrderDisplayPanel(cf);
+        final OrderStatusPanel osp = new OrderStatusPanel(cf);
 
         cf.setOrderDisplayPanel(odp);
         cf.setOrderStatusPanel(osp);
 
         // right-panel layout
-        JPanel rightPanel = new JPanel(new BorderLayout());
+        final JPanel rightPanel = new JPanel(new BorderLayout());
         rightPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         rightPanel.add(osp, BorderLayout.NORTH);
         rightPanel.add(odp, BorderLayout.CENTER);
         cf.getJSplitPane().setRightComponent(rightPanel);
 
         // setup map panel (left-panel)
-        MapPanel mp = new MapPanel(cf);
+        final MapPanel mp = new MapPanel(cf);
         cf.setMapPanel(mp);
         cf.getJSplitPane().setLeftComponent(mp);
 
@@ -90,7 +90,7 @@ public class DefaultGUIGameSetup implements GUIGameSetup {
     /**
      * We do not need to save any data.
      */
-    public void save(ClientFrame cf) {
+    public void save(final ClientFrame cf) {
     }
 
 

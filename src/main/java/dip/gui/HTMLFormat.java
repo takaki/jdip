@@ -117,16 +117,16 @@ public class HTMLFormat {
     }// getInstance()
 
 
-    public String format(String html, Map map) {
+    public String format(final String html, final Map map) {
         this.map = map;
         sb.setLength(0);
 
-        StringBuffer accum = new StringBuffer(1024);
+        final StringBuffer accum = new StringBuffer(1024);
 
         boolean inBrace = false;
-        StringTokenizer st = new StringTokenizer(html, "{}", true);
+        final StringTokenizer st = new StringTokenizer(html, "{}", true);
         while (st.hasMoreTokens()) {
-            String tok = st.nextToken();
+            final String tok = st.nextToken();
             if ("{".equals(tok) && !inBrace) {
                 inBrace = true;
             } else if ("}".equals(tok) && inBrace) {
@@ -145,7 +145,7 @@ public class HTMLFormat {
         return sb.toString();
     }// format()
 
-    private void parseBetweenBraces(String text) {
+    private void parseBetweenBraces(final String text) {
         // decision loop: check for keywords
         if (text.startsWith("decimal:")) {
             replaceDecimal(text);
@@ -156,7 +156,7 @@ public class HTMLFormat {
         } else {
             // simple replace, unless we have a ':';
             // then we need to see if we've got an array...
-            int colonIndex = text.indexOf(':');
+            final int colonIndex = text.indexOf(':');
             if (colonIndex != -1) {
                 replaceArray(text, colonIndex);
             } else {
@@ -166,15 +166,15 @@ public class HTMLFormat {
     }// parseBetweenBraces()
 
 
-    private void replaceSimple(String key) {
-        Object lookup = map.get(key);
+    private void replaceSimple(final String key) {
+        final Object lookup = map.get(key);
         sb.append(lookup.toString());
     }// replaceSimple()
 
 
-    private void replaceDate(String text) {
-        int colonIdx = text.indexOf(':');
-        int commaIdx = text.indexOf(',');
+    private void replaceDate(final String text) {
+        final int colonIdx = text.indexOf(':');
+        final int commaIdx = text.indexOf(',');
         String key = null;
         String spec = null;
 
@@ -187,14 +187,14 @@ public class HTMLFormat {
             dateFormat.applyLocalizedPattern(spec);
         }
 
-        Date date = (Date) map.get(key);
+        final Date date = (Date) map.get(key);
         sb.append(dateFormat.format(date));
     }// replaceDate()
 
 
-    private void replaceDecimal(String text) {
-        int colonIdx = text.indexOf(':');
-        int commaIdx = text.indexOf(',');
+    private void replaceDecimal(final String text) {
+        final int colonIdx = text.indexOf(':');
+        final int commaIdx = text.indexOf(',');
         String key = null;
         String spec = null;
 
@@ -207,19 +207,19 @@ public class HTMLFormat {
             decimalFormat.applyLocalizedPattern(spec);
         }
 
-        Number num = (Number) map.get(key);
+        final Number num = (Number) map.get(key);
         sb.append(decimalFormat.format(num));
     }// replaceDecimal()
 
 
-    private void replaceArray(String text, int colonIdx) {
-        String key = text.substring(0, colonIdx);
-        String index = text.substring(colonIdx + 1);
+    private void replaceArray(final String text, final int colonIdx) {
+        final String key = text.substring(0, colonIdx);
+        final String index = text.substring(colonIdx + 1);
         Object[] objs = null;
 
         try {
             objs = (Object[]) map.get(key);
-        } catch (ClassCastException e) {
+        } catch (final ClassCastException e) {
             System.err.println(
                     "ERROR: HTMLFormat: value for key \"" + key + "\" not an array.");
             return;
@@ -244,7 +244,7 @@ public class HTMLFormat {
         String tok0 = null;
         String tok1 = null;
 
-        StringTokenizer st = new StringTokenizer(
+        final StringTokenizer st = new StringTokenizer(
                 text.substring(0, text.indexOf(' ')), ":", false);
         st.nextToken();    // for:  this has already been detected
 
@@ -265,10 +265,10 @@ public class HTMLFormat {
             // only one token; name-based
             // derive start & end from this variable (which must be an array)
             try {
-                Object[] objs = (Object[]) map.get(tok0);
+                final Object[] objs = (Object[]) map.get(tok0);
                 start = 0;
                 end = objs.length;
-            } catch (ClassCastException e) {
+            } catch (final ClassCastException e) {
                 System.err.println(
                         "ERROR: HTMLFormat: for: parameter \"" + tok0 + "\" is not an array!");
                 return;
@@ -284,7 +284,7 @@ public class HTMLFormat {
         text = text.substring(text.indexOf(' '));
 
         // create stringbuffer
-        StringBuffer iterText = new StringBuffer(text.length() + 256);
+        final StringBuffer iterText = new StringBuffer(text.length() + 256);
 
         // iterate the loop; each time, go through and replace @@ variables
         // with the new values, and add this to the main string buffer.
@@ -304,10 +304,10 @@ public class HTMLFormat {
     }// replaceFor()
 
 
-    private int parseInt(String text) {
+    private int parseInt(final String text) {
         try {
             return Integer.parseInt(text);
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             System.err.println(
                     "HTMLFormat: could not parse \"" + text + "\" as Integer");
         }
@@ -315,12 +315,12 @@ public class HTMLFormat {
         return 0;
     }// parseInt()
 
-    private int parseIntegerFromMap(String key) {
-        Object obj = map.get(key);
+    private int parseIntegerFromMap(final String key) {
+        final Object obj = map.get(key);
         if (obj instanceof Integer) {
             try {
                 return ((Integer) obj).intValue();
-            } catch (NumberFormatException e) {
+            } catch (final NumberFormatException e) {
             }
         }
 
@@ -331,7 +331,7 @@ public class HTMLFormat {
 
     // if 'in' starts with a valid java identifier, look it up, and return the value
     // if 'in' starts with a digit, parse it, and return the value
-    private int parseOrLookupInt(String in) {
+    private int parseOrLookupInt(final String in) {
         if (Character.isJavaIdentifierStart(in.charAt(0))) {
             return parseIntegerFromMap(in);
         }
@@ -343,12 +343,12 @@ public class HTMLFormat {
 
     // probably should be in Utils.java :: also used by OrderParser
     //
-    private void replaceAll(StringBuffer in, String find, String replace) {
+    private void replaceAll(final StringBuffer in, final String find, final String replace) {
         int idx = 0;
         int start = in.indexOf(find, idx);
 
         while (start != -1) {
-            int end = start + find.length();
+            final int end = start + find.length();
             in.replace(start, end, replace);
 
             // repeat search
@@ -360,13 +360,13 @@ public class HTMLFormat {
     // looks for "@@" and if followed by any text, followed by "@";
     // looks it up; if array, replace with indexed, otherwise, just print.
     //
-    private void replaceAllVariables(StringBuffer in, int forIndex) {
+    private void replaceAllVariables(final StringBuffer in, final int forIndex) {
         int idx = 0;
         int start = in.indexOf(VAR_PREFIX, idx);
 
         while (start != -1) {
             String replace = "";
-            int end = in.indexOf("@", (start + VAR_PREFIX.length()));
+            final int end = in.indexOf("@", (start + VAR_PREFIX.length()));
 
             if (end - start > 48) {
                 // probably not valid; skip
@@ -377,12 +377,12 @@ public class HTMLFormat {
                 break;
             }
 
-            String key = in.substring(start + VAR_PREFIX.length(), end);
-            Object obj = map.get(key);
+            final String key = in.substring(start + VAR_PREFIX.length(), end);
+            final Object obj = map.get(key);
 
             if (obj != null) {
                 if (obj.getClass().isArray()) {
-                    Object[] array = (Object[]) obj;
+                    final Object[] array = (Object[]) obj;
                     replace = array[forIndex].toString();
                 } else {
                     replace = obj.toString();

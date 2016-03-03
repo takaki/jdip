@@ -68,8 +68,8 @@ public class SymbolInjector {
      * <p>
      * Throws an IOException if URL resolving fails.
      */
-    public SymbolInjector(ClientFrame cf, Variant variant, MapGraphic mg,
-                          SymbolPack sp) throws IOException, SAXException, ParserConfigurationException {
+    public SymbolInjector(final ClientFrame cf, final Variant variant, final MapGraphic mg,
+                          final SymbolPack sp) throws IOException, SAXException, ParserConfigurationException {
         if (variant == null || mg == null || sp == null) {
             throw new IllegalArgumentException();
         }
@@ -77,7 +77,7 @@ public class SymbolInjector {
         this.sp = sp;
 
         // resolve URL
-        URL url = new VariantManager().getResource(variant, mg.getURI()).orElse(null);
+        final URL url = new VariantManager().getResource(variant, mg.getURI()).orElse(null);
         if (url == null) {
             throw new IOException();
         }
@@ -86,10 +86,10 @@ public class SymbolInjector {
         InputStream is = null;
         try {
             is = new BufferedInputStream(url.openStream());
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             dbf.setNamespaceAware(true);    // essential!
             dbf.setValidating(cf.getValidating());
-            DocumentBuilder docBuilder = dbf.newDocumentBuilder();
+            final DocumentBuilder docBuilder = dbf.newDocumentBuilder();
             docBuilder.setErrorHandler(new XMLErrorHandler());
             FastEntityResolver.attach(docBuilder);
 
@@ -98,7 +98,7 @@ public class SymbolInjector {
             if (is != null) {
                 try {
                     is.close();
-                } catch (IOException e) {
+                } catch (final IOException e) {
                 }
             }
         }
@@ -113,7 +113,7 @@ public class SymbolInjector {
      */
     public void inject() throws IOException {
         // find <defs> element
-        Element root = doc.getDocumentElement();
+        final Element root = doc.getDocumentElement();
         Element defs = null;
         Element style = null;
 
@@ -129,7 +129,7 @@ public class SymbolInjector {
         if (style != null && sp.hasCSSStyles()) {
             // check CSS type (must be "text/css")
             //
-            String type = style.getAttribute(ATT_TYPE).trim();
+            final String type = style.getAttribute(ATT_TYPE).trim();
             if (!CSS_TYPE_VALUE.equals(type)) {
                 throw new IOException(
                         "Only <style type=\"text/css\"> is accepted. Cannot merge CSS otherwise.");
@@ -138,7 +138,7 @@ public class SymbolInjector {
             style.normalize();
 
             // get style CDATA
-            CDATASection cdsNode = (CDATASection) XMLUtils
+            final CDATASection cdsNode = (CDATASection) XMLUtils
                     .findChildNodeMatching(style, CDATA_NODE_NAME,
                             Node.CDATA_SECTION_NODE);
 
@@ -153,21 +153,21 @@ public class SymbolInjector {
         // find all <g> or <symbol> under defs with same tag names.
         // if found, replace with our own symbols. If not found, add them.
         //
-        HashMap<String, Element> defsElementMap = elementMapper(defs, ID_ATTRIBUTE);
+        final HashMap<String, Element> defsElementMap = elementMapper(defs, ID_ATTRIBUTE);
 
         final List<Symbol> symbols = sp.getSymbols();
         assert (symbols != null);
         assert (symbols.size() > 0);
 
         for (int i = 0; i < symbols.size(); i++) {
-            Symbol symbol = symbols.get(i);
-            Element element = defsElementMap.get(symbol.getName());
+            final Symbol symbol = symbols.get(i);
+            final Element element = defsElementMap.get(symbol.getName());
             if (element == null) {
                 // does not exist! add
                 defs.appendChild(getSymbolElement(symbol));
             } else {
                 // already exists! replace
-                Element parent = (Element) element.getParentNode();
+                final Element parent = (Element) element.getParentNode();
                 parent.replaceChild(getSymbolElement(symbol), element);
             }
         }
@@ -188,7 +188,7 @@ public class SymbolInjector {
      * "wrong document" DOMException), since the Symbol SVG data
      * originated within a different XML document.
      */
-    private Element getSymbolElement(Symbol symbol) {
+    private Element getSymbolElement(final Symbol symbol) {
         return (Element) doc.importNode(symbol.getSVGData(), true);
     }// getSymbolElement()
 
@@ -201,9 +201,9 @@ public class SymbolInjector {
      * an org.w3c.Element. An Exception is thrown if an element with a
      * duplicate attribute value (case-sensitive) is found.
      */
-    private HashMap<String, Element> elementMapper(Element start,
-                                                   String attrName) throws IOException {
-        HashMap<String, Element> map = new HashMap<String, Element>(31);
+    private HashMap<String, Element> elementMapper(final Element start,
+                                                   final String attrName) throws IOException {
+        final HashMap<String, Element> map = new HashMap<String, Element>(31);
         elementMapperWalker(map, start, attrName);
         return map;
     }// elementMapper()
@@ -216,8 +216,8 @@ public class SymbolInjector {
                                      final String attrName) throws IOException {
         if (node.getNodeType() == Node.ELEMENT_NODE) {
             if (node.hasAttributes()) {
-                NamedNodeMap attributes = node.getAttributes();
-                Node attrNode = attributes.getNamedItem(attrName);
+                final NamedNodeMap attributes = node.getAttributes();
+                final Node attrNode = attributes.getNamedItem(attrName);
                 if (attrNode != null) {
                     final String attrValue = attrNode.getNodeValue();
                     if (!"".equals(attrValue)) {
@@ -235,7 +235,7 @@ public class SymbolInjector {
 
         // check if current node has any children
         // if so, iterate through & recursively call this method
-        NodeList children = node.getChildNodes();
+        final NodeList children = node.getChildNodes();
         if (children != null) {
             for (int i = 0; i < children.getLength(); i++) {
                 elementMapperWalker(map, children.item(i), attrName);
@@ -263,7 +263,7 @@ public class SymbolInjector {
         }
 
         // add (at end)
-        StringBuffer sb = new StringBuffer(oldCSS);
+        final StringBuffer sb = new StringBuffer(oldCSS);
 
 
         sb.append("/* merged CSS from SymbolPack */\n");

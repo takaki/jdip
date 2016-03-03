@@ -46,8 +46,8 @@ public class DefineState extends Order {
             .getLocalString(DEFSTATE_FORMAT);
 
 
-    protected DefineState(Power power, Location src,
-                          Unit.Type srcUnit) throws OrderException {
+    protected DefineState(final Power power, final Location src,
+                          final Unit.Type srcUnit) throws OrderException {
         super(power, src, srcUnit);
 
         if (srcUnit.equals(Unit.Type.UNDEFINED)) {
@@ -77,22 +77,22 @@ public class DefineState extends Order {
 
 
     public String toBriefString() {
-        StringBuffer sb = new StringBuffer(64);
+        final StringBuffer sb = new StringBuffer(64);
         super.appendBrief(sb);
         return sb.toString();
     }// toBriefString()
 
 
     public String toFullString() {
-        StringBuffer sb = new StringBuffer(128);
+        final StringBuffer sb = new StringBuffer(128);
         super.appendFull(sb);
         return sb.toString();
     }// toFullString()
 
 
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (obj instanceof DefineState) {
-            DefineState ds = (DefineState) obj;
+            final DefineState ds = (DefineState) obj;
             if (super.equals(ds)) {
                 return true;
             }
@@ -107,8 +107,8 @@ public class DefineState extends Order {
      * a game state). For example, dip.misc.TestSuite uses DefineState orders
      * to define the units and their positions for a test scenario.
      */
-    public void validate(TurnState state, ValidationOptions valOpts,
-                         RuleOptions ruleOpts) throws OrderException {
+    public void validate(final TurnState state, final ValidationOptions valOpts,
+                         final RuleOptions ruleOpts) throws OrderException {
         // DefineState orders always fail validation.
         throw new OrderException(Utils.getLocalString(DEFSTATE_VAL_DEFAULT));
     }// validate()
@@ -116,21 +116,21 @@ public class DefineState extends Order {
     /**
      * DefineState orders do not require verification.
      */
-    public void verify(Adjudicator adjudicator) {
-        OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
+    public void verify(final Adjudicator adjudicator) {
+        final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
         thisOS.setVerified(true);
     }// verify()
 
     /**
      * Empty method: DefineState orders do not require dependency determination.
      */
-    public void determineDependencies(Adjudicator adjudicator) {
+    public void determineDependencies(final Adjudicator adjudicator) {
     }
 
     /**
      * Empty method: DefineState orders do not require evaluation logic.
      */
-    public void evaluate(Adjudicator adjudicator) {
+    public void evaluate(final Adjudicator adjudicator) {
         // do nothing
     }// evaluate()
 

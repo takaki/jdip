@@ -405,7 +405,7 @@ public class OrderFormatOptions implements Cloneable {
     /**
      * Sets the Province Style
      */
-    public void setProvinceStyle(int style) {
+    public void setProvinceStyle(final int style) {
         checkStyle(style);
         styleProvince = style;
     }// ()
@@ -413,7 +413,7 @@ public class OrderFormatOptions implements Cloneable {
     /**
      * Sets the Coast Style
      */
-    public void setCoastStyle(int style) {
+    public void setCoastStyle(final int style) {
         checkStyle(style);
         styleCoast = style;
     }// ()
@@ -421,7 +421,7 @@ public class OrderFormatOptions implements Cloneable {
     /**
      * Sets the Power Style
      */
-    public void setPowerStyle(int style) {
+    public void setPowerStyle(final int style) {
         checkStyle(style);
         stylePower = style;
     }// ()
@@ -429,7 +429,7 @@ public class OrderFormatOptions implements Cloneable {
     /**
      * Sets the Unit Style
      */
-    public void setUnitStyle(int style) {
+    public void setUnitStyle(final int style) {
         checkStyle(style);
         styleUnit = style;
     }// ()
@@ -437,7 +437,7 @@ public class OrderFormatOptions implements Cloneable {
     /**
      * Sets the Order Name Style
      */
-    public void setOrderNameStyle(int style) {
+    public void setOrderNameStyle(final int style) {
         checkStyle(style);
         styleOrderName = style;
     }// ()
@@ -446,7 +446,7 @@ public class OrderFormatOptions implements Cloneable {
     /**
      * Sets the Province Format
      */
-    public void setProvinceFormat(int fmt) {
+    public void setProvinceFormat(final int fmt) {
         checkFormat(fmt);
         formatProvince = fmt;
     }// ()
@@ -454,7 +454,7 @@ public class OrderFormatOptions implements Cloneable {
     /**
      * Sets the Coast Format
      */
-    public void setCoastFormat(int fmt) {
+    public void setCoastFormat(final int fmt) {
         checkCoastFormat(fmt);
         formatCoast = fmt;
     }// ()
@@ -462,7 +462,7 @@ public class OrderFormatOptions implements Cloneable {
     /**
      * Sets the Power Format
      */
-    public void setPowerFormat(int fmt) {
+    public void setPowerFormat(final int fmt) {
         checkFormat(fmt);
         formatPower = fmt;
     }// ()
@@ -470,7 +470,7 @@ public class OrderFormatOptions implements Cloneable {
     /**
      * Sets the Unit Format
      */
-    public void setUnitFormat(int fmt) {
+    public void setUnitFormat(final int fmt) {
         checkFormat(fmt);
         formatUnit = fmt;
     }// ()
@@ -478,7 +478,7 @@ public class OrderFormatOptions implements Cloneable {
     /**
      * Sets the Order Name Format
      */
-    public void setOrderNameFormat(int fmt) {
+    public void setOrderNameFormat(final int fmt) {
         checkFormat(fmt);
         formatOrderName = fmt;
     }// ()
@@ -487,7 +487,7 @@ public class OrderFormatOptions implements Cloneable {
     /**
      * Sets the Movement Arrow
      */
-    public void setArrow(String value) {
+    public void setArrow(final String value) {
         if (value == null) {
             throw new IllegalArgumentException();
         }
@@ -498,14 +498,14 @@ public class OrderFormatOptions implements Cloneable {
     /**
      * Sets if Possessive Powers are displayed
      */
-    public void setShowPossessivePower(boolean value) {
+    public void setShowPossessivePower(final boolean value) {
         showPossessivePower = value;
     }// setShowOptionalPower()
 
     /**
      * Sets if order should end with a period.
      */
-    public void setEndWithDot(boolean value) {
+    public void setEndWithDot(final boolean value) {
         endWithDot = value;
     }// setEndWithDot()
 
@@ -517,14 +517,14 @@ public class OrderFormatOptions implements Cloneable {
      * type (in brackets); e.g.: "null[Location]", instead of being
      * ignored.
      */
-    public void setDebug(boolean value) {
+    public void setDebug(final boolean value) {
         isDebug = value;
     }// setDebug()
 
     /**
      * Set the character that separates the Province from the Coast
      */
-    public void setCoastSeparator(char value) {
+    public void setCoastSeparator(final char value) {
         coastSep = value;
     }
 
@@ -534,8 +534,8 @@ public class OrderFormatOptions implements Cloneable {
      */
     public byte[] encode() {
         try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream(256);
-            DataOutputStream d = new DataOutputStream(baos);
+            final ByteArrayOutputStream baos = new ByteArrayOutputStream(256);
+            final DataOutputStream d = new DataOutputStream(baos);
 
             d.writeInt(styleProvince);
             d.writeInt(styleCoast);
@@ -558,7 +558,7 @@ public class OrderFormatOptions implements Cloneable {
 
             d.close();
             return baos.toByteArray();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new IllegalStateException("internal error");
         }
     }// encode()
@@ -581,8 +581,8 @@ public class OrderFormatOptions implements Cloneable {
             defaultOptions.formatUnit = -1;
             defaultOptions.formatOrderName = -1;
 
-            ByteArrayInputStream is = new ByteArrayInputStream(in);
-            DataInputStream d = new DataInputStream(is);
+            final ByteArrayInputStream is = new ByteArrayInputStream(in);
+            final DataInputStream d = new DataInputStream(is);
 
             defaultOptions.setProvinceStyle(d.readInt());
             defaultOptions.setCoastStyle(d.readInt());
@@ -604,7 +604,7 @@ public class OrderFormatOptions implements Cloneable {
             defaultOptions.arrow = d.readUTF();
 
             d.close();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             Log.println("OrderFormatOptions::decode() error\n", e);
         }
 
@@ -625,7 +625,7 @@ public class OrderFormatOptions implements Cloneable {
     /**
      * Check non-coast format value
      */
-    private void checkFormat(int value) {
+    private void checkFormat(final int value) {
         if (value != FORMAT_BRIEF && value != FORMAT_FULL) {
             throw new IllegalArgumentException(String.valueOf(value));
         }
@@ -634,7 +634,7 @@ public class OrderFormatOptions implements Cloneable {
     /**
      * Check coast formats
      */
-    private void checkCoastFormat(int value) {
+    private void checkCoastFormat(final int value) {
         if (value != FORMAT_COAST_PAREN_BRIEF && value != FORMAT_COAST_PAREN_FULL && value != FORMAT_BRIEF && value != FORMAT_FULL) {
             throw new IllegalArgumentException(String.valueOf(value));
         }
@@ -646,7 +646,7 @@ public class OrderFormatOptions implements Cloneable {
     public Object clone() {
         try {
             return (OrderFormatOptions) super.clone();
-        } catch (CloneNotSupportedException e) {
+        } catch (final CloneNotSupportedException e) {
             Log.println("OrderFormat::clone() error: ", e);
             throw new IllegalStateException();
         }

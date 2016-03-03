@@ -31,12 +31,12 @@ public class InvalidWorldException extends Exception {
     /**
      * Create an InvalidWorldException
      */
-    public InvalidWorldException(String message) {
+    public InvalidWorldException(final String message) {
         super(message);
     }
 
 
-    public InvalidWorldException(String message, Exception e) {
+    public InvalidWorldException(final String message, final Exception e) {
         super(message, e);
     }
 }// InvalidWorldException

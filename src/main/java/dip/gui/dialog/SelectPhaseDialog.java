@@ -56,8 +56,8 @@ public class SelectPhaseDialog extends HeaderDialog {
      * Returns the Phase selected, or <code>null</code> if no
      * Phase was selected, or dialog was cancelled.
      */
-    public static Phase displayDialog(ClientFrame cf) {
-        SelectPhaseDialog spd = new SelectPhaseDialog(cf);
+    public static Phase displayDialog(final ClientFrame cf) {
+        final SelectPhaseDialog spd = new SelectPhaseDialog(cf);
         spd.pack();
         spd.setSize(new Dimension(500, 450));
         Utils.centerInScreen(spd);
@@ -66,7 +66,7 @@ public class SelectPhaseDialog extends HeaderDialog {
     }// displayDialog()
 
 
-    private SelectPhaseDialog(ClientFrame clientFrame) {
+    private SelectPhaseDialog(final ClientFrame clientFrame) {
         super(clientFrame, Utils.getLocalString(TITLE), true);
         this.clientFrame = clientFrame;
 
@@ -76,7 +76,7 @@ public class SelectPhaseDialog extends HeaderDialog {
 
         // if we don't put the scroller in a JPanel, the scroller's border
         // isn't drawn.
-        JPanel contentPanel = new JPanel(new BorderLayout());
+        final JPanel contentPanel = new JPanel(new BorderLayout());
         contentPanel.add(phaseScrollPane, BorderLayout.CENTER);
         createDefaultContentBorder(contentPanel);
         setContentPane(contentPanel);
@@ -88,7 +88,7 @@ public class SelectPhaseDialog extends HeaderDialog {
 
     private Phase getSelectedPhase() {
         if (getReturnedActionCommand().equals(ACTION_OK)) {
-            ListRow lr = list.getSelectedValue();
+            final ListRow lr = list.getSelectedValue();
             if (lr != null) {
                 return lr.getPhase();
             }
@@ -100,12 +100,12 @@ public class SelectPhaseDialog extends HeaderDialog {
 
     private void makePhaseList() {
         // create ListRows
-        List<ListRow> lrList = new LinkedList<ListRow>();
-        Set<Phase> phaseSet = clientFrame.getWorld().getPhaseSet();
+        final List<ListRow> lrList = new LinkedList<ListRow>();
+        final Set<Phase> phaseSet = clientFrame.getWorld().getPhaseSet();
         int idx = 1;
-        Iterator<Phase> iter = phaseSet.iterator();
+        final Iterator<Phase> iter = phaseSet.iterator();
         while (iter.hasNext()) {
-            Phase phase = iter.next();
+            final Phase phase = iter.next();
             lrList.add(new ListRow(phase, idx++));
         }
 
@@ -120,7 +120,7 @@ public class SelectPhaseDialog extends HeaderDialog {
         private final Phase phase;
         private final int num;
 
-        public ListRow(Phase phase, int n) {
+        public ListRow(final Phase phase, final int n) {
             this.phase = phase;
             this.num = n;
         }// ListRow()
@@ -130,7 +130,7 @@ public class SelectPhaseDialog extends HeaderDialog {
         }// getPhase()
 
         public String toString() {
-            StringBuffer sb = new StringBuffer(64);
+            final StringBuffer sb = new StringBuffer(64);
             sb.append(String.valueOf(num));
             sb.append(".  ");
             sb.append(phase);

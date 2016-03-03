@@ -91,7 +91,7 @@ public class PersistenceManager {
     /**
      * Creates a new PersistenceManager object.
      */
-    public PersistenceManager(ClientFrame clientFrame) {
+    public PersistenceManager(final ClientFrame clientFrame) {
         this.clientFrame = clientFrame;
 
         // create the persistance-manager threadgroup
@@ -104,7 +104,7 @@ public class PersistenceManager {
 
         // enable modification event listener
         modListener = new PropertyChangeListener() {
-            public void propertyChange(PropertyChangeEvent evt) {
+            public void propertyChange(final PropertyChangeEvent evt) {
                 if (!isChanged()) {
                     setChanged(true);
                 }
@@ -178,7 +178,7 @@ public class PersistenceManager {
                                 pendingThreads[i].getName());
                         pendingThreads[i].join(THREAD_WAIT);
                         Log.println("    done.");
-                    } catch (Throwable t) {
+                    } catch (final Throwable t) {
                         Log.println("PM::exit(): uncaught exception:");
                         Log.println(t);
                     }
@@ -192,7 +192,7 @@ public class PersistenceManager {
             // to shut down at this point.
             try {
                 clientFrame.dispose();
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 Log.println(
                         "PM::exit(): exception during clientFrame.dispose():");
                 Log.println(e);
@@ -206,12 +206,12 @@ public class PersistenceManager {
     /**
      * Opens a World from the given File, after confirmation
      */
-    public World open(File file) {
+    public World open(final File file) {
         World world = null;
         if (confirmDialog()) {
             try {
                 world = readGameFile(file);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 ErrorDialog.displayFileIO(clientFrame, e, file.toString());
             }
 
@@ -230,12 +230,12 @@ public class PersistenceManager {
     public World open() {
         if (confirmDialog()) {
             // JFileChooser setup
-            XJFileChooser chooser = XJFileChooser.getXJFileChooser();
+            final XJFileChooser chooser = XJFileChooser.getXJFileChooser();
             chooser.addFileFilter(SimpleFileFilter.SAVE_GAME_FILTER);
             chooser.setFileFilter(SimpleFileFilter.SAVE_GAME_FILTER);
             chooser.setCurrentDirectory(
                     GeneralPreferencePanel.getDefaultGameDir());
-            File file = chooser.displayOpen(clientFrame);
+            final File file = chooser.displayOpen(clientFrame);
             XJFileChooser.dispose();
 
             // get file name
@@ -244,7 +244,7 @@ public class PersistenceManager {
 
                 try {
                     world = readGameFile(file);
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     ErrorDialog.displayFileIO(clientFrame, e, file.toString());
                 }
 
@@ -260,7 +260,7 @@ public class PersistenceManager {
      * Basic operations performed whenever we read in a World.
      * if passed World is null, does nothing.
      */
-    private void openWorld(World world, File file) {
+    private void openWorld(final World world, final File file) {
         if (world == null) {
             return;
         }
@@ -292,7 +292,7 @@ public class PersistenceManager {
      */
     public World newGame() {
         if (confirmDialog()) {
-            World world = NewGameDialog.displayDialog(clientFrame);
+            final World world = NewGameDialog.displayDialog(clientFrame);
             if (world != null) {
                 fileName = null;
                 setChanged(false);
@@ -318,7 +318,7 @@ public class PersistenceManager {
      */
     public World newF2FGame() {
         if (confirmDialog()) {
-            World world = NewGameDialog.displayDialog(clientFrame,
+            final World world = NewGameDialog.displayDialog(clientFrame,
                     Utils.getLocalString(NewGameDialog.TITLE_F2F),
                     dip.misc.Help.HelpID.Dialog_NewF2f);
 
@@ -365,7 +365,7 @@ public class PersistenceManager {
     public boolean saveAs() {
         if (clientFrame.getWorld() != null) {
             // JFileChooser setup
-            XJFileChooser chooser = XJFileChooser.getXJFileChooser();
+            final XJFileChooser chooser = XJFileChooser.getXJFileChooser();
             chooser.addFileFilter(SimpleFileFilter.SAVE_GAME_FILTER);
             chooser.setFileFilter(SimpleFileFilter.SAVE_GAME_FILTER);
 
@@ -377,13 +377,13 @@ public class PersistenceManager {
             chooser.setSelectedFile(new File(getSuggestedSaveName()));
 
             // show dialog
-            File file = chooser.displaySaveAs(clientFrame);
+            final File file = chooser.displaySaveAs(clientFrame);
             XJFileChooser.dispose();
 
             // get file name
             if (file != null) {
                 fileName = file;
-                boolean returnValue = writeGameFile();
+                final boolean returnValue = writeGameFile();
                 setTitle(); // in case write fails; we have chosen the file name
                 GeneralPreferencePanel.setRecentFileName(fileName);
                 clientFrame.getClientMenu().updateRecentFiles();
@@ -401,18 +401,18 @@ public class PersistenceManager {
     public void saveTo() {
         if (clientFrame.getWorld() != null) {
             // JFileChooser setup
-            XJFileChooser chooser = XJFileChooser.getXJFileChooser();
+            final XJFileChooser chooser = XJFileChooser.getXJFileChooser();
             chooser.addFileFilter(SimpleFileFilter.SAVE_GAME_FILTER);
             chooser.setFileFilter(SimpleFileFilter.SAVE_GAME_FILTER);
             chooser.setCurrentDirectory(
                     GeneralPreferencePanel.getDefaultGameDir());
-            File file = chooser.displaySave(clientFrame,
+            final File file = chooser.displaySave(clientFrame,
                     Utils.getLocalString(SAVE_TO_TITLE));
             XJFileChooser.dispose();
 
             // get file name
             if (file != null) {
-                File saveToFile = file;
+                final File saveToFile = file;
 
                 try {
                     World.save(saveToFile, clientFrame.getWorld());
@@ -420,7 +420,7 @@ public class PersistenceManager {
                     // Update recent file name list
                     GeneralPreferencePanel.setRecentFileName(saveToFile);
                     clientFrame.getClientMenu().updateRecentFiles();
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     ErrorDialog.displayFileIO(clientFrame, e,
                             saveToFile.toString());
                 }
@@ -432,13 +432,13 @@ public class PersistenceManager {
     /**
      * Lets the user choose the judge file to import
      */
-    public World importJudge(World currentWorld) {
+    public World importJudge(final World currentWorld) {
         // JFileChooser setup
-        XJFileChooser chooser = XJFileChooser.getXJFileChooser();
+        final XJFileChooser chooser = XJFileChooser.getXJFileChooser();
         chooser.addFileFilter(SimpleFileFilter.TXT_FILTER);
         chooser.setFileFilter(SimpleFileFilter.TXT_FILTER);
         chooser.setCurrentDirectory(GeneralPreferencePanel.getDefaultGameDir());
-        File file = chooser.displayOpen(clientFrame,
+        final File file = chooser.displayOpen(clientFrame,
                 Utils.getLocalString(IMPORT_CHOOSER_TITLE));
         XJFileChooser.dispose();
 
@@ -454,7 +454,7 @@ public class PersistenceManager {
      * Imports the given Judge file (no file requester dialog is displayed)
      * Returns: null, if the current world has been updated, or a new world object
      */
-    public World importJudge(File file, World currentWorld) {
+    public World importJudge(final File file, World currentWorld) {
         World world = null;
 
         // TODO: operate on a backup up currentWorld, if everything is ok, update real currentWorld
@@ -468,25 +468,25 @@ public class PersistenceManager {
             // otherwise diplay dialog and try again
             while ((ji.getResult() == JudgeImport.JI_RESULT_TRYREWIND) || (ji
                     .getResult() == JudgeImport.JI_RESULT_LOADOTHER)) {
-                String gameInfo = ji.getGameInfo();
-                Phase phase = Phase.parse(gameInfo).orElse(null);
+                final String gameInfo = ji.getGameInfo();
+                final Phase phase = Phase.parse(gameInfo).orElse(null);
 
                 if (ji.getResult() == JudgeImport.JI_RESULT_TRYREWIND) {
                     // we need to rewind the current game
                     if (rewindDialog(phase)) {
                         // rewind current game
-                        Iterator<Phase> iter = currentWorld.getPhaseSet().iterator();
-                        LinkedList<Phase> l = new LinkedList<Phase>();
+                        final Iterator<Phase> iter = currentWorld.getPhaseSet().iterator();
+                        final LinkedList<Phase> l = new LinkedList<Phase>();
                         while (iter.hasNext()) {
-                            Phase p = iter.next();
+                            final Phase p = iter.next();
                             if (p.compareTo(phase) > 0) {
                                 l.add(p);
                             }
                         }
                         while (!l.isEmpty()) {
-                            Phase p = l.getFirst();
+                            final Phase p = l.getFirst();
                             l.removeFirst();
-                            TurnState ts = currentWorld.getTurnState(p);
+                            final TurnState ts = currentWorld.getTurnState(p);
                             currentWorld.removeTurnState(ts);
                         }
                         // clear orders for the last turnstate, because we have got the new orders
@@ -498,7 +498,7 @@ public class PersistenceManager {
                 } else {
                     // we need to load the correct game
                     if (loadDialog(gameInfo)) {
-                        World newWorld = open();
+                        final World newWorld = open();
                         if (newWorld != null) {
                             clientFrame.createWorld(newWorld);
                             currentWorld = clientFrame.getWorld();
@@ -548,7 +548,7 @@ public class PersistenceManager {
                         .fireTurnstateChanged(currentWorld.getLastTurnState());
             }
             clientFrame.fireStateModified();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             ErrorDialog.displayFileIO(clientFrame, e, file.toString());
         }
 
@@ -573,7 +573,7 @@ public class PersistenceManager {
      * as a game file if it has an extension of SimpleFileFilter.SAVE_GAME_FILTER
      * type. Otherwise, attempt to import it.
      */
-    public World acceptDrag(File selectedFile, World currentWorld) {
+    public World acceptDrag(final File selectedFile, final World currentWorld) {
         if (selectedFile.getPath().toLowerCase().endsWith(
                 "." + SimpleFileFilter.SAVE_GAME_FILTER.getExtension())) {
             return open(selectedFile);
@@ -584,15 +584,15 @@ public class PersistenceManager {
 
 
     // reads in a game file
-    private World readGameFile(File file) throws Exception {
-        World w = World.open(file);
+    private World readGameFile(final File file) throws Exception {
+        final World w = World.open(file);
 
         // check if variant is available; if not, inform user.
-        World.VariantInfo vi = w.getVariantInfo();
+        final World.VariantInfo vi = w.getVariantInfo();
 
         if (new VariantManager().getVariant(vi.getVariantName(),
                 vi.getVariantVersion()) == null) {
-            Variant variant = new VariantManager().getVariant(vi.getVariantName(),
+            final Variant variant = new VariantManager().getVariant(vi.getVariantName(),
                     VariantManager.VERSION_NEWEST).orElse(null);
             if (variant == null) {
                 // we don't have the variant AT ALL
@@ -615,13 +615,13 @@ public class PersistenceManager {
      */
     private boolean writeGameFile() {
         try {
-            World w = clientFrame.getWorld();
+            final World w = clientFrame.getWorld();
 
             Log.println("PM::writeGameFile(): saving GUIGameSetup");
 
             // notify the GameSetup object to update its
             // state
-            GUIGameSetup ggs = (GUIGameSetup) w.getGameSetup();
+            final GUIGameSetup ggs = (GUIGameSetup) w.getGameSetup();
             if (ggs != null) {
                 ggs.save(clientFrame);
             }
@@ -633,7 +633,7 @@ public class PersistenceManager {
             Log.println("PM::writeGameFile(): world saved ok.");
             setChanged(false);
             return true;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             ErrorDialog.displayFileIO(clientFrame, e, fileName.toString());
         }
 
@@ -648,14 +648,14 @@ public class PersistenceManager {
     /**
      * World object may not yet be available in ClientFrame; if not, can specify it here (or null)
      */
-    private void setTitle(World localWorld) {
-        StringBuffer title = new StringBuffer(128);
+    private void setTitle(final World localWorld) {
+        final StringBuffer title = new StringBuffer(128);
         title.append(ClientFrame.getProgramName());
 
         // if no file is open, we shouldn't display a gamename/filename
         if (localWorld != null || clientFrame.getWorld() != null) {
             // use local world, if not, use clientFrame world
-            World world = (localWorld != null) ? localWorld : clientFrame
+            final World world = (localWorld != null) ? localWorld : clientFrame
                     .getWorld();
 
             // get game name
@@ -698,7 +698,7 @@ public class PersistenceManager {
     }// setTitle()
 
 
-    private void setSaveEnabled(boolean value) {
+    private void setSaveEnabled(final boolean value) {
         clientFrame.getClientMenu().setEnabled(ClientMenu.FILE_SAVE, value);
         clientFrame.getClientMenu().setEnabled(ClientMenu.FILE_SAVEAS, value);
         clientFrame.getClientMenu().setEnabled(ClientMenu.FILE_SAVETO, value);
@@ -711,17 +711,17 @@ public class PersistenceManager {
             // per apple guidelines:
             // [don't save] ==big space=== [cancel] [save]
             // we will switch cancel/save to make it more like windows (cancel on right)
-            Object[] dlgOptions = {Utils.getLocalString(
+            final Object[] dlgOptions = {Utils.getLocalString(
                     CONFIRM_BUTTON_DONTSAVE),        // 0
                     Box.createRigidArea(new Dimension(25, 5)),            // 1
                     Utils.getLocalString(CONFIRM_BUTTON_SAVE),            // 2
                     Utils.getLocalString(CONFIRM_BUTTON_CANCEL)            // 3
             };
 
-            String message = Utils.getText(Utils.getLocalString(CONFIRM_TEXT));
-            String title = Utils.getLocalString(CONFIRM_TITLE);
+            final String message = Utils.getText(Utils.getLocalString(CONFIRM_TEXT));
+            final String title = Utils.getLocalString(CONFIRM_TITLE);
 
-            int result = JOptionPane
+            final int result = JOptionPane
                     .showOptionDialog(clientFrame, message, title,
                             JOptionPane.YES_NO_CANCEL_OPTION,
                             JOptionPane.QUESTION_MESSAGE, null, dlgOptions,
@@ -741,19 +741,19 @@ public class PersistenceManager {
         return true;
     }// confirmDialog()
 
-    private boolean rewindDialog(Phase phase) {
-        Object[] dlgOptions = {Utils.getLocalString(
+    private boolean rewindDialog(final Phase phase) {
+        final Object[] dlgOptions = {Utils.getLocalString(
                 CONFIRM_BUTTON_REWIND),        // 0
                 Box.createRigidArea(new Dimension(25, 5)),            // 1
                 Utils.getLocalString(CONFIRM_BUTTON_CANCEL)            // 2
         };
 
-        String message = Utils
+        final String message = Utils
                 .getText(Utils.getLocalString(CONFIRM_REWIND_TEXT),
                         phase.toString());
-        String title = Utils.getLocalString(CONFIRM_REWIND_TITLE);
+        final String title = Utils.getLocalString(CONFIRM_REWIND_TITLE);
 
-        int result = JOptionPane.showOptionDialog(clientFrame, message, title,
+        final int result = JOptionPane.showOptionDialog(clientFrame, message, title,
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
                 null, dlgOptions, dlgOptions[2]);
 
@@ -763,18 +763,18 @@ public class PersistenceManager {
         return (result == 0);
     }
 
-    private boolean loadDialog(String gameInfo) {
-        Object[] dlgOptions = {Utils.getLocalString(
+    private boolean loadDialog(final String gameInfo) {
+        final Object[] dlgOptions = {Utils.getLocalString(
                 CONFIRM_BUTTON_LOAD),        // 0
                 Box.createRigidArea(new Dimension(25, 5)),            // 1
                 Utils.getLocalString(CONFIRM_BUTTON_CANCEL)            // 2
         };
 
-        String message = Utils
+        final String message = Utils
                 .getText(Utils.getLocalString(CONFIRM_LOAD_TEXT), gameInfo);
-        String title = Utils.getLocalString(CONFIRM_LOAD_TITLE);
+        final String title = Utils.getLocalString(CONFIRM_LOAD_TITLE);
 
-        int result = JOptionPane.showOptionDialog(clientFrame, message, title,
+        final int result = JOptionPane.showOptionDialog(clientFrame, message, title,
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
                 null, dlgOptions, dlgOptions[2]);
 
@@ -784,7 +784,7 @@ public class PersistenceManager {
         return (result == 0);
     }
 
-    private void setChanged(boolean value) {
+    private void setChanged(final boolean value) {
         isChanged = value;
         setTitle();
     }// setChanged()
@@ -801,7 +801,7 @@ public class PersistenceManager {
     public String getSuggestedSaveName() {
         if (fileName == null) {
             // game name?
-            String gameName = clientFrame.getWorld().getGameMetadata()
+            final String gameName = clientFrame.getWorld().getGameMetadata()
                     .getGameName();
             if (!EMPTY.equals(gameName) && gameName != null) {
                 return gameName;
@@ -825,13 +825,13 @@ public class PersistenceManager {
      * Assumes current World/TurnState are not null.
      */
     public String getSuggestedExportName() {
-        StringBuffer sb = new StringBuffer(64);
+        final StringBuffer sb = new StringBuffer(64);
 
         // get prefix
         sb.append(getSuggestedSaveName());
 
         // remove trailing extension from suggested name, if any
-        int idx = sb.lastIndexOf(
+        final int idx = sb.lastIndexOf(
                 "." + SimpleFileFilter.SAVE_GAME_FILTER.getExtension());
         if (idx >= 0) {
             sb.replace(idx, sb.length(), "");

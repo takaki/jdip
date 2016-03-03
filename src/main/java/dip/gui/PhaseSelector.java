@@ -49,7 +49,7 @@ public class PhaseSelector {
     /**
      * Create a PhaseSelector object.
      */
-    public PhaseSelector(ClientFrame parent) {
+    public PhaseSelector(final ClientFrame parent) {
         this.parent = parent;
         this.menu = parent.getClientMenu();
         this.pcl = new PhasePCL();
@@ -114,7 +114,7 @@ public class PhaseSelector {
     }// getCurrentPhasePosition()
 
 
-    private void setWorld(World newWorld) {
+    private void setWorld(final World newWorld) {
         if (newWorld == null) {
             // disable menu options
             menu.setEnabled(ClientMenu.HISTORY_PREVIOUS, false);
@@ -145,7 +145,7 @@ public class PhaseSelector {
     }// setWorld()
 
 
-    private void setTurnState(TurnState ts) {
+    private void setTurnState(final TurnState ts) {
         if (ts == null) {
             throw new IllegalArgumentException("null turnstate");
         }
@@ -161,14 +161,14 @@ public class PhaseSelector {
 
     private void setCurrentPosition() {
         // get set, convert to array
-        Set set = currentWorld.getPhaseSet();
+        final Set set = currentWorld.getPhaseSet();
         phases = (Phase[]) set.toArray(new Phase[set.size()]);
 
         // set max size
         maxPos = phases.length - 1;
 
         // find current position in array
-        Phase currentPhase = currentTS.getPhase();
+        final Phase currentPhase = currentTS.getPhase();
         currentPos = Arrays.binarySearch(phases, currentPhase);
         if (currentPos < 0) {
             throw new IllegalStateException("bad position!");
@@ -205,7 +205,7 @@ public class PhaseSelector {
             if (currentPos <= 0) {
                 menu.setEnabled(ClientMenu.REPORTS_PREVIOUS_RESULTS, false);
             } else {
-                TurnState previousTS = currentWorld
+                final TurnState previousTS = currentWorld
                         .getTurnState(phases[currentPos - 1]);
                 if (previousTS != null) {
                     menu.setEnabled(ClientMenu.REPORTS_PREVIOUS_RESULTS,
@@ -223,19 +223,19 @@ public class PhaseSelector {
      */
     private class PhasePCL extends AbstractCFPListener {
 
-        public void actionWorldCreated(World w) {
+        public void actionWorldCreated(final World w) {
             setWorld(w);
         }// actionWorldCreated()
 
-        public void actionWorldDestroyed(World w) {
+        public void actionWorldDestroyed(final World w) {
             setWorld(null);
         }// actionWorldDestroyed()
 
-        public void actionTurnstateChanged(TurnState ts) {
+        public void actionTurnstateChanged(final TurnState ts) {
             setTurnState(ts);
         }// actionTurnstateChanged()
 
-        public void actionTurnstateAdded(TurnState ts) {
+        public void actionTurnstateAdded(final TurnState ts) {
             setCurrentPosition();
         }// actionTurnstateAdded()
 
@@ -243,7 +243,7 @@ public class PhaseSelector {
             setCurrentPosition();
         }// actionTurnstateRemoved()
 
-        public void actionModeChanged(String newMode) {
+        public void actionModeChanged(final String newMode) {
             if (newMode == ClientFrame.MODE_NONE || newMode == ClientFrame.MODE_EDIT) {
                 // disable history menu, completely
                 menu.setEnabled(ClientMenu.HISTORY_PREVIOUS, false);

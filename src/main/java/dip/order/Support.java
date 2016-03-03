@@ -71,8 +71,8 @@ public class Support extends Order {
     /**
      * Creates a Support order, for supporting a Hold or other <b>non</b>-movement order.
      */
-    protected Support(Power power, Location src, Unit.Type srcUnit,
-                      Location supSrc, Power supPower, Unit.Type supUnit) {
+    protected Support(final Power power, final Location src, final Unit.Type srcUnit,
+                      final Location supSrc, final Power supPower, final Unit.Type supUnit) {
         this(power, src, srcUnit, supSrc, supPower, supUnit, null);
     }// Support()
 
@@ -85,9 +85,9 @@ public class Support extends Order {
      * location is not a valid order.
      * <p>
      */
-    protected Support(Power power, Location src, Unit.Type srcUnit,
-                      Location supSrc, Power supPower, Unit.Type supUnit,
-                      Location supDest) {
+    protected Support(final Power power, final Location src, final Unit.Type srcUnit,
+                      final Location supSrc, final Power supPower, final Unit.Type supUnit,
+                      final Location supDest) {
         super(power, src, srcUnit);
 
         if (supSrc == null || supUnit == null) {
@@ -117,7 +117,7 @@ public class Support extends Order {
      *
      * @throws IllegalArgumentException if this is a Move support.
      */
-    public void setNarrowingOrder(Order o) {
+    public void setNarrowingOrder(final Order o) {
         if (!isSupportingHold()) {
             throw new IllegalArgumentException(
                     "Cannot narrow a supported move order.");
@@ -218,7 +218,7 @@ public class Support extends Order {
 
 
     public String toBriefString() {
-        StringBuffer sb = new StringBuffer(64);
+        final StringBuffer sb = new StringBuffer(64);
 
         super.appendBrief(sb);
         sb.append(' ');
@@ -238,7 +238,7 @@ public class Support extends Order {
 
 
     public String toFullString() {
-        StringBuffer sb = new StringBuffer(128);
+        final StringBuffer sb = new StringBuffer(128);
 
         super.appendFull(sb);
         sb.append(' ');
@@ -257,7 +257,7 @@ public class Support extends Order {
     }// toFullString()
 
 
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (obj instanceof Support) {
             final Support support = (Support) obj;
             if (super.equals(support) && supUnitType
@@ -272,8 +272,8 @@ public class Support extends Order {
     }// equals()
 
 
-    public void validate(TurnState state, ValidationOptions valOpts,
-                         RuleOptions ruleOpts) throws OrderException {
+    public void validate(final TurnState state, final ValidationOptions valOpts,
+                         final RuleOptions ruleOpts) throws OrderException {
         // v.0: 	check season/phase, basic validation
         checkSeasonMovement(state, orderNameFull);
         checkPower(power, state, true);
@@ -281,7 +281,7 @@ public class Support extends Order {
 
         if (valOpts.getOption(ValidationOptions.KEY_GLOBAL_PARSING)
                 .equals(ValidationOptions.VALUE_GLOBAL_PARSING_STRICT)) {
-            Position position = state.getPosition();
+            final Position position = state.getPosition();
 
             // validate Borders
             Border border = src.getProvince()
@@ -294,7 +294,7 @@ public class Support extends Order {
             }
 
             // v.1: unit existence / matching
-            Unit supUnit = position.getUnit(supSrc.getProvince()).orElse(null);
+            final Unit supUnit = position.getUnit(supSrc.getProvince()).orElse(null);
             supUnitType = getValidatedUnitType(supSrc.getProvince(),
                     supUnitType, supUnit);
 
@@ -381,7 +381,7 @@ public class Support extends Order {
      * <p>
      * At this time, we do not check for narrowing conventions in a support order.
      */
-    public void verify(Adjudicator adjudicator) {
+    public void verify(final Adjudicator adjudicator) {
         String failureText = null;
         boolean isMatched = false;
 
@@ -403,7 +403,7 @@ public class Support extends Order {
             // Support: supporting a Move
             failureText = Utils.getLocalString(SUPPORT_VER_NOMATCH);
             if (matchingOS.getOrder() instanceof Move) {
-                Move matchingMove = (Move) matchingOS.getOrder();
+                final Move matchingMove = (Move) matchingOS.getOrder();
                 if (matchingMove.getDest()
                         .isProvinceEqual(getSupportedDest())) {
                     // NOTE: if a coast is specified in the destination, it MUST match the move order.
@@ -440,7 +440,7 @@ public class Support extends Order {
      * <li>Support to this space (only considered if attacked, to prevent dislodgement)
      * </ol>
      */
-    public void determineDependencies(Adjudicator adjudicator) {
+    public void determineDependencies(final Adjudicator adjudicator) {
         addSupportsOfAndMovesToSource(adjudicator);
     }// determineDependencies()
 
@@ -499,10 +499,10 @@ public class Support extends Order {
      * only 2.c.3.b.3, 2.b.1.b result in UNCERTAIN success results.
      * </pre>
      */
-    public void evaluate(Adjudicator adjudicator) {
+    public void evaluate(final Adjudicator adjudicator) {
         Log.println("--- evaluate() dip.order.Support ---");
 
-        OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
+        final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
         // 1) calculate support (to prevent dislodgement)
 
 		/* 
@@ -512,7 +512,7 @@ public class Support extends Order {
 		 * If the modification was negitive, subtract it to add it back.
 		 * If the modification was positive, subtract it to remove it.
 		 */
-        int mod = getSupportedDest().getProvince()
+        final int mod = getSupportedDest().getProvince()
                 .getBaseMoveModifier(getSource());
         thisOS.setDefMax(thisOS.getSupport(false) - mod);
         thisOS.setDefCertain(thisOS.getSupport(true) - mod);
@@ -544,11 +544,11 @@ public class Support extends Order {
             Tristate evalResult = Tristate.SUCCESS;
             Move cuttingMove = null;
 
-            OrderState[] depMovesToSrc = thisOS.getDependentMovesToSource();
+            final OrderState[] depMovesToSrc = thisOS.getDependentMovesToSource();
 
             for (int i = 0; i < depMovesToSrc.length; i++) {
-                OrderState depMoveOS = depMovesToSrc[i];
-                Move depMove = (Move) depMoveOS.getOrder();
+                final OrderState depMoveOS = depMovesToSrc[i];
+                final Move depMove = (Move) depMoveOS.getOrder();
 
                 Log.println("  checking against move: ", depMove);
 
@@ -626,9 +626,9 @@ public class Support extends Order {
                             evalResult = pickState(evalResult,
                                     Tristate.SUCCESS);
                         } else {
-                            Order convoy = getSupportingAConvoyAttack(
+                            final Order convoy = getSupportingAConvoyAttack(
                                     adjudicator, depMove);
-                            Path path = new Path(adjudicator);
+                            final Path path = new Path(adjudicator);
 
                             Log.println("     supporting convoy attack = ",
                                     convoy);
@@ -640,7 +640,7 @@ public class Support extends Order {
                                 // 						support is cut.
                                 // if pathEvalResult == FAILURE, convoy must have ONLY one route;
                                 //						support is not cut.
-                                Tristate pathEvalResult = path
+                                final Tristate pathEvalResult = path
                                         .getConvoyRouteEvaluation(depMove,
                                                 convoy.getSource(), null);
                                 cuttingMove = depMove;    // if we don't cut, this will just be ignored.
@@ -673,7 +673,7 @@ public class Support extends Order {
                                 // 2.c.3.a
                                 // depends upon route; if route is SUCCESS, we fail; if route is FAILURE,
                                 // not cut, if route is uncertain, so are we.
-                                Tristate pathEvalResult = path
+                                final Tristate pathEvalResult = path
                                         .getConvoyRouteEvaluation(depMove, null,
                                                 null);
                                 if (pathEvalResult == Tristate.SUCCESS) {
@@ -759,7 +759,7 @@ public class Support extends Order {
      * FAILURE >> UNCERTAIN >> SUCCESS
      * </pre>
      */
-    private Tristate pickState(Tristate oldState, Tristate newState) {
+    private Tristate pickState(final Tristate oldState, final Tristate newState) {
         // any failure == failure
         if (newState == Tristate.FAILURE || oldState == Tristate.FAILURE) {
             return Tristate.FAILURE;
@@ -781,18 +781,18 @@ public class Support extends Order {
      * <p>
      * Returns OrderState or null
      */
-    private Order getSupportingAConvoyAttack(Adjudicator adjudicator,
-                                             Move convoyedMove) {
+    private Order getSupportingAConvoyAttack(final Adjudicator adjudicator,
+                                             final Move convoyedMove) {
         // are we even supporting a Move?
         if (!isSupportingHold()) {
             // if so, get the OrderState at the destination
-            OrderState destOS = adjudicator
+            final OrderState destOS = adjudicator
                     .findOrderStateBySrc(getSupportedDest());
             if (destOS != null) {
                 if (destOS.getOrder() instanceof Convoy) {
                     // destination of the supported move has a convoy
                     // see if it matches the convoyedMove
-                    Convoy convoy = (Convoy) destOS.getOrder();
+                    final Convoy convoy = (Convoy) destOS.getOrder();
                     if (convoy.getConvoySrc()
                             .equals(convoyedMove.getSource()) && convoy
                             .getConvoyDest().equals(convoyedMove.getDest())) {

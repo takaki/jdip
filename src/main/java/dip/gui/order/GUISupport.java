@@ -74,9 +74,9 @@ public class GUISupport extends Support implements GUIOrder {
     /**
      * Creates a GUISupport
      */
-    protected GUISupport(Power power, Location src, Unit.Type srcUnitType,
-                         Location supSrc, Power supPower,
-                         Unit.Type supUnitType) {
+    protected GUISupport(final Power power, final Location src, final Unit.Type srcUnitType,
+                         final Location supSrc, final Power supPower,
+                         final Unit.Type supUnitType) {
         super(power, src, srcUnitType, supSrc, supPower, supUnitType);
     }// GUISupport()
 
@@ -84,9 +84,9 @@ public class GUISupport extends Support implements GUIOrder {
     /**
      * Creates a GUISupport
      */
-    protected GUISupport(Power power, Location src, Unit.Type srcUnitType,
-                         Location supSrc, Power supPower, Unit.Type supUnitType,
-                         Location supDest) {
+    protected GUISupport(final Power power, final Location src, final Unit.Type srcUnitType,
+                         final Location supSrc, final Power supPower, final Unit.Type supUnitType,
+                         final Location supDest) {
         super(power, src, srcUnitType, supSrc, supPower, supUnitType, supDest);
     }// GUISupport()
 
@@ -95,12 +95,12 @@ public class GUISupport extends Support implements GUIOrder {
      * This only accepts Support orders.
      * All others will throw an IllegalArgumentException.
      */
-    public void deriveFrom(Orderable order) {
+    public void deriveFrom(final Orderable order) {
         if (!(order instanceof Support)) {
             throw new IllegalArgumentException();
         }
 
-        Support support = (Support) order;
+        final Support support = (Support) order;
         power = support.getPower();
         src = support.getSource();
         srcUnitType = support.getSourceUnitType();
@@ -116,8 +116,8 @@ public class GUISupport extends Support implements GUIOrder {
     }// deriveFrom()
 
 
-    public boolean testLocation(StateInfo stateInfo, Location location,
-                                StringBuffer sb) {
+    public boolean testLocation(final StateInfo stateInfo, final Location location,
+                                final StringBuffer sb) {
         sb.setLength(0);
 
         if (isComplete()) {
@@ -126,13 +126,13 @@ public class GUISupport extends Support implements GUIOrder {
         }
 
 
-        Position position = stateInfo.getPosition();
-        Province province = location.getProvince();
+        final Position position = stateInfo.getPosition();
+        final Province province = location.getProvince();
 
         if (currentLocNum == 0) {
             // set Support origin (supporting unit)
             // we require a unit present. We will check unit ownership too, if appropriate
-            Unit unit = position.getUnit(province).orElse(null);
+            final Unit unit = position.getUnit(province).orElse(null);
             if (unit != null) {
                 if (!stateInfo.canIssueOrder(unit.getPower())) {
                     sb.append(Utils.getLocalString(GUIOrder.NOT_OWNER,
@@ -182,7 +182,7 @@ public class GUISupport extends Support implements GUIOrder {
                 return false;
             } else if (position.hasUnit(province)) {
                 // check borders
-                Unit supUnit = position.getUnit(province).orElse(null);
+                final Unit supUnit = position.getUnit(province).orElse(null);
                 if (!GUIOrderUtils.checkBorder(this,
                         new Location(province, supUnit.getCoast()),
                         supUnit.getType(), stateInfo.getPhase(), sb)) {
@@ -270,15 +270,15 @@ public class GUISupport extends Support implements GUIOrder {
     }// clearLocations()
 
 
-    public boolean setLocation(StateInfo stateInfo, Location location,
-                               StringBuffer sb) {
+    public boolean setLocation(final StateInfo stateInfo, final Location location,
+                               final StringBuffer sb) {
         if (isComplete()) {
             return false;
         }
 
         if (testLocation(stateInfo, location, sb)) {
             if (currentLocNum == 0) {
-                Unit unit = stateInfo.getPosition()
+                final Unit unit = stateInfo.getPosition()
                         .getUnit(location.getProvince()).orElse(null);
                 src = new Location(location.getProvince(), unit.getCoast());
                 power = unit.getPower();
@@ -286,7 +286,7 @@ public class GUISupport extends Support implements GUIOrder {
                 currentLocNum++;
                 return true;
             } else if (currentLocNum == 1) {
-                Unit unit = stateInfo.getPosition()
+                final Unit unit = stateInfo.getPosition()
                         .getUnit(location.getProvince()).orElse(null);
                 supSrc = new Location(location.getProvince(), unit.getCoast());
                 supPower = unit.getPower();
@@ -332,21 +332,21 @@ public class GUISupport extends Support implements GUIOrder {
     /**
      * Always throws an IllegalArgumentException
      */
-    public void setParam(Parameter param, Object value) {
+    public void setParam(final Parameter param, final Object value) {
         throw new IllegalArgumentException();
     }
 
     /**
      * Always throws an IllegalArgumentException
      */
-    public Object getParam(Parameter param) {
+    public Object getParam(final Parameter param) {
         throw new IllegalArgumentException();
     }
 
 
-    public void removeFromDOM(MapInfo mapInfo) {
+    public void removeFromDOM(final MapInfo mapInfo) {
         if (group != null) {
-            SVGGElement powerGroup = mapInfo
+            final SVGGElement powerGroup = mapInfo
                     .getPowerSVGGElement(power, LAYER_LOWEST);
             GUIOrderUtils.removeChild(powerGroup, group);
             group = null;
@@ -361,7 +361,7 @@ public class GUISupport extends Support implements GUIOrder {
      * then draws a dashed circle around the unit, then
      * draws a dashed line with arrow representing the move.
      */
-    public void updateDOM(MapInfo mapInfo) {
+    public void updateDOM(final MapInfo mapInfo) {
         // if we are not displayable, we exit, after remove the order (if
         // it was created)
         if (!GUIOrderUtils.isDisplayable(power, mapInfo)) {
@@ -420,7 +420,7 @@ public class GUISupport extends Support implements GUIOrder {
 
         // draw 'failed' marker, if appropriate.
         if (!mapInfo.getTurnState().isOrderSuccessful(this)) {
-            SVGElement useElement = GUIOrderUtils
+            final SVGElement useElement = GUIOrderUtils
                     .createFailedOrderSymbol(mapInfo, failPt.x, failPt.y);
             group.appendChild(useElement);
         }
@@ -430,15 +430,15 @@ public class GUISupport extends Support implements GUIOrder {
     /**
      * Draw Supported Hold order
      */
-    private void updateDOMHold(MapInfo mapInfo) {
+    private void updateDOMHold(final MapInfo mapInfo) {
         SVGElement[] elements = null;
 
         // create hilight line
-        String cssStyle = mapInfo.getMapMetadata()
+        final String cssStyle = mapInfo.getMapMetadata()
                 .getOrderParamString(MapMetadata.EL_SUPPORT,
                         MapMetadata.ATT_HILIGHT_CLASS);
         if (!cssStyle.equalsIgnoreCase("none")) {
-            float offset = mapInfo.getMapMetadata()
+            final float offset = mapInfo.getMapMetadata()
                     .getOrderParamFloat(MapMetadata.EL_SUPPORT,
                             MapMetadata.ATT_HILIGHT_OFFSET);
             elements = drawSupportedHold(mapInfo, offset);
@@ -462,15 +462,15 @@ public class GUISupport extends Support implements GUIOrder {
     /**
      * Draw Supported Move order
      */
-    private void updateDOMMove(MapInfo mapInfo) {
+    private void updateDOMMove(final MapInfo mapInfo) {
         SVGElement[] elements = null;
 
         // create hilight line
-        String cssStyle = mapInfo.getMapMetadata()
+        final String cssStyle = mapInfo.getMapMetadata()
                 .getOrderParamString(MapMetadata.EL_SUPPORT,
                         MapMetadata.ATT_HILIGHT_CLASS);
         if (!cssStyle.equalsIgnoreCase("none")) {
-            float offset = mapInfo.getMapMetadata()
+            final float offset = mapInfo.getMapMetadata()
                     .getOrderParamFloat(MapMetadata.EL_SUPPORT,
                             MapMetadata.ATT_HILIGHT_OFFSET);
             elements = drawSupportedMove(mapInfo, offset, false);
@@ -494,19 +494,19 @@ public class GUISupport extends Support implements GUIOrder {
     /**
      * Note: we don't draw the 3rd part (supSrc->supDest) if moveFound == false.
      */
-    private SVGElement[] drawSupportedMove(MapInfo mapInfo, float offset,
-                                           boolean addMarker) {
+    private SVGElement[] drawSupportedMove(final MapInfo mapInfo, final float offset,
+                                           final boolean addMarker) {
         // setup
         //SVGElement[] elements = new SVGElement[ ((dependentFound) ? 1 : 3) ];
-        SVGElement[] elements = new SVGElement[1];
+        final SVGElement[] elements = new SVGElement[1];
 
-        Position position = mapInfo.getTurnState().getPosition();
+        final Position position = mapInfo.getTurnState().getPosition();
 
-        MapMetadata mmd = mapInfo.getMapMetadata();
-        Point2D.Float ptSrc = mmd.getUnitPt(src.getProvince(), src.getCoast());
-        Point2D.Float ptSupSrc = mmd
+        final MapMetadata mmd = mapInfo.getMapMetadata();
+        final Point2D.Float ptSrc = mmd.getUnitPt(src.getProvince(), src.getCoast());
+        final Point2D.Float ptSupSrc = mmd
                 .getUnitPt(supSrc.getProvince(), supSrc.getCoast());
-        Point2D.Float ptSupDest = mmd
+        final Point2D.Float ptSupDest = mmd
                 .getUnitPt(supDest.getProvince(), supDest.getCoast());
 
 
@@ -524,16 +524,16 @@ public class GUISupport extends Support implements GUIOrder {
         Point2D.Float newSupDest = null;
         if (position.hasUnit(supDest.getProvince())) {
             // since we're supporting a Move, we should use the Move radius
-            Unit.Type destUnitType = position.getUnit(supDest.getProvince()).orElse(null)
+            final Unit.Type destUnitType = position.getUnit(supDest.getProvince()).orElse(null)
                     .getType();
-            float moveRadius = mmd.getOrderRadius(MapMetadata.EL_MOVE,
+            final float moveRadius = mmd.getOrderRadius(MapMetadata.EL_MOVE,
                     mapInfo.getSymbolName(destUnitType));
             newSupDest = GUIOrderUtils
                     .getLineCircleIntersection(ptSupSrc.x, ptSupSrc.y,
                             ptSupDest.x, ptSupDest.y, ptSupDest.x, ptSupDest.y,
                             moveRadius);
         } else {
-            float moveRadius = (mmd.getOrderRadius(MapMetadata.EL_MOVE,
+            final float moveRadius = (mmd.getOrderRadius(MapMetadata.EL_MOVE,
                     mapInfo.getSymbolName(Unit.Type.ARMY)) / 2);
             newSupDest = GUIOrderUtils
                     .getLineCircleIntersection(ptSupSrc.x, ptSupSrc.y,
@@ -553,7 +553,7 @@ public class GUISupport extends Support implements GUIOrder {
                         SVGConstants.SVG_PATH_TAG);
 
 
-        StringBuffer sb = new StringBuffer();
+        final StringBuffer sb = new StringBuffer();
 
         sb.append("M ");
         GUIOrderUtils.appendFloat(sb, ptSrc.x);    // unit start
@@ -593,17 +593,17 @@ public class GUISupport extends Support implements GUIOrder {
     }// drawSupportedMove()
 
 
-    private SVGElement[] drawSupportedHold(MapInfo mapInfo, float offset) {
+    private SVGElement[] drawSupportedHold(final MapInfo mapInfo, final float offset) {
         // setup
-        SVGElement[] elements = new SVGElement[((dependentFound) ? 1 : 2)];
+        final SVGElement[] elements = new SVGElement[((dependentFound) ? 1 : 2)];
 
-        MapMetadata mmd = mapInfo.getMapMetadata();
-        Point2D.Float ptSrc = mmd.getUnitPt(src.getProvince(), src.getCoast());
-        Point2D.Float ptSupSrc = mmd
+        final MapMetadata mmd = mapInfo.getMapMetadata();
+        final Point2D.Float ptSrc = mmd.getUnitPt(src.getProvince(), src.getCoast());
+        final Point2D.Float ptSupSrc = mmd
                 .getUnitPt(supSrc.getProvince(), supSrc.getCoast());
 
         // supUnitType shouldn't be null here...
-        float radius = mmd.getOrderRadius(MapMetadata.EL_SUPPORT,
+        final float radius = mmd.getOrderRadius(MapMetadata.EL_SUPPORT,
                 mapInfo.getSymbolName(supUnitType));
 
         // adjust for offset
@@ -613,7 +613,7 @@ public class GUISupport extends Support implements GUIOrder {
         ptSupSrc.y += offset;
 
         // draw line to the octagon
-        Point2D.Float newPtTo = GUIOrderUtils
+        final Point2D.Float newPtTo = GUIOrderUtils
                 .getLineCircleIntersection(ptSrc.x, ptSrc.y, ptSupSrc.x,
                         ptSupSrc.y, ptSupSrc.x, ptSupSrc.y, radius);
 
@@ -639,9 +639,9 @@ public class GUISupport extends Support implements GUIOrder {
 
         // draw octagon
         if (!dependentFound) {
-            Point2D.Float[] pts = GUIOrderUtils.makeOctagon(ptSupSrc, radius);
+            final Point2D.Float[] pts = GUIOrderUtils.makeOctagon(ptSupSrc, radius);
 
-            StringBuffer sb = new StringBuffer(160);
+            final StringBuffer sb = new StringBuffer(160);
             for (int i = 0; i < pts.length; i++) {
                 GUIOrderUtils.appendFloat(sb, pts[i].x);
                 sb.append(',');
@@ -675,15 +675,15 @@ public class GUISupport extends Support implements GUIOrder {
     /**
      * Check a Move between two locations, for adjacency (even by theoretical convoy route).
      */
-    private boolean checkMove(Position position, Location from, Location to,
-                              StringBuffer sb) {
+    private boolean checkMove(final Position position, final Location from, final Location to,
+                              final StringBuffer sb) {
         if (from.isAdjacent(to.getProvince())) {
             sb.append(Utils.getLocalString(CLICK_TO_SUPPORT_MOVE));
             return true;
         } else if (from.getProvince()
                 .isCoastal() && supUnitType == Unit.Type.ARMY) {
             // NOTE: assume destination coast is Coast.NONE
-            Path path = new Path(position);
+            final Path path = new Path(position);
             if (path.isPossibleConvoyRoute(from,
                     new Location(to.getProvince(), Coast.NONE))) {
                 sb.append(Utils.getLocalString(CLICK_TO_SUPPORT_CONVOYED_MOVE));

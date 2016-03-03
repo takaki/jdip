@@ -56,19 +56,19 @@ public class Help {
     public synchronized static void init() {
         loaderThread = new SwingWorker() {
             public Object construct() {
-                long time = System.currentTimeMillis();
-                HKeeper keeper = new HKeeper();
+                final long time = System.currentTimeMillis();
+                final HKeeper keeper = new HKeeper();
 
                 try {
                     final String helpFileName = Utils
                             .getResourceBasePrefix() + HELP_FILE_NAME;
 
-                    URL url = HelpSet
+                    final URL url = HelpSet
                             .findHelpSet(Utils.getClassLoader(), helpFileName,
                                     Utils.getLocale());
                     Log.println("HelpSet URL: ", url);
                     keeper.helpSet = new HelpSet(null, url);
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     Log.println("Help not available: ", e);
                     //ErrorDialog.displaySerious(null, e);
                     return null;
@@ -101,10 +101,10 @@ public class Help {
     /**
      * Sets the context-sensitive Dialog-Level help
      */
-    public static void enableDialogHelp(JDialog dialog, HelpID id) {
+    public static void enableDialogHelp(final JDialog dialog, final HelpID id) {
         checkInit();
         if (hk != null) {
-            String sID = (id == null) ? null : id.toString();
+            final String sID = (id == null) ? null : id.toString();
             hk.helpBroker.enableHelpKey(dialog.getRootPane(), sID, hk.helpSet);
         }
     }// enableWindowHelp()
@@ -113,10 +113,10 @@ public class Help {
     /**
      * Set the Help for a button (and Swing menu items)
      */
-    public static void enableHelpOnButton(AbstractButton button, HelpID id) {
+    public static void enableHelpOnButton(final AbstractButton button, final HelpID id) {
         checkInit();
         if (hk != null) {
-            String sID = (id == null) ? null : id.toString();
+            final String sID = (id == null) ? null : id.toString();
             hk.helpBroker.enableHelpOnButton(button, sID, null);
         }
     }// enableHelpOnButton()
@@ -188,7 +188,7 @@ public class Help {
         // instance fields
         private final String id;
 
-        private HelpID(String value) {
+        private HelpID(final String value) {
             if (value == null) {
                 throw new IllegalArgumentException();
             }

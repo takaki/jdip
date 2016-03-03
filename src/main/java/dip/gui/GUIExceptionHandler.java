@@ -64,7 +64,7 @@ public class GUIExceptionHandler {
             System.setProperty("sun.awt.exception.handler",
                     GUIExceptionHandler.class.getName());
             return true;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             return false;
         }
     }// registerHandler()
@@ -73,7 +73,7 @@ public class GUIExceptionHandler {
     /**
      * Handles the thrown Exception, from an AWT event thread
      */
-    public void handle(Throwable thrown) {
+    public void handle(final Throwable thrown) {
         ErrorDialog.displaySerious(null, thrown);
     }// handle()
 

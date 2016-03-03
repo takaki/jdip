@@ -78,8 +78,8 @@ public class JudgeParser {
     /**
      * Create a JudgeParser, and start parsing.
      */
-    public JudgeParser(OrderFactory orderFactory,
-                       Reader r) throws IOException, PatternSyntaxException {
+    public JudgeParser(final OrderFactory orderFactory,
+                       final Reader r) throws IOException, PatternSyntaxException {
         this.orderFactory = orderFactory;
         reader = new BufferedReader(r, 8192);
 
@@ -151,7 +151,7 @@ public class JudgeParser {
     /**
      * Prepend the given string in front of the stored text
      */
-    public String prependText(String s) {
+    public String prependText(final String s) {
         text = s + text;
         return text;
     }
@@ -176,7 +176,7 @@ public class JudgeParser {
         // regex is case-insensitive
         // capture groups are in order
         // double () on last capture group because of buggy behavior!? WTF?
-        Pattern pattern = Pattern.compile(
+        final Pattern pattern = Pattern.compile(
                 "\\W*judge\\W*(\\S*)\\W*game\\W*(\\S*)\\W*variant\\W*((\\S*))",
                 Pattern.CASE_INSENSITIVE);
 
@@ -185,7 +185,7 @@ public class JudgeParser {
         while (line != null) {
             if (line.trim().indexOf("::") >= 0) {
                 // attempt to parse via regex. If it fails, read another line.
-                Matcher m = pattern.matcher(line);
+                final Matcher m = pattern.matcher(line);
                 if (m.find()) {
                     judgeName = m.group(1);
                     gameName = m.group(2);
@@ -208,7 +208,7 @@ public class JudgeParser {
      */
     private void findPlayerList() throws IOException, PatternSyntaxException {
         // our pattern for finding the player list
-        Pattern pattern = Pattern.compile("(?i)following players");
+        final Pattern pattern = Pattern.compile("(?i)following players");
 
         reader.mark(READ_AHEAD_LENGTH);
         int count = 0;
@@ -217,10 +217,10 @@ public class JudgeParser {
         while (line != null && count < READ_AHEAD_LENGTH) {
             count += line.length();
 
-            Matcher m = pattern.matcher(line);
+            final Matcher m = pattern.matcher(line);
             if (m.find()) {
-                LinkedList<String> names = new LinkedList<String>();
-                LinkedList<String> email = new LinkedList<String>();
+                final LinkedList<String> names = new LinkedList<String>();
+                final LinkedList<String> email = new LinkedList<String>();
 
                 // now read each player UNTIL we get an empty line (or of length < 4)
                 line = reader.readLine();
@@ -228,15 +228,15 @@ public class JudgeParser {
                     if (line.length() < 4) {
                         break;
                     } else {
-                        StringTokenizer st = new StringTokenizer(line,
+                        final StringTokenizer st = new StringTokenizer(line,
                                 ": \t\n\r\f");
-                        int nTok = st.countTokens();
+                        final int nTok = st.countTokens();
                         if (nTok == 0) {
                             break;    // if line is somehow garbage....
                         }
 
                         for (int i = 0; i < nTok; i++) {
-                            String tok = st.nextToken();
+                            final String tok = st.nextToken();
 
                             if (i == 0) {
                                 names.add(tok);        // name is first token
@@ -283,17 +283,17 @@ public class JudgeParser {
         // save the initial text; we will need this if we are a history;
         // if we are a listing, this will be null. This is all the text UP TO and EXCLUDING
         // the first "Date:" line.
-        StringBuffer initSB = new StringBuffer(2048);
+        final StringBuffer initSB = new StringBuffer(2048);
 
         line = reader.readLine();
         while (line != null && count < READ_AHEAD_LENGTH) {
             // first check: Date
             count += line.length();
-            int pos1 = line.toLowerCase().indexOf("date:");
+            final int pos1 = line.toLowerCase().indexOf("date:");
             if (pos1 >= 0 && pos1 < 10) {
                 //System.out.println("Date Found");
                 // read next line; should be "subject" line
-                String line2 = reader.readLine();
+                final String line2 = reader.readLine();
                 if (line2 == null) {
                     break;
                 }
@@ -301,11 +301,11 @@ public class JudgeParser {
                 count += line2.length();
 
                 // second check: Subject:
-                int pos2 = line2.toLowerCase().indexOf("subject:");
+                final int pos2 = line2.toLowerCase().indexOf("subject:");
                 if (pos2 >= 0 && pos2 < 10) {
                     type = JP_TYPE_HISTORY;
 
-                    StringBuffer sb = new StringBuffer(256);
+                    final StringBuffer sb = new StringBuffer(256);
                     sb.append(line);
                     sb.append('\n');
                     sb.append(line2);
@@ -328,9 +328,9 @@ public class JudgeParser {
 
         // we are not a history.
         // Next we try to find a result header.
-        Pattern hm = Pattern.compile(JudgeOrderParser.MOVE_ORDER_HEADER);
-        Pattern hr = Pattern.compile(JudgeOrderParser.RETREAT_ORDER_HEADER);
-        Pattern ha = Pattern.compile(JudgeOrderParser.ADJUSTMENT_ORDER_HEADER);
+        final Pattern hm = Pattern.compile(JudgeOrderParser.MOVE_ORDER_HEADER);
+        final Pattern hr = Pattern.compile(JudgeOrderParser.RETREAT_ORDER_HEADER);
+        final Pattern ha = Pattern.compile(JudgeOrderParser.ADJUSTMENT_ORDER_HEADER);
 
         reader.reset();
         count = 0;
@@ -338,9 +338,9 @@ public class JudgeParser {
         while (line != null && count < READ_AHEAD_LENGTH) {
             count += line.length();
             line = line.trim();    // needed for Patterns to work properly
-            Matcher m_hm = hm.matcher(line);
-            Matcher m_hr = hr.matcher(line);
-            Matcher m_ha = ha.matcher(line);
+            final Matcher m_hm = hm.matcher(line);
+            final Matcher m_hr = hr.matcher(line);
+            final Matcher m_ha = ha.matcher(line);
             if (m_hm.lookingAt() ||
                     m_hr.lookingAt() ||
                     m_ha.lookingAt()) {
@@ -359,16 +359,16 @@ public class JudgeParser {
         }
 
         // Try to find a game starting message
-        Pattern gs = Pattern.compile(JudgeOrderParser.GAME_STARTING_HEADER);
-        Pattern sp = Pattern.compile(JudgeOrderParser.STARTING_POSITION_REGEX);
+        final Pattern gs = Pattern.compile(JudgeOrderParser.GAME_STARTING_HEADER);
+        final Pattern sp = Pattern.compile(JudgeOrderParser.STARTING_POSITION_REGEX);
 
         reader.reset();
         count = 0;
         line = reader.readLine();
         while (line != null && count < READ_AHEAD_LENGTH) {
             count += line.length();
-            Matcher m_gs = gs.matcher(line);
-            Matcher m_sp = sp.matcher(line);
+            final Matcher m_gs = gs.matcher(line);
+            final Matcher m_sp = sp.matcher(line);
             if (m_gs.lookingAt()) {
                 type = JP_TYPE_GAMESTART;
             }
@@ -398,8 +398,8 @@ public class JudgeParser {
     /**
      * Given the current position in the reader, get the rest of the text to the end of the input
      */
-    private void makeRestOfText(String toPrepend) throws IOException {
-        StringBuffer sb = new StringBuffer(16384);
+    private void makeRestOfText(final String toPrepend) throws IOException {
+        final StringBuffer sb = new StringBuffer(16384);
 
         // prepend text first, if any
         if (toPrepend != null) {

@@ -52,8 +52,8 @@ public class PreferenceDialog extends HeaderDialog {
     /**
      * Show the Preferences dialog.
      */
-    public static void displayDialog(ClientFrame parent) {
-        PreferenceDialog pd = new PreferenceDialog(parent);
+    public static void displayDialog(final ClientFrame parent) {
+        final PreferenceDialog pd = new PreferenceDialog(parent);
         pd.createPanels();
         pd.pack();
         pd.setSize(new Dimension(450, 550));
@@ -62,7 +62,7 @@ public class PreferenceDialog extends HeaderDialog {
     }// displayDialog()
 
 
-    private PreferenceDialog(ClientFrame parent) {
+    private PreferenceDialog(final ClientFrame parent) {
         super(parent, Utils.getLocalString(TITLE), true);
         this.parent = parent;
 
@@ -91,7 +91,7 @@ public class PreferenceDialog extends HeaderDialog {
     /**
      * Apply or Cancel settings after closing dialog
      */
-    public void close(String actionCommand) {
+    public void close(final String actionCommand) {
         super.close(actionCommand);
 
         if (isCloseOrCancel(actionCommand)) {

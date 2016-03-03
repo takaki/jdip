@@ -45,7 +45,7 @@ public class Disband extends Order {
     /**
      * Creates a Disband order
      */
-    protected Disband(Power power, Location src, Unit.Type srcUnit) {
+    protected Disband(final Power power, final Location src, final Unit.Type srcUnit) {
         super(power, src, srcUnit);
     }// Disband()
 
@@ -72,7 +72,7 @@ public class Disband extends Order {
 
 
     public String toBriefString() {
-        StringBuffer sb = new StringBuffer(64);
+        final StringBuffer sb = new StringBuffer(64);
 
         super.appendBrief(sb);
         sb.append(' ');
@@ -83,7 +83,7 @@ public class Disband extends Order {
 
 
     public String toFullString() {
-        StringBuffer sb = new StringBuffer(128);
+        final StringBuffer sb = new StringBuffer(128);
 
         super.appendFull(sb);
         sb.append(' ');
@@ -93,7 +93,7 @@ public class Disband extends Order {
     }// toFullString()
 
 
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (obj instanceof Disband) {
             if (super.equals(obj)) {
                 return true;
@@ -103,15 +103,15 @@ public class Disband extends Order {
     }// equals()
 
 
-    public void validate(TurnState state, ValidationOptions valOpts,
-                         RuleOptions ruleOpts) throws OrderException {
+    public void validate(final TurnState state, final ValidationOptions valOpts,
+                         final RuleOptions ruleOpts) throws OrderException {
         // step 0
         checkSeasonRetreat(state, orderNameFull);
         checkPower(power, state, false);    // inactive units can disband!
 
         // step 1
-        Position position = state.getPosition();
-        Unit unit = position.getDislodgedUnit(src.getProvince()).orElse(null);
+        final Position position = state.getPosition();
+        final Unit unit = position.getDislodgedUnit(src.getProvince()).orElse(null);
         super.validate(valOpts, unit);
     }// validate()
 
@@ -119,23 +119,23 @@ public class Disband extends Order {
     /**
      * Disband orders do not require verification.
      */
-    public void verify(Adjudicator adjudicator) {
-        OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
+    public void verify(final Adjudicator adjudicator) {
+        final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
         thisOS.setVerified(true);
     }// verify()
 
     /**
      * Empty method: Disband orders do not require dependency determination.
      */
-    public void determineDependencies(Adjudicator adjudicator) {
+    public void determineDependencies(final Adjudicator adjudicator) {
     }
 
 
     /**
      * Disband orders are always successful.
      */
-    public void evaluate(Adjudicator adjudicator) {
-        OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
+    public void evaluate(final Adjudicator adjudicator) {
+        final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
 
         Log.println("--- evaluate() dip.order.Disband ---");
         Log.println("   order: ", this);

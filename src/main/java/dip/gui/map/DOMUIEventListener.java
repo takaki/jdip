@@ -66,7 +66,7 @@ public class DOMUIEventListener implements EventListener {
     /**
      * Set the MapRenderer
      */
-    public void setMapRenderer(MapRenderer2 mr) {
+    public void setMapRenderer(final MapRenderer2 mr) {
         this.mapRenderer = mr;
     }// setMapRenderer()
 
@@ -74,7 +74,7 @@ public class DOMUIEventListener implements EventListener {
      * Define the (single) object that will receive DOM UI
      * events. Set to null to disable event reporting.
      */
-    public void setDOMUIEventHandler(DOMUIEventHandler handler) {
+    public void setDOMUIEventHandler(final DOMUIEventHandler handler) {
         this.handler = handler;
     }// setDOMUIEventHandler()
 
@@ -82,14 +82,14 @@ public class DOMUIEventListener implements EventListener {
      * Handle Events; this method dispatches events to the appropriate
      * DOMUIEventHandler methods.
      */
-    public void handleEvent(Event evt) {
+    public void handleEvent(final Event evt) {
         if (handler == null || mapRenderer == null) {
             return;
         }
 
         // get ID for current element. If no ID is present, go up one level
         // the the parent element (usually a <g> element).
-        SVGElement element = (SVGElement) evt.getTarget();
+        final SVGElement element = (SVGElement) evt.getTarget();
         String id = element.getAttribute(SVGConstants.SVG_ID_ATTRIBUTE);
         if ("".equals(id)) {
             id = ((SVGElement) element.getParentNode())
@@ -97,7 +97,7 @@ public class DOMUIEventListener implements EventListener {
         }
 
         // lookup Location (convert ID to Location); this may be null.
-        Location location = mapRenderer.getLocation(id);
+        final Location location = mapRenderer.getLocation(id);
 
         // dispatch events, as appropriate
         if (evt instanceof MouseEvent) {
@@ -133,7 +133,7 @@ public class DOMUIEventListener implements EventListener {
      * Method to decide if the mouse button is the Right mouse button, or,
      * command (meta) + left (default) mouse button.
      */
-    public static boolean isRMBorMetaLMB(MouseEvent me) {
+    public static boolean isRMBorMetaLMB(final MouseEvent me) {
         final short button = me.getButton();
         return ((button == BUTTON_RIGHT) || (button == BUTTON_LEFT && me
                 .getMetaKey()));
@@ -144,7 +144,7 @@ public class DOMUIEventListener implements EventListener {
      * Method to decide if the mouse button is the middle mouse button, or,
      * control + left (default) mouse button.
      */
-    public static boolean isMMBorControlLMB(MouseEvent me) {
+    public static boolean isMMBorControlLMB(final MouseEvent me) {
         final short button = me.getButton();
         return ((button == BUTTON_MIDDLE) || (button == BUTTON_LEFT && me
                 .getShiftKey()));

@@ -122,7 +122,7 @@ public class PositionParser {
      * Parses the input for Position information, if any is present.
      */
     public PositionParser(
-            String input) throws IOException, PatternSyntaxException {
+            final String input) throws IOException, PatternSyntaxException {
         parseInput(input);
     }// PositionParser()
 
@@ -152,7 +152,7 @@ public class PositionParser {
         /**
          * Creates a PositionInfo object
          */
-        public PositionInfo(String power, String unit, String location) {
+        public PositionInfo(final String power, final String unit, final String location) {
             this.power = power;
             this.unit = unit;
             this.location = location;
@@ -183,7 +183,7 @@ public class PositionParser {
          * For debugging only; this may change between versions.
          */
         public String toString() {
-            StringBuffer sb = new StringBuffer();
+            final StringBuffer sb = new StringBuffer();
             sb.append("PositionInfo[power=");
             sb.append(power);
             sb.append(",unit=");
@@ -201,15 +201,15 @@ public class PositionParser {
      * until no more positions can be found.
      */
     private void parseInput(
-            String input) throws IOException, PatternSyntaxException {
+            final String input) throws IOException, PatternSyntaxException {
         // search for header input. once found, shuttle all input to the appropriate
         // handler type.
-        Pattern pp1 = Pattern.compile(HEADER_REGEX_1);
-        Pattern pp2 = Pattern.compile(HEADER_REGEX_2);
+        final Pattern pp1 = Pattern.compile(HEADER_REGEX_1);
+        final Pattern pp2 = Pattern.compile(HEADER_REGEX_2);
 
         // init
-        List<PositionInfo> posList = new LinkedList<PositionInfo>();
-        BufferedReader br = new BufferedReader(new StringReader(input));
+        final List<PositionInfo> posList = new LinkedList<PositionInfo>();
+        final BufferedReader br = new BufferedReader(new StringReader(input));
 
         // header parse loop
         String line = ParserUtils.getNextLongLine(br);
@@ -241,13 +241,13 @@ public class PositionParser {
     /**
      * Parses the positions.
      */
-    private void parsePositions(BufferedReader br,
-                                List<PositionInfo> posList) throws IOException, PatternSyntaxException {
-        Pattern mrp = Pattern.compile(PARSE_REGEX);
+    private void parsePositions(final BufferedReader br,
+                                final List<PositionInfo> posList) throws IOException, PatternSyntaxException {
+        final Pattern mrp = Pattern.compile(PARSE_REGEX);
 
         String line = ParserUtils.getNextLongLine(br);
         while (line != null) {
-            Matcher m = mrp.matcher(line);
+            final Matcher m = mrp.matcher(line);
             if (m.find()) {
                 posList.add(new PositionInfo(m.group(1), m.group(2),
                         ParserUtils.filter(m.group(3))));
@@ -264,11 +264,11 @@ public class PositionParser {
     /**
      * Makes the phase; throws an exception if we cannot.
      */
-    private Phase makePhase(String phaseType, String seasonType,
-                            String year) throws IOException {
+    private Phase makePhase(String phaseType, final String seasonType,
+                            final String year) throws IOException {
         phaseType = (phaseType == null) ? "Movement" : phaseType;
 
-        StringBuffer sb = new StringBuffer();
+        final StringBuffer sb = new StringBuffer();
         sb.append(phaseType);
         sb.append(' ');
         sb.append(seasonType);
@@ -277,7 +277,7 @@ public class PositionParser {
 
         try {
             return Phase.parse(sb.toString()).orElse(null);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new IOException(
                     Utils.getLocalString(PP_UNKNOWN_PHASE, sb.toString()));
         }

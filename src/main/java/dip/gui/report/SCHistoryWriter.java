@@ -64,8 +64,8 @@ public class SCHistoryWriter {
      * an entire game. If MapMetadata is ready,
      * color will be added.
      */
-    public static String SCHistoryToHTML(ClientFrame clientFrame, World w,
-                                         boolean inColor) {
+    public static String SCHistoryToHTML(final ClientFrame clientFrame, final World w,
+                                         final boolean inColor) {
         return new SCHistoryWriter(clientFrame, w, inColor).getAsHTML();
     }// SCHistoryToHTML()
 
@@ -78,7 +78,7 @@ public class SCHistoryWriter {
      */
     public static void displayDialog(final ClientFrame clientFrame,
                                      final World w) {
-        TextViewer tv = new TextViewer(clientFrame);
+        final TextViewer tv = new TextViewer(clientFrame);
         tv.setEditable(false);
         tv.addSingleButton(tv.makeOKButton());
         tv.setTitle(Utils.getLocalString(DIALOG_TITLE));
@@ -97,7 +97,7 @@ public class SCHistoryWriter {
     /**
      * StateWriter constructor
      */
-    private SCHistoryWriter(ClientFrame cf, World w, boolean inColor) {
+    private SCHistoryWriter(final ClientFrame cf, final World w, final boolean inColor) {
         this.world = w;
         this.allPowers = w.getMap().getPowers().toArray(new Power[0]);
 
@@ -108,7 +108,7 @@ public class SCHistoryWriter {
         }
 
         // find all provinces w/supply centers
-        List<Province> scList = new ArrayList();
+        final List<Province> scList = new ArrayList();
         final Province[] provs = w.getMap().getProvinces().toArray(new Province[0]);
         for (int i = 0; i < provs.length; i++) {
             if (provs[i].hasSupplyCenter()) {
@@ -118,13 +118,13 @@ public class SCHistoryWriter {
 
         // sort list by alphabetical order of the short name (abbreviation)
         Collections.sort(scList, new Comparator() {
-            public int compare(Object o1, Object o2) {
-                Province p1 = (Province) o1;
-                Province p2 = (Province) o2;
+            public int compare(final Object o1, final Object o2) {
+                final Province p1 = (Province) o1;
+                final Province p2 = (Province) o2;
                 return p1.getShortName().compareTo(p2.getShortName());
             }
 
-            public boolean equals(Object obj) {
+            public boolean equals(final Object obj) {
                 return false;
             }
         });
@@ -138,11 +138,11 @@ public class SCHistoryWriter {
      */
     private String getAsHTML() {
         // get template
-        String templateText = Utils
+        final String templateText = Utils
                 .getText(Utils.getLocalString(HTML_TEMPLATE));
 
         // get template objects
-        Object[] templateData = new Object[]{makeSCSummary(),        // {0} : SC summary by power
+        final Object[] templateData = new Object[]{makeSCSummary(),        // {0} : SC summary by power
                 makeSCCounts()            // {1} : SC counts by power
         };
 
@@ -161,7 +161,7 @@ public class SCHistoryWriter {
 
         // format array into a table.
         //
-        StringBuffer sb = new StringBuffer(4096);
+        final StringBuffer sb = new StringBuffer(4096);
         sb.append("<table cellspacing=\"3\" cellpadding=\"1\" border=\"0\">");
 
         // header row
@@ -181,7 +181,7 @@ public class SCHistoryWriter {
         //
         for (int r = 1; r < rows; r++) {
             // on even rows, put a background on rows (easier to read)
-            String trType = ((r & 1) == 0) ? TR_HIGHLIGHT : "<tr>";
+            final String trType = ((r & 1) == 0) ? TR_HIGHLIGHT : "<tr>";
             sb.append(trType);
 
             // col 0: special handling (province abbreviation)
@@ -193,7 +193,7 @@ public class SCHistoryWriter {
             // col 1..n: print 1st letter of power, or nothing if null.
             for (int c = 1; c < cols; c++) {
                 sb.append("<td>");
-                Object obj = array[r][c];
+                final Object obj = array[r][c];
                 if (obj != null) {
                     sb.append(Character.toTitleCase(obj.toString().charAt(0)));
                 }
@@ -223,22 +223,22 @@ public class SCHistoryWriter {
     private Object[][] makeSummaryTable() {
         // cols: # of appropriate turns + 1 (first column is the province name)
         //
-        ArrayList<TurnState> turnList = new ArrayList<TurnState>(100);    // array of TurnStates
+        final ArrayList<TurnState> turnList = new ArrayList<TurnState>(100);    // array of TurnStates
 
         // add initial phase
         turnList.add(world.getInitialTurnState());
 
-        Iterator<TurnState> iter = world.getAllTurnStates().iterator();
+        final Iterator<TurnState> iter = world.getAllTurnStates().iterator();
         while (iter.hasNext()) {
             // we want the RETREAT or MOVE phase for a fall season,
             // but not both (a unit could retreat into a SC; thus we need to check)
             //
             TurnState ts = iter.next();
-            Phase phase = ts.getPhase();
+            final Phase phase = ts.getPhase();
             if (phase.getSeasonType() == Phase.SeasonType.FALL) {
                 if (phase.getPhaseType() == Phase.PhaseType.MOVEMENT) {
                     if (iter.hasNext()) {
-                        TurnState nextTS = iter.next();
+                        final TurnState nextTS = iter.next();
                         if (nextTS.getPhase()
                                 .getPhaseType() == Phase.PhaseType.RETREAT) {
                             ts = nextTS;
@@ -254,7 +254,7 @@ public class SCHistoryWriter {
         // make the array (rectangular)
         final int cols = turnList
                 .size() + 1;    // easier; cols == array[0].length
-        Object[][] array = new Object[scProvs.length + 1][cols];
+        final Object[][] array = new Object[scProvs.length + 1][cols];
 
         // fill the array
         // remember, (0,0) == null
@@ -278,7 +278,7 @@ public class SCHistoryWriter {
             final Position pos = ts.getPosition();
 
             for (int scIdx = 0; scIdx < scProvs.length; scIdx++) {
-                Power p = pos.getSupplyCenterOwner(scProvs[scIdx]).orElse(null);
+                final Power p = pos.getSupplyCenterOwner(scProvs[scIdx]).orElse(null);
                 array[scIdx + 1][i] = p;
             }
         }
@@ -292,7 +292,7 @@ public class SCHistoryWriter {
      * Power names are along the X axis.
      */
     private String makeSCCounts() {
-        StringBuffer sb = new StringBuffer(2048);
+        final StringBuffer sb = new StringBuffer(2048);
         sb.append("<table cellspacing=\"4\" cellpadding=\"1\" border=\"0\">");
 
         // make header
@@ -319,18 +319,18 @@ public class SCHistoryWriter {
         sb.append(makeSCCountTableRow(world.getInitialTurnState()));
 
         // make all other rows.
-        Iterator<TurnState> iter = world.getAllTurnStates().iterator();
+        final Iterator<TurnState> iter = world.getAllTurnStates().iterator();
         while (iter.hasNext()) {
             // we want the RETREAT or MOVE phase for a fall season,
             // but not both.
             // (a unit could retreat into a SC; thus we need to check)
             //
             TurnState ts = iter.next();
-            Phase phase = ts.getPhase();
+            final Phase phase = ts.getPhase();
             if (phase.getSeasonType() == Phase.SeasonType.FALL) {
                 if (phase.getPhaseType() == Phase.PhaseType.MOVEMENT) {
                     if (iter.hasNext()) {
-                        TurnState nextTS = iter.next();
+                        final TurnState nextTS = iter.next();
                         if (nextTS.getPhase()
                                 .getPhaseType() == Phase.PhaseType.RETREAT) {
                             ts = nextTS;
@@ -350,9 +350,9 @@ public class SCHistoryWriter {
     /**
      * Make a row for the SC Summary table, including the Index.
      */
-    private String makeSCCountTableRow(TurnState ts) {
+    private String makeSCCountTableRow(final TurnState ts) {
         final Phase phase = ts.getPhase();
-        StringBuffer sb = new StringBuffer(64);
+        final StringBuffer sb = new StringBuffer(64);
 
         sb.append("<tr>");
 
@@ -368,7 +368,7 @@ public class SCHistoryWriter {
 
         int sumOfSquares = 0;
         for (int i = 0; i < allPowers.length; i++) {
-            Province[] ownedSC = ts.getPosition()
+            final Province[] ownedSC = ts.getPosition()
                     .getOwnedSupplyCenters(allPowers[i]).toArray(new Province[0]);
             final int count = ownedSC.length;
 
@@ -396,11 +396,11 @@ public class SCHistoryWriter {
     /**
      * Creates a font-color
      */
-    private String makeFontColorOpen(Power power) {
+    private String makeFontColorOpen(final Power power) {
         if (mmd != null) {
-            String colorName = mmd.getPowerColor(power);
-            Color color = SVGColorParser.parseColor(colorName);
-            StringBuffer sb = new StringBuffer(32);
+            final String colorName = mmd.getPowerColor(power);
+            final Color color = SVGColorParser.parseColor(colorName);
+            final StringBuffer sb = new StringBuffer(32);
             sb.append("<font color=\"");
             sb.append(Utils.colorToHTMLHex(color));
             sb.append("\">");

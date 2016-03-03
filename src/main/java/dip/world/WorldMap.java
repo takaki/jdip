@@ -220,7 +220,7 @@ public final class WorldMap implements Serializable {
      * This will match the closest power but requires at least
      * 5 characters for a match.
      */
-    public Optional<Power> getPowerMatching(String powerName) {
+    public Optional<Power> getPowerMatching(final String powerName) {
         // return 'null' if powerName is empty
         if (powerName == null || powerName.isEmpty()) {
             return Optional.empty();
@@ -493,7 +493,7 @@ public final class WorldMap implements Serializable {
         // preceding character MUST be a whitespace character.
         // thus "prussia" would not become "p"
         if (wsIdx >= 0) {
-            for (String lcPowerName : lcPowerNames) {
+            for (final String lcPowerName : lcPowerNames) {
                 final int idx = sb.indexOf(lcPowerName, wsIdx);
                 if (idx >= 0) {
                     if (idx != 0 && Character
