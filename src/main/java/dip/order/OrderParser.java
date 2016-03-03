@@ -38,6 +38,7 @@ import dip.world.WorldMap;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.StringTokenizer;
 
 /**
@@ -242,16 +243,14 @@ public class OrderParser {
                        final Power power, final TurnState turnState,
                        final boolean locked,
                        final boolean guess) throws OrderException {
-        if (orderFactory == null) {
-            throw new IllegalArgumentException("null OrderFactory");
-        }
+        Objects.requireNonNull(orderFactory);
 
         // check arguments
-        if (locked && power == null) {
+        if (locked && Objects.isNull(power)) {
             throw new IllegalArgumentException("power/lock disagreement");
         }
 
-        if (guess && (power != null || locked || turnState == null)) {
+        if (guess && (Objects.nonNull(power) || Objects.isNull(turnState))) {
             throw new IllegalArgumentException(
                     "if guess == true, conditions: turnState != null, power == null, and !locked must all be true");
         }
@@ -311,17 +310,17 @@ public class OrderParser {
         final int startIdx = ptok == null ? 0 : ptok.length();
 
         // string replacement
-        for (final String[] REPLACEMENT : REPLACEMENTS) {
+        for (final String[] replacement : REPLACEMENTS) {
             int idx = startIdx;
-            int start = sb.indexOf(REPLACEMENT[0], idx);
+            int start = sb.indexOf(replacement[0], idx);
 
             while (start != -1) {
-                final int end = start + REPLACEMENT[0].length();
-                sb.replace(start, end, REPLACEMENT[1]);
+                final int end = start + replacement[0].length();
+                sb.replace(start, end, replacement[1]);
 
                 // repeat search
-                idx = start + REPLACEMENT[1].length();
-                start = sb.indexOf(REPLACEMENT[0], idx);
+                idx = start + replacement[1].length();
+                start = sb.indexOf(replacement[0], idx);
             }
         }
 
@@ -416,8 +415,7 @@ public class OrderParser {
 
         // parse the order type -- if this is missing, we
         // have a 'defineState' order type
-        final String orderType;
-        orderType = st.hasMoreTokens() ? getToken(st,
+        final String orderType = st.hasMoreTokens() ? getToken(st,
                 Utils.getLocalString(OF_NO_ORDER_TYPE)) : "definestate";
 
 
@@ -450,116 +448,113 @@ public class OrderParser {
 
         assert power != null;
 
-
         // create order based on order type
-        if (orderType.equals("h")) {
-            // HOLD order
-            // <power>: <type> <s-prov> h
-            return orderFactory.createHold(power, src, srcUnitType);
-        }
-        if (orderType.equals("m")) {
-            return parseMoveOrder(map, turnState, position, orderFactory, st,
-                    power, src, srcUnitType, false);
+        switch (orderType) {
+            case "h":
+                // HOLD order
+                // <power>: <type> <s-prov> h
+                return orderFactory.createHold(power, src, srcUnitType);
+            case "m":
+                return parseMoveOrder(map, turnState, position, orderFactory,
+                        st, power, src, srcUnitType, false);
 
-        }
-        if (orderType.equals("s")) {
-            // SUPPORT order
-            // <power>: <type> <s-prov> s <type> <s-prov>
-            // <power>: <type> <s-prov> s <type> <s-prov> [h]
-            // <power>: <type> <s-prov> s <type> <s-prov> m <d-prov>
-            //
-            // get type and/or support source names
-            final TypeAndSource tas = getTypeAndSource(st);
+            case "s": {
+                // SUPPORT order
+                // <power>: <type> <s-prov> s <type> <s-prov>
+                // <power>: <type> <s-prov> s <type> <s-prov> [h]
+                // <power>: <type> <s-prov> s <type> <s-prov> m <d-prov>
+                //
+                // get type and/or support source names
+                final TypeAndSource tas = getTypeAndSource(st);
 
-            // parse supSrc / supUnit
-            final Type supUnitType = parseUnitType(tas.type);
-            final Location supSrc = parseLocation(map, tas.src);
+                // parse supSrc / supUnit
+                final Type supUnitType = parseUnitType(tas.type);
+                final Location supSrc = parseLocation(map, tas.src);
 
-            assert supUnitType != null;
-            assert supSrc != null;
+                assert supUnitType != null;
+                assert supSrc != null;
 
-            // get power from unit, if possible
-            Power supPower = null;
-            if (position.hasUnit(supSrc.getProvince())) {
-                supPower = position.getUnit(supSrc.getProvince()).orElse(null)
-                        .getPower();
+                // get power from unit, if possible
+                Power supPower = null;
+                if (position.hasUnit(supSrc.getProvince())) {
+                    supPower = position.getUnit(supSrc.getProvince())
+                            .orElse(null).getPower();
+                }
+
+                // support a MOVE [if specified]
+                if (st.hasMoreTokens()) {
+                    token = st.nextToken();
+
+                    if (token.equals("m")) {
+                        final String supDestName = getToken(st,
+                                Utils.getLocalString(OF_SUPPORT_NO_DEST));
+                        final Location supDest = parseLocation(map,
+                                supDestName);
+                        assert supDest != null;
+                        return orderFactory
+                                .createSupport(power, src, srcUnitType, supSrc,
+                                        supPower, supUnitType, supDest);
+                    } else if (!token.equals("h")) {
+                        // anything BUT a hold is ok.
+                        Log.println("OrderException: order: ", ord);
+                        throw new OrderException(
+                                Utils.getLocalString(OF_SUPPORT_NO_MOVE));
+                    }
+                }
+
+                // support a HOLD
+                return orderFactory
+                        .createSupport(power, src, srcUnitType, supSrc,
+                                supPower, supUnitType);
             }
+            case "c":
+                // CONVOY order
+                // <power>: <type> <s-prov> c <type> <s-prov> m <d-prov>
+                // get type and/or support source
+                final TypeAndSource tas = getTypeAndSource(st);
+                final String conSrcName = tas.src;
+                final String conUnitName = tas.type;
 
-            // support a MOVE [if specified]
-            if (st.hasMoreTokens()) {
-                token = st.nextToken();
-
-                if (token.equals("m")) {
-                    final String supDestName = getToken(st,
-                            Utils.getLocalString(OF_SUPPORT_NO_DEST));
-                    final Location supDest = parseLocation(map, supDestName);
-                    assert supDest != null;
-                    return orderFactory
-                            .createSupport(power, src, srcUnitType, supSrc,
-                                    supPower, supUnitType, supDest);
-                } else if (!token.equals("h")) {
-                    // anything BUT a hold is ok.
+                // verify that there is an "m"
+                token = getToken(st,
+                        Utils.getLocalString(OF_CONVOY_NO_MOVE_OR_DEST));
+                if (!token.equalsIgnoreCase("m")) {
                     Log.println("OrderException: order: ", ord);
                     throw new OrderException(
-                            Utils.getLocalString(OF_SUPPORT_NO_MOVE));
+                            Utils.getLocalString(OF_CONVOY_NO_MOVE_SPEC));
                 }
-            }
 
-            // support a HOLD
-            return orderFactory
-                    .createSupport(power, src, srcUnitType, supSrc, supPower,
-                            supUnitType);
-        }
-        if (orderType.equals("c")) {
-            // CONVOY order
-            // <power>: <type> <s-prov> c <type> <s-prov> m <d-prov>
-            // get type and/or support source
-            final TypeAndSource tas = getTypeAndSource(st);
-            final String conSrcName = tas.src;
-            final String conUnitName = tas.type;
+                // get the destination
+                final String conDestName = getToken(st,
+                        Utils.getLocalString(OF_CONVOY_NO_DEST));
 
-            // verify that there is an "m"
-            token = getToken(st,
-                    Utils.getLocalString(OF_CONVOY_NO_MOVE_OR_DEST));
-            if (!token.equalsIgnoreCase("m")) {
+                // parse convoy src/dest/type
+                final Location conSrc = parseLocation(map, conSrcName);
+                final Location conDest = parseLocation(map, conDestName);
+                final Type conUnitType = parseUnitType(conUnitName);
+
+                // get power, from unit
+                Power conPower = null;
+                if (position.hasUnit(conSrc.getProvince())) {
+                    conPower = position.getUnit(conSrc.getProvince())
+                            .orElse(null).getPower();
+                }
+
+                // create order.
+                return orderFactory
+                        .createConvoy(power, src, srcUnitType, conSrc, conPower,
+                                conUnitType, conDest);
+            case "d":
+                // DISBAND order
+                return createDisbandOrRemove(orderFactory, turnState, true,
+                        power, src, srcUnitType);
+            case "definestate":
+                return orderFactory.createDefineState(power, src, srcUnitType);
+            default:
                 Log.println("OrderException: order: ", ord);
                 throw new OrderException(
-                        Utils.getLocalString(OF_CONVOY_NO_MOVE_SPEC));
-            }
-
-            // get the destination
-            final String conDestName = getToken(st,
-                    Utils.getLocalString(OF_CONVOY_NO_DEST));
-
-            // parse convoy src/dest/type
-            final Location conSrc = parseLocation(map, conSrcName);
-            final Location conDest = parseLocation(map, conDestName);
-            final Type conUnitType = parseUnitType(conUnitName);
-
-            // get power, from unit
-            Power conPower = null;
-            if (position.hasUnit(conSrc.getProvince())) {
-                conPower = position.getUnit(conSrc.getProvince()).orElse(null)
-                        .getPower();
-            }
-
-            // create order.
-            return orderFactory
-                    .createConvoy(power, src, srcUnitType, conSrc, conPower,
-                            conUnitType, conDest);
+                        Utils.getLocalString(OF_UNKNOWN_ORDER, orderType));
         }
-        if (orderType.equals("d")) {
-            // DISBAND order
-            return createDisbandOrRemove(orderFactory, turnState, true, power,
-                    src, srcUnitType);
-        }
-        if (orderType.equals("definestate")) {
-            return orderFactory.createDefineState(power, src, srcUnitType);
-        }
-
-        Log.println("OrderException: order: ", ord);
-        throw new OrderException(
-                Utils.getLocalString(OF_UNKNOWN_ORDER, orderType));
     }// parse
 
 
@@ -633,9 +628,7 @@ public class OrderParser {
             return orderFactory
                     .createRetreat(srcPower, srcLoc, srcUnitType, dest);
         } else {
-            if (isConvoyedMove)    // MUST test this first -- it overrides isExplicitConvoy
-            {
-                assert al != null;
+            if (isConvoyedMove) {// MUST test this first -- it overrides isExplicitConvoy
                 final Province[] convoyRoute = al
                         .toArray(new Province[al.size()]);
                 return orderFactory
@@ -672,8 +665,8 @@ public class OrderParser {
                 // WAIVE order
                 // <power>: <waive> <province>
                 // we ignore 'type', but let it be specified
-                final Location src = parseLocation(map,
-                        getTypeAndSource(st).src);
+                final TypeAndSource tas = getTypeAndSource(st);
+                final Location src = parseLocation(map, tas.src);
                 if (guessing) {
                     power = getPowerFromLocation(true, position, turnState,
                             src);
