@@ -253,20 +253,15 @@ public final class TurnState implements Serializable {
         }
 
         if (resultMap == null) {
-            resultMap = new HashMap<>(53);
-            for (Result obj : getResultList()) {
-                if (obj instanceof OrderResult) {
-                    final OrderResult ordRes = (OrderResult) obj;
-
-                    // we only map SUCCESSFULL orders.
-                    if (ordRes.getResultType() == ResultType.SUCCESS) {
-                        resultMap.put(ordRes.getOrder(), Boolean.TRUE);
-                    }
-                }
-            }
+            resultMap = resultList.stream()
+                    .filter(obj -> obj instanceof OrderResult)
+                    .map(obj -> (OrderResult) obj).filter(ordRes -> ordRes
+                            .getResultType() == ResultType.SUCCESS).collect(
+                            Collectors.toMap(OrderResult::getOrder,
+                                    ordRes -> Boolean.TRUE));
         }
 
-        return resultMap.get(o) == Boolean.TRUE;
+        return Objects.equals(resultMap.get(o), Boolean.TRUE);
 
     }// isFailedOrder()
 
