@@ -387,7 +387,7 @@ public class GUIBuild extends Build implements GUIOrder {
             return false;
         }
 
-        if (srcUnitType.equals(Unit.Type.ARMY)) {
+        if (srcUnitType == Unit.Type.ARMY) {
             if (province.isSea()) {
                 sb.append(Utils.getLocalString(NOBUILD_NO_ARMY_IN_SEA));
                 return false;
@@ -401,7 +401,7 @@ public class GUIBuild extends Build implements GUIOrder {
                 sb.append(Utils.getLocalString(BUILD_ARMY_OK));
                 return true;
             }
-        } else if (srcUnitType.equals(Unit.Type.FLEET)) {
+        } else if (srcUnitType == Unit.Type.FLEET) {
             if (province.isLandLocked()) {
                 sb.append(Utils.getLocalString(NOBUILD_FLEET_LANDLOCKED));
                 return false;
@@ -415,7 +415,7 @@ public class GUIBuild extends Build implements GUIOrder {
                 sb.append(Utils.getLocalString(BUILD_FLEET_OK));
                 return true;
             }
-        } else if (srcUnitType.equals(Unit.Type.WING)) {
+        } else if (srcUnitType == Unit.Type.WING) {
             // check borders
             if (!GUIOrderUtils
                     .checkBorder(this, loc, srcUnitType, stateInfo.getPhase(),

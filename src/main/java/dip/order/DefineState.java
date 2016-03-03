@@ -50,7 +50,7 @@ public class DefineState extends Order {
                           final Unit.Type srcUnit) throws OrderException {
         super(power, src, srcUnit);
 
-        if (srcUnit.equals(Unit.Type.UNDEFINED)) {
+        if (srcUnit == Unit.Type.UNDEFINED) {
             throw new OrderException(
                     Utils.getLocalString(DEFSTATE_NO_UNIT_TYPE));
         }

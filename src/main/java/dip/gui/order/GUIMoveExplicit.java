@@ -367,7 +367,7 @@ public class GUIMoveExplicit extends Move implements GUIOrder {
                 // we're good to go. If this unit is a coastal army, it is
                 // considered "possibly convoyable". We may use this later.
                 isConvoyableArmy = (location.getProvince()
-                        .isCoastal() && Unit.Type.ARMY.equals(srcUnitType));
+                        .isCoastal() && Unit.Type.ARMY == srcUnitType);
                 if (isConvoyableArmy) {
                     assert (tmpConvoyPath == null);
                     tmpConvoyPath = new LinkedList();

@@ -1079,11 +1079,11 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
                                    final boolean isDislodged) {
         // determine symbol ID
         String symbolID = null;
-        if (u.getType().equals(Unit.Type.FLEET)) {
+        if (u.getType() == Unit.Type.FLEET) {
             symbolID = (isDislodged) ? SYMBOL_DISLODGED_FLEET : SYMBOL_FLEET;
-        } else if (u.getType().equals(Unit.Type.ARMY)) {
+        } else if (u.getType() == Unit.Type.ARMY) {
             symbolID = (isDislodged) ? SYMBOL_DISLODGED_ARMY : SYMBOL_ARMY;
-        } else if (u.getType().equals(Unit.Type.WING)) {
+        } else if (u.getType() == Unit.Type.WING) {
             symbolID = (isDislodged) ? SYMBOL_DISLODGED_WING : SYMBOL_WING;
         } else {
             throw new IllegalArgumentException(

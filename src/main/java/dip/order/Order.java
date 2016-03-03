@@ -427,7 +427,7 @@ public abstract class Order extends Object implements Orderable, Serializable {
 
             if (power.equals(o.power) &&
                     src.equals(o.src) &&
-                    srcUnitType.equals(o.srcUnitType)) {
+                    srcUnitType == o.srcUnitType) {
                 return true;
             }
         }

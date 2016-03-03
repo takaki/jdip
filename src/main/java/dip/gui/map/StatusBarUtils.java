@@ -181,7 +181,7 @@ public class StatusBarUtils {
      * Get coast information, if appropriate
      */
     private void getCoast(final StringBuffer sb, final Unit unit, final Province p) {
-        if (unit.getType().equals(Unit.Type.FLEET) && p.isMultiCoastal()) {
+        if (unit.getType() == Unit.Type.FLEET && p.isMultiCoastal()) {
             sb.append(" (");
             sb.append(unit.getCoast().getName());
             sb.append(")");

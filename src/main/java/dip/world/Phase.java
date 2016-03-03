@@ -163,8 +163,7 @@ public class Phase implements Serializable, Comparable<Phase> {
     @Override
     public boolean equals(final Object obj) {
         final Phase phase = (Phase) obj;
-        return yearType.equals(phase.yearType) && seasonType
-                .equals(phase.seasonType) && phaseType.equals(phase.phaseType);
+        return yearType.equals(phase.yearType) && seasonType == phase.seasonType && phaseType == phase.phaseType;
     }// equals()
 
     /**

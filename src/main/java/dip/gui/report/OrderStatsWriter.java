@@ -246,8 +246,8 @@ public class OrderStatsWriter {
         final Iterator<TurnState> iter = turns.iterator();
         while (iter.hasNext()) {
             final TurnState ts = iter.next();
-            if (ts.isResolved() && Phase.PhaseType.MOVEMENT
-                    .equals(ts.getPhase().getPhaseType())) {
+            if (ts.isResolved() && Phase.PhaseType.MOVEMENT == ts.getPhase()
+                    .getPhaseType()) {
                 data.add(new MovePhaseTurnData(ts));
             }
         }
@@ -265,8 +265,7 @@ public class OrderStatsWriter {
         private final Stats[] stats;
 
         public MovePhaseTurnData(final TurnState ts) {
-            if (!ts.getPhase().getPhaseType()
-                    .equals(Phase.PhaseType.MOVEMENT)) {
+            if (ts.getPhase().getPhaseType() != Phase.PhaseType.MOVEMENT) {
                 throw new IllegalArgumentException();
             }
 

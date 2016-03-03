@@ -153,8 +153,8 @@ public class OrderControlBar extends ViewControlBar {
         }
 
         final RuleOptions ro = mapPanel.getWorld().getRuleOptions();
-        useExplicitGUIMove = RuleOptions.OptionValue.VALUE_PATHS_EXPLICIT
-                .equals(ro.getOptionValue(RuleOptions.Option.OPTION_CONVOYED_MOVES));
+        useExplicitGUIMove = RuleOptions.OptionValue.VALUE_PATHS_EXPLICIT == ro
+                .getOptionValue(RuleOptions.Option.OPTION_CONVOYED_MOVES);
 
         makeLayout();
     }
