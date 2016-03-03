@@ -136,11 +136,10 @@ public final class RuleOptions implements Serializable {
         }
 
         /**
-         * Checks if the given optionValue is allowed.
+         * Checks if the given value is allowed.
          */
-        public boolean isAllowed(final OptionValue optionValue) {
-            return allowed.stream()
-                    .anyMatch(anAllowed -> (optionValue == anAllowed));
+        public boolean isAllowed(final OptionValue value) {
+            return allowed.stream().anyMatch(anAllowed -> (anAllowed == value));
         }// isAllowed()
 
         /**
@@ -156,13 +155,6 @@ public final class RuleOptions implements Serializable {
         public String getDescriptionI18N() {
             return Utils.getLocalString(name + DESCRIPTION);
         }
-
-        /**
-         * Checks if the given OptionValue is permitted; if so, returns true.
-         */
-        public boolean checkValue(final OptionValue value) {
-            return allowed.stream().anyMatch(anAllowed -> anAllowed == value);
-        }// checkValue()
 
 
         /**
@@ -271,9 +263,9 @@ public final class RuleOptions implements Serializable {
         Objects.requireNonNull(option);
         Objects.requireNonNull(value);
 
-        if (!option.checkValue(value)) {
-            throw new IllegalArgumentException(
-                    "invalid OptionValue for Option");
+        if (!option.isAllowed(value)) {
+            throw new InvalidWorldException(
+                    Utils.getLocalString(RO_BAD_OPTIONVALUE, value, option));
         }
 
         optionMap.put(option, value);
@@ -335,13 +327,6 @@ public final class RuleOptions implements Serializable {
             // first, check the name
             final Option option = Option.valueOf(nvp.getName());
             final OptionValue optionValue = OptionValue.valueOf(nvp.getValue());
-
-            // ensure that optionValue is valid for option
-            if (!option.isAllowed(optionValue)) {
-                throw new InvalidWorldException(
-                        Utils.getLocalString(RO_BAD_OPTIONVALUE, nvp.getValue(),
-                                nvp.getName()));
-            }
 
             // set option
             ruleOpts.setOption(option, optionValue);
