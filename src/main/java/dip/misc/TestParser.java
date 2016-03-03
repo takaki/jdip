@@ -570,7 +570,7 @@ public class TestParser {
      * Get tokens from an order result (non-failure) as a string array
      */
     private String[] getORPTokens(final String in) {
-        final ArrayList<String> al = new ArrayList<String>(10);
+        final ArrayList<String> al = new ArrayList<>(10);
 
         // parse result.
         // format is like xxxx(a, b, c, d)
@@ -692,7 +692,7 @@ public class TestParser {
         try {
             boolean setupDone = false;
             List<String> accum = null;
-            cases = new ArrayList<ORPair>(200);
+            cases = new ArrayList<>(200);
             ORPair currentCase = null;
             List<String> posList = null;
             List<String> dislodgedPosList = null;
@@ -728,7 +728,7 @@ public class TestParser {
                             lnrErrorExit(lnr, "SETUP block already defined.");
                         }
 
-                        accum = new ArrayList<String>(50);
+                        accum = new ArrayList<>(50);
                     } else if (key == KEY_END) {
                         if (accum == null) {
                             lnrErrorExit(lnr,
@@ -759,7 +759,7 @@ public class TestParser {
                                     "SETUPDISLODGED block already defined.");
                         }
 
-                        accum = new ArrayList<String>(50);
+                        accum = new ArrayList<>(50);
                     } else if (key == KEY_ORDER) {
                         if (!setupDone) {
                             lnrErrorExit(lnr,

@@ -241,8 +241,7 @@ public class OrderStatsWriter {
      */
     public MovePhaseTurnData[] collectData() {
         final List<TurnState> turns = world.getAllTurnStates();
-        final ArrayList<MovePhaseTurnData> data = new ArrayList<MovePhaseTurnData>(
-                turns.size());
+        final ArrayList<MovePhaseTurnData> data = new ArrayList<>(turns.size());
 
         final Iterator<TurnState> iter = turns.iterator();
         while (iter.hasNext()) {
@@ -305,8 +304,7 @@ public class OrderStatsWriter {
 
         private void collectStats(final TurnState ts) {
             // create order-result mapping
-            final HashMap<Orderable, Boolean> resultMap = new HashMap<Orderable, Boolean>(
-                    53);
+            final HashMap<Orderable, Boolean> resultMap = new HashMap<>(53);
             Iterator iter = ts.getResultList().iterator();
             while (iter.hasNext()) {
                 final Object obj = iter.next();

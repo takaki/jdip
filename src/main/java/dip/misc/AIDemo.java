@@ -275,7 +275,7 @@ public class AIDemo {
         // 	A war S lvn-pru
         // 	A lvn-pru
         //	A mos-lvn
-        final List<dip.order.Order> russianOrders = new ArrayList<dip.order.Order>();
+        final List<dip.order.Order> russianOrders = new ArrayList<>();
         russianOrders.add(orderFactory.createSupport(russia,
                 makeLocation(pos, map.getProvince("war")), Unit.Type.ARMY,
                 makeLocation(pos, map.getProvince("lvn")), russia,

@@ -260,7 +260,7 @@ public class SVGUtils {
      */
     public static Map tagFinderSVG(final List<String> lookList, final Node root,
                                    final boolean anySVGElement) {
-        final List<String> list = new ArrayList<String>(lookList);
+        final List<String> list = new ArrayList<>(lookList);
         final Map map = new HashMap((4 * lookList.size()) / 3);
 
         // recursively walk tree from root
@@ -294,7 +294,7 @@ public class SVGUtils {
      */
     public static void tagFinderSVG(final Map<String, org.w3c.dom.svg.SVGGElement> map, final List<String> lookList, final Node root,
                                     final boolean anySVGElement) {
-        final List<String> list = new ArrayList<String>(lookList);
+        final List<String> list = new ArrayList<>(lookList);
 
         // recursively walk tree from root
         nodeWalker(root, list, map, anySVGElement);
@@ -306,7 +306,7 @@ public class SVGUtils {
      * Objects w/o IDs are ignored.
      */
     public static SVGElement[] idFinderSVG(final Node root) {
-        final List<SVGElement> list = new ArrayList<SVGElement>(150);
+        final List<SVGElement> list = new ArrayList<>(150);
         idNodeWalker(root, list, true);
         return (SVGElement[]) list.toArray(new SVGElement[list.size()]);
     }// idFinderSVG()

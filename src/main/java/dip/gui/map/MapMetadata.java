@@ -265,7 +265,7 @@ public class MapMetadata {
         this.mp = mp;
         this.sp = sp;
         this.supressPlacementErrors = supressPlacementErrors;
-        infoMap = new HashMap<Province, InfoEntry>(113);
+        infoMap = new HashMap<>(113);
         displayProps = new HashMap(47);
 
         final Element root = mp.getSVGDocument().getRootElement();
@@ -373,11 +373,11 @@ public class MapMetadata {
             }
 
             if (unitCoasts == null) {
-                unitCoasts = new HashMap<Coast, Point2D.Float>(3);
+                unitCoasts = new HashMap<>(3);
             }
 
             if (dislodgedUnitCoasts == null) {
-                dislodgedUnitCoasts = new HashMap<Coast, Point2D.Float>(3);
+                dislodgedUnitCoasts = new HashMap<>(3);
             }
 
             unitCoasts.put(coast, unitPt);

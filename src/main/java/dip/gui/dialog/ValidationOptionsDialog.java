@@ -232,7 +232,7 @@ public class ValidationOptionsDialog extends HeaderDialog {
             options[i] = dopts[i].getDisplayName();
         }
 
-        optionList = new JList<String>(options);
+        optionList = new JList<>(options);
         optionList.setBorder(new EtchedBorder());
         optionList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         optionList.addListSelectionListener(new ListSelectionListener() {

@@ -461,7 +461,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
     private TabComponent selectNextRandomTab() {
         // find Power tabs that are not disabled
         final Power[] powers = world.getMap().getPowers().toArray(new Power[0]);
-        final List<TabComponent> tabSelectionOrderList = new ArrayList<TabComponent>(powers.length);
+        final List<TabComponent> tabSelectionOrderList = new ArrayList<>(powers.length);
 
         for (int i = 0; i < powers.length; i++) {
             final TabComponent tc = getTabComponent(powers[i]);
@@ -681,7 +681,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
          * Create an F2FState object
          */
         public F2FState() {
-            submittedMap = new HashMap<Power, Boolean>(11);
+            submittedMap = new HashMap<>(11);
         }// F2FState()
 
         /**

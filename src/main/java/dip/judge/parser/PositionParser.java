@@ -208,7 +208,7 @@ public class PositionParser {
         final Pattern pp2 = Pattern.compile(HEADER_REGEX_2);
 
         // init
-        final List<PositionInfo> posList = new LinkedList<PositionInfo>();
+        final List<PositionInfo> posList = new LinkedList<>();
         final BufferedReader br = new BufferedReader(new StringReader(input));
 
         // header parse loop

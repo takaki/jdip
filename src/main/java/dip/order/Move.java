@@ -125,7 +125,7 @@ public class Move extends Order {
             throw new IllegalArgumentException("bad or missing route");
         }
 
-        convoyRoutes = new ArrayList<Province[]>(1);
+        convoyRoutes = new ArrayList<>(1);
         convoyRoutes.add(convoyRoute);
     }// Move()
 
@@ -790,7 +790,7 @@ public class Move extends Order {
                 // move to *destination* space (that are not this order)
                 if (move.getDest().isProvinceEqual(this.getDest())) {
                     if (depMTDest == null) {
-                        depMTDest = new ArrayList<OrderState>(5);
+                        depMTDest = new ArrayList<>(5);
                     }
                     depMTDest.add(dependentOS);
                 }
@@ -813,12 +813,12 @@ public class Move extends Order {
                         .getSupportedDest().isProvinceEqual(this.getDest())) {
                     if (adjudicator.isSelfSupportedMove(dependentOS)) {
                         if (depSelfSup == null) {
-                            depSelfSup = new ArrayList<OrderState>(5);
+                            depSelfSup = new ArrayList<>(5);
                         }
                         depSelfSup.add(dependentOS);
                     } else {
                         if (depSup == null) {
-                            depSup = new ArrayList<OrderState>(5);
+                            depSup = new ArrayList<>(5);
                         }
                         depSup.add(dependentOS);
                     }

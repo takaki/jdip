@@ -176,7 +176,7 @@ public class Retreat extends Move {
 
                 if (retreat.getDest().isProvinceEqual(this.getDest())) {
                     if (depMTDest == null) {
-                        depMTDest = new ArrayList<OrderState>(4);
+                        depMTDest = new ArrayList<>(4);
                     }
                     depMTDest.add(dependentOS);
                 }

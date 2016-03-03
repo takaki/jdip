@@ -143,7 +143,7 @@ public class JudgeOrderParser {
         final Pattern ha = Pattern.compile(ADJUSTMENT_ORDER_HEADER);
 
         // create List
-        final List<NJudgeOrder> orderList = new ArrayList<NJudgeOrder>(64);
+        final List<NJudgeOrder> orderList = new ArrayList<>(64);
 
         final BufferedReader br = new BufferedReader(new StringReader(input));
         String line = ParserUtils.getNextLongLine(br);

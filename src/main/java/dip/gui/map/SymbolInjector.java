@@ -203,7 +203,7 @@ public class SymbolInjector {
      */
     private HashMap<String, Element> elementMapper(final Element start,
                                                    final String attrName) throws IOException {
-        final HashMap<String, Element> map = new HashMap<String, Element>(31);
+        final HashMap<String, Element> map = new HashMap<>(31);
         elementMapperWalker(map, start, attrName);
         return map;
     }// elementMapper()

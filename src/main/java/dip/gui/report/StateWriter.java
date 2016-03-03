@@ -506,9 +506,9 @@ public class StateWriter {
      * for province names are always used.
      */
     private Map<Power, LinkedList<String>> getUnitsByPower() {
-        final Map<Power, LinkedList<String>> pmap = new HashMap<Power, LinkedList<String>>();
+        final Map<Power, LinkedList<String>> pmap = new HashMap<>();
         for (int i = 0; i < allPowers.size(); i++) {
-            pmap.put(allPowers.get(i), new LinkedList<String>());
+            pmap.put(allPowers.get(i), new LinkedList<>());
         }
 
         final Position position = turnState.getPosition();

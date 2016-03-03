@@ -57,7 +57,7 @@ public class ValidationOptions implements Serializable, Cloneable {
 
 
     // instance variables
-    protected Hashtable<String, Object> map = new Hashtable<String, Object>(5);
+    protected Hashtable<String, Object> map = new Hashtable<>(5);
     protected Option[] options = null;            // subclasses should modify as appropriate in constructor
 
 

@@ -282,8 +282,8 @@ public class AdjustmentParser {
      */
     private void parseInput(final String input) throws IOException {
         // create lists
-        ownerList = new LinkedList<OwnerInfo>();
-        adjustList = new LinkedList<AdjustInfo>();
+        ownerList = new LinkedList<>();
+        adjustList = new LinkedList<>();
 
         // create patterns
         regexAdjust = Pattern.compile(ADJUST_REGEX);
@@ -329,7 +329,7 @@ public class AdjustmentParser {
      */
     private void parseOwnerBlock(final String text) throws IOException {
         // map of Powers to StringBuffers
-        final HashMap<Power, StringBuffer> pmap = new HashMap<Power, StringBuffer>();
+        final HashMap<Power, StringBuffer> pmap = new HashMap<>();
 
         // parse and re-formulate
         // into a new string

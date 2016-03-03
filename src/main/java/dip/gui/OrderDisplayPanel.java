@@ -392,9 +392,10 @@ public class OrderDisplayPanel extends JPanel {
             throw new IllegalStateException("not in editable state");
         }
 
-        final LinkedHashMap<Orderable, OrderException> map = new LinkedHashMap<Orderable, OrderException>(19);
-        final ArrayList<Orderable> ordersAdded = new ArrayList<Orderable>(orders.length);
-        final ArrayList<Orderable> ordersDeleted = new ArrayList<Orderable>(orders.length);
+        final LinkedHashMap<Orderable, OrderException> map = new LinkedHashMap<>(
+                19);
+        final ArrayList<Orderable> ordersAdded = new ArrayList<>(orders.length);
+        final ArrayList<Orderable> ordersDeleted = new ArrayList<>(orders.length);
 
         for (int i = 0; i < orders.length; i++) {
             final Orderable order = orders[i];
@@ -501,7 +502,7 @@ public class OrderDisplayPanel extends JPanel {
     public synchronized boolean removeOrders(final Orderable[] orders,
                                              final boolean undoable) {
         int count = 0;
-        final ArrayList<Orderable> deletedOrderList = new ArrayList<Orderable>(orders.length);
+        final ArrayList<Orderable> deletedOrderList = new ArrayList<>(orders.length);
 
         for (int i = 0; i < orders.length; i++) {
             final Orderable order = orders[i];
@@ -942,7 +943,7 @@ public class OrderDisplayPanel extends JPanel {
          * Create an OrderListModel object
          */
         public OrderListModel() {
-            list = new ArrayList<DisplayOrder>(50);
+            list = new ArrayList<>(50);
             comparator = new DOSortProvince();    // default comparator
         }// OrderListModel()
 
@@ -1574,7 +1575,7 @@ public class OrderDisplayPanel extends JPanel {
         final JLabel label = new JLabel(Utils.getLocalString(LABEL_SORT));
 
         // combobox
-        final JComboBox<String> sortCombo = new JComboBox<String>();
+        final JComboBox<String> sortCombo = new JComboBox<>();
         sortCombo.setEditable(false);
         sortCombo.addItem(Utils.getLocalString(LABEL_SORT_POWER));
         sortCombo.addItem(Utils.getLocalString(LABEL_SORT_PROVINCE));

@@ -98,7 +98,7 @@ public class ToolManager {
 
         // for each Tool, attempt to load its main class (same as the file name, without the
         // file extension) and add it to the Tool array
-        final ArrayList<Tool> list = new ArrayList<Tool>();
+        final ArrayList<Tool> list = new ArrayList<>();
         for (int i = 0; i < foundToolURLs.length; i++) {
             if (mainClassNames[i] != null && foundToolURLs[i] != null) {
                 try {
@@ -138,7 +138,7 @@ public class ToolManager {
      * Searches the paths for plugins, and returns the URL to each.
      */
     private File[] searchForFiles(final File[] searchPaths) {
-        final List<File> fileList = new ArrayList<File>();
+        final List<File> fileList = new ArrayList<>();
 
         for (int spIdx = 0; spIdx < searchPaths.length; spIdx++) {
             Log.println("Searching for tools on: ", searchPaths[spIdx]);

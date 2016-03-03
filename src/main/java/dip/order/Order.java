@@ -208,7 +208,7 @@ public abstract class Order extends Object implements Orderable, java.io.Seriali
                 if (order instanceof Move && ((Move) order).getDest()
                         .isProvinceEqual(this.getSource())) {
                     if (depMTS == null) {
-                        depMTS = new ArrayList<OrderState>(5);
+                        depMTS = new ArrayList<>(5);
                     }
                     depMTS.add(dependentOS);
                 } else if (order instanceof Support) {
@@ -219,7 +219,7 @@ public abstract class Order extends Object implements Orderable, java.io.Seriali
                     if (support.isSupportingHold() && support.getSupportedSrc()
                             .isProvinceEqual(this.getSource())) {
                         if (depSup == null) {
-                            depSup = new ArrayList<OrderState>(5);
+                            depSup = new ArrayList<>(5);
                         }
                         depSup.add(dependentOS);
                     }

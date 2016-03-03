@@ -100,7 +100,7 @@ public class SelectPhaseDialog extends HeaderDialog {
 
     private void makePhaseList() {
         // create ListRows
-        final List<ListRow> lrList = new LinkedList<ListRow>();
+        final List<ListRow> lrList = new LinkedList<>();
         final Set<Phase> phaseSet = clientFrame.getWorld().getPhaseSet();
         int idx = 1;
         final Iterator<Phase> iter = phaseSet.iterator();
@@ -110,7 +110,7 @@ public class SelectPhaseDialog extends HeaderDialog {
         }
 
         // create & populate JList
-        list = new JList<ListRow>(lrList.toArray(new ListRow[lrList.size()]));
+        list = new JList<>(lrList.toArray(new ListRow[lrList.size()]));
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         phaseScrollPane = new XJScrollPane(list);
     }// makePhaseList()

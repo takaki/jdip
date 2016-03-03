@@ -223,7 +223,7 @@ public class SCHistoryWriter {
     private Object[][] makeSummaryTable() {
         // cols: # of appropriate turns + 1 (first column is the province name)
         //
-        final ArrayList<TurnState> turnList = new ArrayList<TurnState>(100);    // array of TurnStates
+        final ArrayList<TurnState> turnList = new ArrayList<>(100);    // array of TurnStates
 
         // add initial phase
         turnList.add(world.getInitialTurnState());

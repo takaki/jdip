@@ -1250,7 +1250,7 @@ public class Utils {
      */
     public static String[] parseCSV(final String input) {
         final Matcher m = REAL_COMMAS.matcher(input);
-        final ArrayList<String> matchList = new ArrayList<String>();
+        final ArrayList<String> matchList = new ArrayList<>();
 
         // find all matches (except last)
         // we trim extra whitespace from ends (no effect if within quotes)

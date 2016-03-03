@@ -219,8 +219,8 @@ public class JudgeParser {
 
             final Matcher m = pattern.matcher(line);
             if (m.find()) {
-                final LinkedList<String> names = new LinkedList<String>();
-                final LinkedList<String> email = new LinkedList<String>();
+                final LinkedList<String> names = new LinkedList<>();
+                final LinkedList<String> email = new LinkedList<>();
 
                 // now read each player UNTIL we get an empty line (or of length < 4)
                 line = reader.readLine();

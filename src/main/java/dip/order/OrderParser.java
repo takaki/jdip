@@ -593,7 +593,7 @@ public class OrderParser {
         //
         ArrayList<Province> al = null;
         if (st.hasMoreTokens()) {
-            al = new ArrayList<Province>();
+            al = new ArrayList<>();
             al.add(srcLoc.getProvince());
             // parse first destination (and add to array list)
             al.add(parseLocation(map, destName).getProvince());

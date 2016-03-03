@@ -215,10 +215,10 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
                 .toArray(new Power[0]);
 
         // setup object maps
-        trackerMap = new HashMap<Province, Tracker>(113);
+        trackerMap = new HashMap<>(113);
         renderSettings = new HashMap<>(11);
-        layerMap = new HashMap<String, SVGGElement>(11);
-        locMap = new HashMap<String, Location>(17);
+        layerMap = new HashMap<>(11);
+        locMap = new HashMap<>(17);
 
         // power order hashmap (now with z-axis) setup
         powerOrderMap = new HashMap[Z_LAYER_NAMES.length];
@@ -1284,10 +1284,8 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      */
     private void addProvinceHilitesToTracker() {
         // Make a list of all possible provinces with underscores
-        final ArrayList<String> uscoreProvList = new ArrayList<String>(
-                125);    // stores underscore-preceded names
-        final ArrayList<Province> lookupProvList = new ArrayList<Province>(
-                125);    // stores corresponding Province
+        final ArrayList<String> uscoreProvList = new ArrayList<>(125);    // stores underscore-preceded names
+        final ArrayList<Province> lookupProvList = new ArrayList<>(125);    // stores corresponding Province
         for (int i = 0; i < provinces.length; i++) {
             final String[] shortNames = provinces[i].getShortNames()
                     .toArray(new String[0]);
