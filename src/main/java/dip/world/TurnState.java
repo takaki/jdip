@@ -60,7 +60,7 @@ import java.util.Objects;
 public class TurnState implements Serializable {
     // instance variables (we serialize all of this)
     private Phase phase;
-    private List<Result> resultList;                // order results, post-adjudication
+    private ArrayList resultList;                // order results, post-adjudication
     private Map<Power, List<Orderable>> orderMap;                // Map of power=>orders
     private boolean isSCOwnerChanged;        // 'true' if any supply centers changed ownership
     private Position position;                // Position data (majority of game state)
@@ -263,7 +263,7 @@ public class TurnState implements Serializable {
 
         if (resultMap == null) {
             resultMap = new HashMap<>(53);
-            final Iterator iter = getResultList().iterator();
+            final Iterator<Result> iter = getResultList().iterator();
             while (iter.hasNext()) {
                 final Object obj = iter.next();
                 if (obj instanceof OrderResult) {

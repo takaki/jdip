@@ -67,7 +67,7 @@ public class TestParser {
     World world = null;
     TurnState turnState = null;    // the first & only TurnState in the World object
     WorldMap map = null;
-    List cases = null;            // a List of ORPairs
+    List<ORPair> cases = null;            // a List of ORPairs
     OrderParser op = null;
     boolean isLogging = false;    // OrderParser internal logging enabled
     ValidationOptions valOpts = null;    // validation options

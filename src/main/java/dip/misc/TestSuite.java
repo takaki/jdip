@@ -189,11 +189,11 @@ public final class TestSuite {
 
     private static String inFileName = null;
 
-    private List<Case> cases = new ArrayList<Case>(10);
+    private List<Case> cases = new ArrayList<>(10);
     private World world = null;
     private TurnState templateTurnState;
     private StdAdjudicator stdJudge = null;
-    private List<String> failedCaseNames = new ArrayList<String>(10);
+    private List<String> failedCaseNames = new ArrayList<>(10);
     private static int benchTimes = 1;
 
     // VARIANT_ALL name
@@ -351,7 +351,7 @@ public final class TestSuite {
         int nFail = 0;
         int nCases = 0;
 
-        List<String> unRezParadoxes = new LinkedList<String>();
+        List<String> unRezParadoxes = new LinkedList<>();
 
         long startMillis = System.currentTimeMillis();    // start timing!
 
@@ -696,7 +696,7 @@ public final class TestSuite {
 
         // create set of resolvedUnits
         //
-        Set resolvedUnits = new HashSet();
+        Set<UnitPos> resolvedUnits = new HashSet<>();
 
         Province[] provs = pos.getUnitProvinces().toArray(new Province[0]);
         for (int i = 0; i < provs.length; i++) {
@@ -721,7 +721,7 @@ public final class TestSuite {
 
         // create set of caseUnits
         //
-        Set caseUnits = new HashSet();
+        Set<UnitPos> caseUnits = new HashSet<>();
 
         DefineState[] dsOrds = c.getPostState();
         for (int i = 0; i < dsOrds.length; i++) {
@@ -745,14 +745,14 @@ public final class TestSuite {
         // first, we must make a duplicate of one set.
         // these are the units that are in the correct position (intersection)
         //
-        Set intersection = new HashSet(caseUnits);
+        Set<UnitPos> intersection = new HashSet<>(caseUnits);
         intersection.retainAll(resolvedUnits);
 
         // now, create subtraction sets
-        Set added = new HashSet(resolvedUnits);
+        Set<UnitPos> added = new HashSet<>(resolvedUnits);
         added.removeAll(caseUnits);
 
-        Set missing = new HashSet(caseUnits);
+        Set<UnitPos> missing = new HashSet<>(caseUnits);
         missing.removeAll(resolvedUnits);
 
         // if subtraction sets have no units, we are done. Otherwise, we must print
@@ -782,10 +782,10 @@ public final class TestSuite {
     /**
      * Print all the UnitPos objects from a Set; prefixing with the given prefix
      */
-    private void printSet(Set set, String prefix) {
-        Iterator iter = set.iterator();
+    private void printSet(Set<UnitPos> set, String prefix) {
+        Iterator<UnitPos> iter = set.iterator();
         while (iter.hasNext()) {
-            UnitPos up = (UnitPos) iter.next();
+            UnitPos up = iter.next();
 
             StringBuffer sb = new StringBuffer(64);
             sb.append("  ");    // spacer
@@ -897,7 +897,7 @@ public final class TestSuite {
                     List<String> post, List<String> supplySCOwnersList, List<String> preDislodgedList,
                     List<String> postDislodgedList, List<String> orderResultList) {
             this.name = name;
-            List<java.io.Serializable> temp = new ArrayList<java.io.Serializable>(50);
+            List<java.io.Serializable> temp = new ArrayList<>(50);
             Iterator<String> iter = null;
             of = OrderParser.getInstance();
 
@@ -1059,7 +1059,7 @@ public final class TestSuite {
                         .toArray(new OrderResult[temp.size()]);
 
                 // add results to previous turnstate
-                previousTS.setResultList(new ArrayList<java.io.Serializable>(temp));
+                previousTS.setResultList(new ArrayList<>(temp));
 
                 // add positions/ownership/orders to current turnstate
                 //
@@ -1403,13 +1403,13 @@ public final class TestSuite {
 
     private void clearAndSetupKeyMap() {
         if (keyMap == null) {
-            keyMap = new HashMap<String, LinkedList<String>>(23);
+            keyMap = new HashMap<>(23);
         }
 
         keyMap.clear();
 
         for (int i = 0; i < KEY_TYPES_WITH_LIST.length; i++) {
-            keyMap.put(KEY_TYPES_WITH_LIST[i], new LinkedList<String>());
+            keyMap.put(KEY_TYPES_WITH_LIST[i], new LinkedList<>());
         }
     }// setupKeyMap()
 

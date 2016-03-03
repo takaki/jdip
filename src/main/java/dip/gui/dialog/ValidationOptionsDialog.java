@@ -59,7 +59,7 @@ public class ValidationOptionsDialog extends HeaderDialog {
     private ValidationOptions.DescriptiveOption[] dopts = null;
 
     // GUI components
-    private JList optionList = null;
+    private JList<String> optionList = null;
 
     // GUI components: on radio button panel
     private JEditorPane description = null;
@@ -232,7 +232,7 @@ public class ValidationOptionsDialog extends HeaderDialog {
             options[i] = dopts[i].getDisplayName();
         }
 
-        optionList = new JList(options);
+        optionList = new JList<String>(options);
         optionList.setBorder(new EtchedBorder());
         optionList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         optionList.addListSelectionListener(new ListSelectionListener() {
