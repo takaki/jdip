@@ -1032,7 +1032,7 @@ public class ClientMenu {
      */
     public Power[] getOrderDrawingPowers() {
         // some powers are selected. determine which.
-        ArrayList list = new ArrayList(powers.length);
+        ArrayList<Power> list = new ArrayList<Power>(powers.length);
 
         for (int i = 0; i < powers.length; i++) {
             if (getSelected(powers[i])) {

@@ -208,7 +208,7 @@ public class PositionParser {
         Pattern pp2 = Pattern.compile(HEADER_REGEX_2);
 
         // init
-        List posList = new LinkedList();
+        List<PositionInfo> posList = new LinkedList<PositionInfo>();
         BufferedReader br = new BufferedReader(new StringReader(input));
 
         // header parse loop
@@ -242,7 +242,7 @@ public class PositionParser {
      * Parses the positions.
      */
     private void parsePositions(BufferedReader br,
-                                List posList) throws IOException, PatternSyntaxException {
+                                List<PositionInfo> posList) throws IOException, PatternSyntaxException {
         Pattern mrp = Pattern.compile(PARSE_REGEX);
 
         String line = ParserUtils.getNextLongLine(br);

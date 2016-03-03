@@ -143,7 +143,7 @@ public class JudgeOrderParser {
         Pattern ha = Pattern.compile(ADJUSTMENT_ORDER_HEADER);
 
         // create List
-        List orderList = new ArrayList(64);
+        List<NJudgeOrder> orderList = new ArrayList<NJudgeOrder>(64);
 
         BufferedReader br = new BufferedReader(new StringReader(input));
         String line = ParserUtils.getNextLongLine(br);
@@ -185,7 +185,7 @@ public class JudgeOrderParser {
      * Parse move and retreat orders
      */
     private void parseOrders(BufferedReader br, PhaseType phaseType,
-                             List orderList) throws IOException, PatternSyntaxException {
+                             List<NJudgeOrder> orderList) throws IOException, PatternSyntaxException {
         final Pattern prefix = Pattern.compile(ORDER_PREFIX);
 
         String line = ParserUtils.getNextLongLine(br).trim();

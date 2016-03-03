@@ -310,7 +310,7 @@ public class DislodgedParser {
 		*/
 
         // create a list of Dislodged units
-        List disList = new LinkedList();
+        List<DislodgedInfo> disList = new LinkedList<DislodgedInfo>();
 
         // Create patterns
         Pattern[] destroyeds = new Pattern[2];

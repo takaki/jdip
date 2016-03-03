@@ -63,8 +63,8 @@ public class AdjustmentParser {
     // INSTANCE VARIABLES
     private WorldMap map = null;
 
-    private List ownerList = null;
-    private List adjustList = null;
+    private List<OwnerInfo> ownerList = null;
+    private List<AdjustInfo> adjustList = null;
     private Pattern regexAdjust = null;
 
     private OwnerInfo[] ownerInfo = null;
@@ -282,8 +282,8 @@ public class AdjustmentParser {
      */
     private void parseInput(String input) throws IOException {
         // create lists
-        ownerList = new LinkedList();
-        adjustList = new LinkedList();
+        ownerList = new LinkedList<OwnerInfo>();
+        adjustList = new LinkedList<AdjustInfo>();
 
         // create patterns
         regexAdjust = Pattern.compile(ADJUST_REGEX);
@@ -329,7 +329,7 @@ public class AdjustmentParser {
      */
     private void parseOwnerBlock(String text) throws IOException {
         // map of Powers to StringBuffers
-        HashMap pmap = new HashMap();
+        HashMap<Power, StringBuffer> pmap = new HashMap<Power, StringBuffer>();
 
         // parse and re-formulate
         // into a new string
@@ -356,7 +356,7 @@ public class AdjustmentParser {
                 pmap.put(p, new StringBuffer());
             } else {
                 if (currentPower != null) {
-                    StringBuffer sb = (StringBuffer) pmap.get(currentPower);
+                    StringBuffer sb = pmap.get(currentPower);
                     sb.append(tok);
                     sb.append(" ");
                 }
@@ -370,7 +370,7 @@ public class AdjustmentParser {
         //
         final Power[] allPowers = map.getPowers().toArray(new Power[0]);
         for (int i = 0; i < allPowers.length; i++) {
-            StringBuffer sb = (StringBuffer) pmap.get(allPowers[i]);
+            StringBuffer sb = pmap.get(allPowers[i]);
             if (sb != null) {
                 final String[] provs = sb.toString().split("[\\,]");
 

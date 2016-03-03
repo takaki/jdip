@@ -472,7 +472,7 @@ public final class JudgeImportHistory {
         Log.println("  Turn.getPhase() = ", turn.getPhase());
 
         final TurnState ts = makeTurnState(turn, positionPlacement);
-        final List results = ts.getResultList();
+        final List<Result> results = ts.getResultList();
 
         Log.println("  Turnstate created. Phase: ", ts.getPhase());
 
@@ -750,7 +750,7 @@ public final class JudgeImportHistory {
         // create TurnState
         final TurnState ts = makeTurnState(turn, positionPlacement);
         final Position position = ts.getPosition();
-        final List results = ts.getResultList();
+        final List<Result> results = ts.getResultList();
         final RuleOptions ruleOpts = world.getRuleOptions();
 
         Log.println("  :procRetreat(): ", ts.getPhase(),
@@ -905,7 +905,7 @@ public final class JudgeImportHistory {
 
         // create TurnState
         final TurnState ts = makeTurnState(turn, positionPlacement);
-        final List results = ts.getResultList();
+        final List<Result> results = ts.getResultList();
         final RuleOptions ruleOpts = world.getRuleOptions();
 
         Log.println("JIH::procAdjust(): ", ts.getPhase());
@@ -1268,15 +1268,15 @@ public final class JudgeImportHistory {
      * <p>
      * old Dislodged results are discarded.
      */
-    private void makeDislodgedResults(final Phase phase, final List results,
+    private void makeDislodgedResults(final Phase phase, final List<Result> results,
                                       final Position position,
                                       final DislodgedInfo[] dislodgedInfo,
                                       final boolean positionPlacement) throws IOException {
         Log.println("JIH::makeDislodgedResults() [", phase, "]");
         Log.println("  # results: ", results.size());
-        final ListIterator iter = results.listIterator();
+        final ListIterator<Result> iter = results.listIterator();
         while (iter.hasNext()) {
-            final Result result = (Result) iter.next();
+            final Result result = iter.next();
             if (result instanceof OrderResult) {
                 final OrderResult orderResult = (OrderResult) result;
                 if (ResultType.DISLODGED.equals(orderResult.getResultType())) {
