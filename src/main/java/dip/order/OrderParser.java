@@ -347,12 +347,8 @@ public class OrderParser {
                         final OrderFactory orderFactory, final boolean locked,
                         final boolean guessing) throws OrderException {
         // Objects common to ALL order types.
-        final String srcName;
-        String srcUnitTypeName = null;
-        Power power;
 
         // current token for parsing
-        String token;
 
         final StringTokenizer st = new StringTokenizer(ord, WHITESPACE, false);
 
@@ -360,7 +356,7 @@ public class OrderParser {
         // Power parsing
 
         // see if first token is a power; if so, parse it
-        power = map.getFirstPower(ord).orElse(null);
+        Power power = map.getFirstPower(ord).orElse(null);
         //Log.println("OP:parse(): first token a power? ", power);
 
         // eat up the token (we don't want to reparse it), but
@@ -400,7 +396,8 @@ public class OrderParser {
         // adjustment orders have a different syntax from other orders
         // parse the src type [if any]
         //
-        token = getToken(st);
+        String token = getToken(st);
+        String srcUnitTypeName = null;
         if (isTypeToken(token)) {
             srcUnitTypeName = token;
             token = getToken(st);
@@ -411,7 +408,7 @@ public class OrderParser {
 
 
         // parse the src province
-        srcName = token;
+        final String srcName = token;
 
         // parse the order type -- if this is missing, we
         // have a 'defineState' order type
@@ -577,8 +574,6 @@ public class OrderParser {
         // MOVE order, or RETREAT order, if we are in RETREAT phase. If so, we can ignore the convoy stuff.
         // <power>: <type> <s-prov> m <d-prov>
         //
-        boolean isExplicitConvoy = false;    // "by convoy" or "via convoy" present
-        boolean isConvoyedMove = false;        // multiple 'move' locations
         String destName = getToken(st, Utils.getLocalString(OF_MISSING_DEST));
 
         // eat possible first "M" if allowed and repeat dest-getting attempt
@@ -603,6 +598,8 @@ public class OrderParser {
             al.add(parseLocation(map, destName).getProvince());
         }
 
+        boolean isConvoyedMove = false;        // multiple 'move' locations
+        boolean isExplicitConvoy = false;    // "by convoy" or "via convoy" present
         while (st.hasMoreTokens()) {
             String token = st.nextToken();
             if (token.equals("m")) {
