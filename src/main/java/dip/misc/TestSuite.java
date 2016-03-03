@@ -897,7 +897,7 @@ public final class TestSuite {
                     List<String> post, List<String> supplySCOwnersList, List<String> preDislodgedList,
                     List<String> postDislodgedList, List<String> orderResultList) {
             this.name = name;
-            List<java.io.Serializable> temp = new ArrayList<>(50);
+            List temp = new ArrayList<>(50);
             Iterator<String> iter = null;
             of = OrderParser.getInstance();
 

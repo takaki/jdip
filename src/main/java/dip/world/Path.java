@@ -439,7 +439,7 @@ public class Path {
      */
     public Tristate getConvoyRouteEvaluation(final Location src,
                                              final Location dest,
-                                             final List validPath) {
+                                             final List<Province> validPath) {
         return getConvoyRouteEvaluation(src, dest, null, validPath);
     }// getConvoyRouteEvaluation()
 
@@ -489,7 +489,7 @@ public class Path {
     public Tristate getConvoyRouteEvaluation(final Location src,
                                              final Location dest,
                                              final Location invalid,
-                                             final List validPath) {
+                                             final List<Province> validPath) {
         final List<Location> path = new ArrayList<>(12);
         SuperConvoyPathEvaluator spe = null;
         boolean isPathFound = false;
