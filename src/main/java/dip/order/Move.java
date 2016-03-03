@@ -594,8 +594,7 @@ public class Move extends Order {
             if (thisOS.getEvalState() == Tristate.UNCERTAIN) {
                 // intent to convoy already determined (e.g., _isViaConvoy is true, so _isConvoyIntent initiall is true)
                 if (_isConvoyIntent) {
-                    if (convoyRoutes != null) // static (explicit) paths
-                    {
+                    if (convoyRoutes != null) {// static (explicit) paths
                         // if we have multiple routes, we don't fail until *all* paths fail.
                         // if at least one is true, then we are OK
                         final boolean overall = convoyRoutes.stream().anyMatch(
@@ -621,8 +620,7 @@ public class Move extends Order {
                                                         MOVE_VER_NO_ROUTE));
                             }
                         }
-                    } else    // implicit path
-                    {
+                    } else { // implicit path
                         final Path path = new Path(adjudicator);
                         if (!path.isLegalConvoyRoute(getSource(), dest)) {
                             // As for static (explicit) paths, if we are explicitly
@@ -643,8 +641,9 @@ public class Move extends Order {
                             }
                         }
                     }
-                } else if (_isAdjWithPossibleConvoy)    // intent must be determined
-                {
+                } else if (_isAdjWithPossibleConvoy) { // intent must be determined
+
+
                     // first, we need to find all paths with possible convoy orders
                     // between src and dest. If we have an order, by the same power,
                     // on ONE of these paths, then intent to convoy will be 'true'
