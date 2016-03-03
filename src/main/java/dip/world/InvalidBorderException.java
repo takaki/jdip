@@ -35,5 +35,7 @@ public class InvalidBorderException extends RuntimeException {
         super(message);
     }// InvalidBorderException()
 
-
+    public InvalidBorderException(final String message, final Throwable e) {
+        super(message, e);
+    }
 }// InvalidBorderException 
