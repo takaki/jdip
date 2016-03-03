@@ -34,11 +34,14 @@ import dip.world.variant.data.SupplyCenter;
 import dip.world.variant.data.Variant;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringTokenizer;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 
 /**
@@ -92,7 +95,7 @@ public class WorldFactory {
         Log.println("WorldFactory.createWorld(): " + variant.getName());
 
         final List<Province> provinces = new ArrayList<>(100);
-        final HashMap<String, Province> provNameMap = new HashMap<>();    // mapping of names->provinces
+        final Map<String, Province> provNameMap = new HashMap<>();    // mapping of names->provinces
 
         // gather all province data, and create provinces
         final List<ProvinceData> provinceDataArray = variant.getProvinceData();
@@ -119,16 +122,14 @@ public class WorldFactory {
 
             // add Province names (all) to our name->province map
             provNameMap.put(province.getFullName().toLowerCase(), province);
-            final List<String> lcProvNames = province.getShortNames();
-            for (final String lcProvName : lcProvNames) {
-                provNameMap.put(lcProvName.toLowerCase(), province);
-            }
+
+            province.getShortNames().stream().forEach(lcProvName -> provNameMap
+                    .put(lcProvName.toLowerCase(), province));
         }
 
         // gather all adjacency data
         // parse adjacency data for all provinces
         // keep a list of the locations parsed below
-        final ArrayList<Location> locationList = new ArrayList<>(16);
         for (final ProvinceData provinceData : provinceDataArray) {
             final List<String> adjProvinceTypes = provinceData
                     .getAdjacentProvinceTypes();
@@ -148,29 +149,21 @@ public class WorldFactory {
             final Adjacency adjacency = province.getAdjacency();
 
             // parse adjacency data, then set it for this province
-            for (int adjIdx = 0; adjIdx < adjProvinceTypes.size(); adjIdx++) {
+            IntStream.range(0, adjProvinceTypes.size()).forEach(adjIdx -> {
                 // get the coast type.
                 final Coast coast = Coast.parse(adjProvinceTypes.get(adjIdx));
-
-                // clear the location list (we re-use it)
-                locationList.clear();
 
                 // parse provinces, making locations for each
                 // provinces must be seperated by " " or "," or ";" or ":"
                 final String input = adjProvinceNames.get(adjIdx).trim()
                         .toLowerCase();
-                final StringTokenizer st = new StringTokenizer(input,
-                        " ,;:\t\n\r", false);
-                while (st.hasMoreTokens()) {
-                    // makeLocation() will change the coast, as needed, and verify the province
-                    final Location location = makeLocation(provNameMap,
-                            st.nextToken(), coast);
-                    locationList.add(location);
-                }
-
+                final List<Location> locs = Arrays
+                        .stream(input.split("[ ,;:\t\n\r]"))
+                        .map(st -> makeLocation(provNameMap, st, coast))
+                        .collect(Collectors.toList());
                 // add data to adjacency table after unwrapping collection
-                adjacency.setLocations(coast, locationList);
-            }
+                adjacency.setLocations(coast, locs);
+            });
 
 
             // validate adjacency data
