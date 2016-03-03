@@ -42,28 +42,28 @@ public class XJTextField extends JTextField {
         this(null, 0);
     }
 
-    public XJTextField(int columns) {
+    public XJTextField(final int columns) {
         this(null, columns);
     }
 
-    public XJTextField(String text) {
+    public XJTextField(final String text) {
         this(text, 0);
     }
 
-    public XJTextField(String text, int columns) {
+    public XJTextField(final String text, final int columns) {
         super(null, columns);
 
-        AbstractDocument doc = (AbstractDocument) getDocument();
+        final AbstractDocument doc = (AbstractDocument) getDocument();
         doc.setDocumentFilter(new DocumentFilter() {
-            public void insertString(DocumentFilter.FilterBypass fb, int offset,
-                                     String text,
-                                     AttributeSet attr) throws BadLocationException {
+            public void insertString(final DocumentFilter.FilterBypass fb, final int offset,
+                                     final String text,
+                                     final AttributeSet attr) throws BadLocationException {
                 replace(fb, offset, 0, text, attr);
             }// insertString()
 
-            public void replace(DocumentFilter.FilterBypass fb, int offset,
-                                int length, String text,
-                                AttributeSet attr) throws BadLocationException {
+            public void replace(final DocumentFilter.FilterBypass fb, final int offset,
+                                final int length, final String text,
+                                final AttributeSet attr) throws BadLocationException {
                 if (!XJTextField.this.isUnicodeAware()) {
                     fb.replace(offset, length, getFixedString(text), attr);
                 } else {
@@ -71,8 +71,8 @@ public class XJTextField extends JTextField {
                 }
             }// replace()
 
-            private String getFixedString(String in) {
-                StringBuffer buffer = new StringBuffer((in == null) ? "" : in);
+            private String getFixedString(final String in) {
+                final StringBuffer buffer = new StringBuffer((in == null) ? "" : in);
 
                 for (int i = buffer.length() - 1; i >= 0; i--) {
                     final char c = buffer.charAt(i);
@@ -96,7 +96,7 @@ public class XJTextField extends JTextField {
         }
     }
 
-    public void setFont(Font f) {
+    public void setFont(final Font f) {
         super.setFont(f);
         detectUnicode();
     }// setFont()

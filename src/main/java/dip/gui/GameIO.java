@@ -50,7 +50,7 @@ public class GameIO {
         /**
          * Create a ReadGameThread
          */
-        public ReadGameThread(ClientFrame cf) {
+        public ReadGameThread(final ClientFrame cf) {
 
 
         }// ReadGameThread()

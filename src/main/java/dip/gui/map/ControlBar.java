@@ -42,7 +42,7 @@ public abstract class ControlBar extends JToolBar implements DOMUIEventHandler {
     /**
      * Create a ControlBar
      */
-    public ControlBar(MapPanel mp) {
+    public ControlBar(final MapPanel mp) {
         super();
         setMargin(new Insets(5, 5, 5, 5));
         setFloatable(false);
@@ -58,37 +58,37 @@ public abstract class ControlBar extends JToolBar implements DOMUIEventHandler {
     /**
      * Key Pressed event. Does Nothing by default.
      */
-    public void keyPressed(DOMKeyEvent ke, Location loc) {
+    public void keyPressed(final DOMKeyEvent ke, final Location loc) {
     }
 
     /**
      * Mouse Over event: Mouse over a province. Does Nothing by default.
      */
-    public void mouseOver(MouseEvent me, Location loc) {
+    public void mouseOver(final MouseEvent me, final Location loc) {
     }
 
     /**
      * Mouse Out event: Mouse out of a province. Does Nothing by default.
      */
-    public void mouseOut(MouseEvent me, Location loc) {
+    public void mouseOut(final MouseEvent me, final Location loc) {
     }
 
     /**
      * Mouse clicked. Does Nothing by default.
      */
-    public void mouseClicked(MouseEvent me, Location loc) {
+    public void mouseClicked(final MouseEvent me, final Location loc) {
     }
 
     /**
      * Mouse button pressed. Does Nothing by default.
      */
-    public void mouseDown(MouseEvent me, Location loc) {
+    public void mouseDown(final MouseEvent me, final Location loc) {
     }
 
     /**
      * Mouse button released. Does Nothing by default.
      */
-    public void mouseUp(MouseEvent me, Location loc) {
+    public void mouseUp(final MouseEvent me, final Location loc) {
     }
 
 }// class ControlBar	

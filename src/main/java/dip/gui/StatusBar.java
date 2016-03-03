@@ -91,7 +91,7 @@ public class StatusBar extends JPanel {
     /**
      * Set Mode indicator text
      */
-    public void setModeText(String s) {
+    public void setModeText(final String s) {
         mode.setText(s);
     }// setModeText()
 
@@ -112,7 +112,7 @@ public class StatusBar extends JPanel {
     /**
      * Shows the Progress Bar (in place of the Mode setting)
      */
-    public void showPB(int min, int max) {
+    public void showPB(final int min, final int max) {
         if (pb == null) {
             pb = new JProgressBar(min, max);
             pb.setStringPainted(false);
@@ -130,7 +130,7 @@ public class StatusBar extends JPanel {
     /**
      * Sets the progress bar displayed value.
      */
-    public void setPBValue(int value) {
+    public void setPBValue(final int value) {
         if (pb != null) {
             pb.setValue(value);
         }

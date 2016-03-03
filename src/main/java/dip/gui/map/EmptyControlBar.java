@@ -38,20 +38,20 @@ public class EmptyControlBar extends ControlBar {
     /**
      * Create an EmptyControlBar
      */
-    public EmptyControlBar(MapPanel mp) {
+    public EmptyControlBar(final MapPanel mp) {
         super(mp);
 
         // create a button to get the size
         // we do this to make sure the JButton characteristics
         // are that of a toolbar button.
-        JButton fit = add(new AbstractAction() {
-            public void actionPerformed(ActionEvent evt) {
+        final JButton fit = add(new AbstractAction() {
+            public void actionPerformed(final ActionEvent evt) {
                 // nothing here!
             }
         });
         fit.setIcon(Utils.getIcon(ICON_ZOOM_FIT));
 
-        Dimension size = fit.getPreferredSize();
+        final Dimension size = fit.getPreferredSize();
         add(Box.createVerticalStrut(size.height));
         remove(fit);
     }// EmptyControlBar()

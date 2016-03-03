@@ -194,7 +194,7 @@ public interface GUIOrder extends Orderable {
         /**
          * Constructor
          */
-        public Parameter(String name) {
+        public Parameter(final String name) {
             if (name == null) {
                 throw new IllegalArgumentException();
             }
@@ -239,23 +239,23 @@ public interface GUIOrder extends Orderable {
         public StateInfo() {
         }
 
-        public void setTurnState(TurnState turnState) {
+        public void setTurnState(final TurnState turnState) {
             this.turnState = turnState;
         }
 
-        public void setAdjustmenInfoMap(AdjustmentInfoMap adjMap) {
+        public void setAdjustmenInfoMap(final AdjustmentInfoMap adjMap) {
             this.adjMap = adjMap;
         }
 
-        public void setRuleOptions(RuleOptions ruleOpts) {
+        public void setRuleOptions(final RuleOptions ruleOpts) {
             this.ruleOpts = ruleOpts;
         }
 
-        public void setValidationOptions(ValidationOptions valOpts) {
+        public void setValidationOptions(final ValidationOptions valOpts) {
             this.valOpts = valOpts;
         }
 
-        public void setClientFrame(ClientFrame cf) {
+        public void setClientFrame(final ClientFrame cf) {
             this.cf = cf;
         }
 
@@ -280,8 +280,8 @@ public interface GUIOrder extends Orderable {
          */
         public boolean canIssueOrder(final Power power) {
             final Power[] powers = cf.getOrderablePowers();
-            for (int i = 0; i < powers.length; i++) {
-                if (powers[i] == power) {
+            for (Power power1 : powers) {
+                if (power1 == power) {
                     return true;
                 }
             }
@@ -327,7 +327,7 @@ public interface GUIOrder extends Orderable {
         /**
          * Creates a MapInfo object
          */
-        public MapInfo(TurnState ts) {
+        public MapInfo(final TurnState ts) {
             this.ts = ts;
         }// MapInfo()
 

@@ -42,7 +42,7 @@ public class StatusBarUtils {
     /**
      * Create the StatusBarUtils object
      */
-    protected StatusBarUtils(MapPanel mp, StatusBar statusbar) {
+    protected StatusBarUtils(final MapPanel mp, final StatusBar statusbar) {
         this.mp = mp;
         this.statusbar = statusbar;
     }// StatusBarUtils()
@@ -50,7 +50,7 @@ public class StatusBarUtils {
     /**
      * Set the StatusBar text
      */
-    public void setText(String text) {
+    public void setText(final String text) {
         statusbar.setText(text);
     }// setText()
 
@@ -66,7 +66,7 @@ public class StatusBarUtils {
     /**
      * Convenience version of displayProvinceInfo(Location, null)
      */
-    public void displayProvinceInfo(Location loc) {
+    public void displayProvinceInfo(final Location loc) {
         displayProvinceInfo(loc, null);
     }// displayProvinceInfo()
 
@@ -77,7 +77,7 @@ public class StatusBarUtils {
      * <p>
      * Clears status bar if location & appendText is null
      */
-    public void displayProvinceInfo(Location loc, String appendText) {
+    public void displayProvinceInfo(final Location loc, final String appendText) {
         if (loc == null) {
             if (appendText == null) {
                 clearText();
@@ -88,9 +88,9 @@ public class StatusBarUtils {
             return;
         }
 
-        StringBuffer sb = new StringBuffer(128);
-        Province p = loc.getProvince();
-        Position position = mp.getPosition();
+        final StringBuffer sb = new StringBuffer(128);
+        final Province p = loc.getProvince();
+        final Position position = mp.getPosition();
 
         if (position == null) {
             // 1) No unit present
@@ -110,7 +110,7 @@ public class StatusBarUtils {
             // province information
             //
             // Unit Information
-            Unit unit = position.getUnit(p).orElse(null);
+            final Unit unit = position.getUnit(p).orElse(null);
             if (unit != null) {
                 sb.append(": ");
                 sb.append(unit.getPower().getAdjective());
@@ -120,7 +120,7 @@ public class StatusBarUtils {
             }
 
             // Dislodged Unit information
-            Unit disUnit = position.getDislodgedUnit(p).orElse(null);
+            final Unit disUnit = position.getDislodgedUnit(p).orElse(null);
             if (disUnit != null) {
                 if (unit != null) {
                     sb.append(", ");
@@ -143,7 +143,7 @@ public class StatusBarUtils {
                     sb.append(": ");
                 }
 
-                Power owner = position.getSupplyCenterOwner(p).orElse(null);
+                final Power owner = position.getSupplyCenterOwner(p).orElse(null);
                 if (owner == null) {
                     sb.append(Utils.getLocalString(SB_UNOWNED));
                 } else {
@@ -180,7 +180,7 @@ public class StatusBarUtils {
     /**
      * Get coast information, if appropriate
      */
-    private void getCoast(StringBuffer sb, Unit unit, Province p) {
+    private void getCoast(final StringBuffer sb, final Unit unit, final Province p) {
         if (unit.getType().equals(Unit.Type.FLEET) && p.isMultiCoastal()) {
             sb.append(" (");
             sb.append(unit.getCoast().getName());

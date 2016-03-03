@@ -99,7 +99,7 @@ public abstract class Order extends Object implements Orderable, java.io.Seriali
      * @param src     Location of the ordered unit
      * @param srcUnit Unit type
      */
-    protected Order(Power power, Location src, Unit.Type srcUnit) {
+    protected Order(final Power power, final Location src, final Unit.Type srcUnit) {
 
         if (power == null || src == null || srcUnit == null) {
             throw new IllegalArgumentException("null parameter(s)");
@@ -129,7 +129,7 @@ public abstract class Order extends Object implements Orderable, java.io.Seriali
     //
     // Format methods
     //
-    public String toFormattedString(OrderFormatOptions ofo) {
+    public String toFormattedString(final OrderFormatOptions ofo) {
         return OrderFormat.format(ofo, getDefaultFormat(), this);
     }// toFormattedString()
 
@@ -172,10 +172,10 @@ public abstract class Order extends Object implements Orderable, java.io.Seriali
      * @param valOpts Current validation options
      * @throws OrderException
      */
-    public void validate(TurnState state, ValidationOptions valOpts,
-                         RuleOptions ruleOpts) throws OrderException {
-        Position position = state.getPosition();
-        Unit unit = position.getUnit(src.getProvince()).orElse(null);
+    public void validate(final TurnState state, final ValidationOptions valOpts,
+                         final RuleOptions ruleOpts) throws OrderException {
+        final Position position = state.getPosition();
+        final Unit unit = position.getUnit(src.getProvince()).orElse(null);
         validate(valOpts, unit);
     }// validate()
 
@@ -193,33 +193,32 @@ public abstract class Order extends Object implements Orderable, java.io.Seriali
      * Only "hold" supports are added. Invalid Move orders are NEVER added.
      */
     protected final void addSupportsOfAndMovesToSource(
-            Adjudicator adjudicator) {
-        OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
+            final Adjudicator adjudicator) {
+        final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
         ArrayList<OrderState> depMTS = null;
         ArrayList<OrderState> depSup = null;
 
-        List<OrderState> orderStates = adjudicator.getOrderStates();
-        for (int osIdx = 0; osIdx < orderStates.size(); osIdx++) {
-            OrderState dependentOS = orderStates.get(osIdx);
-            Orderable order = dependentOS.getOrder();
+        final List<OrderState> orderStates = adjudicator.getOrderStates();
+        for (final OrderState dependentOS : orderStates) {
+            final Orderable order = dependentOS.getOrder();
 
             if (order != this) // always exclude self
             {
                 if (order instanceof Move && ((Move) order).getDest()
                         .isProvinceEqual(this.getSource())) {
                     if (depMTS == null) {
-                        depMTS = new ArrayList<OrderState>(5);
+                        depMTS = new ArrayList<>(5);
                     }
                     depMTS.add(dependentOS);
                 } else if (order instanceof Support) {
-                    Support support = (Support) order;
+                    final Support support = (Support) order;
 
                     // if we don't check for hold-type support (Support.isSupportingHold() == true)
                     // we will accidentally add move-supports! (bad)
                     if (support.isSupportingHold() && support.getSupportedSrc()
                             .isProvinceEqual(this.getSource())) {
                         if (depSup == null) {
-                            depSup = new ArrayList<OrderState>(5);
+                            depSup = new ArrayList<>(5);
                         }
                         depSup.add(dependentOS);
                     }
@@ -242,8 +241,8 @@ public abstract class Order extends Object implements Orderable, java.io.Seriali
      * Validates a dislodged or non-dislodged unit, depending upon what type of
      * unit is specified
      */
-    protected void validate(ValidationOptions valOpts,
-                            Unit unit) throws OrderException {
+    protected void validate(final ValidationOptions valOpts,
+                            final Unit unit) throws OrderException {
         // Basic Validation: [not in correct order]
         // 	1) must be a unit in the province ordered.
         //	2) Power of unit in Province must == Power of this Order
@@ -252,7 +251,7 @@ public abstract class Order extends Object implements Orderable, java.io.Seriali
         //	4) validate the source location given the unit type.
         //		(ensure coast is correct)
         //
-        Province srcProvince = src.getProvince();
+        final Province srcProvince = src.getProvince();
 
         // unit-existence
         if (unit == null) {
@@ -280,9 +279,9 @@ public abstract class Order extends Object implements Orderable, java.io.Seriali
      * If a type is undefined, the type is derived from the existing unit. If the
      * existing unit is not found (or mismatched), an exception is thrown.
      */
-    protected final Unit.Type getValidatedUnitType(Province province,
-                                                   Unit.Type unitType,
-                                                   Unit unit) throws OrderException {
+    protected final Unit.Type getValidatedUnitType(final Province province,
+                                                   final Unit.Type unitType,
+                                                   final Unit unit) throws OrderException {
         if (unit == null) {
             throw new OrderException(
                     Utils.getLocalString(ORD_VAL_NOUNIT, province));
@@ -307,9 +306,9 @@ public abstract class Order extends Object implements Orderable, java.io.Seriali
     /**
      * Validates the given Power
      */
-    protected final void checkPower(Power power, TurnState turnState,
-                                    boolean checkIfActive) throws OrderException {
-        Position position = turnState.getPosition();
+    protected final void checkPower(final Power power, final TurnState turnState,
+                                    final boolean checkIfActive) throws OrderException {
+        final Position position = turnState.getPosition();
         if (position.isEliminated(power)) {
             throw new OrderException(
                     Utils.getLocalString(ORD_VAL_PWR_ELIMINATED, power));
@@ -324,8 +323,8 @@ public abstract class Order extends Object implements Orderable, java.io.Seriali
     /**
      * Convenience method to check that we are in the Retreat phase
      */
-    protected final void checkSeasonRetreat(TurnState state,
-                                            String orderName) throws OrderException {
+    protected final void checkSeasonRetreat(final TurnState state,
+                                            final String orderName) throws OrderException {
         if (state.getPhase().getPhaseType() != Phase.PhaseType.RETREAT) {
             throw new OrderException(
                     Utils.getLocalString(ORD_VAL_SZ_RETREAT, orderName));
@@ -336,8 +335,8 @@ public abstract class Order extends Object implements Orderable, java.io.Seriali
     /**
      * Convenience method to check that we are in the Adjustment phase
      */
-    protected final void checkSeasonAdjustment(TurnState state,
-                                               String orderName) throws OrderException {
+    protected final void checkSeasonAdjustment(final TurnState state,
+                                               final String orderName) throws OrderException {
         if (state.getPhase().getPhaseType() != Phase.PhaseType.ADJUSTMENT) {
             throw new OrderException(
                     Utils.getLocalString(ORD_VAL_SZ_ADJUST, orderName));
@@ -348,8 +347,8 @@ public abstract class Order extends Object implements Orderable, java.io.Seriali
     /**
      * Convenience method to check that we are in the Movement phase
      */
-    protected final void checkSeasonMovement(TurnState state,
-                                             String orderName) throws OrderException {
+    protected final void checkSeasonMovement(final TurnState state,
+                                             final String orderName) throws OrderException {
         if (state.getPhase().getPhaseType() != Phase.PhaseType.MOVEMENT) {
             throw new OrderException(
                     Utils.getLocalString(ORD_VAL_SZ_MOVEMENT, orderName));
@@ -362,7 +361,7 @@ public abstract class Order extends Object implements Orderable, java.io.Seriali
      * <br>
      * Example: France: Army Spain/sc
      */
-    protected final void appendFull(StringBuffer sb) {
+    protected final void appendFull(final StringBuffer sb) {
         sb.append(power);
         sb.append(": ");
         sb.append(srcUnitType.getFullName());
@@ -376,7 +375,7 @@ public abstract class Order extends Object implements Orderable, java.io.Seriali
      * <br>
      * Example: France: Army spa/sc
      */
-    protected final void appendBrief(StringBuffer sb) {
+    protected final void appendBrief(final StringBuffer sb) {
         sb.append(power);
         sb.append(": ");
         sb.append(srcUnitType.getShortName());
@@ -406,12 +405,12 @@ public abstract class Order extends Object implements Orderable, java.io.Seriali
      * subclassed Order object! Subclasses are advised to call
      * the super method for assistance.
      */
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         // speedy reference check
         if (this == obj) {
             return true;
         } else if (obj instanceof Order) {
-            Order o = (Order) obj;
+            final Order o = (Order) obj;
 
             if (power.equals(o.power) &&
                     src.equals(o.src) &&

@@ -76,7 +76,7 @@ public class FlocImportDialog extends HeaderDialog implements FlocImportCallback
      * Display the dialog. Returns the succesfully imported
      * World object, or null if failure occured.
      */
-    public static World displayDialog(ClientFrame parent) {
+    public static World displayDialog(final ClientFrame parent) {
         final FlocImportDialog fid = new FlocImportDialog(parent);
         fid.pack();
         fid.setSize(Utils.getScreenSize(0.4f, 0.5f));
@@ -89,12 +89,12 @@ public class FlocImportDialog extends HeaderDialog implements FlocImportCallback
     /**
      * Create the dialog.
      */
-    private FlocImportDialog(ClientFrame parent) {
+    private FlocImportDialog(final ClientFrame parent) {
         super(parent, Utils.getLocalString(TITLE), true);
         this.clientFrame = parent;
 
         // get last judge used (unless empty; if so, ignore)
-        Preferences prefs = SharedPrefs.getUserNode();
+        final Preferences prefs = SharedPrefs.getUserNode();
         final String lastJudgeUsed = prefs.get(PREFS_LAST_JUDGE_USED, "");
 
         // component creation
@@ -132,18 +132,18 @@ public class FlocImportDialog extends HeaderDialog implements FlocImportCallback
      */
     private JPanel makeContent() {
 
-        int w1[] = {BORDER, 0, 5, 0, BORDER};
-        int h1[] = {BORDER, 0, 20, 0, 0, BORDER, 0};
+        final int[] w1 = {BORDER, 0, 5, 0, BORDER};
+        final int[] h1 = {BORDER, 0, 20, 0, 0, BORDER, 0};
 
-        HIGLayout l1 = new HIGLayout(w1, h1);
+        final HIGLayout l1 = new HIGLayout(w1, h1);
         l1.setColumnWeight(1, 1);
         l1.setRowWeight(1, 2);
         l1.setColumnWeight(5, 1);
         l1.setRowWeight(5, 3);
 
-        JPanel content = new JPanel(l1);
+        final JPanel content = new JPanel(l1);
 
-        HIGConstraints c = new HIGConstraints();
+        final HIGConstraints c = new HIGConstraints();
         content.add(new JLabel(Utils.getLocalString(LABEL_JUDGES)),
                 c.rcwh(2, 2, 1, 1, "r"));
         content.add(cbJudges, c.rcwh(2, 4, 1, 1, "l"));
@@ -158,7 +158,7 @@ public class FlocImportDialog extends HeaderDialog implements FlocImportCallback
     /**
      * Handle OK and CANCEL selections
      */
-    public void close(String actionCommand) {
+    public void close(final String actionCommand) {
         if (isOKorAccept(actionCommand)) {
             // check game name text
             final String judgeName = ((String) cbJudges.getSelectedItem())
@@ -201,7 +201,7 @@ public class FlocImportDialog extends HeaderDialog implements FlocImportCallback
 
 
             // save selected judge
-            Preferences prefs = SharedPrefs.getUserNode();
+            final Preferences prefs = SharedPrefs.getUserNode();
             prefs.put(PREFS_LAST_JUDGE_USED, judgeName);
             SharedPrefs.savePrefs(prefs);
 
@@ -230,9 +230,9 @@ public class FlocImportDialog extends HeaderDialog implements FlocImportCallback
     /**
      * FlocImportCallback implementation
      */
-    public void flocImportException(IOException e) {
+    public void flocImportException(final IOException e) {
         // enhance our error report
-        ErrorDialog.BugReportInfo bri = new ErrorDialog.BugReportInfo(e);
+        final ErrorDialog.BugReportInfo bri = new ErrorDialog.BugReportInfo(e);
         bri.add("contact_site", "http://www.floc.net/");
         bri.add("judge_name", (String) cbJudges.getSelectedItem());
         bri.add("game_name", tfGameName.getText());
@@ -248,7 +248,7 @@ public class FlocImportDialog extends HeaderDialog implements FlocImportCallback
     /**
      * FlocImportCallback implementation
      */
-    public boolean flocTextImportComplete(String text) {
+    public boolean flocTextImportComplete(final String text) {
         // we don't do anything with the raw text.
         // and don't close the dialog, either
         return true;
@@ -257,7 +257,7 @@ public class FlocImportDialog extends HeaderDialog implements FlocImportCallback
     /**
      * FlocImportCallback implementation
      */
-    public void flocWorldImportComplete(World w) {
+    public void flocWorldImportComplete(final World w) {
         this.world = w;
         enableProgressBar(false);
         close(ACTION_CANCEL);
@@ -266,7 +266,7 @@ public class FlocImportDialog extends HeaderDialog implements FlocImportCallback
     /**
      * FlocImportCallback implementation
      */
-    public void flocImportMessage(String message) {
+    public void flocImportMessage(final String message) {
         clientFrame.getStatusBar().setText(message);
     }// flocImportMessage()
 
@@ -289,7 +289,7 @@ public class FlocImportDialog extends HeaderDialog implements FlocImportCallback
         getButton(0).setEnabled(true);
     }// flocImportUnregistered()
 
-    private synchronized void enableProgressBar(boolean value) {
+    private synchronized void enableProgressBar(final boolean value) {
         progressBar.setVisible(value);
         progressBar.setString("");
     }// enableProgressBar()

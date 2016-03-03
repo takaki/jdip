@@ -88,13 +88,13 @@ public class MultiOrderEntry {
     /**
      * Display the MultiOrderEntry dialog
      */
-    public static void displayDialog(ClientFrame parent, World world) {
-        MultiOrderEntry moe = new MultiOrderEntry(parent, world);
+    public static void displayDialog(final ClientFrame parent, final World world) {
+        final MultiOrderEntry moe = new MultiOrderEntry(parent, world);
         moe.tv.displayDialog();
     }// displayDialog()
 
 
-    private MultiOrderEntry(ClientFrame parent, World world) {
+    private MultiOrderEntry(final ClientFrame parent, final World world) {
         this.parent = parent;
         this.world = world;
         this.orderDisplayPanel = parent.getOrderDisplayPanel();
@@ -115,7 +115,7 @@ public class MultiOrderEntry {
 
 
     private class Acceptor implements TextViewer.AcceptListener {
-        public boolean isAcceptable(TextViewer t) {
+        public boolean isAcceptable(final TextViewer t) {
             String text = t.getText();
             text = text.trim();
             if (!text.equals("")) {
@@ -133,13 +133,13 @@ public class MultiOrderEntry {
     // process line-by-line
     // keep exceptions
     // keep tally of total orders / invalid / valid
-    private boolean process(String text) {
+    private boolean process(final String text) {
         int nOrders = 0;
-        List exList = new ArrayList();
-        List failList = new ArrayList();
+        final List exList = new ArrayList();
+        final List failList = new ArrayList();
 
         try {
-            BufferedReader br = new BufferedReader(new StringReader(text));
+            final BufferedReader br = new BufferedReader(new StringReader(text));
             String line = br.readLine();
             while (line != null) {
                 try {
@@ -153,14 +153,14 @@ public class MultiOrderEntry {
 
                         // trim anything after (and including) a "(*" for cut-and-pastes
                         // from judge output
-                        int idx = line.indexOf(COMMENT_PREFIX);
+                        final int idx = line.indexOf(COMMENT_PREFIX);
                         if (idx > COMMENT_PREFIX.length()) {
                             line = line.substring(0, idx);
                         }
 
                         parseOrder(line);
                     }
-                } catch (OrderException oe) {
+                } catch (final OrderException oe) {
                     exList.add(oe.getMessage());
                     failList.add(line);
                 }
@@ -168,19 +168,19 @@ public class MultiOrderEntry {
                 line = br.readLine();
             }
             br.close();
-        } catch (IOException ioe) {
+        } catch (final IOException ioe) {
             throw new IllegalStateException("BufferedReader: internal error?");
         }
 
-        int nFailed = exList.size();
+        final int nFailed = exList.size();
         if (nFailed > 0) {
-            String headerText = Utils
+            final String headerText = Utils
                     .getLocalString(RESULT_DIALOG_HEADER, new Integer(nOrders),
                             new Integer(nFailed),
                             new Integer(nOrders - nFailed));
 
             // order text, formatted with CSS
-            StringBuffer sb = new StringBuffer(4096);
+            final StringBuffer sb = new StringBuffer(4096);
 
             for (int i = 0; i < exList.size(); i++) {
                 // failed order
@@ -196,12 +196,12 @@ public class MultiOrderEntry {
             }
 
             // the above text, added to the template
-            String templateText = Utils
+            final String templateText = Utils
                     .getText(Utils.getLocalString("MOED.dlg.template"));
-            String dialogText = Utils.format(templateText,
+            final String dialogText = Utils.format(templateText,
                     new Object[]{headerText, sb.toString()});
 
-            TextViewer rv = new TextViewer(parent, true);
+            final TextViewer rv = new TextViewer(parent, true);
             rv.setEditable(false);
             rv.setTitle(Utils.getLocalString(RESULT_DIALOG_TITLE));
             rv.addSingleButton(rv.makeOKButton());
@@ -230,7 +230,7 @@ public class MultiOrderEntry {
             listPattern = Pattern.compile(LIST_REGEX);
         }
 
-        Matcher m = listPattern.matcher(input);
+        final Matcher m = listPattern.matcher(input);
 
         // we only want ONE match
         if (m.lookingAt())    // find FIRST match
@@ -266,7 +266,7 @@ public class MultiOrderEntry {
      * This helps prevent bad support or convoy orders
      * from being over-parsed into move orders.
      */
-    private void recursiveParse(String input) throws OrderException {
+    private void recursiveParse(final String input) throws OrderException {
         Log.println("MOE::recursiveParse(): ", input);
         OrderException firstException = null;
 
@@ -275,7 +275,7 @@ public class MultiOrderEntry {
             orderDisplayPanel.addOrderRaw(input, true);
             Log.println("  MOE::recursiveParse(): success on first pass.");
             return;
-        } catch (OrderException oe) {
+        } catch (final OrderException oe) {
             Log.println("  MOE::recursiveParse(): first pass failed.");
             firstException = oe;
         }
@@ -292,13 +292,13 @@ public class MultiOrderEntry {
                 break;
             }
 
-            String text = fromTokens(tokens, i, tokens.length);
+            final String text = fromTokens(tokens, i, tokens.length);
             Log.println("  MOE::recursiveParse(): now trying: \"", text, "\"");
 
             try {
                 orderDisplayPanel.addOrderRaw(text, true);
                 return;
-            } catch (OrderException oe) {
+            } catch (final OrderException oe) {
                 Log.println("  MOE::recursiveParse(): try failed.");
                 // do nothing.
             }
@@ -320,9 +320,9 @@ public class MultiOrderEntry {
     /**
      * Converts input to token array
      */
-    private String[] toTokens(String input) {
-        ArrayList list = new ArrayList(10);
-        StringTokenizer st = new StringTokenizer(input);
+    private String[] toTokens(final String input) {
+        final ArrayList list = new ArrayList(10);
+        final StringTokenizer st = new StringTokenizer(input);
         while (st.hasMoreTokens()) {
             list.add(st.nextToken());
         }
@@ -336,12 +336,12 @@ public class MultiOrderEntry {
      * using the given starting and ending indices
      * Start is inclusive; End is exclusive
      */
-    private String fromTokens(String[] tokens, int start, int end) {
+    private String fromTokens(final String[] tokens, final int start, final int end) {
         if (start > end || start < 0 || end > tokens.length) {
             throw new IllegalArgumentException();
         }
 
-        StringBuffer sb = new StringBuffer(256);
+        final StringBuffer sb = new StringBuffer(256);
 
         for (int i = start; i < end; i++) {
             sb.append(tokens[i]);
@@ -357,8 +357,8 @@ public class MultiOrderEntry {
      * a) Power
      * b) Unit
      */
-    private boolean isRecognized(String tok) {
-        WorldMap map = world.getMap();
+    private boolean isRecognized(final String tok) {
+        final WorldMap map = world.getMap();
 
         // check against known powers
         if (map.getPower(tok) != null) {
@@ -366,8 +366,8 @@ public class MultiOrderEntry {
         }
 
         // check against against other bad tokens
-        for (int i = 0; i < BAD_TOKS.length; i++) {
-            if (tok.equals(BAD_TOKS[i])) {
+        for (String BAD_TOK : BAD_TOKS) {
+            if (tok.equals(BAD_TOK)) {
                 return true;
             }
         }

@@ -135,17 +135,17 @@ public class JudgeOrderParser {
      * sets the PhaseType and calls the phase-specific parser. This analyzes input line-by-line.
      */
     private void parseInput(
-            String input) throws IOException, PatternSyntaxException {
+            final String input) throws IOException, PatternSyntaxException {
         // search for header input. once found, shuttle all input to the appropriate
         // handler type.
-        Pattern hm = Pattern.compile(MOVE_ORDER_HEADER);
-        Pattern hr = Pattern.compile(RETREAT_ORDER_HEADER);
-        Pattern ha = Pattern.compile(ADJUSTMENT_ORDER_HEADER);
+        final Pattern hm = Pattern.compile(MOVE_ORDER_HEADER);
+        final Pattern hr = Pattern.compile(RETREAT_ORDER_HEADER);
+        final Pattern ha = Pattern.compile(ADJUSTMENT_ORDER_HEADER);
 
         // create List
-        List<NJudgeOrder> orderList = new ArrayList<NJudgeOrder>(64);
+        final List<NJudgeOrder> orderList = new ArrayList<>(64);
 
-        BufferedReader br = new BufferedReader(new StringReader(input));
+        final BufferedReader br = new BufferedReader(new StringReader(input));
         String line = ParserUtils.getNextLongLine(br);
         while (line != null) {
             Matcher m = hm.matcher(line);
@@ -184,8 +184,8 @@ public class JudgeOrderParser {
     /**
      * Parse move and retreat orders
      */
-    private void parseOrders(BufferedReader br, PhaseType phaseType,
-                             List<NJudgeOrder> orderList) throws IOException, PatternSyntaxException {
+    private void parseOrders(final BufferedReader br, final PhaseType phaseType,
+                             final List<NJudgeOrder> orderList) throws IOException, PatternSyntaxException {
         final Pattern prefix = Pattern.compile(ORDER_PREFIX);
 
         String line = ParserUtils.getNextLongLine(br).trim();
@@ -193,7 +193,7 @@ public class JudgeOrderParser {
         try {
             while (line != null) {
                 // only parse lines starting with ORDER_PREFIX
-                Matcher m = prefix.matcher(line);
+                final Matcher m = prefix.matcher(line);
                 if (m.lookingAt()) {
                     orderList.add(parser
                             .parse(map, orderFactory, phaseType, line));
@@ -204,8 +204,8 @@ public class JudgeOrderParser {
 
                 line = ParserUtils.getNextLongLine(br);
             }
-        } catch (OrderException oe) {
-            IOException ioe = new IOException(oe.getMessage());
+        } catch (final OrderException oe) {
+            final IOException ioe = new IOException(oe.getMessage());
             ioe.initCause(oe);
             throw ioe;
         }

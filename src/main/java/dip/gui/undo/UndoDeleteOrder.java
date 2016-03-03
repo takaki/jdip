@@ -41,7 +41,7 @@ public class UndoDeleteOrder extends XAbstractUndoableEdit {
     private Orderable order;
 
 
-    public UndoDeleteOrder(UndoRedoManager urm, Orderable order) {
+    public UndoDeleteOrder(final UndoRedoManager urm, final Orderable order) {
         super(urm);
         this.order = order;
     }// UndoDeleteOrder()

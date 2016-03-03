@@ -75,16 +75,16 @@ public class GUIMove extends Move implements GUIOrder {
     /**
      * Creates a GUIMove
      */
-    protected GUIMove(Power power, Location source, Unit.Type srcUnitType,
-                      Location dest, boolean isConvoying) {
+    protected GUIMove(final Power power, final Location source, final Unit.Type srcUnitType,
+                      final Location dest, final boolean isConvoying) {
         super(power, source, srcUnitType, dest, isConvoying);
     }// GUIMove()
 
     /**
      * Creates a GUIMove
      */
-    protected GUIMove(Power power, Location src, Unit.Type srcUnitType,
-                      Location dest, Province[] convoyRoute) {
+    protected GUIMove(final Power power, final Location src, final Unit.Type srcUnitType,
+                      final Location dest, final Province[] convoyRoute) {
         super(power, src, srcUnitType, dest, convoyRoute);
     }// GUIMove()
 
@@ -92,8 +92,8 @@ public class GUIMove extends Move implements GUIOrder {
     /**
      * Creates a GUIMove
      */
-    protected GUIMove(Power power, Location src, Unit.Type srcUnitType,
-                      Location dest, List<Province> routes) {
+    protected GUIMove(final Power power, final Location src, final Unit.Type srcUnitType,
+                      final Location dest, final List<Province> routes) {
         super(power, src, srcUnitType, dest, routes);
     }// GUIMove()
 
@@ -101,12 +101,12 @@ public class GUIMove extends Move implements GUIOrder {
     /**
      * This only accepts Move orders. All others will throw an IllegalArgumentException.
      */
-    public void deriveFrom(Orderable order) {
+    public void deriveFrom(final Orderable order) {
         if (!(order instanceof Move)) {
             throw new IllegalArgumentException();
         }
 
-        Move move = (Move) order;
+        final Move move = (Move) order;
         power = move.getPower();
         src = move.getSource();
         srcUnitType = move.getSourceUnitType();
@@ -119,8 +119,8 @@ public class GUIMove extends Move implements GUIOrder {
         currentLocNum = REQ_LOC;
     }// GUIMove()
 
-    public boolean testLocation(StateInfo stateInfo, Location location,
-                                StringBuffer sb) {
+    public boolean testLocation(final StateInfo stateInfo, final Location location,
+                                final StringBuffer sb) {
         sb.setLength(0);
 
         if (isComplete()) {
@@ -129,13 +129,13 @@ public class GUIMove extends Move implements GUIOrder {
         }
 
 
-        Position position = stateInfo.getPosition();
-        Province province = location.getProvince();
+        final Position position = stateInfo.getPosition();
+        final Province province = location.getProvince();
 
         if (currentLocNum == 0) {
             // set Move source
             // we require a unit present. We will check unit ownership too, if appropriate
-            Unit unit = position.getUnit(province).orElse(null);
+            final Unit unit = position.getUnit(province).orElse(null);
             if (unit != null) {
                 if (!stateInfo.canIssueOrder(unit.getPower())) {
                     sb.append(Utils.getLocalString(GUIOrder.NOT_OWNER,
@@ -182,7 +182,7 @@ public class GUIMove extends Move implements GUIOrder {
             } else if (province.isCoastal() && srcUnitType == Unit.Type.ARMY) {
                 // we may have a possible convoy route; if not, say so
                 // NOTE: assume destination coast is Coast.NONE
-                Path path = new Path(position);
+                final Path path = new Path(position);
                 if (path.isPossibleConvoyRoute(src,
                         new Location(province, Coast.NONE))) {
                     sb.append(Utils.getLocalString(CLICK_TO_SET_DEST));
@@ -227,11 +227,11 @@ public class GUIMove extends Move implements GUIOrder {
     }// clearLocations()
 
 
-    public boolean setLocation(StateInfo stateInfo, Location location,
-                               StringBuffer sb) {
+    public boolean setLocation(final StateInfo stateInfo, final Location location,
+                               final StringBuffer sb) {
         if (testLocation(stateInfo, location, sb)) {
             if (currentLocNum == 0) {
-                Unit unit = stateInfo.getPosition()
+                final Unit unit = stateInfo.getPosition()
                         .getUnit(location.getProvince()).orElse(null);
                 src = new Location(location.getProvince(), unit.getCoast());
                 power = unit.getPower();
@@ -271,7 +271,7 @@ public class GUIMove extends Move implements GUIOrder {
     /**
      * Sets optional Move parameters.
      */
-    public void setParam(Parameter param, Object value) {
+    public void setParam(final Parameter param, final Object value) {
         if (param == BY_CONVOY) {
             if (value instanceof Boolean) {
                 _isViaConvoy = ((Boolean) value).booleanValue();
@@ -287,7 +287,7 @@ public class GUIMove extends Move implements GUIOrder {
     /**
      * Get optional Move parameters.
      */
-    public Object getParam(Parameter param) {
+    public Object getParam(final Parameter param) {
         if (param == BY_CONVOY) {
             return Boolean.valueOf(isViaConvoy());
         } else {
@@ -296,9 +296,9 @@ public class GUIMove extends Move implements GUIOrder {
     }// getParam()
 
 
-    public void removeFromDOM(MapInfo mapInfo) {
+    public void removeFromDOM(final MapInfo mapInfo) {
         if (group != null) {
-            SVGGElement powerGroup = mapInfo
+            final SVGGElement powerGroup = mapInfo
                     .getPowerSVGGElement(power, LAYER_TYPICAL);
             GUIOrderUtils.removeChild(powerGroup, group);
             group = null;
@@ -310,7 +310,7 @@ public class GUIMove extends Move implements GUIOrder {
     /**
      * Draws a line with an arrow.
      */
-    public void updateDOM(MapInfo mapInfo) {
+    public void updateDOM(final MapInfo mapInfo) {
         // if we are not displayable, we exit, after remove the order (if
         // it was created)
         if (!GUIOrderUtils.isDisplayable(power, mapInfo)) {
@@ -357,14 +357,14 @@ public class GUIMove extends Move implements GUIOrder {
         SVGElement element = null;
 
         // create hilight line
-        String cssStyle = mapInfo.getMapMetadata()
+        final String cssStyle = mapInfo.getMapMetadata()
                 .getOrderParamString(MapMetadata.EL_MOVE,
                         MapMetadata.ATT_HILIGHT_CLASS);
         if (!cssStyle.equalsIgnoreCase("none")) {
-            float offset = mapInfo.getMapMetadata()
+            final float offset = mapInfo.getMapMetadata()
                     .getOrderParamFloat(MapMetadata.EL_MOVE,
                             MapMetadata.ATT_HILIGHT_OFFSET);
-            float width = GUIOrderUtils
+            final float width = GUIOrderUtils
                     .getLineWidth(mapInfo, MapMetadata.EL_MOVE,
                             MapMetadata.ATT_SHADOW_WIDTHS, numSupports);
 
@@ -379,7 +379,7 @@ public class GUIMove extends Move implements GUIOrder {
         }
 
         // create real line
-        float width = GUIOrderUtils.getLineWidth(mapInfo, MapMetadata.EL_MOVE,
+        final float width = GUIOrderUtils.getLineWidth(mapInfo, MapMetadata.EL_MOVE,
                 MapMetadata.ATT_WIDTHS, numSupports);
 
         element = drawOrder(mapInfo, 0, true);
@@ -392,7 +392,7 @@ public class GUIMove extends Move implements GUIOrder {
 
         // draw 'failed' marker, if appropriate.
         if (!mapInfo.getTurnState().isOrderSuccessful(this)) {
-            SVGUseElement useElement = GUIOrderUtils
+            final SVGUseElement useElement = GUIOrderUtils
                     .createFailedOrderSymbol(mapInfo, failPt.x, failPt.y);
             group.appendChild(useElement);
         }
@@ -402,8 +402,8 @@ public class GUIMove extends Move implements GUIOrder {
     /**
      * draws convoyed or non-convoyed order, depending upon flag
      */
-    private SVGElement drawOrder(MapInfo mapInfo, float offset,
-                                 boolean addMarker) {
+    private SVGElement drawOrder(final MapInfo mapInfo, final float offset,
+                                 final boolean addMarker) {
         /*
         if(isByConvoy())
 		{
@@ -422,20 +422,20 @@ public class GUIMove extends Move implements GUIOrder {
     /**
      * if addMarker == true, ALWAYS add marker; otherwise, only added if offset is non-zero
      */
-    private SVGElement drawNCOrder(MapInfo mapInfo, float offset,
-                                   boolean addMarker) {
-        MapMetadata mmd = mapInfo.getMapMetadata();
-        Point2D.Float ptFrom = mmd.getUnitPt(src.getProvince(), src.getCoast());
-        Point2D.Float ptTo = mmd.getUnitPt(dest.getProvince(), dest.getCoast());
+    private SVGElement drawNCOrder(final MapInfo mapInfo, final float offset,
+                                   final boolean addMarker) {
+        final MapMetadata mmd = mapInfo.getMapMetadata();
+        final Point2D.Float ptFrom = mmd.getUnitPt(src.getProvince(), src.getCoast());
+        final Point2D.Float ptTo = mmd.getUnitPt(dest.getProvince(), dest.getCoast());
 
         // respect radius, if there is a unit present in destination.
         // if there is no unit, use radius / 2. (for an Army)
         //
         Point2D.Float newPtTo = ptTo;
-        Position position = mapInfo.getTurnState().getPosition();
+        final Position position = mapInfo.getTurnState().getPosition();
         float r = 0.0f;
         if (position.hasUnit(dest.getProvince())) {
-            Unit.Type destUnitType = position.getUnit(dest.getProvince()).orElse(null)
+            final Unit.Type destUnitType = position.getUnit(dest.getProvince()).orElse(null)
                     .getType();
             r = mmd.getOrderRadius(MapMetadata.EL_MOVE,
                     mapInfo.getSymbolName(destUnitType));
@@ -467,7 +467,7 @@ public class GUIMove extends Move implements GUIOrder {
                 .getLineMidpoint(ptFrom.x, ptFrom.y, newPtTo.x, newPtTo.y);
 
         // create SVG element(s)
-        SVGLineElement line = (SVGLineElement) mapInfo.getDocument()
+        final SVGLineElement line = (SVGLineElement) mapInfo.getDocument()
                 .createElementNS(SVGDOMImplementation.SVG_NAMESPACE_URI,
                         SVGConstants.SVG_LINE_TAG);
 
@@ -621,7 +621,7 @@ public class GUIMove extends Move implements GUIOrder {
         /**
          * Creates a MoveParameter
          */
-        public MoveParameter(String name) {
+        public MoveParameter(final String name) {
             super(name);
         }// MoveParameter()
     }// nested class MoveParameter

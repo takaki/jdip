@@ -44,8 +44,8 @@ public class UndoEditSCOwner extends XAbstractUndoableEdit {
     private Power newPower;
 
 
-    public UndoEditSCOwner(UndoRedoManager urm, Position position,
-                           Province province, Power oldPower, Power newPower) {
+    public UndoEditSCOwner(final UndoRedoManager urm, final Position position,
+                           final Province province, final Power oldPower, final Power newPower) {
         super(urm);
         this.position = position;
         this.province = province;
@@ -74,8 +74,8 @@ public class UndoEditSCOwner extends XAbstractUndoableEdit {
     /**
      * helper method: change SC owner
      */
-    private static void changeSCOwner(UndoRedoManager urm, Position pos,
-                                      Province prov, Power newPow) {
+    private static void changeSCOwner(final UndoRedoManager urm, final Position pos,
+                                      final Province prov, final Power newPow) {
         pos.setSupplyCenterOwner(prov, newPow);
 
         // re-render province & set changed flag

@@ -141,7 +141,7 @@ public class DislodgedParser {
     /**
      * Creates a DislodgedParser object, which parses the given input for a Dislodged (retreat) information block
      */
-    public DislodgedParser(Phase phase, String input) throws IOException {
+    public DislodgedParser(final Phase phase, final String input) throws IOException {
         this.phase = phase;
         this.inputText = input;
         parseInput(input);
@@ -171,8 +171,8 @@ public class DislodgedParser {
         /**
          * Create a DislodgedInfo object
          */
-        public DislodgedInfo(String power, String unit, String src,
-                             String[] retreatLocs) {
+        public DislodgedInfo(final String power, final String unit, final String src,
+                             final String[] retreatLocs) {
             this.power = power;
             this.unit = unit;
             this.src = src;
@@ -219,7 +219,7 @@ public class DislodgedParser {
          * String output for debugging; may change between versions.
          */
         public String toString() {
-            StringBuffer sb = new StringBuffer();
+            final StringBuffer sb = new StringBuffer();
             sb.append("DislodgedInfo[power=");
             sb.append(power);
             sb.append(", src=");
@@ -227,8 +227,8 @@ public class DislodgedParser {
             sb.append(", unit=");
             sb.append(unit);
             sb.append(", locNames=");
-            for (int i = 0; i < retreatLocs.length; i++) {
-                sb.append(retreatLocs[i]);
+            for (String retreatLoc : retreatLocs) {
+                sb.append(retreatLoc);
                 sb.append(',');
             }
             sb.append(']');
@@ -237,22 +237,22 @@ public class DislodgedParser {
     }// nested class DislodgedInfo
 
 
-    private void parseInput(String input) throws IOException {
+    private void parseInput(final String input) throws IOException {
         Log.println("DislodgedParser::parseInput()");
 
         // Create HEADER_REGEX pattern, HEADER_END_REGEX pattern
         Pattern header = Pattern.compile(HEADER_REGEX);
-        Pattern endHeader = Pattern.compile(HEADER_END_REGEX);
+        final Pattern endHeader = Pattern.compile(HEADER_END_REGEX);
 
         // search for HEADER_REGEX
         // keep searching until we find an empty line, or HEADER_END_REGEX.
         //
-        BufferedReader br = new BufferedReader(new StringReader(input));
-        StringBuffer accum = new StringBuffer(2048);
+        final BufferedReader br = new BufferedReader(new StringReader(input));
+        final StringBuffer accum = new StringBuffer(2048);
 
         String line = br.readLine();
         while (line != null) {
-            Matcher m = header.matcher(line);
+            final Matcher m = header.matcher(line);
             if (m.lookingAt()) {
                 boolean inBlock = false;
                 line = br.readLine();
@@ -262,7 +262,7 @@ public class DislodgedParser {
                         // if we are 'end header regex', we end
                         // though typically having a zero-length trimmed line will do that too
                         //
-                        Matcher endM = endHeader.matcher(line);
+                        final Matcher endM = endHeader.matcher(line);
                         if (endM.lookingAt()) {
                             break;
                         }
@@ -310,19 +310,19 @@ public class DislodgedParser {
 		*/
 
         // create a list of Dislodged units
-        List<DislodgedInfo> disList = new LinkedList<DislodgedInfo>();
+        final List<DislodgedInfo> disList = new LinkedList<>();
 
         // Create patterns
-        Pattern[] destroyeds = new Pattern[2];
+        final Pattern[] destroyeds = new Pattern[2];
         destroyeds[0] = Pattern.compile(DESTROYED_REGEX_1);
         destroyeds[1] = Pattern.compile(DESTROYED_REGEX_2);
 
-        Pattern dislodged = Pattern.compile(DISLODGED_REGEX);
+        final Pattern dislodged = Pattern.compile(DISLODGED_REGEX);
 
         // parse accum line-by-line, looking for DESTROYED_REGEX and
         // DISLODGED_REGEX.
         //
-        StringTokenizer st = new StringTokenizer(accum.toString(), "\n");
+        final StringTokenizer st = new StringTokenizer(accum.toString(), "\n");
         while (st.hasMoreTokens()) {
             line = st.nextToken();
 
@@ -330,8 +330,8 @@ public class DislodgedParser {
 
             boolean foundMatch = false;
 
-            for (int i = 0; i < destroyeds.length; i++) {
-                Matcher m = destroyeds[i].matcher(line);
+            for (Pattern destroyed : destroyeds) {
+                final Matcher m = destroyed.matcher(line);
                 if (m.lookingAt()) {
                     disList.add(new DislodgedInfo(m.group(1), m.group(2),
                             ParserUtils.filter(m.group(3).trim()), null));
@@ -342,10 +342,10 @@ public class DislodgedParser {
             }
 
             if (!foundMatch) {
-                Matcher m = dislodged.matcher(line);
+                final Matcher m = dislodged.matcher(line);
                 if (m.lookingAt()) {
                     // parse location-list predicate
-                    String[] retreatLocs = m.group(4)
+                    final String[] retreatLocs = m.group(4)
                             .split(DISLODGED_SPLIT_REGEX);
                     for (int i = 0; i < retreatLocs.length; i++) {
                         retreatLocs[i] = ParserUtils.filter(retreatLocs[i]);

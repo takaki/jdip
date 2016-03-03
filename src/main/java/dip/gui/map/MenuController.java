@@ -40,7 +40,7 @@ final class MenuController {
     /**
      * Creates a MenuController
      */
-    public MenuController(MapPanel mapPanel) {
+    public MenuController(final MapPanel mapPanel) {
         this.mapPanel = mapPanel;
 
         // Print / Export
@@ -62,8 +62,8 @@ final class MenuController {
     /**
      * enable / disable Print & Export menu items
      */
-    private void setExportingEnabled(boolean value) {
-        ClientMenu cm = mapPanel.getClientFrame().getClientMenu();
+    private void setExportingEnabled(final boolean value) {
+        final ClientMenu cm = mapPanel.getClientFrame().getClientMenu();
         cm.setEnabled(ClientMenu.FILE_PRINT, value);
         cm.setEnabled(ClientMenu.FILE_EXPORT_JPG, value);
         cm.setEnabled(ClientMenu.FILE_EXPORT_PNG, value);
@@ -77,7 +77,7 @@ final class MenuController {
      */
     private void registerExportItems() {
         // remove any pre-existing listeners for these items
-        ClientMenu cm = mapPanel.getClientFrame().getClientMenu();
+        final ClientMenu cm = mapPanel.getClientFrame().getClientMenu();
 
         JMenuItem mi = cm.getMenuItem(ClientMenu.FILE_PRINT);
         removeActionListeners(mi);
@@ -104,10 +104,10 @@ final class MenuController {
     /**
      * Removes all action listeners associated with an AbstractButton
      */
-    private void removeActionListeners(AbstractButton ab) {
-        ActionListener[] al = ab.getActionListeners();
-        for (int i = 0; i < al.length; i++) {
-            ab.removeActionListener(al[i]);
+    private void removeActionListeners(final AbstractButton ab) {
+        final ActionListener[] al = ab.getActionListeners();
+        for (ActionListener anAl : al) {
+            ab.removeActionListener(anAl);
         }
     }// removeActionListeners()
 

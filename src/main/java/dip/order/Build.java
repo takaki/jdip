@@ -52,7 +52,7 @@ public class Build extends Order {
     /**
      * Creates a Build order
      */
-    protected Build(Power power, Location src, Unit.Type srcUnit) {
+    protected Build(final Power power, final Location src, final Unit.Type srcUnit) {
         super(power, src, srcUnit);
     }// Build()
 
@@ -78,7 +78,7 @@ public class Build extends Order {
 
 
     public String toBriefString() {
-        StringBuffer sb = new StringBuffer(64);
+        final StringBuffer sb = new StringBuffer(64);
 
         sb.append(power);
         sb.append(": ");
@@ -93,7 +93,7 @@ public class Build extends Order {
 
 
     public String toFullString() {
-        StringBuffer sb = new StringBuffer(128);
+        final StringBuffer sb = new StringBuffer(128);
 
         sb.append(power);
         sb.append(": ");
@@ -107,7 +107,7 @@ public class Build extends Order {
     }// toFullString()
 
 
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (obj instanceof Build) {
             if (super.equals(obj)) {
                 return true;
@@ -145,13 +145,13 @@ public class Build extends Order {
      * cannot know what other orders have been submitted), such as if too many
      * build orders are submitted. verify() could, but currently does not.
      */
-    public void validate(TurnState state, ValidationOptions valOpts,
-                         RuleOptions ruleOpts) throws OrderException {
+    public void validate(final TurnState state, final ValidationOptions valOpts,
+                         final RuleOptions ruleOpts) throws OrderException {
         checkSeasonAdjustment(state, orderNameFull);
         checkPower(power, state, true);
 
-        Province province = src.getProvince();
-        Position position = state.getPosition();
+        final Province province = src.getProvince();
+        final Position position = state.getPosition();
 
         // basic
         if (position.hasUnit(province)) {
@@ -180,7 +180,7 @@ public class Build extends Order {
         src = src.getValidated(srcUnitType);
 
         // validate Borders
-        Border border = src.getProvince()
+        final Border border = src.getProvince()
                 .getTransit(src, srcUnitType, state.getPhase(),
                         this.getClass()).orElse(null);
         if (border != null) {
@@ -202,15 +202,15 @@ public class Build extends Order {
     /**
      * Empty method: Build orders do not require verification.
      */
-    public void verify(Adjudicator adjudicator) {
-        OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
+    public void verify(final Adjudicator adjudicator) {
+        final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
         thisOS.setVerified(true);
     }// verify()
 
     /**
      * Empty method: Build orders do not require dependency determination.
      */
-    public void determineDependencies(Adjudicator adjudicator) {
+    public void determineDependencies(final Adjudicator adjudicator) {
     }
 
 
@@ -223,11 +223,11 @@ public class Build extends Order {
      * <p>
      * Extra build orders are NOT considered in the evaluate() method here.
      */
-    public void evaluate(Adjudicator adjudicator) {
+    public void evaluate(final Adjudicator adjudicator) {
         Log.println("--- evaluate() dip.order.Build ---");
         Log.println("   order: ", this);
 
-        OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
+        final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
 
         if (thisOS.getEvalState() == Tristate.UNCERTAIN) {
             thisOS.setEvalState(Tristate.SUCCESS);

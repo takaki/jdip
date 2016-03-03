@@ -45,14 +45,14 @@ public class OrderWarning extends OrderException {
     /**
      * Create an OrderWarning.
      */
-    public OrderWarning(String text) {
+    public OrderWarning(final String text) {
         super(text);
     }// OrderWarning()
 
     /**
      * Create an OrderWarning.
      */
-    public OrderWarning(Order order, String text) {
+    public OrderWarning(final Order order, final String text) {
         super(order, text);
     }// OrderWarning()
 

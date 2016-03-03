@@ -46,7 +46,7 @@ public class XMLUtils {
      * Find the first child Element matching the given tag name. Only searches
      * 1st-level children; not a recursive search. Null if not found.
      */
-    public static Element findChildElementMatching(Node root, String tagName) {
+    public static Element findChildElementMatching(final Node root, final String tagName) {
         return (Element) findChildNodeMatching(root, tagName,
                 Node.ELEMENT_NODE);
     }// findChildMatching()
@@ -56,8 +56,8 @@ public class XMLUtils {
      * Find the first child node matching the given tag name. Only searches
      * 1st-level children; not a recursive search. Null if not found.
      */
-    public static Node findChildNodeMatching(Node root, String tagName,
-                                             short nodeType) {
+    public static Node findChildNodeMatching(final Node root, final String tagName,
+                                             final short nodeType) {
         Node childNode = root.getFirstChild();
         while (childNode != null) {
             if (childNode.getNodeType() == nodeType) {

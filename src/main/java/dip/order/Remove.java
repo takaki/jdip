@@ -46,7 +46,7 @@ public class Remove extends Order {
     /**
      * Creates a Remove order
      */
-    protected Remove(Power power, Location src, Unit.Type srcUnit) {
+    protected Remove(final Power power, final Location src, final Unit.Type srcUnit) {
         super(power, src, srcUnit);
     }// Remove()
 
@@ -73,7 +73,7 @@ public class Remove extends Order {
 
 
     public String toBriefString() {
-        StringBuffer sb = new StringBuffer(64);
+        final StringBuffer sb = new StringBuffer(64);
 
         sb.append(power);
         sb.append(": ");
@@ -88,7 +88,7 @@ public class Remove extends Order {
 
 
     public String toFullString() {
-        StringBuffer sb = new StringBuffer(128);
+        final StringBuffer sb = new StringBuffer(128);
 
         sb.append(power);
         sb.append(": ");
@@ -102,7 +102,7 @@ public class Remove extends Order {
     }// toFullString()
 
 
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (obj instanceof Remove) {
             if (super.equals(obj)) {
                 return true;
@@ -112,8 +112,8 @@ public class Remove extends Order {
     }// equals()
 
 
-    public void validate(TurnState state, ValidationOptions valOpts,
-                         RuleOptions ruleOpts) throws OrderException {
+    public void validate(final TurnState state, final ValidationOptions valOpts,
+                         final RuleOptions ruleOpts) throws OrderException {
         checkSeasonAdjustment(state, orderNameFull);
         super.validate(state, valOpts, ruleOpts);
         checkPower(power, state, false);
@@ -125,15 +125,15 @@ public class Remove extends Order {
     /**
      * Empty method: Remove orders do not require verification.
      */
-    public void verify(Adjudicator adjudicator) {
-        OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
+    public void verify(final Adjudicator adjudicator) {
+        final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
         thisOS.setVerified(true);
     }// verify()
 
     /**
      * Empty method: Remove orders do not require dependency determination.
      */
-    public void determineDependencies(Adjudicator adjudicator) {
+    public void determineDependencies(final Adjudicator adjudicator) {
     }
 
 
@@ -143,11 +143,11 @@ public class Remove extends Order {
      * Note that too many (or two few) remove orders may be given; this
      * must be handled by the adjustment adjudicator.
      */
-    public void evaluate(Adjudicator adjudicator) {
+    public void evaluate(final Adjudicator adjudicator) {
         Log.println("--- evaluate() dip.order.Disband ---");
         Log.println("   order: ", this);
 
-        OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
+        final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
         if (thisOS.getEvalState() == Tristate.UNCERTAIN) {
             thisOS.setEvalState(Tristate.SUCCESS);
         }

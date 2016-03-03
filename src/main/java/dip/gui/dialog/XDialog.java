@@ -91,56 +91,56 @@ public class XDialog extends JDialog {
     /**
      * Create an XDialog
      */
-    public XDialog(Frame owner) {
+    public XDialog(final Frame owner) {
         super(owner);
     }// UniverseJDialog()
 
     /**
      * Create an XDialog
      */
-    public XDialog(Frame owner, String title) {
+    public XDialog(final Frame owner, final String title) {
         super(owner, title);
     }// XDialog()
 
     /**
      * Create an XDialog
      */
-    public XDialog(Frame owner, boolean modal) {
+    public XDialog(final Frame owner, final boolean modal) {
         super(owner, modal);
     }// XDialog()
 
     /**
      * Create an XDialog
      */
-    public XDialog(Frame owner, String title, boolean modal) {
+    public XDialog(final Frame owner, final String title, final boolean modal) {
         super(owner, title, modal);
     }// XDialog()
 
     /**
      * Create an XDialog
      */
-    public XDialog(Dialog owner) {
+    public XDialog(final Dialog owner) {
         super(owner);
     }// UniverseJDialog()
 
     /**
      * Create an XDialog
      */
-    public XDialog(Dialog owner, String title) {
+    public XDialog(final Dialog owner, final String title) {
         super(owner, title);
     }// XDialog()
 
     /**
      * Create an XDialog
      */
-    public XDialog(Dialog owner, boolean modal) {
+    public XDialog(final Dialog owner, final boolean modal) {
         super(owner, modal);
     }// XDialog()
 
     /**
      * Create an XDialog
      */
-    public XDialog(Dialog owner, String title, boolean modal) {
+    public XDialog(final Dialog owner, final String title, final boolean modal) {
         super(owner, title, modal);
     }// XDialog()
 
@@ -166,7 +166,7 @@ public class XDialog extends JDialog {
         super.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
         addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent e) {
+            public void windowClosing(final WindowEvent e) {
                 XDialog.this.close();
             }
         });
@@ -177,16 +177,16 @@ public class XDialog extends JDialog {
      * Adds the ESC key listener
      */
     protected JRootPane createRootPane() {
-        JRootPane rootPane = super.createRootPane();
+        final JRootPane rootPane = super.createRootPane();
 
         // install ESC key checking.
-        ActionListener actionListener = new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
+        final ActionListener actionListener = new ActionListener() {
+            public void actionPerformed(final ActionEvent actionEvent) {
                 XDialog.this.close();
             }
         };
 
-        KeyStroke strokeESC = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
+        final KeyStroke strokeESC = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
 
         rootPane.registerKeyboardAction(actionListener, strokeESC,
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
@@ -198,7 +198,7 @@ public class XDialog extends JDialog {
     /**
      * Throws an IllegalArgumentException()
      */
-    public void setDefaultCloseOperation(int operation) {
+    public void setDefaultCloseOperation(final int operation) {
         throw new IllegalArgumentException("override close() instead");
     }// setDefaultCloseOperation()
 
@@ -207,7 +207,7 @@ public class XDialog extends JDialog {
      * Set the HelpID (see dip.misc.Help).  If non-null, sets the Window-Level
      * help for this dialog.
      */
-    public void setHelpID(Help.HelpID helpID) {
+    public void setHelpID(final Help.HelpID helpID) {
         Help.enableDialogHelp(this, helpID);
     }// setHelpID()
 
@@ -232,11 +232,11 @@ public class XDialog extends JDialog {
         if (getParent() instanceof ClientFrame && !isModal()) {
             final ClientFrame cf = (ClientFrame) getParent();
             cf.addPropertyChangeListener(new AbstractCFPListener() {
-                public void actionWorldCreated(World w) {
+                public void actionWorldCreated(final World w) {
                     worldChanged();
                 }
 
-                public void actionWorldDestroyed(World w) {
+                public void actionWorldDestroyed(final World w) {
                     worldChanged();
                 }
             });

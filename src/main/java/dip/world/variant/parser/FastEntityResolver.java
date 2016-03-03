@@ -42,7 +42,7 @@ public class FastEntityResolver implements EntityResolver {
     /**
      * Construct a FastEntityResolver
      */
-    public FastEntityResolver(boolean isValidating) {
+    public FastEntityResolver(final boolean isValidating) {
         this.isValidating = isValidating;
     }// FastEntityResolver()
 
@@ -51,7 +51,7 @@ public class FastEntityResolver implements EntityResolver {
      * Attach a FastEntityResolver to a DocumentBuilder, setting
      * validation as appropriate.
      */
-    public static void attach(DocumentBuilder db) {
+    public static void attach(final DocumentBuilder db) {
         db.setEntityResolver(new FastEntityResolver(db.isValidating()));
     }// attach()
 
@@ -59,14 +59,14 @@ public class FastEntityResolver implements EntityResolver {
     /**
      * Resolve the Entity
      */
-    public InputSource resolveEntity(String publicID, String systemID) {
+    public InputSource resolveEntity(final String publicID, final String systemID) {
         if (!isValidating) {
             // log the request
             Log.println("XML:Entity resolution ignored: ", publicID, "; ",
                     systemID);
 
             // return an empty InputSource
-            InputSource is = new InputSource(new StringReader(""));
+            final InputSource is = new InputSource(new StringReader(""));
             is.setPublicId(publicID);
             is.setSystemId(systemID);
             return is;

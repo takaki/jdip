@@ -15,19 +15,19 @@ public class PropertyCheck {
     final Properties[] props;
     final String[] names;
 
-    public static void main(String args[]) throws IOException {
+    public static void main(final String[] args) throws IOException {
         if (args.length < 2) {
             System.err.println(
                     "PropertyCheck: 2 or more properties files must be specified.");
             System.exit(1);
         }
 
-        PropertyCheck pc = new PropertyCheck(args);
+        final PropertyCheck pc = new PropertyCheck(args);
         pc.check();
     }// main()
 
 
-    public PropertyCheck(String[] args) throws IOException {
+    public PropertyCheck(final String[] args) throws IOException {
         this.names = args;
         this.props = new Properties[names.length];
         for (int i = 0; i < props.length; i++) {
@@ -40,7 +40,7 @@ public class PropertyCheck {
 
     public void check() {
         for (int i = 0; i < props.length; i++) {
-            Properties p = props[i];
+            final Properties p = props[i];
 
             System.out.println("\n\nCHECKING: " + names[i]);
             System.out.println("Missing Keys:");
@@ -54,7 +54,7 @@ public class PropertyCheck {
                     // print which file it was from.
                     //
                     final String name = names[j];
-                    Enumeration e = props[j].propertyNames();
+                    final Enumeration e = props[j].propertyNames();
                     while (e.hasMoreElements()) {
                         final String key = (String) e.nextElement();
                         if (p.getProperty(key) == null) {

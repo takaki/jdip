@@ -40,7 +40,7 @@ public class ColorRectIcon implements Icon {
     /**
      * Create a ColorRect
      */
-    public ColorRectIcon(int height, int width, Color color) {
+    public ColorRectIcon(final int height, final int width, final Color color) {
         this.h = height;
         this.w = width;
         this.color = color;
@@ -63,7 +63,7 @@ public class ColorRectIcon implements Icon {
     /**
      * Draw the Icon
      */
-    public void paintIcon(Component c, Graphics g, int x, int y) {
+    public void paintIcon(final Component c, final Graphics g, final int x, final int y) {
         g.setColor(color);
         g.fillRect(x, y, w, h);
 

@@ -36,7 +36,7 @@ public abstract class XAbstractUndoableEdit extends AbstractUndoableEdit impleme
      * Constructs an XAbstractUndoableEdit object.<p>
      * UndoRedoManager must not be null.
      */
-    public XAbstractUndoableEdit(UndoRedoManager urm) {
+    public XAbstractUndoableEdit(final UndoRedoManager urm) {
         if (urm == null) {
             throw new IllegalArgumentException();
         }

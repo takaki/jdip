@@ -38,7 +38,7 @@ public class XJSVGScroller extends JSVGScrollPane {
     /**
      * Creates a XJSVGScroller. This adds support for Wheel mice, too.
      */
-    public XJSVGScroller(JSVGCanvas canvas) {
+    public XJSVGScroller(final JSVGCanvas canvas) {
         super(canvas);
         addMouseWheelListener(new WheelListener());
     }// XJSVGScroller()
@@ -47,7 +47,7 @@ public class XJSVGScroller extends JSVGScrollPane {
      * Inner class to catch mouse wheel events
      */
     private class WheelListener implements MouseWheelListener {
-        public void mouseWheelMoved(MouseWheelEvent e) {
+        public void mouseWheelMoved(final MouseWheelEvent e) {
             final JScrollBar sb = (vertical
                     .isVisible()) ? vertical : horizontal;    // vertical is preferred
 

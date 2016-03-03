@@ -135,9 +135,9 @@ public class OrderFormat {
      * For null values, when debugging, print the word "null"
      * followed by the type (indicated by cls).
      */
-    private static String handleNull(Class<?> cls) {
+    private static String handleNull(final Class<?> cls) {
         assert (cls != null);
-        StringBuffer sb = new StringBuffer(64);
+        final StringBuffer sb = new StringBuffer(64);
         sb.append("null(");
         sb.append(cls.getName());
         sb.append(")");
@@ -193,7 +193,7 @@ public class OrderFormat {
      * words are converted to Title case, instead of just the first
      * word.
      */
-    private static String toTitleCase(final String input, boolean allWords) {
+    private static String toTitleCase(final String input, final boolean allWords) {
         final StringBuffer sb = new StringBuffer(input.length());
 
         boolean isInWord = false;
@@ -223,7 +223,7 @@ public class OrderFormat {
     /**
      * Format a Coast given the order formatting parameters.
      */
-    public static String format(OrderFormatOptions ofo, Coast coast) {
+    public static String format(final OrderFormatOptions ofo, final Coast coast) {
         if (ofo == null) {
             throw new IllegalArgumentException();
         }
@@ -242,7 +242,7 @@ public class OrderFormat {
                         text = coast.getName();
                         break;
                     case OrderFormatOptions.FORMAT_COAST_PAREN_BRIEF: {
-                        StringBuffer sb = new StringBuffer(4);
+                        final StringBuffer sb = new StringBuffer(4);
                         sb.append('(');
                         sb.append(coast.getAbbreviation());
                         sb.append(')');
@@ -250,7 +250,7 @@ public class OrderFormat {
                     }
                     break;
                     case OrderFormatOptions.FORMAT_COAST_PAREN_FULL: {
-                        StringBuffer sb = new StringBuffer(16);
+                        final StringBuffer sb = new StringBuffer(16);
                         sb.append('(');
                         sb.append(coast.getName());
                         sb.append(')');
@@ -277,7 +277,7 @@ public class OrderFormat {
     /**
      * Format a Province given the order formatting parameters.
      */
-    public static String format(OrderFormatOptions ofo, Province province) {
+    public static String format(final OrderFormatOptions ofo, final Province province) {
         if (ofo == null) {
             throw new IllegalArgumentException();
         }
@@ -309,7 +309,7 @@ public class OrderFormat {
     /**
      * Format a Unit Type given the order formatting parameters.
      */
-    public static String format(OrderFormatOptions ofo, Unit.Type unitType) {
+    public static String format(final OrderFormatOptions ofo, final Unit.Type unitType) {
         if (ofo == null) {
             throw new IllegalArgumentException();
         }
@@ -342,7 +342,7 @@ public class OrderFormat {
      * <p>
      * <b>Note:</b> FORMAT_BRIEF is not yet supported for Power names.
      */
-    public static String format(OrderFormatOptions ofo, Power power) {
+    public static String format(final OrderFormatOptions ofo, final Power power) {
         if (ofo == null) {
             throw new IllegalArgumentException();
         }
@@ -374,7 +374,7 @@ public class OrderFormat {
     /**
      * Format a Location given the order formatting parameters.
      */
-    public static String format(OrderFormatOptions ofo, Location loc) {
+    public static String format(final OrderFormatOptions ofo, final Location loc) {
         if (ofo == null) {
             throw new IllegalArgumentException();
         }
@@ -382,7 +382,7 @@ public class OrderFormat {
         if (loc == null) {
             return (ofo.isDebug() ? handleNull(Location.class) : EMPTY);
         } else {
-            StringBuffer sb = new StringBuffer(64);
+            final StringBuffer sb = new StringBuffer(64);
 
             sb.append(format(ofo, loc.getProvince()));
 
@@ -402,8 +402,8 @@ public class OrderFormat {
      * Formats an Order Name (obtained from an Order)
      * given the order formatting parameters.
      */
-    public static String formatOrderName(OrderFormatOptions ofo,
-                                         Orderable order) {
+    public static String formatOrderName(final OrderFormatOptions ofo,
+                                         final Orderable order) {
         if (ofo == null) {
             throw new IllegalArgumentException();
         }
@@ -529,7 +529,7 @@ public class OrderFormat {
             try {
                 return cls.getMethod(name.substring(0, name.length() - 2), null)
                         .invoke(order, null);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 Log.println(
                         "OrderFormat::getViaReflection() cannot reflect method \"",
                         name, "\"");
@@ -540,7 +540,7 @@ public class OrderFormat {
         } else {
             try {
                 return cls.getDeclaredField(name).get(order);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 Log.println(
                         "OrderFormat::getViaReflection() cannot reflect field \"",
                         name, "\"");
@@ -559,7 +559,7 @@ public class OrderFormat {
      * These are, essentially, constants.
      */
     private static Object procStaticKeyword(final OrderFormatOptions ofo,
-                                            Orderable order,
+                                            final Orderable order,
                                             final String keyWord) {
         if (keyWord.startsWith("_") && keyWord.endsWith("_")) {
             if (keyWord.equals(ARROW)) {
@@ -594,7 +594,7 @@ public class OrderFormat {
             if (input instanceof Power) {
                 // get adjective for the power, instead of the power name.
                 // apply power-formatting style
-                String adj = ((Power) input).getAdjective();
+                final String adj = ((Power) input).getAdjective();
                 return applyStyle(ofo.getPowerStyle(), adj);
             }
         } else if (keyword.equals(LOC_COAST)) {
@@ -666,13 +666,13 @@ public class OrderFormat {
         }
 
 
-        StringBuffer output = new StringBuffer(256);
+        final StringBuffer output = new StringBuffer(256);
         StringBuffer accum = new StringBuffer(32);
 
         boolean inBrace = false;
-        StringTokenizer st = new StringTokenizer(format, "{}", true);
+        final StringTokenizer st = new StringTokenizer(format, "{}", true);
         while (st.hasMoreTokens()) {
-            String tok = st.nextToken();
+            final String tok = st.nextToken();
             if ("{".equals(tok) && !inBrace) {
                 inBrace = true;
             } else if ("}".equals(tok) && inBrace) {
@@ -708,27 +708,27 @@ public class OrderFormat {
      * Gets an example order, suitable for display in a user interface,
      * using the given OrderFormatOptions.
      */
-    public static String getFormatExample(OrderFormatOptions ofo,
-                                          OrderFactory of) {
+    public static String getFormatExample(final OrderFormatOptions ofo,
+                                          final OrderFactory of) {
         // this is about the ONLY time Province or Power objects are
         // created using 'new'
-        Province prov1 = new Province("Livonia",
+        final Province prov1 = new Province("Livonia",
                 Collections.singletonList("lvn"), 0, false);
-        Province prov2 = new Province("St. Petersburg",
+        final Province prov2 = new Province("St. Petersburg",
                 Collections.singletonList("stp"), 0, false);
-        Province prov3 = new Province("Golf of Bothnia",
+        final Province prov3 = new Province("Golf of Bothnia",
                 Collections.singletonList("gob"), 0, false);
 
-        Power power1 = new Power(Collections.singletonList("Russia"), "Russian",
+        final Power power1 = new Power(Collections.singletonList("Russia"), "Russian",
                 true);
-        Power power2 = new Power(Collections.singletonList("German"), "German",
+        final Power power2 = new Power(Collections.singletonList("German"), "German",
                 true);
 
-        Location src = new Location(prov1, Coast.SEA);
-        Location supSrc = new Location(prov2, Coast.SOUTH);
-        Location supDest = new Location(prov3, Coast.SEA);
+        final Location src = new Location(prov1, Coast.SEA);
+        final Location supSrc = new Location(prov2, Coast.SOUTH);
+        final Location supDest = new Location(prov3, Coast.SEA);
 
-        Support support = of
+        final Support support = of
                 .createSupport(power1, src, Unit.Type.FLEET, supSrc, power2,
                         Unit.Type.FLEET, supDest);
 

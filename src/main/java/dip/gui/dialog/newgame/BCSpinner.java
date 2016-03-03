@@ -39,14 +39,14 @@ public class BCSpinner extends JSpinner {
     /**
      * Create a BCSpinner
      */
-    public BCSpinner(int initialYear, int minimum, int maximum) {
+    public BCSpinner(final int initialYear, final int minimum, final int maximum) {
         this(new YearType(initialYear), minimum, maximum);
     }// BCSpinner()
 
     /**
      * Create a BCSpinner
      */
-    public BCSpinner(YearType initialYear, int minimum, int maximum) {
+    public BCSpinner(final YearType initialYear, final int minimum, final int maximum) {
         super(new SpinnerYearTypeModel(initialYear, minimum, maximum));
         setEditor(new YearTypeEditor(this));
     }// BCSpinner()
@@ -54,21 +54,21 @@ public class BCSpinner extends JSpinner {
     /**
      * Sets the current value
      */
-    public void setValue(int value) {
+    public void setValue(final int value) {
         setValue(new YearType(value));
     }// setValue()
 
     /**
      * Sets the minimum value
      */
-    public void setMinimum(int value) {
+    public void setMinimum(final int value) {
         ((SpinnerYearTypeModel) getModel()).setMinimum(value);
     }// setMinimum()
 
     /**
      * Sets the maximum value
      */
-    public void setMaximum(int value) {
+    public void setMaximum(final int value) {
         ((SpinnerYearTypeModel) getModel()).setMaximum(value);
     }// setMaximum()
 
@@ -82,9 +82,9 @@ public class BCSpinner extends JSpinner {
 
     private static class YearTypeEditor extends JSpinner.DefaultEditor {
 
-        YearTypeEditor(JSpinner spinner) {
+        YearTypeEditor(final JSpinner spinner) {
             super(spinner);
-            JFormattedTextField ftf = getTextField();
+            final JFormattedTextField ftf = getTextField();
             ftf.setEditable(true);
             ftf.setColumns(4);
         }// YearTypeEditor()
@@ -100,7 +100,7 @@ public class BCSpinner extends JSpinner {
         /**
          * Create a SpinnerYearTypeModel. 0 is not a valid min, max, or stepSize value.
          */
-        SpinnerYearTypeModel(YearType initialYear, int minimum, int maximum) {
+        SpinnerYearTypeModel(final YearType initialYear, final int minimum, final int maximum) {
             if (minimum > maximum || initialYear
                     .getYear() > maximum || initialYear.getYear() < minimum) {
                 throw new IllegalArgumentException(
@@ -121,7 +121,7 @@ public class BCSpinner extends JSpinner {
         /**
          * Sets the minimum value. Note that 0 is not allowed.
          */
-        public void setMinimum(int min) {
+        public void setMinimum(final int min) {
             if (min == 0 || min > maximum) {
                 throw new IllegalArgumentException("invalid min value");
             }
@@ -133,7 +133,7 @@ public class BCSpinner extends JSpinner {
         /**
          * Sets the maximum value. Note that 0 is not allowed.
          */
-        public void setMaximum(int max) {
+        public void setMaximum(final int max) {
             if (max == 0 || max < minimum) {
                 throw new IllegalArgumentException("invalid max value");
             }
@@ -161,7 +161,7 @@ public class BCSpinner extends JSpinner {
          * Returns the next number in the sequence. Bounds-checks.
          */
         public Object getNextValue() {
-            YearType incremented = value.getNext();
+            final YearType incremented = value.getNext();
             if (incremented.getYear() > maximum) {
                 return null;
             }
@@ -174,7 +174,7 @@ public class BCSpinner extends JSpinner {
          * Returns the previous number in the sequence. Bounds-checks.
          */
         public Object getPreviousValue() {
-            YearType decremented = value.getPrevious();
+            final YearType decremented = value.getPrevious();
             if (decremented.getYear() < minimum) {
                 return null;
             }
@@ -195,7 +195,7 @@ public class BCSpinner extends JSpinner {
          * is converted to a String and parsing is attempted.
          * If the value is not valid, the current value is used.
          */
-        public void setValue(Object newValue) {
+        public void setValue(final Object newValue) {
             // separate by type
             YearType yt = null;
             if (newValue instanceof YearType) {

@@ -57,8 +57,8 @@ public class Retreat extends Move {
     /**
      * Creates a Retreat order
      */
-    protected Retreat(Power power, Location src, Unit.Type srcUnitType,
-                      Location dest) {
+    protected Retreat(final Power power, final Location src, final Unit.Type srcUnitType,
+                      final Location dest) {
         super(power, src, srcUnitType, dest, false);
     }// Move()
 
@@ -82,9 +82,9 @@ public class Retreat extends Move {
     }// getFullName()
 
 
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (obj instanceof Retreat) {
-            Retreat retreat = (Retreat) obj;
+            final Retreat retreat = (Retreat) obj;
             if (super.equals(retreat) && this.dest.equals(retreat.dest)) {
                 return true;
             }
@@ -93,16 +93,16 @@ public class Retreat extends Move {
     }// equals()
 
 
-    public void validate(TurnState state, ValidationOptions valOpts,
-                         RuleOptions ruleOpts) throws OrderException {
+    public void validate(final TurnState state, final ValidationOptions valOpts,
+                         final RuleOptions ruleOpts) throws OrderException {
         // step 0
         checkSeasonRetreat(state, getFullName());
         checkPower(power, state, true);
 
 
         // 1
-        Position position = state.getPosition();
-        Unit unit = position.getDislodgedUnit(src.getProvince()).orElse(null);
+        final Position position = state.getPosition();
+        final Unit unit = position.getDislodgedUnit(src.getProvince()).orElse(null);
         super.validate(valOpts, unit);
 
         if (valOpts.getOption(ValidationOptions.KEY_GLOBAL_PARSING)
@@ -139,7 +139,7 @@ public class Retreat extends Move {
             }
 
             // 4
-            RetreatChecker rc = new RetreatChecker(state);
+            final RetreatChecker rc = new RetreatChecker(state);
             if (!rc.isValid(src, dest)) {
                 throw new OrderException(
                         Utils.getLocalString(RETREAT_CANNOT, dest));
@@ -151,8 +151,8 @@ public class Retreat extends Move {
     /**
      * No verification is performed.
      */
-    public void verify(Adjudicator adjudicator) {
-        OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
+    public void verify(final Adjudicator adjudicator) {
+        final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
         thisOS.setVerified(true);
     }// verify()
 
@@ -161,22 +161,21 @@ public class Retreat extends Move {
      * Retreat orders are only dependent on other
      * retreat orders that are moving to the same destination.
      */
-    public void determineDependencies(Adjudicator adjudicator) {
+    public void determineDependencies(final Adjudicator adjudicator) {
         // add moves to destination space, and supports of this space
-        OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
+        final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
         List<OrderState> depMTDest = null;
 
-        List<OrderState> orderStates = adjudicator.getOrderStates();
-        for (int osIdx = 0; osIdx < orderStates.size(); osIdx++) {
-            OrderState dependentOS = orderStates.get(osIdx);
-            Orderable order = dependentOS.getOrder();
+        final List<OrderState> orderStates = adjudicator.getOrderStates();
+        for (final OrderState dependentOS : orderStates) {
+            final Orderable order = dependentOS.getOrder();
 
             if (order instanceof Retreat && order != this) {
-                Retreat retreat = (Retreat) order;
+                final Retreat retreat = (Retreat) order;
 
                 if (retreat.getDest().isProvinceEqual(this.getDest())) {
                     if (depMTDest == null) {
-                        depMTDest = new ArrayList<OrderState>(4);
+                        depMTDest = new ArrayList<>(4);
                     }
                     depMTDest.add(dependentOS);
                 }
@@ -194,8 +193,8 @@ public class Retreat extends Move {
      * If a retreat is valid, it will be successfull unless
      * there exists one or more retreats to the same destination.
      */
-    public void evaluate(Adjudicator adjudicator) {
-        OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
+    public void evaluate(final Adjudicator adjudicator) {
+        final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
 
         // while Retreat orders cannot be supported, we DO need to determine
         // if we are retrating across a difficult passable border.
@@ -215,7 +214,7 @@ public class Retreat extends Move {
         // if other retreats to destination, we will succeed; otherwise, we will
         // probably fail.
         if (thisOS.getEvalState() == Tristate.UNCERTAIN) {
-            OrderState[] depMovesToDest = thisOS
+            final OrderState[] depMovesToDest = thisOS
                     .getDependentMovesToDestination();
 
             if (depMovesToDest.length == 0) {
@@ -238,9 +237,8 @@ public class Retreat extends Move {
                 Tristate evalResult = Tristate.UNCERTAIN;
                 boolean isStrongerThanAllOthers = false;
 
-                for (int i = 0; i < depMovesToDest.length; i++) {
-                    OrderState depMoveOS = depMovesToDest[i];
-                    Move depMove = (Move) depMoveOS.getOrder();
+                for (final OrderState depMoveOS : depMovesToDest) {
+                    final Move depMove = (Move) depMoveOS.getOrder();
 
                     if (depMoveOS.isRetreatStrengthSet()) {
                         if (thisOS.getRetreatStrength() < depMoveOS

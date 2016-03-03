@@ -132,7 +132,7 @@ public class AdjustmentParser {
     /**
      * Creates a AdjustmentParser object, which parses the given input for an Ownership and Adjustment info blocks
      */
-    public AdjustmentParser(WorldMap map, String input) throws IOException {
+    public AdjustmentParser(final WorldMap map, final String input) throws IOException {
         if (map == null || input == null) {
             throw new IllegalArgumentException();
         }
@@ -168,7 +168,7 @@ public class AdjustmentParser {
         /**
          * Create a OwnerInfo object
          */
-        public OwnerInfo(String power, String[] locations) {
+        public OwnerInfo(final String power, final String[] locations) {
             this.power = power;
             this.locations = (locations == null) ? EMPTY : locations;
         }// OwnerInfo()
@@ -191,12 +191,12 @@ public class AdjustmentParser {
          * String output for debugging; may change between versions.
          */
         public String toString() {
-            StringBuffer sb = new StringBuffer();
+            final StringBuffer sb = new StringBuffer();
             sb.append("OwnerInfo[power=");
             sb.append(power);
             sb.append(", locations=");
-            for (int i = 0; i < locations.length; i++) {
-                sb.append(locations[i]);
+            for (String location : locations) {
+                sb.append(location);
                 sb.append(',');
             }
             sb.append(']');
@@ -218,8 +218,8 @@ public class AdjustmentParser {
         /**
          * Create an AdjustInfo object
          */
-        public AdjustInfo(String power, int numSC, int numUnits,
-                          int toBuildOrRemove) {
+        public AdjustInfo(final String power, final int numSC, final int numUnits,
+                          final int toBuildOrRemove) {
             if (numSC < 0 || numUnits < 0 || toBuildOrRemove < 0 || power == null) {
                 throw new IllegalArgumentException("bad arguments");
             }
@@ -262,7 +262,7 @@ public class AdjustmentParser {
          * String output for debugging; may change between versions.
          */
         public String toString() {
-            StringBuffer sb = new StringBuffer();
+            final StringBuffer sb = new StringBuffer();
             sb.append("AdjustInfo[power=");
             sb.append(power);
             sb.append(", SC=");
@@ -280,24 +280,24 @@ public class AdjustmentParser {
     /**
      * Parse the input, and create the appropriate Info objects (or a zero-length arrays)
      */
-    private void parseInput(String input) throws IOException {
+    private void parseInput(final String input) throws IOException {
         // create lists
-        ownerList = new LinkedList<OwnerInfo>();
-        adjustList = new LinkedList<AdjustInfo>();
+        ownerList = new LinkedList<>();
+        adjustList = new LinkedList<>();
 
         // create patterns
         regexAdjust = Pattern.compile(ADJUST_REGEX);
 
         // Create HEADER_REGEX pattern
-        Pattern header = Pattern.compile(HEADER_REGEX);
+        final Pattern header = Pattern.compile(HEADER_REGEX);
 
         // search for HEADER_REGEX
         // create a block of text
-        BufferedReader br = new BufferedReader(new StringReader(input));
+        final BufferedReader br = new BufferedReader(new StringReader(input));
 
         String line = br.readLine();
         while (line != null) {
-            Matcher m = header.matcher(line);
+            final Matcher m = header.matcher(line);
             if (m.lookingAt()) {
                 parseOwnerBlock(ParserUtils.parseBlock(br));
                 parseAdjustmentBlock(ParserUtils.parseBlock(br));
@@ -327,17 +327,17 @@ public class AdjustmentParser {
     /**
      * Given a trimmed block, determines ownership
      */
-    private void parseOwnerBlock(String text) throws IOException {
+    private void parseOwnerBlock(final String text) throws IOException {
         // map of Powers to StringBuffers
-        HashMap<Power, StringBuffer> pmap = new HashMap<Power, StringBuffer>();
+        final HashMap<Power, StringBuffer> pmap = new HashMap<>();
 
         // parse and re-formulate
         // into a new string
         //
         Power currentPower = null;
-        StringTokenizer st = new StringTokenizer(text, " \f\t\n\r");
+        final StringTokenizer st = new StringTokenizer(text, " \f\t\n\r");
         while (st.hasMoreTokens()) {
-            String tok = st.nextToken();
+            final String tok = st.nextToken();
             if (tok.equalsIgnoreCase("unowned:")) {
                 // we don't process unowned SC yet. I'm not sure that
                 // all judges support this??
@@ -345,7 +345,7 @@ public class AdjustmentParser {
             } else if (tok.endsWith(":")) {
                 // should be a Power
                 //
-                Power p = map.getPower(tok.substring(0, tok.length() - 1));
+                final Power p = map.getPower(tok.substring(0, tok.length() - 1));
                 if (p == null) {
                     throw new IOException(
                             "Adjustment Block: Power " + tok + " not recognized.");
@@ -356,7 +356,7 @@ public class AdjustmentParser {
                 pmap.put(p, new StringBuffer());
             } else {
                 if (currentPower != null) {
-                    StringBuffer sb = pmap.get(currentPower);
+                    final StringBuffer sb = pmap.get(currentPower);
                     sb.append(tok);
                     sb.append(" ");
                 }
@@ -369,8 +369,8 @@ public class AdjustmentParser {
         // which should be eliminated.
         //
         final Power[] allPowers = map.getPowers().toArray(new Power[0]);
-        for (int i = 0; i < allPowers.length; i++) {
-            StringBuffer sb = pmap.get(allPowers[i]);
+        for (Power allPower : allPowers) {
+            final StringBuffer sb = pmap.get(allPower);
             if (sb != null) {
                 final String[] provs = sb.toString().split("[\\,]");
 
@@ -390,7 +390,7 @@ public class AdjustmentParser {
                 }
 
                 // create OwnerInfo
-                ownerList.add(new OwnerInfo(allPowers[i].getName(), provs));
+                ownerList.add(new OwnerInfo(allPower.getName(), provs));
             }
         }
     }// parseOwnerBlock()
@@ -399,11 +399,11 @@ public class AdjustmentParser {
     /**
      * Given a trimmed block, determines adjustment
      */
-    private void parseAdjustmentBlock(String text) {
-        String[] lines = text.split("\\n");
+    private void parseAdjustmentBlock(final String text) {
+        final String[] lines = text.split("\\n");
 
-        for (int i = 0; i < lines.length; i++) {
-            Matcher m = regexAdjust.matcher(lines[i]);
+        for (String line : lines) {
+            final Matcher m = regexAdjust.matcher(line);
 
             if (m.find()) {
                 adjustList.add(new AdjustInfo(m.group(1),

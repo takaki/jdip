@@ -45,14 +45,14 @@ public class ConvoyPathResult extends OrderResult {
     /**
      * Create a ConvoyPathResult
      */
-    public ConvoyPathResult(Orderable order, List<Province> path) {
+    public ConvoyPathResult(final Orderable order, final List<Province> path) {
         this(order, (Province[]) path.toArray(new Province[path.size()]));
     }// ConvoyPathResult()
 
     /**
      * Create a ConvoyPathResult
      */
-    public ConvoyPathResult(Orderable order, Province[] convoyPath) {
+    public ConvoyPathResult(final Orderable order, final Province[] convoyPath) {
         super();
         if (convoyPath == null || convoyPath.length < 3) {
             throw new IllegalArgumentException("bad path (null or length < 3)");
@@ -78,14 +78,14 @@ public class ConvoyPathResult extends OrderResult {
      * Creates an appropriate internationalized text message given the
      * convoy path.
      */
-    public String getMessage(OrderFormatOptions ofo) {
+    public String getMessage(final OrderFormatOptions ofo) {
         /*
         arguments:
 			{0}	: convoy path taken.
 		*/
 
         // create path list
-        StringBuffer sb = new StringBuffer(128);
+        final StringBuffer sb = new StringBuffer(128);
         final String arrow = Utils.getLocalString(KEY_ARROW);
 
         sb.append(OrderFormat.format(ofo, convoyPath[0]));
@@ -103,7 +103,7 @@ public class ConvoyPathResult extends OrderResult {
      * Primarily for debugging.
      */
     public String toString() {
-        StringBuffer sb = new StringBuffer(256);
+        final StringBuffer sb = new StringBuffer(256);
         sb.append(super.toString());
 
         // add convoy path

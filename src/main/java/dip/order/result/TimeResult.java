@@ -43,7 +43,7 @@ public class TimeResult extends Result {
      * <p>
      * Note that resource must correspond to an il8n resource!
      */
-    public TimeResult(Power power, String resource) {
+    public TimeResult(final Power power, final String resource) {
         super(power, resource);
 
         // create timestamp
@@ -54,7 +54,7 @@ public class TimeResult extends Result {
     /**
      * A TimeStamped result, applicable to all powers.
      */
-    public TimeResult(String resource) {
+    public TimeResult(final String resource) {
         this(null, resource);
     }// Result()
 
@@ -71,7 +71,7 @@ public class TimeResult extends Result {
      * Converts the Resource to a properly-internationlized text message.
      * argument {0} is always the time.
      */
-    public String getMessage(OrderFormatOptions ofo) {
+    public String getMessage(final OrderFormatOptions ofo) {
         return Utils.getLocalString(message, new Date(timeStamp));
     }// getMessage()
 
@@ -80,7 +80,7 @@ public class TimeResult extends Result {
      * Convert the output to a String
      */
     public String toString() {
-        StringBuffer sb = new StringBuffer(128);
+        final StringBuffer sb = new StringBuffer(128);
 
         if (power == null) {
             sb.append("(none)");

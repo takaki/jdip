@@ -203,7 +203,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
     /**
      * Creates a DefaultMapRenderer object
      */
-    public DefaultMapRenderer2(MapPanel mp, SymbolPack sp) throws MapException {
+    public DefaultMapRenderer2(final MapPanel mp, final SymbolPack sp) throws MapException {
         super(mp);
         this.symbolPack = sp;
         Log.printTimed(mapPanel.startTime, "DMR2 constructor start");
@@ -215,10 +215,10 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
                 .toArray(new Power[0]);
 
         // setup object maps
-        trackerMap = new HashMap<Province, Tracker>(113);
+        trackerMap = new HashMap<>(113);
         renderSettings = new HashMap<>(11);
-        layerMap = new HashMap<String, SVGGElement>(11);
-        locMap = new HashMap<String, Location>(17);
+        layerMap = new HashMap<>(11);
+        locMap = new HashMap<>(17);
 
         // power order hashmap (now with z-axis) setup
         powerOrderMap = new HashMap[Z_LAYER_NAMES.length];
@@ -275,8 +275,8 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
                         domEventListener, true);
 
         // create a complete set of Tracker objects for all provinces
-        for (int i = 0; i < provinces.length; i++) {
-            trackerMap.put(provinces[i], new Tracker());
+        for (Province province : provinces) {
+            trackerMap.put(province, new Tracker());
         }
 
         // add province hilites to Tracker object
@@ -288,24 +288,24 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
         // add all SC to the map. The SC are never removed or added, however,
         // their attributes (attribute class) may change.
         // after adding to DOM, the element is added to the Tracker object.
-        RunnableQueue rq = getRunnableQueue();
+        final RunnableQueue rq = getRunnableQueue();
         if (rq != null) {
             rq.invokeLater(new Runnable() {
                 public void run() {
                     synchronized (trackerMap) {
-                        for (int i = 0; i < provinces.length; i++) {
-                            if (provinces[i].hasSupplyCenter()) {
+                        for (Province province : provinces) {
+                            if (province.hasSupplyCenter()) {
                                 // create element
-                                SVGElement element = makeSCUse(provinces[i],
+                                final SVGElement element = makeSCUse(province,
                                         null);
 
                                 // add element to tracker
-                                Tracker tracker = (Tracker) trackerMap
-                                        .get(provinces[i]);
+                                final Tracker tracker = (Tracker) trackerMap
+                                        .get(province);
                                 tracker.setSCElement(element);
 
                                 // add to DOM
-                                SVGElement parent = (SVGElement) layerMap
+                                final SVGElement parent = (SVGElement) layerMap
                                         .get(LAYER_SC);
                                 parent.appendChild(element);
                             }
@@ -343,12 +343,12 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
                         domEventListener, false);
 
         // Remove other mouse/key listeners
-        SVGElement[] mouseElements = SVGUtils
+        final SVGElement[] mouseElements = SVGUtils
                 .idFinderSVG(layerMap.get(LAYER_MOUSE));
-        for (int i = 0; i < mouseElements.length; i++) {
-            if (mouseElements[i] instanceof EventTarget) {
+        for (SVGElement mouseElement : mouseElements) {
+            if (mouseElement instanceof EventTarget) {
                 // add mouse listeners
-                EventTarget et = (EventTarget) mouseElements[i];
+                final EventTarget et = (EventTarget) mouseElement;
                 et.removeEventListener(SVGConstants.SVG_EVENT_CLICK,
                         domEventListener, false);
                 et.removeEventListener(SVGConstants.SVG_EVENT_MOUSEOUT,
@@ -382,7 +382,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
     /**
      * Get a mapped layer
      */
-    public SVGGElement getLayer(String key) {
+    public SVGGElement getLayer(final String key) {
         return layerMap.get(key);
     }// getLayer()
 
@@ -394,7 +394,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
             public void execute() {
                 Log.println("DMR2: orderCreated(): ", order);
 
-                MapInfo mapInfo = new DMRMapInfo(turnState);
+                final MapInfo mapInfo = new DMRMapInfo(turnState);
                 order.updateDOM(mapInfo);
 
                 unsyncUpdateDependentOrders(new GUIOrder[]{order});
@@ -412,7 +412,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
             public void execute() {
                 Log.println("DMR2: orderDeleted(): ", order);
 
-                MapInfo mapInfo = new DMRMapInfo(turnState);
+                final MapInfo mapInfo = new DMRMapInfo(turnState);
                 order.removeFromDOM(mapInfo);
 
                 unsyncUpdateDependentOrders(null);
@@ -428,12 +428,12 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
         execRenderCommand(new RenderCommand(this) {
             public void execute() {
                 Log.println("DMR2: multipleOrdersCreated(): ", orders);
-                MapInfo mapInfo = new DMRMapInfo(turnState);
+                final MapInfo mapInfo = new DMRMapInfo(turnState);
 
                 // render orders and update provinces
-                for (int i = 0; i < orders.length; i++) {
-                    orders[i].updateDOM(mapInfo);
-                    unsyncUpdateProvince(orders[i].getSource().getProvince());
+                for (GUIOrder order : orders) {
+                    order.updateDOM(mapInfo);
+                    unsyncUpdateProvince(order.getSource().getProvince());
                 }
 
                 // update dependent orders
@@ -449,12 +449,12 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
         execRenderCommand(new RenderCommand(this) {
             public void execute() {
                 Log.println("DMR2: multipleOrdersDeleted(): ", orders);
-                MapInfo mapInfo = new DMRMapInfo(turnState);
+                final MapInfo mapInfo = new DMRMapInfo(turnState);
 
                 // render orders and update provinces
-                for (int i = 0; i < orders.length; i++) {
-                    orders[i].removeFromDOM(mapInfo);
-                    unsyncUpdateProvince(orders[i].getSource().getProvince());
+                for (GUIOrder order : orders) {
+                    order.removeFromDOM(mapInfo);
+                    unsyncUpdateProvince(order.getSource().getProvince());
                 }
 
                 // update dependent orders
@@ -484,7 +484,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      * only operate within a run() method... if the turnState is changed
      * while another run() method is activated, bad things can happen.
      */
-    protected void setTurnState(TurnState ts) {
+    protected void setTurnState(final TurnState ts) {
         if (ts == null || ts.getPosition() == null) {
             throw new IllegalArgumentException("null turnstate or position");
         }
@@ -506,7 +506,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
     /**
      * Get a map rendering setting
      */
-    public Object getRenderSetting(Object key) {
+    public Object getRenderSetting(final Object key) {
         synchronized (renderSettings) {
             return renderSettings.get(key);
         }
@@ -516,7 +516,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
     /**
      * Internally set a Render Setting
      */
-    protected void setRenderSetting(Object key, Object value) {
+    protected void setRenderSetting(final Object key, final Object value) {
         synchronized (renderSettings) {
             renderSettings.put(key, value);
         }
@@ -526,7 +526,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
     /**
      * Get the Symbol Name for the given unit type
      */
-    public String getSymbolName(Unit.Type unitType) {
+    public String getSymbolName(final Unit.Type unitType) {
         if (unitType == Unit.Type.ARMY) {
             return DefaultMapRenderer2.SYMBOL_ARMY;
         } else if (unitType == Unit.Type.FLEET) {
@@ -543,8 +543,8 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
     /**
      * Gets the location that corresponds to a given string id<br>Assumes ID is lowercase!
      */
-    public Location getLocation(String id) {
-        Province province = worldMap.getProvince(id);
+    public Location getLocation(final String id) {
+        final Province province = worldMap.getProvince(id);
         if (province != null) {
             return new Location(province, Coast.UNDEFINED);
         }
@@ -559,7 +559,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      * corresponds, in powerOrderMap.
      */
     private void createDOMOrderTree() {
-        RunnableQueue rq = getRunnableQueue();
+        final RunnableQueue rq = getRunnableQueue();
         if (rq != null) {
             rq.invokeLater(new Runnable() {
                 public void run() {
@@ -580,7 +580,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
                             // higher z orders
                             //
 
-                            SVGGElement parentLayer = layerMap
+                            final SVGGElement parentLayer = layerMap
                                     .get(LAYER_ORDERS);
 
                             // create order layer under ORDER_LAYERS layer (e.g., id="Layer1", or id="Layer2")
@@ -597,14 +597,14 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
                         }
 
                         // create an order layer for each power. append the z order ID
-                        for (int i = 0; i < powers.length; i++) {
-                            SVGGElement gElement = (SVGGElement) doc
+                        for (Power power : powers) {
+                            final SVGGElement gElement = (SVGGElement) doc
                                     .createElementNS(
                                             SVGDOMImplementation.SVG_NAMESPACE_URI,
                                             SVGConstants.SVG_G_TAG);
                             // make layer name (needs to be unique)
-                            StringBuffer sb = new StringBuffer(32);
-                            sb.append(getPowerName(powers[i]));
+                            final StringBuffer sb = new StringBuffer(32);
+                            sb.append(getPowerName(power));
                             sb.append('_');
                             sb.append(String.valueOf(z));
 
@@ -612,7 +612,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
                                     SVGConstants.SVG_ID_ATTRIBUTE,
                                     sb.toString());
                             orderLayer.appendChild(gElement);
-                            powerOrderMap[z].put(powers[i], gElement);
+                            powerOrderMap[z].put(power, gElement);
                         }
                     }
                 }
@@ -627,10 +627,10 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      */
     protected void unsyncDestroyAllOrders() {
         Log.println("DMR2::unsyncDestroyAllOrders()");
-        MapInfo mapInfo = new DMRMapInfo(turnState);
-        Iterator iter = turnState.getAllOrders().iterator();
+        final MapInfo mapInfo = new DMRMapInfo(turnState);
+        final Iterator iter = turnState.getAllOrders().iterator();
         while (iter.hasNext()) {
-            GUIOrder order = (GUIOrder) iter.next();
+            final GUIOrder order = (GUIOrder) iter.next();
             order.removeFromDOM(mapInfo);
         }
     }// unsyncDestroyAllOrders()
@@ -640,7 +640,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      * Get the Power order SVGGElement (group) for
      * then given z-order. z : [0,2]
      */
-    private SVGGElement getPowerSVGGElement(Power p, int z) {
+    private SVGGElement getPowerSVGGElement(final Power p, final int z) {
         return (SVGGElement) powerOrderMap[z].get(p);
     }// getPowerSVGGElement()
 
@@ -649,7 +649,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      * Sets the Visibility (CSS visibility) for a Power's orders.
      * This manipulates all layers for a given power.
      */
-    private void setPowerOrderVisibility(Power p, boolean isVisible) {
+    private void setPowerOrderVisibility(final Power p, final boolean isVisible) {
         for (int i = 0; i < powerOrderMap.length; i++) {
             setElementVisibility(getPowerSVGGElement(p, i), isVisible);
         }
@@ -660,22 +660,22 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      * determine which orders should be displayed.
      */
     protected void unsyncSetVisiblePowers() {
-        Power[] displayedPowers = (Power[]) getRenderSetting(
+        final Power[] displayedPowers = (Power[]) getRenderSetting(
                 KEY_SHOW_ORDERS_FOR_POWERS);
 
         // displayedPowers contains the powers that are visible.
         // go thru all powers, setting the visibility
-        for (int i = 0; i < powers.length; i++) {
+        for (Power power : powers) {
             boolean isVisible = false;
-            for (int j = 0; j < displayedPowers.length; j++) {
-                if (powers[i] == displayedPowers[j]) {
+            for (Power displayedPower : displayedPowers) {
+                if (power == displayedPower) {
                     isVisible = true;
                     break;
                 }
             }
 
             // set visibility
-            setPowerOrderVisibility(powers[i], isVisible);
+            setPowerOrderVisibility(power, isVisible);
         }
     }// unsyncSetVisiblePowers()
 
@@ -686,8 +686,8 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      */
     protected void unsyncRemoveAllOrdersFromDOM() {
         for (int z = 0; z < powerOrderMap.length; z++) {
-            for (int i = 0; i < powers.length; i++) {
-                SVGGElement powerNode = getPowerSVGGElement(powers[i], z);
+            for (Power power : powers) {
+                final SVGGElement powerNode = getPowerSVGGElement(power, z);
 
                 Node child = powerNode.getFirstChild();
                 while (child != null) {
@@ -702,11 +702,11 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
     /**
      * Implements Influence mode. Saves and restores old mapRenderer settings.
      */
-    protected void unsyncSetInfluenceMode(boolean value) {
+    protected void unsyncSetInfluenceMode(final boolean value) {
         //Log.println("unsyncSetInfluenceMode(): ", String.valueOf(value));
 
         // disable or enable certain View menu items
-        ClientMenu cm = mapPanel.getClientFrame().getClientMenu();
+        final ClientMenu cm = mapPanel.getClientFrame().getClientMenu();
 
         // save and set, or restore, previous MapRenderer2
         if (value) {
@@ -756,10 +756,10 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
                     .get(LAYER_MAP);    // always show map in influence mode
             setElementVisibility(elLayer, true);
 
-            Power[] visiblePowers = (Power[]) oldRenderSettings
+            final Power[] visiblePowers = (Power[]) oldRenderSettings
                     .get(MapRenderer2.KEY_SHOW_ORDERS_FOR_POWERS);
-            for (int i = 0; i < visiblePowers.length; i++) {
-                setPowerOrderVisibility(visiblePowers[i], false);
+            for (Power visiblePower : visiblePowers) {
+                setPowerOrderVisibility(visiblePower, false);
             }
 
             // reset renderSetting influence state, since we just cleared it
@@ -770,8 +770,8 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
             }
 
             // update province CSS values
-            for (int i = 0; i < provinces.length; i++) {
-                unsyncUpdateProvince(provinces[i]);
+            for (Province province : provinces) {
+                unsyncUpdateProvince(province);
             }
         } else {
             // EXITING influence mode
@@ -784,9 +784,9 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
             // this must be set for unsyncUpdateProvince to work correctly
             // we also want to reset the KEY_INFLUENCE_MODE
             synchronized (renderSettings) {
-                Iterator iter = oldRenderSettings.entrySet().iterator();
+                final Iterator iter = oldRenderSettings.entrySet().iterator();
                 while (iter.hasNext()) {
-                    Map.Entry me = (Map.Entry) iter.next();
+                    final Map.Entry me = (Map.Entry) iter.next();
                     renderSettings.put(me.getKey(), me.getValue());
                 }
 
@@ -846,16 +846,16 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
         //Log.println("unsyncUpdateDependentOrders() : ", addedOrder);
 
         // get ALL orders
-        MapInfo mapInfo = new DMRMapInfo(turnState);
-        Iterator iter = turnState.getAllOrders().iterator();
+        final MapInfo mapInfo = new DMRMapInfo(turnState);
+        final Iterator iter = turnState.getAllOrders().iterator();
         while (iter.hasNext()) {
-            GUIOrder order = (GUIOrder) iter.next();
+            final GUIOrder order = (GUIOrder) iter.next();
 
             if (order.isDependent()) {
                 if (addedOrders != null) {
                     // do not update if we are in the addedOrders branch
-                    for (int i = 0; i < addedOrders.length; i++) {
-                        if (order == addedOrders[i]) {
+                    for (GUIOrder addedOrder : addedOrders) {
+                        if (order == addedOrder) {
                             break;
                         }
                     }
@@ -873,10 +873,10 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      */
     protected void unsyncRecreateAllOrders() {
         // get ALL orders
-        MapInfo mapInfo = new DMRMapInfo(turnState);
-        Iterator iter = turnState.getAllOrders().iterator();
+        final MapInfo mapInfo = new DMRMapInfo(turnState);
+        final Iterator iter = turnState.getAllOrders().iterator();
         while (iter.hasNext()) {
-            GUIOrder order = (GUIOrder) iter.next();
+            final GUIOrder order = (GUIOrder) iter.next();
             order.updateDOM(mapInfo);
         }
     }// unsyncRecreateAllOrders()
@@ -887,10 +887,10 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      */
     private void unsyncUpdateAllOrders() {
         // get ALL orders
-        MapInfo mapInfo = new DMRMapInfo(turnState);
-        Iterator iter = turnState.getAllOrders().iterator();
+        final MapInfo mapInfo = new DMRMapInfo(turnState);
+        final Iterator iter = turnState.getAllOrders().iterator();
         while (iter.hasNext()) {
-            GUIOrder order = (GUIOrder) iter.next();
+            final GUIOrder order = (GUIOrder) iter.next();
             order.updateDOM(mapInfo);
         }
     }// unsyncUpdateAllOrders()
@@ -900,9 +900,8 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      * Unsynchronized updater: Renders ALL provinces but NOT orders
      */
     protected void unsyncUpdateAllProvinces() {
-        for (int i = 0; i < provinces.length; i++) {
-            Province province = provinces[i];
-            Tracker tracker = (Tracker) trackerMap.get(province);
+        for (final Province province : provinces) {
+            final Tracker tracker = (Tracker) trackerMap.get(province);
             unsyncUpdateProvince(tracker, province, false);
         }
     }// unsyncUpdateAllProvincesAndOrders()
@@ -913,9 +912,9 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      * We must synchronize around this because this method
      * will alter the DOM.
      */
-    protected void unsyncUpdateProvince(Province province,
-                                        boolean forceUpdate) {
-        Tracker tracker = trackerMap.get(province);
+    protected void unsyncUpdateProvince(final Province province,
+                                        final boolean forceUpdate) {
+        final Tracker tracker = trackerMap.get(province);
         unsyncUpdateProvince(tracker, province, forceUpdate);
     }// unsyncUpdateProvince()
 
@@ -923,7 +922,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
     /**
      * Convenience method: non-forced.
      */
-    protected void unsyncUpdateProvince(Province province) {
+    protected void unsyncUpdateProvince(final Province province) {
         unsyncUpdateProvince(province, false);
     }// unsyncUpdateProvince()
 
@@ -933,8 +932,8 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      * will alter the DOM. If the 'force' flag is true, we will update
      * the unit information EVEN IF it hasn't changed.
      */
-    protected void unsyncUpdateProvince(Tracker tracker, Province province,
-                                        boolean force) {
+    protected void unsyncUpdateProvince(final Tracker tracker, final Province province,
+                                        final boolean force) {
         if (tracker == null) {
             // avoid NPE when in mid-render and batik exits
             return;
@@ -953,7 +952,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
         }
 
         // set province hiliting based upon current render settings
-        SVGElement provinceGroupElement = tracker.getProvinceHiliteElement();
+        final SVGElement provinceGroupElement = tracker.getProvinceHiliteElement();
         if (provinceGroupElement != null) {
             // if we are in 'influence mode', we hilite provinces differently
             if (renderSettings
@@ -984,7 +983,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
                 } else {
                     if (province.hasSupplyCenter()) {
                         // get supply center owner
-                        Power power = position.getSupplyCenterOwner(province)
+                        final Power power = position.getSupplyCenterOwner(province)
                                 .orElse(null);
 
                         // note:
@@ -1019,11 +1018,11 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      * Updates an SC element with new position information.
      * No change made to CSS.
      */
-    protected void unsyncUpdateSC(Province province) {
-        Tracker tracker = (Tracker) trackerMap.get(province);
-        SVGElement scEl = tracker.getSCElement();
+    protected void unsyncUpdateSC(final Province province) {
+        final Tracker tracker = (Tracker) trackerMap.get(province);
+        final SVGElement scEl = tracker.getSCElement();
         if (scEl != null) {
-            Point2D.Float pos = mapMeta.getSCPt(province);
+            final Point2D.Float pos = mapMeta.getSCPt(province);
             scEl.setAttributeNS(null, SVGConstants.SVG_X_ATTRIBUTE,
                     String.valueOf(pos.x));
             scEl.setAttributeNS(null, SVGConstants.SVG_Y_ATTRIBUTE,
@@ -1036,13 +1035,13 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      * Changes a Unit in the DOM
      */
     private void changeUnitInDOM(final Unit posUnit, final Tracker tracker,
-                                 final Province province, boolean isDislodged) {
+                                 final Province province, final boolean isDislodged) {
         // make tracker unit mirror posUnit
         //
         SVGElement newElement = null;
 
         // get old element (dislodged or normal)
-        SVGElement oldElement = (isDislodged) ? tracker
+        final SVGElement oldElement = (isDislodged) ? tracker
                 .getDislodgedUnitElement() : tracker.getUnitElement();
 
         // remove, add, or replace as appropriate
@@ -1055,7 +1054,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
         } else if (oldElement == null && posUnit != null) {
             // case 2: new unit not null, old unit null: create new element, then add
             newElement = makeUnitUse(posUnit, province, isDislodged);
-            SVGElement layer = ((isDislodged) ? layerMap
+            final SVGElement layer = ((isDislodged) ? layerMap
                     .get(LAYER_DISLODGED_UNITS) : layerMap.get(LAYER_UNITS));
             layer.appendChild(newElement);
         } else {
@@ -1076,8 +1075,8 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
     /**
      * Creates a Unit of the given type / owner color,  via a <use> symbol, in the right place
      */
-    private SVGElement makeUnitUse(Unit u, Province province,
-                                   boolean isDislodged) {
+    private SVGElement makeUnitUse(final Unit u, final Province province,
+                                   final boolean isDislodged) {
         // determine symbol ID
         String symbolID = null;
         if (u.getType().equals(Unit.Type.FLEET)) {
@@ -1092,16 +1091,16 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
         }
 
         // get symbol size data
-        MapMetadata.SymbolSize symbolSize = mapMeta.getSymbolSize(symbolID);
+        final MapMetadata.SymbolSize symbolSize = mapMeta.getSymbolSize(symbolID);
         assert (symbolSize != null);
 
         // get the rectangle coordinates
-        Coast coast = u.getCoast();
-        Point2D.Float pos = (isDislodged) ? mapMeta
+        final Coast coast = u.getCoast();
+        final Point2D.Float pos = (isDislodged) ? mapMeta
                 .getDislodgedUnitPt(province, coast) : mapMeta
                 .getUnitPt(province, coast);
-        float x = pos.x;
-        float y = pos.y;
+        final float x = pos.x;
+        final float y = pos.y;
         return SVGUtils.createUseElement(doc, symbolID, null,
                 getUnitCSSClass(u.getPower()), x, y, symbolSize);
     }// makeUnitUse()
@@ -1111,8 +1110,8 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      * Returns the CSS class for power fills.
      * If the power starts with a number, the a capital X is prepended.
      */
-    private String getUnitCSSClass(Power power) {
-        StringBuffer sb = new StringBuffer(power.getName().length() + 4);
+    private String getUnitCSSClass(final Power power) {
+        final StringBuffer sb = new StringBuffer(power.getName().length() + 4);
         sb.append("unit");
         sb.append(getPowerName(power));
         return sb.toString();
@@ -1123,12 +1122,12 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      * Returns the CSS class for Supply Center fills. Returns SC_NOPOWER if power is null.
      * If the power starts with a number, the a capital X is prepended.
      */
-    private String getSCCSSClass(Power power) {
+    private String getSCCSSClass(final Power power) {
         if (power == null) {
             return SC_NOPOWER;
         }
 
-        StringBuffer sb = new StringBuffer(power.getName().length() + 2);
+        final StringBuffer sb = new StringBuffer(power.getName().length() + 2);
         sb.append("sc");
         sb.append(getPowerName(power));
         return sb.toString();
@@ -1139,11 +1138,11 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      * Creates the power name, and prepends an "X" if power name starts with a digit.
      * Does not accept null arguments.
      */
-    private String getPowerName(Power power) {
-        String name = power.getName().toLowerCase();
+    private String getPowerName(final Power power) {
+        final String name = power.getName().toLowerCase();
 
         if (Character.isDigit(name.charAt(0))) {
-            StringBuffer sb = new StringBuffer(name.length() + 1);
+            final StringBuffer sb = new StringBuffer(name.length() + 1);
             sb.append('X');
             sb.append(name);
             return sb.toString();
@@ -1157,9 +1156,9 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      * Creates a Supply Center via a &lt;use&gt; symbol, in the right place.
      * Power may be null.
      */
-    private SVGElement makeSCUse(Province province, Power power) {
-        Point2D.Float pos = mapMeta.getSCPt(province);
-        MapMetadata.SymbolSize symbolSize = mapMeta.getSymbolSize(SYMBOL_SC);
+    private SVGElement makeSCUse(final Province province, final Power power) {
+        final Point2D.Float pos = mapMeta.getSCPt(province);
+        final MapMetadata.SymbolSize symbolSize = mapMeta.getSymbolSize(SYMBOL_SC);
         return SVGUtils
                 .createUseElement(doc, SYMBOL_SC, null, getSCCSSClass(power),
                         pos.x, pos.y, symbolSize);
@@ -1169,9 +1168,9 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
     /**
      * Set the visibility of an element
      */
-    protected void setElementVisibility(SVGElement element, boolean value) {
+    protected void setElementVisibility(final SVGElement element, final boolean value) {
         // optimization: if no change, make no change to the DOM.
-        String oldValue = element
+        final String oldValue = element
                 .getAttributeNS(null, CSSConstants.CSS_VISIBILITY_PROPERTY);
 
         if (value) {
@@ -1197,20 +1196,20 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      */
     private void checkSymbols() throws MapException {
         // check symbol presence
-        Map map = SVGUtils
+        final Map map = SVGUtils
                 .tagFinderSVG(Arrays.asList(SYMBOLS), doc.getRootElement());
-        for (int i = 0; i < SYMBOLS.length; i++) {
-            if (map.get(SYMBOLS[i]) == null) {
+        for (String SYMBOL1 : SYMBOLS) {
+            if (map.get(SYMBOL1) == null) {
                 throw new MapException(
-                        "Missing required <symbol> or <g> element with id=\"" + SYMBOLS[i] + "\".");
+                        "Missing required <symbol> or <g> element with id=\"" + SYMBOL1 + "\".");
             }
         }
 
         // check MMD
-        for (int i = 0; i < SYMBOLS.length; i++) {
-            if (mapMeta.getSymbolSize(SYMBOLS[i]) == null) {
+        for (String SYMBOL : SYMBOLS) {
+            if (mapMeta.getSymbolSize(SYMBOL) == null) {
                 throw new MapException(
-                        "Missing required <jdipNS:SYMBOLSIZE> element for symbol name \"" + SYMBOLS[i] + "\"");
+                        "Missing required <jdipNS:SYMBOLSIZE> element for symbol name \"" + SYMBOL + "\"");
             }
         }
 
@@ -1223,10 +1222,10 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
     private void mapLayers() throws MapException {
         SVGUtils.tagFinderSVG(layerMap, Arrays.asList(LAYERS),
                 doc.getRootElement());
-        for (int i = 0; i < LAYERS.length; i++) {
-            if (layerMap.get(LAYERS[i]) == null) {
+        for (String LAYER : LAYERS) {
+            if (layerMap.get(LAYER) == null) {
                 throw new MapException(
-                        "Missing required layer (<g> element) with id=\"" + LAYERS[i] + "\".");
+                        "Missing required layer (<g> element) with id=\"" + LAYER + "\".");
             }
         }
     }// mapLayers()
@@ -1241,18 +1240,18 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      * This also sets up a special lookup table for multicoastal provinces.
      */
     private void validateAndSetupMouseRegions() throws MapException {
-        SVGElement[] mouseElements = SVGUtils
+        final SVGElement[] mouseElements = SVGUtils
                 .idFinderSVG((SVGElement) layerMap.get(LAYER_MOUSE));
 
-        for (int i = 0; i < mouseElements.length; i++) {
+        for (SVGElement mouseElement : mouseElements) {
             // get id, which must be a province with or without a coast
-            String id = mouseElements[i]
+            final String id = mouseElement
                     .getAttribute(SVGConstants.SVG_ID_ATTRIBUTE);
 
             // parse ID; determine if there is a coast.
-            String provinceID = Coast.getProvinceName(id);
-            Coast coast = Coast.parse(id);
-            Province province = worldMap.getProvince(provinceID);
+            final String provinceID = Coast.getProvinceName(id);
+            final Coast coast = Coast.parse(id);
+            final Province province = worldMap.getProvince(provinceID);
 
             if (province == null) {
                 throw new MapException(
@@ -1260,14 +1259,14 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
             }
 
             // can we even target this element??
-            if (mouseElements[i] instanceof EventTarget) {
+            if (mouseElement instanceof EventTarget) {
                 // map the location, but only if the coast is defined.
                 if (coast != Coast.UNDEFINED) {
                     locMap.put(id.toLowerCase(), new Location(province, coast));
                 }
             } else {
                 throw new MapException(
-                        LAYER_MOUSE + "element: " + mouseElements[i] + " cannot be targetted by mouse events.");
+                        LAYER_MOUSE + "element: " + mouseElement + " cannot be targetted by mouse events.");
             }
         }
     }// validateAndSetupMouseRegions()
@@ -1284,21 +1283,19 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      */
     private void addProvinceHilitesToTracker() {
         // Make a list of all possible provinces with underscores
-        ArrayList<String> uscoreProvList = new ArrayList<String>(
-                125);    // stores underscore-preceded names
-        ArrayList<Province> lookupProvList = new ArrayList<Province>(
-                125);    // stores corresponding Province
-        for (int i = 0; i < provinces.length; i++) {
-            String[] shortNames = provinces[i].getShortNames()
+        final ArrayList<String> uscoreProvList = new ArrayList<>(125);    // stores underscore-preceded names
+        final ArrayList<Province> lookupProvList = new ArrayList<>(125);    // stores corresponding Province
+        for (Province province : provinces) {
+            final String[] shortNames = province.getShortNames()
                     .toArray(new String[0]);
-            for (int j = 0; j < shortNames.length; j++) {
-                uscoreProvList.add('_' + shortNames[j]);
-                lookupProvList.add(provinces[i]);
+            for (String shortName : shortNames) {
+                uscoreProvList.add('_' + shortName);
+                lookupProvList.add(province);
             }
         }
 
         // try to find as many of the above names as possible
-        Map map = SVGUtils
+        final Map map = SVGUtils
                 .tagFinderSVG(uscoreProvList, doc.getRootElement(), true);
 
         // safety check
@@ -1306,9 +1303,9 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
 
         // go through the map and add non-null objects to the tracker.
         for (int i = 0; i < lookupProvList.size(); i++) {
-            SVGElement element = (SVGElement) map.get(uscoreProvList.get(i));
+            final SVGElement element = (SVGElement) map.get(uscoreProvList.get(i));
             if (element != null) {
-                Tracker tracker = trackerMap
+                final Tracker tracker = trackerMap
                         .get(lookupProvList.get(i));
                 tracker.setProvinceHiliteElement(element);
             }
@@ -1321,7 +1318,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      * during Movement and Adjustment phases, and the dislodged unit during the
      * Retreat phase.
      */
-    private Unit getPhaseApropriateUnit(Province p) {
+    private Unit getPhaseApropriateUnit(final Province p) {
         return (isDislodgedPhase) ? position.getDislodgedUnit(p)
                 .orElse(null) : position.getUnit(p).orElse(null);
     }// getPhaseAppropriateUnit()
@@ -1332,8 +1329,8 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      * from the existing CSS style. Returns true if a change was made.
      * A null css value is not allowed.
      */
-    private boolean setCSSIfChanged(SVGElement el, String css) {
-        String oldCSS = el
+    private boolean setCSSIfChanged(final SVGElement el, final String css) {
+        final String oldCSS = el
                 .getAttributeNS(null, SVGConstants.SVG_CLASS_ATTRIBUTE);
 
         if (!css.equals(oldCSS)) {
@@ -1352,13 +1349,13 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      * we then look at the orders for the power of that unit (phase
      * appropriate). This cuts the searching time.
      */
-    private boolean isOrdered(Province province) {
-        Unit unit = getPhaseApropriateUnit(province);
+    private boolean isOrdered(final Province province) {
+        final Unit unit = getPhaseApropriateUnit(province);
         if (unit != null) {
-            List<dip.order.Orderable> list = turnState.getOrders(unit.getPower());
-            Iterator<dip.order.Orderable> iter = list.iterator();
+            final List<dip.order.Orderable> list = turnState.getOrders(unit.getPower());
+            final Iterator<dip.order.Orderable> iter = list.iterator();
             while (iter.hasNext()) {
-                Orderable order = iter.next();
+                final Orderable order = iter.next();
                 if (order.getSource().isProvinceEqual(province)) {
                     return true;
                 }
@@ -1417,16 +1414,16 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
             return dislodgedUnit;
         }
 
-        public void setUnit(Unit u) {
+        public void setUnit(final Unit u) {
             unit = u;
         }
 
-        public void setDislodgedUnit(Unit u) {
+        public void setDislodgedUnit(final Unit u) {
             dislodgedUnit = u;
         }
 
 
-        public void setProvinceHiliteElement(SVGElement el) {
+        public void setProvinceHiliteElement(final SVGElement el) {
             provHilite = el;
 
             if (provHilite != null) {
@@ -1452,7 +1449,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
          * SVG file (if available) if power is null. If no original CSS exists, then,
          * no CSS value is returned.
          */
-        public String getPowerCSSClass(Power power) {
+        public String getPowerCSSClass(final Power power) {
             if (power == null) {
                 return getOriginalProvinceCSS();
             }
@@ -1460,7 +1457,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
             return getPowerName(power);
         }// getPowerCSSClass()
 
-        public void setSCElement(SVGElement el) {
+        public void setSCElement(final SVGElement el) {
             scElement = el;
         }
 
@@ -1469,12 +1466,12 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
         }
 
 
-        public void setUnit(SVGElement el, Unit unit) {
+        public void setUnit(final SVGElement el, final Unit unit) {
             elUnit = el;
             this.unit = unit;
         }// setUnit()
 
-        public void setDislodgedUnit(SVGElement el, Unit unit) {
+        public void setDislodgedUnit(final SVGElement el, final Unit unit) {
             elDislodgedUnit = el;
             dislodgedUnit = unit;
         }// setDislodgedUnit()
@@ -1484,7 +1481,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
          * For debugging only
          */
         public String toString() {
-            StringBuffer sb = new StringBuffer(128);
+            final StringBuffer sb = new StringBuffer(128);
             sb.append("elUnit=");
             sb.append(elUnit);
             sb.append(",unit=");
@@ -1500,7 +1497,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      * Implicit class for MapInfo interface
      */
     protected class DMRMapInfo extends GUIOrder.MapInfo {
-        public DMRMapInfo(TurnState ts) {
+        public DMRMapInfo(final TurnState ts) {
             super(ts);
         }// DMRMapInfo()
 
@@ -1508,15 +1505,15 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
             return mapMeta;
         }
 
-        public String getPowerCSS(Power power) {
+        public String getPowerCSS(final Power power) {
             return DefaultMapRenderer2.this.getPowerName(power);
         }
 
-        public String getUnitCSS(Power power) {
+        public String getUnitCSS(final Power power) {
             return DefaultMapRenderer2.this.getUnitCSSClass(power);
         }
 
-        public String getSymbolName(Unit.Type unitType) {
+        public String getSymbolName(final Unit.Type unitType) {
             return DefaultMapRenderer2.this.getSymbolName(unitType);
         }
 
@@ -1525,7 +1522,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
         }
 
         public Power[] getDisplayablePowers() {
-            Power[] powers = super.getDisplayablePowers();
+            final Power[] powers = super.getDisplayablePowers();
             if (powers == null) {
                 return mapPanel.getClientFrame().getDisplayablePowers();
             }
@@ -1533,7 +1530,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
             return powers;
         }// getDisplayablePowers()
 
-        public SVGGElement getPowerSVGGElement(Power p, int z) {
+        public SVGGElement getPowerSVGGElement(final Power p, final int z) {
             return DefaultMapRenderer2.this.getPowerSVGGElement(p, z);
         }
     }// nested class DMRMapInfo

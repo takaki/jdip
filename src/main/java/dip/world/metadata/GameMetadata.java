@@ -119,63 +119,63 @@ public class GameMetadata implements Serializable {
     /**
      * Sets game comment. Never null. May be empty.
      */
-    public void setComment(String value) {
+    public void setComment(final String value) {
         comment = (value == null) ? EMPTY : value;
     }
 
     /**
      * Sets game name. Never null, may be empty.
      */
-    public void setGameName(String value) {
+    public void setGameName(final String value) {
         gameName = (value == null) ? EMPTY : value;
     }
 
     /**
      * Sets moderator name; may be null.
      */
-    public void setModeratorName(String value) {
+    public void setModeratorName(final String value) {
         moderator = value;
     }
 
     /**
      * Sets moderator email address; may be null.
      */
-    public void setModeratorEmail(String value) {
+    public void setModeratorEmail(final String value) {
         moderatorEmail = value;
     }
 
     /**
      * Sets moderator URI; may be null.
      */
-    public void setModeratorURI(URI value) {
+    public void setModeratorURI(final URI value) {
         moderatorURI = value;
     }
 
     /**
      * Sets textual notes. Never null, but may be empty.
      */
-    public void setNotes(String value) {
+    public void setNotes(final String value) {
         notes = (value == null) ? EMPTY : value;
     }
 
     /**
      * Sets the Judge name; may be null
      */
-    public void setJudgeName(String value) {
+    public void setJudgeName(final String value) {
         judgeName = value;
     }
 
     /**
      * Sets the game URI; may be null
      */
-    public void setGameURI(URI value) {
+    public void setGameURI(final URI value) {
         gameURI = value;
     }
 
     /**
      * Sets the game ID: e.g., Boardman, Miller, or EPNum. Never null.
      */
-    public void setGameID(String value) {
+    public void setGameID(final String value) {
         id = (value == null) ? EMPTY : value;
     }
 

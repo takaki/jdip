@@ -54,10 +54,10 @@ public class AssocJComboBox extends JComboBox {
         // longest is the prototype
         int len = 0;
         AssociatedObj longestAO = null;
-        for (int i = 0; i < objs.length; i++) {
-            if (objs[i].getDisplay().length() > len) {
-                len = objs[i].getDisplay().length();
-                longestAO = objs[i];
+        for (AssociatedObj obj : objs) {
+            if (obj.getDisplay().length() > len) {
+                len = obj.getDisplay().length();
+                longestAO = obj;
             }
         }
 
@@ -96,7 +96,7 @@ public class AssocJComboBox extends JComboBox {
      * Set to the Default AssociatedObj, or index(0) if none.
      */
     public void reset() {
-        AssociatedObj ao = getDefaultAO();
+        final AssociatedObj ao = getDefaultAO();
         if (ao == null) {
             setSelectedIndex(0);
         } else {
@@ -134,7 +134,7 @@ public class AssocJComboBox extends JComboBox {
     /**
      * Sets the selected item by its AssociatedObj <b>Value</b>;
      */
-    public void setSelectedItem(Object obj) {
+    public void setSelectedItem(final Object obj) {
         super.setSelectedItem(getAOForValue(obj));
     }// setSelectedItem()
 
@@ -144,10 +144,10 @@ public class AssocJComboBox extends JComboBox {
      * returns null.
      */
     private AssociatedObj getDefaultAO() {
-        ComboBoxModel model = getModel();
+        final ComboBoxModel model = getModel();
         final int len = model.getSize();
         for (int i = 0; i < len; i++) {
-            AssociatedObj ao = (AssociatedObj) model.getElementAt(i);
+            final AssociatedObj ao = (AssociatedObj) model.getElementAt(i);
             if (ao.isDefault()) {
                 return ao;
             }
@@ -161,15 +161,15 @@ public class AssocJComboBox extends JComboBox {
      * If none, returns null. If an AssociatedObj is passed in,
      * that same AssociatedObj is returned.
      */
-    private AssociatedObj getAOForValue(Object value) {
+    private AssociatedObj getAOForValue(final Object value) {
         // short circuit
         if (value instanceof AssociatedObj) {
             return (AssociatedObj) value;
         } else if (value != null) {
-            ComboBoxModel model = getModel();
+            final ComboBoxModel model = getModel();
             final int len = model.getSize();
             for (int i = 0; i < len; i++) {
-                AssociatedObj ao = (AssociatedObj) model.getElementAt(i);
+                final AssociatedObj ao = (AssociatedObj) model.getElementAt(i);
                 if (value.equals(ao.getValue()) || value
                         .equals(ao.getDisplay())) {
                     return ao;
@@ -199,14 +199,14 @@ public class AssocJComboBox extends JComboBox {
         /**
          * Create an AssociatedObj
          */
-        public AssociatedObj(Object obj, String display) {
+        public AssociatedObj(final Object obj, final String display) {
             this(obj, display, false);
         }// AssociatedObj()
 
         /**
          * Create an AssociatedObj
          */
-        public AssociatedObj(Object obj, String display, boolean isDefault) {
+        public AssociatedObj(final Object obj, final String display, final boolean isDefault) {
             if (obj == null || display == null) {
                 throw new IllegalArgumentException("null obj or display value");
             }
@@ -242,7 +242,7 @@ public class AssocJComboBox extends JComboBox {
          * Collates (sorts) but only if display values are Strings.
          * Otherwise, nothing is done.
          */
-        public static void collate(AssociatedObj[] array, Collator c) {
+        public static void collate(final AssociatedObj[] array, final Collator c) {
             Arrays.sort(array, new AssocObjComparator(c));
         }// collates()
 
@@ -252,17 +252,17 @@ public class AssocJComboBox extends JComboBox {
         private static class AssocObjComparator implements Comparator {
             private final Collator c;
 
-            public AssocObjComparator(Collator c) {
+            public AssocObjComparator(final Collator c) {
                 this.c = c;
             }// AssocObjComparator()
 
-            public int compare(Object o1, Object o2) {
-                String display1 = ((AssociatedObj) o1).getDisplay();
-                String display2 = ((AssociatedObj) o2).getDisplay();
+            public int compare(final Object o1, final Object o2) {
+                final String display1 = ((AssociatedObj) o1).getDisplay();
+                final String display2 = ((AssociatedObj) o2).getDisplay();
                 return c.compare(display1, display2);
             }// compare()
 
-            public boolean equals(Object obj) {
+            public boolean equals(final Object obj) {
                 return c.equals(obj);
             }// equals()
         }// inner class AssocObjComparator
@@ -281,21 +281,21 @@ public class AssocJComboBox extends JComboBox {
         // MUST include trailing '.' on prefix if req'd
         // objs must be toString()-able
         public static AssociatedObj[] createAssociatedObjects(
-                final Object[] objs, final String prefix, Object defaultValue,
-                boolean sort) {
+                final Object[] objs, final String prefix, final Object defaultValue,
+                final boolean sort) {
             if (objs == null || prefix == null) {
                 throw new IllegalArgumentException();
             }
 
-            AssociatedObj[] assocObjs = new AssociatedObj[objs.length];
+            final AssociatedObj[] assocObjs = new AssociatedObj[objs.length];
             for (int i = 0; i < assocObjs.length; i++) {
-                boolean isDefault = objs[i].equals(defaultValue);
-                String text = Utils.getLocalString(prefix + objs[i].toString());
+                final boolean isDefault = objs[i].equals(defaultValue);
+                final String text = Utils.getLocalString(prefix + objs[i].toString());
                 assocObjs[i] = new AssociatedObj(objs[i], text, isDefault);
             }
 
             if (sort) {
-                Collator collator = Collator.getInstance();
+                final Collator collator = Collator.getInstance();
                 AssociatedObj.collate(assocObjs, collator);
             }
 
@@ -306,7 +306,7 @@ public class AssocJComboBox extends JComboBox {
         // default can be null
         public static AssociatedObj[] createAssociatedObjects(
                 final Object[] objs, final String[] display,
-                Object defaultValue, boolean sort) {
+                final Object defaultValue, final boolean sort) {
             if (objs == null) {
                 throw new IllegalArgumentException();
             }
@@ -315,15 +315,15 @@ public class AssocJComboBox extends JComboBox {
                 throw new IllegalArgumentException();
             }
 
-            AssociatedObj[] assocObjs = new AssociatedObj[objs.length];
+            final AssociatedObj[] assocObjs = new AssociatedObj[objs.length];
             for (int i = 0; i < assocObjs.length; i++) {
-                boolean isDefault = objs[i].equals(defaultValue);
+                final boolean isDefault = objs[i].equals(defaultValue);
                 assocObjs[i] = new AssociatedObj(objs[i], display[i],
                         isDefault);
             }
 
             if (sort) {
-                Collator collator = Collator.getInstance();
+                final Collator collator = Collator.getInstance();
                 AssociatedObj.collate(assocObjs, collator);
             }
 

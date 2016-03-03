@@ -52,7 +52,7 @@ public abstract class AbstractCFPListener implements PropertyChangeListener {
     /**
      * Process PropertyChangeEvents into appropriate sub-methods. Marked final for safety.
      */
-    public final void propertyChange(PropertyChangeEvent evt) {
+    public final void propertyChange(final PropertyChangeEvent evt) {
         final String name = evt.getPropertyName();
         if (name == ClientFrame.EVT_WORLD_CREATED) {
             final World w = (World) evt.getNewValue();
@@ -109,13 +109,13 @@ public abstract class AbstractCFPListener implements PropertyChangeListener {
     /**
      * Invoked when a World is created
      */
-    public void actionWorldCreated(World w) {
+    public void actionWorldCreated(final World w) {
     }
 
     /**
      * Invoked when a World is destroyed
      */
-    public void actionWorldDestroyed(World w) {
+    public void actionWorldDestroyed(final World w) {
     }
 
     /**
@@ -127,13 +127,13 @@ public abstract class AbstractCFPListener implements PropertyChangeListener {
     /**
      * Invoked when a TurnState changes
      */
-    public void actionTurnstateChanged(TurnState ts) {
+    public void actionTurnstateChanged(final TurnState ts) {
     }
 
     /**
      * Invoked when a TurnState is added to the World
      */
-    public void actionTurnstateAdded(TurnState ts) {
+    public void actionTurnstateAdded(final TurnState ts) {
     }
 
     /**
@@ -145,63 +145,63 @@ public abstract class AbstractCFPListener implements PropertyChangeListener {
     /**
      * Invoked when a TurnState has been resolved
      */
-    public void actionTurnstateResolved(TurnState ts) {
+    public void actionTurnstateResolved(final TurnState ts) {
     }
 
     /**
      * Invoked when Validation Options have changed
      */
-    public void actionValOptsChanged(ValidationOptions options) {
+    public void actionValOptsChanged(final ValidationOptions options) {
     }
 
     /**
      * Invoked when the Mode has changed (see ClientFrame)
      */
-    public void actionModeChanged(String mode) {
+    public void actionModeChanged(final String mode) {
     }
 
     /**
      * Invoked when MapMetadata information is ready/not ready
      */
-    public void actionMMDReady(MapMetadata mmd) {
+    public void actionMMDReady(final MapMetadata mmd) {
     }
 
     /**
      * Invoked when an Order is created
      */
-    public void actionOrderCreated(Orderable order) {
+    public void actionOrderCreated(final Orderable order) {
     }
 
     /**
      * Invoked when an Order is deleted
      */
-    public void actionOrderDeleted(Orderable order) {
+    public void actionOrderDeleted(final Orderable order) {
     }
 
     /**
      * Invoked when multiple Orders are created
      */
-    public void actionOrdersCreated(Orderable[] orders) {
+    public void actionOrdersCreated(final Orderable[] orders) {
     }
 
     /**
      * Invoked when multiple Orders are deleted
      */
-    public void actionOrdersDeleted(Orderable[] orders) {
+    public void actionOrdersDeleted(final Orderable[] orders) {
     }
 
     /**
      * Invoked when the orderable Powers have changed
      */
-    public void actionOrderablePowersChanged(Power[] oldPowers,
-                                             Power[] newPowers) {
+    public void actionOrderablePowersChanged(final Power[] oldPowers,
+                                             final Power[] newPowers) {
     }
 
     /**
      * Invoked when the displayable Powers have changed
      */
-    public void actionDisplayablePowersChanged(Power[] oldPowers,
-                                               Power[] newPowers) {
+    public void actionDisplayablePowersChanged(final Power[] oldPowers,
+                                               final Power[] newPowers) {
     }
 
 }// class AbstractCFPListener

@@ -80,7 +80,7 @@ public class NGDRuleOptions extends JPanel implements NewGameDialog.NGDTabPane {
         optionList.setFixedCellWidth(100);
         optionList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         optionList.addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e) {
+            public void valueChanged(final ListSelectionEvent e) {
                 updateChoices();
             }
         });
@@ -88,7 +88,7 @@ public class NGDRuleOptions extends JPanel implements NewGameDialog.NGDTabPane {
         // reset button
         reset = new JButton(Utils.getLocalString(BUTTON_RESET));
         reset.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(final ActionEvent e) {
                 resetData();
             }
         });
@@ -129,11 +129,11 @@ public class NGDRuleOptions extends JPanel implements NewGameDialog.NGDTabPane {
     /**
      * Enables & Disables controls on this panel
      */
-    public void setEnabled(boolean value) {
+    public void setEnabled(final boolean value) {
         optionList.setEnabled(value);
         reset.setEnabled(value);
-        for (int i = 0; i < radioButtons.length; i++) {
-            radioButtons[i].setEnabled(value);
+        for (JRadioButton radioButton : radioButtons) {
+            radioButton.setEnabled(value);
         }
 
         super.setEnabled(value);
@@ -149,7 +149,7 @@ public class NGDRuleOptions extends JPanel implements NewGameDialog.NGDTabPane {
             ruleOpts = RuleOptions.createFromVariant(variant);
             refreshList();
             setEnabled(true);
-        } catch (InvalidWorldException e) {
+        } catch (final InvalidWorldException e) {
             heldException = e;
             setEnabled(false);
             ruleOpts = null;
@@ -164,8 +164,8 @@ public class NGDRuleOptions extends JPanel implements NewGameDialog.NGDTabPane {
         optionList.clearSelection();
 
         // create a list of OptListItems, and refresh list data
-        Set options = ruleOpts.getAllOptions();
-        Iterator iter = options.iterator();
+        final Set options = ruleOpts.getAllOptions();
+        final Iterator iter = options.iterator();
         while (iter.hasNext()) {
             optionListModel.addElement(new OptListItem((Option) iter.next()));
         }
@@ -176,18 +176,18 @@ public class NGDRuleOptions extends JPanel implements NewGameDialog.NGDTabPane {
      * Updates the OptionValue choices (upto 6) associated with the selected Option
      */
     private void updateChoices() {
-        OptListItem optListItem = (OptListItem) optionList.getSelectedValue();
+        final OptListItem optListItem = (OptListItem) optionList.getSelectedValue();
         if (optListItem == null) {
-            for (int i = 0; i < radioButtons.length; i++) {
-                radioButtons[i].setVisible(false);
+            for (JRadioButton radioButton1 : radioButtons) {
+                radioButton1.setVisible(false);
             }
 
             description.setText(makeHTML(Utils.getLocalString(INTRO_TEXT)));
 
-            for (int i = 0; i < radioButtons.length; i++) {
-                radioButtons[i].setText("");
-                radioButtons[i].setSelected(false);
-                radioButtons[i].setVisible(false);
+            for (JRadioButton radioButton : radioButtons) {
+                radioButton.setText("");
+                radioButton.setSelected(false);
+                radioButton.setVisible(false);
             }
 
             revalidate();
@@ -195,14 +195,14 @@ public class NGDRuleOptions extends JPanel implements NewGameDialog.NGDTabPane {
         }
 
         // get option
-        Option option = optListItem.getOption();
+        final Option option = optListItem.getOption();
 
         // set description
         description.setText(makeHTML(option.getDescriptionI18N()));
 
         // radio-button setup
-        java.util.List<OptionValue> allowedOptVals = option.getAllowed();
-        OptionValue current = ruleOpts
+        final java.util.List<OptionValue> allowedOptVals = option.getAllowed();
+        final OptionValue current = ruleOpts
                 .getOptionValue(option);    // currently selected value
 
         for (int i = 0; i < radioButtons.length; i++) {
@@ -232,20 +232,20 @@ public class NGDRuleOptions extends JPanel implements NewGameDialog.NGDTabPane {
      */
     private void makeLayout() {
         // layout subpanel (description + radio buttons)
-        int w1[] = {25, 0, 5};    //            9  10 11 12 13 14 15  16,17  18,19
-        int h1[] = {10, 0, 3, 0, 3, 0, 3, 0, 3, 0, 3, 0, 3, 0, 10, 0, 5, 0, 5};
+        final int[] w1 = {25, 0, 5};    //            9  10 11 12 13 14 15  16,17  18,19
+        final int[] h1 = {10, 0, 3, 0, 3, 0, 3, 0, 3, 0, 3, 0, 3, 0, 10, 0, 5, 0, 5};
 
-        HIGLayout l1 = new HIGLayout(w1, h1);
+        final HIGLayout l1 = new HIGLayout(w1, h1);
         l1.setColumnWeight(2, 1);
         l1.setRowWeight(14, 1);
 
-        JPanel ruleListPanel = new JPanel(new BorderLayout());
+        final JPanel ruleListPanel = new JPanel(new BorderLayout());
         ruleListPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
         ruleListPanel.add(new XJScrollPane(optionList), BorderLayout.CENTER);
 
-        JPanel subPanel = new JPanel();
+        final JPanel subPanel = new JPanel();
         subPanel.setLayout(l1);
-        HIGConstraints c = new HIGConstraints();
+        final HIGConstraints c = new HIGConstraints();
 
         subPanel.add(reset, c.rcwh(18, 1, 2, 1, "l"));
         subPanel.add(new JSeparator(), c.rcwh(16, 1, 2, 1, "lr"));
@@ -254,7 +254,7 @@ public class NGDRuleOptions extends JPanel implements NewGameDialog.NGDTabPane {
             subPanel.add(radioButtons[i], c.rc((2 * (i + 1)), 2, "l"));
         }
 
-        JPanel rightPanel = new JPanel();
+        final JPanel rightPanel = new JPanel();
         rightPanel.setLayout(new BorderLayout());
         rightPanel.add(description, BorderLayout.NORTH);
         rightPanel.add(subPanel, BorderLayout.CENTER);
@@ -268,8 +268,8 @@ public class NGDRuleOptions extends JPanel implements NewGameDialog.NGDTabPane {
     /**
      * makes the text HTML
      */
-    private String makeHTML(String in) {
-        StringBuffer sb = new StringBuffer(in.length() + 64);
+    private String makeHTML(final String in) {
+        final StringBuffer sb = new StringBuffer(in.length() + 64);
         sb.append("<html><font face=\"Arial, Helvetica\" size=\"-1\">");
         sb.append(in);
         sb.append("</html>");
@@ -287,7 +287,7 @@ public class NGDRuleOptions extends JPanel implements NewGameDialog.NGDTabPane {
     /**
      * The Variant has Changed.
      */
-    public void variantChanged(Variant variant) {
+    public void variantChanged(final Variant variant) {
         this.variant = variant;
         resetData();
         revalidate();
@@ -296,7 +296,7 @@ public class NGDRuleOptions extends JPanel implements NewGameDialog.NGDTabPane {
     /**
      * The Enabled status has Changed.
      */
-    public void enablingChanged(boolean enabled) {
+    public void enablingChanged(final boolean enabled) {
         setEnabled(enabled);
     }// enablingChanged()
 
@@ -307,7 +307,7 @@ public class NGDRuleOptions extends JPanel implements NewGameDialog.NGDTabPane {
     private class OptListItem extends Object {
         private Option option;
 
-        public OptListItem(Option option) {
+        public OptListItem(final Option option) {
             this.option = option;
         }
 
@@ -325,15 +325,15 @@ public class NGDRuleOptions extends JPanel implements NewGameDialog.NGDTabPane {
      * RB listener
      */
     private class RBListener implements ActionListener {
-        public void actionPerformed(ActionEvent e) {
+        public void actionPerformed(final ActionEvent e) {
             // set options according to what we found from the button group.
             // if possible. The action command corresponds to the button index,
             // which corresponds to the index in the values array, since all
             // arrays in ValidationOptions correspond.
             if (radioButtons != null) {
-                OptListItem oli = (OptListItem) optionList.getSelectedValue();
+                final OptListItem oli = (OptListItem) optionList.getSelectedValue();
                 if (oli != null) {
-                    int idx = Integer.parseInt(e.getActionCommand());
+                    final int idx = Integer.parseInt(e.getActionCommand());
                     ruleOpts.setOption(oli.getOption(),
                             oli.getOption().getAllowed().get(idx));
                 }

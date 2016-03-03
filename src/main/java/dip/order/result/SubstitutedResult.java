@@ -41,8 +41,8 @@ public class SubstitutedResult extends OrderResult {
      * Create a SubstitutedResult. Note that oldOrder may be null, but
      * newOrder is not allowed to be null.
      */
-    public SubstitutedResult(Orderable oldOrder, Orderable newOrder,
-                             String message) {
+    public SubstitutedResult(final Orderable oldOrder, final Orderable newOrder,
+                             final String message) {
         super();
         if (newOrder == null) {
             throw new IllegalArgumentException();
@@ -72,7 +72,7 @@ public class SubstitutedResult extends OrderResult {
      * This is intended for debugging only.
      */
     public String toString() {
-        StringBuffer sb = new StringBuffer(256);
+        final StringBuffer sb = new StringBuffer(256);
         sb.append(power);
         sb.append(": [");
         sb.append(resultType);

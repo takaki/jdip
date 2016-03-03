@@ -43,8 +43,8 @@ public class UndoEditAddUnit extends XAbstractUndoableEdit {
     private boolean isDislodged;
     private Province province;
 
-    public UndoEditAddUnit(UndoRedoManager urm, Position position,
-                           Province province, Unit unit, boolean isDislodged) {
+    public UndoEditAddUnit(final UndoRedoManager urm, final Position position,
+                           final Province province, final Unit unit, final boolean isDislodged) {
         super(urm);
         this.position = position;
         this.unit = unit;
@@ -74,8 +74,8 @@ public class UndoEditAddUnit extends XAbstractUndoableEdit {
     /**
      * helper method: add unit to position
      */
-    static void addUnit(UndoRedoManager urm, Position position,
-                        Province province, Unit unit, boolean isDislodged) {
+    static void addUnit(final UndoRedoManager urm, final Position position,
+                        final Province province, final Unit unit, final boolean isDislodged) {
         if (isDislodged) {
             position.setDislodgedUnit(province, unit);
         } else {

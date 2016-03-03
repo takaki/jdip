@@ -50,8 +50,8 @@ public class UndoRedoManager extends UndoManager {
     /**
      * Constructor
      */
-    public UndoRedoManager(ClientFrame clientFrame,
-                           OrderDisplayPanel orderDisplayPanel) {
+    public UndoRedoManager(final ClientFrame clientFrame,
+                           final OrderDisplayPanel orderDisplayPanel) {
         super();
         if (clientFrame == null || orderDisplayPanel == null) {
             throw new IllegalArgumentException("null argument(s)");
@@ -67,7 +67,7 @@ public class UndoRedoManager extends UndoManager {
     /**
      * Can be used post-deserialization
      */
-    public synchronized void setClientFrame(ClientFrame clientFrame) {
+    public synchronized void setClientFrame(final ClientFrame clientFrame) {
         if (clientFrame == null) {
             throw new IllegalArgumentException("null clientFrame");
         }
@@ -79,7 +79,7 @@ public class UndoRedoManager extends UndoManager {
      * Can be used post-deserialization
      */
     public synchronized void setOrderDisplayPanel(
-            OrderDisplayPanel orderDisplayPanel) {
+            final OrderDisplayPanel orderDisplayPanel) {
         if (orderDisplayPanel == null) {
             throw new IllegalArgumentException("null clientFrame");
         }
@@ -90,7 +90,7 @@ public class UndoRedoManager extends UndoManager {
     /**
      * Add an Edit (UndoableEdit)
      */
-    public synchronized boolean addEdit(UndoableEdit anEdit) {
+    public synchronized boolean addEdit(final UndoableEdit anEdit) {
         //System.out.println("URM: addEdit(): edits (before): "+edits.size());
         checkState();
         //System.out.println("     added: "+anEdit);
@@ -174,7 +174,7 @@ public class UndoRedoManager extends UndoManager {
      * MODE_ORDER.
      */
     public void refreshMenu() {
-        ClientMenu menu = clientFrame.getClientMenu();
+        final ClientMenu menu = clientFrame.getClientMenu();
         menu.setText(ClientMenu.EDIT_UNDO, getUndoPresentationName());
         menu.setText(ClientMenu.EDIT_REDO, getRedoPresentationName());
 
@@ -198,13 +198,13 @@ public class UndoRedoManager extends UndoManager {
     public synchronized void filterF2F() {
         Log.println("UndoRedoManager::filterF2F()");
 
-        ListIterator listIter = edits.listIterator(edits.size());
+        final ListIterator listIter = edits.listIterator(edits.size());
 
         int from = Integer.MAX_VALUE;
 
         while (listIter.hasPrevious()) {
             final int idx = listIter.previousIndex();
-            UndoableEdit ue = (UndoableEdit) listIter.previous();
+            final UndoableEdit ue = (UndoableEdit) listIter.previous();
 
             //Log.println("  checking: ", String.valueOf(idx), ": ", ue.getClass().getName());
 
@@ -245,7 +245,7 @@ public class UndoRedoManager extends UndoManager {
         // We wait until after we find the first UndoResolve to avoid destroying
         // any edits (if any) in the current unresolved turnstate.
         //
-        ListIterator listIter = edits.listIterator(edits.size());
+        final ListIterator listIter = edits.listIterator(edits.size());
         boolean foundResolved = false;
 
         int from = Integer.MAX_VALUE;
@@ -253,7 +253,7 @@ public class UndoRedoManager extends UndoManager {
 
         while (listIter.hasPrevious()) {
             final int idx = listIter.previousIndex();
-            UndoableEdit ue = (UndoableEdit) listIter.previous();
+            final UndoableEdit ue = (UndoableEdit) listIter.previous();
 
             //Log.println("  checking: ", String.valueOf(idx), ": ", ue.getClass().getName());
 

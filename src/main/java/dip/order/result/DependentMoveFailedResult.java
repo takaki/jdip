@@ -39,8 +39,8 @@ public class DependentMoveFailedResult extends OrderResult {
     private Orderable dependentOrder = null;
 
 
-    public DependentMoveFailedResult(Orderable order,
-                                     Orderable dependentOrder) {
+    public DependentMoveFailedResult(final Orderable order,
+                                     final Orderable dependentOrder) {
         super(order, OrderResult.ResultType.FAILURE, null);
         if (dependentOrder == null) {
             throw new IllegalArgumentException();
@@ -61,7 +61,7 @@ public class DependentMoveFailedResult extends OrderResult {
      * Creates an appropriate internationalized text
      * message given the set and unset parameters.
      */
-    public String getMessage(OrderFormatOptions ofo) {
+    public String getMessage(final OrderFormatOptions ofo) {
         /*
         {0} : the dependent order, formatted with OrderFormat
 		*/
@@ -76,7 +76,7 @@ public class DependentMoveFailedResult extends OrderResult {
      * Primarily for debugging.
      */
     public String toString() {
-        StringBuffer sb = new StringBuffer(256);
+        final StringBuffer sb = new StringBuffer(256);
         sb.append(super.toString());
 
         sb.append("Dependent Order: ");

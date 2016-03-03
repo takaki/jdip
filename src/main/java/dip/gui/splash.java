@@ -40,15 +40,15 @@ public final class splash {
     /**
      * Starts the Splash screen, then starts loading jDip (ClientFrame)
      */
-    public static void main(String args[]) {
+    public static void main(final String[] args) {
         //long time = System.currentTimeMillis();
         //System.out.println("splash.main() START: "+time);
         checkRequirements();
 
         // check for a 'nosplash' argument
         boolean noSplash = false;
-        for (int i = 0; i < args.length; i++) {
-            if (args[i].equalsIgnoreCase("-nosplash")) {
+        for (String arg : args) {
+            if (arg.equalsIgnoreCase("-nosplash")) {
                 noSplash = true;
                 break;
             }
@@ -65,13 +65,13 @@ public final class splash {
         // successfully compile this class with 1.1 and the rest with 1.4
         // hence the loose coupling.
         try {
-            Class cf = Class.forName("dip.gui.ClientFrame");
-            Method m = cf.getMethod("main", new Class[]{String[].class});
-            Object[] params = new Object[]{args};
+            final Class cf = Class.forName("dip.gui.ClientFrame");
+            final Method m = cf.getMethod("main", new Class[]{String[].class});
+            final Object[] params = new Object[]{args};
             m.invoke(null, params);
             //time = (System.currentTimeMillis() - time);
             //System.out.println("splash.main() INVOKED: "+time);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             System.err.println(e);
             e.printStackTrace();
         }
@@ -95,7 +95,7 @@ public final class splash {
     /** */
     private splash() {
         sprunner = new splashRunner();
-        Thread t = new Thread(sprunner);
+        final Thread t = new Thread(sprunner);
         t.setPriority(Thread.MIN_PRIORITY);
         t.start();
     }// splsah()
@@ -125,7 +125,7 @@ public final class splash {
             // this will throw an internal error. Fix.
             try {
                 frame = new Frame("test");
-            } catch (Throwable t) {
+            } catch (final Throwable t) {
                 // be a bit facetious
                 System.err.println(
                         "jDip requires a computer with a mouse, keyboard, monitor,");
@@ -138,7 +138,7 @@ public final class splash {
             win = new Window(frame);
 
             // get image
-            ClassLoader classLoader = this.getClass().getClassLoader();
+            final ClassLoader classLoader = this.getClass().getClassLoader();
             img = win.getToolkit()
                     .createImage(classLoader.getResource(SPLASH_GRAPHIC));
 
@@ -150,14 +150,14 @@ public final class splash {
                 try {
                     tracker.waitForID(0);
                     tracker.removeImage(img, 0);
-                } catch (InterruptedException e) {
+                } catch (final InterruptedException e) {
                 }
             }
 
             tracker = null;
 
-            Canvas canvas = new Canvas() {
-                public void paint(Graphics g) {
+            final Canvas canvas = new Canvas() {
+                public void paint(final Graphics g) {
                     super.paint(g);
                     if (img != null) {
                         g.drawImage(img, 0, 0, null);
@@ -166,9 +166,9 @@ public final class splash {
             };
 
             if (img != null) {
-                int w = img.getWidth(null);
-                int h = img.getHeight(null);
-                Dimension screenSize = win.getToolkit().getScreenSize();
+                final int w = img.getWidth(null);
+                final int h = img.getHeight(null);
+                final Dimension screenSize = win.getToolkit().getScreenSize();
 
                 canvas.setBounds(0, 0, w, h);
                 win.setLayout(null);
@@ -201,10 +201,10 @@ public final class splash {
      */
     private static void checkRequirements() {
         // 48 = 1.4; 49 = 1.5; 44 = 1.0   : class file version -> java version
-        String cv = System.getProperty("java.class.version", "44.0");
+        final String cv = System.getProperty("java.class.version", "44.0");
         if ("48.0".compareTo(cv) > 0) {
-            String version = System.getProperty("java.version", "(unknown)");
-            String vendor = System.getProperty("java.vendor", "(unknown)");
+            final String version = System.getProperty("java.version", "(unknown)");
+            final String vendor = System.getProperty("java.vendor", "(unknown)");
 
 
             // print an error to stderr
@@ -230,7 +230,7 @@ public final class splash {
                 final Dialog dlg = new Dialog(dlgFrame, "jDip Error", true);
 
                 dlg.addWindowListener(new WindowAdapter() {
-                    public void windowClosing(WindowEvent e) {
+                    public void windowClosing(final WindowEvent e) {
                         dlg.hide();
                         dlg.dispose();
                         dlgFrame.dispose();
@@ -238,16 +238,16 @@ public final class splash {
                 });
 
 
-                Button button = new Button("  OK  ");
+                final Button button = new Button("  OK  ");
                 button.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
+                    public void actionPerformed(final ActionEvent e) {
                         dlg.hide();
                         dlg.dispose();
                         dlgFrame.dispose();
                     }
                 });
 
-                Panel panel = new Panel(new FlowLayout(FlowLayout.CENTER));
+                final Panel panel = new Panel(new FlowLayout(FlowLayout.CENTER));
                 panel.add(button);
 
                 dlg.setLayout(new GridLayout(6, 1, 0, 0));
@@ -266,13 +266,13 @@ public final class splash {
                 // dialog-close-listener
 
                 // center and show dialog
-                Dimension screenSize = Toolkit.getDefaultToolkit()
+                final Dimension screenSize = Toolkit.getDefaultToolkit()
                         .getScreenSize();
-                Dimension dlgSize = dlg.getSize();
+                final Dimension dlgSize = dlg.getSize();
                 dlg.setLocation((screenSize.width - dlgSize.width) / 2,
                         (screenSize.height - dlgSize.height) / 2);
                 dlg.show();
-            } catch (Throwable t) {
+            } catch (final Throwable t) {
                 // do nothing. we've done enough already :-)
             }
 

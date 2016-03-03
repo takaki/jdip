@@ -46,7 +46,7 @@ public class SharedPrefs {
     static {
         try {
             sharedRootNodeClass = Class.forName("dip.gui.ClientFrame");
-        } catch (ClassNotFoundException e) {
+        } catch (final ClassNotFoundException e) {
             System.err.println(
                     "ERROR: could not find class: dip.gui.ClientFrame");
         }
@@ -68,7 +68,7 @@ public class SharedPrefs {
 
 
     // helper methods
-    public static void putColor(Preferences p, String key, Color c) {
+    public static void putColor(final Preferences p, final String key, final Color c) {
         if (c == null) {
             throw new IllegalArgumentException("null color");
         }
@@ -76,9 +76,9 @@ public class SharedPrefs {
         p.put(key, Utils.colorToHex(c, true));
     }// putColor()
 
-    public static Color getColor(Preferences p, String key,
-                                 Color defaultColor) {
-        String str = p.get(key, null);
+    public static Color getColor(final Preferences p, final String key,
+                                 final Color defaultColor) {
+        final String str = p.get(key, null);
         if (str != null) {
             return Utils.parseColor(str, defaultColor);
         }
@@ -90,10 +90,10 @@ public class SharedPrefs {
     /**
      * Save user preferences. Save errors ignored (unless logging on)
      */
-    public static void savePrefs(Preferences prefs) {
+    public static void savePrefs(final Preferences prefs) {
         try {
             prefs.flush();
-        } catch (BackingStoreException bse) {
+        } catch (final BackingStoreException bse) {
             Log.println(bse);
         }
     }// savePrefs()

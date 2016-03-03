@@ -81,7 +81,7 @@ public abstract class RenderCommandFactory {
         /**
          * Constructor
          */
-        public RenderCommand(MapRenderer2 mr) {
+        public RenderCommand(final MapRenderer2 mr) {
             this.mr = mr;
         }
 
@@ -119,7 +119,7 @@ public abstract class RenderCommandFactory {
          * For debugging
          */
         public String toString() {
-            StringBuffer sb = new StringBuffer();
+            final StringBuffer sb = new StringBuffer();
             sb.append("[");
             sb.append(this.getClass().getName());
             return sb.toString();
@@ -136,7 +136,7 @@ public abstract class RenderCommandFactory {
         /**
          * Constructor
          */
-        public BooleanRenderCommand(MapRenderer2 mr, boolean value) {
+        public BooleanRenderCommand(final MapRenderer2 mr, final boolean value) {
             super(mr);
             this.value = value;
         }// BooleanRenderCommand()
@@ -151,7 +151,7 @@ public abstract class RenderCommandFactory {
         /**
          * Constructor
          */
-        public RCRenderAll(MapRenderer2 mr) {
+        public RCRenderAll(final MapRenderer2 mr) {
             super(mr);
         }// RCRenderAll()
     }// abstract nested class RCRenderAll
@@ -164,7 +164,7 @@ public abstract class RenderCommandFactory {
         /**
          * Constructor
          */
-        public RCShowMap(MapRenderer2 mr, boolean value) {
+        public RCShowMap(final MapRenderer2 mr, final boolean value) {
             super(mr, value);
         }// RCShowMap()
     }// abstract nested class RCShowMap
@@ -179,7 +179,7 @@ public abstract class RenderCommandFactory {
         /**
          * Constructor
          */
-        public RCSetTurnstate(MapRenderer2 mr, TurnState ts) {
+        public RCSetTurnstate(final MapRenderer2 mr, final TurnState ts) {
             super(mr);
             if (ts == null) {
                 throw new IllegalArgumentException("null TurnState");
@@ -200,7 +200,7 @@ public abstract class RenderCommandFactory {
         /**
          * Constructor
          */
-        public RCRenderProvince(MapRenderer2 mr, Province province) {
+        public RCRenderProvince(final MapRenderer2 mr, final Province province) {
             super(mr);
 
             if (province == null) {
@@ -220,7 +220,7 @@ public abstract class RenderCommandFactory {
         /**
          * Constructor
          */
-        public RCSetLabel(MapRenderer2 mr, Object labelValue) {
+        public RCSetLabel(final MapRenderer2 mr, final Object labelValue) {
             super(mr);
             if (labelValue != MapRenderer2.VALUE_LABELS_NONE && labelValue != MapRenderer2.VALUE_LABELS_FULL && labelValue != MapRenderer2.VALUE_LABELS_BRIEF) {
                 throw new IllegalArgumentException("bad labelValue");
@@ -238,7 +238,7 @@ public abstract class RenderCommandFactory {
         /**
          * Constructor
          */
-        public RCSetDisplaySC(MapRenderer2 mr, boolean value) {
+        public RCSetDisplaySC(final MapRenderer2 mr, final boolean value) {
             super(mr, value);
         }// RCSetDisplaySC()
     }// abstract nested class RCSetDisplaySC
@@ -250,7 +250,7 @@ public abstract class RenderCommandFactory {
         /**
          * Constructor
          */
-        public RCSetDisplayUnits(MapRenderer2 mr, boolean value) {
+        public RCSetDisplayUnits(final MapRenderer2 mr, final boolean value) {
             super(mr, value);
         }// RCSetDisplaySC()
     }// abstract nested class RCSetDisplayUnits
@@ -262,7 +262,7 @@ public abstract class RenderCommandFactory {
         /**
          * Constructor
          */
-        public RCSetDisplayDislodgedUnits(MapRenderer2 mr, boolean value) {
+        public RCSetDisplayDislodgedUnits(final MapRenderer2 mr, final boolean value) {
             super(mr, value);
         }// RCSetDisplaySC()
     }// abstract nested class RCSetDisplayDislodgedUnits
@@ -274,7 +274,7 @@ public abstract class RenderCommandFactory {
         /**
          * Constructor
          */
-        public RCSetDisplayUnordered(MapRenderer2 mr, boolean value) {
+        public RCSetDisplayUnordered(final MapRenderer2 mr, final boolean value) {
             super(mr, value);
         }// RCSetDisplaySC()
     }// abstract nested class RCSetDisplayUnordered
@@ -286,7 +286,7 @@ public abstract class RenderCommandFactory {
         /**
          * Constructor
          */
-        public RCSetInfluenceMode(MapRenderer2 mr, boolean value) {
+        public RCSetInfluenceMode(final MapRenderer2 mr, final boolean value) {
             super(mr, value);
         }// RCSetDisplaySC()
     }// abstract nested class RCSetInfluenceMode
@@ -300,8 +300,8 @@ public abstract class RenderCommandFactory {
         /**
          * Constructor
          */
-        public RCSetPowerOrdersDisplayed(MapRenderer2 mr,
-                                         Power[] displayedPowers) {
+        public RCSetPowerOrdersDisplayed(final MapRenderer2 mr,
+                                         final Power[] displayedPowers) {
             super(mr);
             if (displayedPowers == null) {
                 throw new IllegalArgumentException("powers null");

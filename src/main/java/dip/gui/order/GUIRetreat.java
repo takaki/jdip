@@ -69,20 +69,20 @@ public class GUIRetreat extends Retreat implements GUIOrder {
     /**
      * Creates a GUIRetreat
      */
-    protected GUIRetreat(Power power, Location source, Unit.Type sourceUnitType,
-                         Location dest) {
+    protected GUIRetreat(final Power power, final Location source, final Unit.Type sourceUnitType,
+                         final Location dest) {
         super(power, source, sourceUnitType, dest);
     }// GUIRetreat()
 
     /**
      * This only accepts Retreat orders. All others will throw an IllegalArgumentException.
      */
-    public void deriveFrom(Orderable order) {
+    public void deriveFrom(final Orderable order) {
         if (!(order instanceof Retreat)) {
             throw new IllegalArgumentException();
         }
 
-        Retreat retreat = (Retreat) order;
+        final Retreat retreat = (Retreat) order;
         power = retreat.getPower();
         src = retreat.getSource();
         srcUnitType = retreat.getSourceUnitType();
@@ -92,8 +92,8 @@ public class GUIRetreat extends Retreat implements GUIOrder {
         currentLocNum = REQ_LOC;
     }// deriveFrom()
 
-    public boolean testLocation(StateInfo stateInfo, Location location,
-                                StringBuffer sb) {
+    public boolean testLocation(final StateInfo stateInfo, final Location location,
+                                final StringBuffer sb) {
         sb.setLength(0);
 
         if (isComplete()) {
@@ -102,14 +102,14 @@ public class GUIRetreat extends Retreat implements GUIOrder {
         }
 
 
-        Position position = stateInfo.getPosition();
-        Province province = location.getProvince();
+        final Position position = stateInfo.getPosition();
+        final Province province = location.getProvince();
 
         if (currentLocNum == 0) {
             // set Retreat source; remember, we are using the *dislodged* unit.
             //
             // we require a dislodged unit present. We will check unit ownership too, if appropriate
-            Unit unit = position.getDislodgedUnit(province).orElse(null);
+            final Unit unit = position.getDislodgedUnit(province).orElse(null);
             if (unit != null) {
                 if (!stateInfo.canIssueOrder(unit.getPower())) {
                     sb.append(Utils.getLocalString(GUIOrder.NOT_OWNER,
@@ -118,7 +118,7 @@ public class GUIRetreat extends Retreat implements GUIOrder {
                 }
 
                 // determine valid retreat locations
-                RetreatChecker rc = stateInfo.getRetreatChecker();
+                final RetreatChecker rc = stateInfo.getRetreatChecker();
                 final List<Location> retreatLocs = rc.getValidLocations(
                         new Location(province, unit.getCoast()));
 
@@ -162,12 +162,12 @@ public class GUIRetreat extends Retreat implements GUIOrder {
 
             // strict parsing is enabled. We are more selective.
             // check destination against possible retreat locations.
-            RetreatChecker rc = stateInfo.getRetreatChecker();
+            final RetreatChecker rc = stateInfo.getRetreatChecker();
             final List<Location> retreatLocs = rc
                     .getValidLocations(getSource());
 
-            for (int i = 0; i < retreatLocs.size(); i++) {
-                if (retreatLocs.get(i).getProvince() == province) {
+            for (Location retreatLoc : retreatLocs) {
+                if (retreatLoc.getProvince() == province) {
                     sb.append(Utils.getLocalString(CLICK_TO_SET_DEST));
                     return true;
                 }
@@ -207,15 +207,15 @@ public class GUIRetreat extends Retreat implements GUIOrder {
     }// clearLocations()
 
 
-    public boolean setLocation(StateInfo stateInfo, Location location,
-                               StringBuffer sb) {
+    public boolean setLocation(final StateInfo stateInfo, final Location location,
+                               final StringBuffer sb) {
         if (isComplete()) {
             return false;
         }
 
         if (testLocation(stateInfo, location, sb)) {
             if (currentLocNum == 0) {
-                Unit unit = stateInfo.getPosition()
+                final Unit unit = stateInfo.getPosition()
                         .getDislodgedUnit(location.getProvince()).orElse(null);
                 src = new Location(location.getProvince(), unit.getCoast());
                 power = unit.getPower();
@@ -254,21 +254,21 @@ public class GUIRetreat extends Retreat implements GUIOrder {
     /**
      * Always throws an IllegalArgumentException
      */
-    public void setParam(Parameter param, Object value) {
+    public void setParam(final Parameter param, final Object value) {
         throw new IllegalArgumentException();
     }
 
     /**
      * Always throws an IllegalArgumentException
      */
-    public Object getParam(Parameter param) {
+    public Object getParam(final Parameter param) {
         throw new IllegalArgumentException();
     }
 
 
-    public void removeFromDOM(MapInfo mapInfo) {
+    public void removeFromDOM(final MapInfo mapInfo) {
         if (group != null) {
-            SVGGElement powerGroup = mapInfo
+            final SVGGElement powerGroup = mapInfo
                     .getPowerSVGGElement(power, LAYER_TYPICAL);
             GUIOrderUtils.removeChild(powerGroup, group);
             group = null;
@@ -279,7 +279,7 @@ public class GUIRetreat extends Retreat implements GUIOrder {
     /**
      * Draws a line with an arrow. Unlife a Move, we are not dependent.
      */
-    public void updateDOM(MapInfo mapInfo) {
+    public void updateDOM(final MapInfo mapInfo) {
         // if we are not displayable, we exit, after remove the order (if
         // it was created)
         if (!GUIOrderUtils.isDisplayable(power, mapInfo)) {
@@ -320,11 +320,11 @@ public class GUIRetreat extends Retreat implements GUIOrder {
         SVGElement element = null;
 
         // create hilight line
-        String cssStyle = mapInfo.getMapMetadata()
+        final String cssStyle = mapInfo.getMapMetadata()
                 .getOrderParamString(MapMetadata.EL_RETREAT,
                         MapMetadata.ATT_HILIGHT_CLASS);
         if (!cssStyle.equalsIgnoreCase("none")) {
-            float offset = mapInfo.getMapMetadata()
+            final float offset = mapInfo.getMapMetadata()
                     .getOrderParamFloat(MapMetadata.EL_RETREAT,
                             MapMetadata.ATT_HILIGHT_OFFSET);
             element = drawOrder(mapInfo, offset, false);
@@ -341,27 +341,27 @@ public class GUIRetreat extends Retreat implements GUIOrder {
 
         // draw 'failed' marker, if appropriate.
         if (!mapInfo.getTurnState().isOrderSuccessful(this)) {
-            SVGElement useElement = GUIOrderUtils
+            final SVGElement useElement = GUIOrderUtils
                     .createFailedOrderSymbol(mapInfo, failPt.x, failPt.y);
             group.appendChild(useElement);
         }
     }// updateDOM()
 
 
-    private SVGElement drawOrder(MapInfo mapInfo, float offset,
-                                 boolean addMarker) {
-        MapMetadata mmd = mapInfo.getMapMetadata();
-        Point2D.Float ptFrom = mmd
+    private SVGElement drawOrder(final MapInfo mapInfo, final float offset,
+                                 final boolean addMarker) {
+        final MapMetadata mmd = mapInfo.getMapMetadata();
+        final Point2D.Float ptFrom = mmd
                 .getDislodgedUnitPt(src.getProvince(), src.getCoast());
-        Point2D.Float ptTo = mmd.getUnitPt(dest.getProvince(), dest.getCoast());
+        final Point2D.Float ptTo = mmd.getUnitPt(dest.getProvince(), dest.getCoast());
 
         // respect radius, if there is a unit present in destination.
         Point2D.Float newPtTo = ptTo;
-        Position position = mapInfo.getTurnState().getPosition();
+        final Position position = mapInfo.getTurnState().getPosition();
         if (position.hasUnit(dest.getProvince())) {
-            Unit.Type destUnitType = position.getUnit(dest.getProvince())
+            final Unit.Type destUnitType = position.getUnit(dest.getProvince())
                     .orElse(null).getType();
-            float r = mmd.getOrderRadius(MapMetadata.EL_RETREAT,
+            final float r = mmd.getOrderRadius(MapMetadata.EL_RETREAT,
                     mapInfo.getSymbolName(destUnitType));
             newPtTo = GUIOrderUtils.getLineCircleIntersection(ptFrom.x + offset,
                     ptFrom.y + offset, ptTo.x + offset, ptTo.y + offset,
@@ -372,7 +372,7 @@ public class GUIRetreat extends Retreat implements GUIOrder {
         failPt = GUIOrderUtils
                 .getLineMidpoint(ptFrom.x, ptFrom.y, newPtTo.x, newPtTo.y);
 
-        SVGLineElement line = (SVGLineElement) mapInfo.getDocument()
+        final SVGLineElement line = (SVGLineElement) mapInfo.getDocument()
                 .createElementNS(SVGDOMImplementation.SVG_NAMESPACE_URI,
                         SVGConstants.SVG_LINE_TAG);
 
@@ -408,11 +408,11 @@ public class GUIRetreat extends Retreat implements GUIOrder {
     /**
      * Generate text message containing valid retreat locations (if any). Assumes non-zero retreatLocs length.
      */
-    private String getRetLocText(List<Location> retreatLocs) {
+    private String getRetLocText(final List<Location> retreatLocs) {
         if (retreatLocs.size() == 0) {
             throw new IllegalStateException();
         } else {
-            StringBuffer tmp = new StringBuffer(64);
+            final StringBuffer tmp = new StringBuffer(64);
             tmp.append(Utils.getLocalString(VALID_RETREAT_LOCS));
 
             tmp.append(retreatLocs.get(0).getProvince().getShortName());

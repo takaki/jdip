@@ -102,7 +102,7 @@ public final class Log {
      * Enables or disables logging; optionally allows logging to a file.
      * File may be null; null file with 'LOG_TO_FILE' logs to stdout.
      */
-    public synchronized static void setLogging(int value, File file) {
+    public synchronized static void setLogging(final int value, final File file) {
         if (value != LOG_NONE && value != LOG_TO_MEMORY && value != LOG_TO_FILE) {
             throw new IllegalArgumentException(
                     "Bad setLogging() value: " + value);
@@ -137,7 +137,7 @@ public final class Log {
                     bw.write("***************************************");
                     bw.newLine();
                     bw.flush();
-                } catch (IOException e) {
+                } catch (final IOException e) {
                     System.err.println(e);
                 }
             }
@@ -151,7 +151,7 @@ public final class Log {
     /**
      * Enables logging to file. Null file logs to stdout.
      */
-    public static void setLogging(File file) {
+    public static void setLogging(final File file) {
         setLogging(LOG_TO_FILE, file);
     }// setLogging()
 
@@ -171,12 +171,12 @@ public final class Log {
         if (bw != null) {
             try {
                 bw.flush();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 System.err.println(e);
             } finally {
                 try {
                     bw.close();
-                } catch (IOException e2) {
+                } catch (final IOException e2) {
                 }
             }
         }
@@ -186,7 +186,7 @@ public final class Log {
      * Print the given Object to the output file / stdout
      * via the Object's toString() method.
      */
-    public static void print(Object s) {
+    public static void print(final Object s) {
         if (isLogging) {
             synchronized (Log.class) {
                 final String str = s.toString();
@@ -198,7 +198,7 @@ public final class Log {
                         try {
                             bw.write(str);
                             bw.flush();
-                        } catch (IOException e) {
+                        } catch (final IOException e) {
                             System.err.print(e);
                         }
                     }
@@ -213,7 +213,7 @@ public final class Log {
      * via the Object's toString() method. Follows with a
      * newline.
      */
-    public static void println(Object s) {
+    public static void println(final Object s) {
         if (isLogging) {
             synchronized (Log.class) {
                 final String str = s.toString();
@@ -226,7 +226,7 @@ public final class Log {
                             bw.write(str);
                             bw.newLine();
                             bw.flush();
-                        } catch (IOException e) {
+                        } catch (final IOException e) {
                             System.err.println(e);
                         }
                     }
@@ -239,9 +239,9 @@ public final class Log {
     /**
      * Print text followed by a boolean
      */
-    public static void println(Object s0, boolean b) {
+    public static void println(final Object s0, final boolean b) {
         if (isLogging) {
-            StringBuffer sb = new StringBuffer(256);
+            final StringBuffer sb = new StringBuffer(256);
             sb.append(s0);
             sb.append(b);
             println(sb);
@@ -253,7 +253,7 @@ public final class Log {
      */
     public static void println(final Object s0, final Object[] arr) {
         if (isLogging) {
-            StringBuffer sb = new StringBuffer(256);
+            final StringBuffer sb = new StringBuffer(256);
             sb.append(s0);
             if (arr == null) {
                 sb.append("null");
@@ -274,9 +274,9 @@ public final class Log {
     /**
      * Print text followed by an int
      */
-    public static void println(Object s0, int i0) {
+    public static void println(final Object s0, final int i0) {
         if (isLogging) {
-            StringBuffer sb = new StringBuffer(256);
+            final StringBuffer sb = new StringBuffer(256);
             sb.append(s0);
             sb.append(i0);
             println(sb);
@@ -286,10 +286,10 @@ public final class Log {
     /**
      * Print text followed timing delta and current time.
      */
-    public static void printTimed(long lastTime, Object s0) {
+    public static void printTimed(final long lastTime, final Object s0) {
         if (isLogging) {
-            long now = System.currentTimeMillis();
-            StringBuffer sb = new StringBuffer(256);
+            final long now = System.currentTimeMillis();
+            final StringBuffer sb = new StringBuffer(256);
             sb.append(s0);
             sb.append(' ');
             sb.append((now - lastTime));
@@ -302,10 +302,10 @@ public final class Log {
     /**
      * Print the delta from the given time. Return the new time.
      */
-    public static long printDelta(long lastTime, Object s0) {
+    public static long printDelta(final long lastTime, final Object s0) {
         if (isLogging) {
             final long now = System.currentTimeMillis();
-            StringBuffer sb = new StringBuffer(128);
+            final StringBuffer sb = new StringBuffer(128);
             sb.append(s0);
             sb.append(' ');
             sb.append((now - lastTime));
@@ -322,9 +322,9 @@ public final class Log {
     /**
      * Print the given objects to the log
      */
-    public static void println(Object s0, Object s1) {
+    public static void println(final Object s0, final Object s1) {
         if (isLogging) {
-            StringBuffer sb = new StringBuffer(256);
+            final StringBuffer sb = new StringBuffer(256);
             sb.append(s0);
             sb.append(s1);
             println(sb);
@@ -334,9 +334,9 @@ public final class Log {
     /**
      * Print the given objects to the log
      */
-    public static void println(Object s0, Object s1, Object s2) {
+    public static void println(final Object s0, final Object s1, final Object s2) {
         if (isLogging) {
-            StringBuffer sb = new StringBuffer(256);
+            final StringBuffer sb = new StringBuffer(256);
             sb.append(s0);
             sb.append(s1);
             sb.append(s2);
@@ -348,9 +348,9 @@ public final class Log {
     /**
      * Print the given objects to the log
      */
-    public static void println(Object s0, Object s1, Object s2, Object s3) {
+    public static void println(final Object s0, final Object s1, final Object s2, final Object s3) {
         if (isLogging) {
-            StringBuffer sb = new StringBuffer(256);
+            final StringBuffer sb = new StringBuffer(256);
             sb.append(s0);
             sb.append(s1);
             sb.append(s2);
@@ -363,7 +363,7 @@ public final class Log {
     /**
      * Add to the memory buffer. Unsynchronized!
      */
-    private static void memLog(String s) {
+    private static void memLog(final String s) {
         buffer[bufferNext] = s;
         bufferNext++;
         bufferNext = (bufferNext >= buffer.length) ? 0 : bufferNext;
@@ -378,7 +378,7 @@ public final class Log {
             return null;
         }
 
-        StringBuffer sb = new StringBuffer(8192);
+        final StringBuffer sb = new StringBuffer(8192);
 
         // print out buffer contents, starting from 'bufferNext' to end of
         // array, then continuing from beginning to 'bufferNext -1'.

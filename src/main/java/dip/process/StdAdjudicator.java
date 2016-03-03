@@ -628,7 +628,7 @@ public class StdAdjudicator implements Adjudicator {
 
         // report statistics, if enabled
         if (statReporting) {
-            for (Object aResultList : resultList) {
+            for (final Object aResultList : resultList) {
                 final Result r = (Result) aResultList;
                 if (r instanceof BouncedResult) {
                     Log.println("-- setting stats for: BouncedResult: ", r);
@@ -1934,7 +1934,7 @@ public class StdAdjudicator implements Adjudicator {
                         if (isSwap) {
                             chainCount++;
 
-                            for (OrderState os : chain) {
+                            for (final OrderState os : chain) {
                                 os.setCircular(true);
                             }
                         }

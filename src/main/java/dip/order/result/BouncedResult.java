@@ -41,7 +41,7 @@ public class BouncedResult extends OrderResult {
     private int atkStrength = -1;
     private int defStrength = -1;
 
-    public BouncedResult(Orderable order) {
+    public BouncedResult(final Orderable order) {
         super(order, OrderResult.ResultType.FAILURE, null);
     }// BouncedResult()
 
@@ -77,7 +77,7 @@ public class BouncedResult extends OrderResult {
      * Set the attack strength. A value of -1 indicates
      * that this has not been set.
      */
-    public void setAttackStrength(int value) {
+    public void setAttackStrength(final int value) {
         if (value < -1) {
             throw new IllegalArgumentException();
         }
@@ -90,7 +90,7 @@ public class BouncedResult extends OrderResult {
      * Set the defense strength. A value of -1 indicates
      * that this has not been set.
      */
-    public void setDefenseStrength(int value) {
+    public void setDefenseStrength(final int value) {
         if (value < -1) {
             throw new IllegalArgumentException();
         }
@@ -104,7 +104,7 @@ public class BouncedResult extends OrderResult {
      * A value of <code>null</code> indicates that this
      * has not been set.
      */
-    public void setBouncer(Province value) {
+    public void setBouncer(final Province value) {
         bouncer = value;
     }// setBouncer()
 
@@ -113,7 +113,7 @@ public class BouncedResult extends OrderResult {
      * Creates an appropriate internationalized text
      * message given the set and unset parameters.
      */
-    public String getMessage(OrderFormatOptions ofo) {
+    public String getMessage(final OrderFormatOptions ofo) {
         /*
         0 : province not specified
 		1 : province specified
@@ -130,7 +130,7 @@ public class BouncedResult extends OrderResult {
         }
 
         // create messageformat arguments
-        Object[] args = {((bouncer == null) ? new Integer(0) : new Integer(
+        final Object[] args = {((bouncer == null) ? new Integer(0) : new Integer(
                 1)),    // {0}; 0 if no province specified
                 fmtProvince,                                            // {1}
                 new Integer(atkStrength),                                // {2}
@@ -146,7 +146,7 @@ public class BouncedResult extends OrderResult {
      * Primarily for debugging.
      */
     public String toString() {
-        StringBuffer sb = new StringBuffer(256);
+        final StringBuffer sb = new StringBuffer(256);
         sb.append(super.toString());
 
         sb.append("Bounced with: ");

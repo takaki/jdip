@@ -132,7 +132,7 @@ public class Utils {
             commonBundle = ResourceBundle
                     .getBundle(COMMON_RESOURCE_FILE, Locale.ENGLISH,
                             classLoader);
-        } catch (MissingResourceException mre) {
+        } catch (final MissingResourceException mre) {
             ErrorDialog.displayFatal(null, mre);
         }
     }
@@ -140,7 +140,7 @@ public class Utils {
     /**
      * Force a load of a locale
      */
-    public static void loadLocale(Locale loc) {
+    public static void loadLocale(final Locale loc) {
         chosenLocale = loc;
         setResourceBundle(chosenLocale);
     }// loadLocale()
@@ -176,12 +176,12 @@ public class Utils {
      * For example, getScreenSize(0.5f) would return a Dimension
      * that was 400 x 300 if the screen size was 800 x 600 pixels.
      */
-    public static Dimension getScreenSize(float fraction) {
+    public static Dimension getScreenSize(final float fraction) {
         if (fraction <= 0) {
             throw new IllegalArgumentException("fraction <= 0");
         }
 
-        Dimension size = toolkit.getScreenSize();
+        final Dimension size = toolkit.getScreenSize();
         size.width = (int) (size.width * fraction);
         size.height = (int) (size.height * fraction);
         return size;
@@ -195,13 +195,13 @@ public class Utils {
      * This is a hackish version, with two fractions. The second fraction
      * is used for 'smaller' screens (defined as 800x600 or less).
      */
-    public static Dimension getScreenSize(float fraction,
-                                          float smallScreenFraction) {
+    public static Dimension getScreenSize(final float fraction,
+                                          final float smallScreenFraction) {
         if (fraction <= 0 || smallScreenFraction <= 0 || smallScreenFraction < fraction) {
             throw new IllegalArgumentException("fraction <= 0");
         }
 
-        Dimension size = toolkit.getScreenSize();
+        final Dimension size = toolkit.getScreenSize();
 
         final float f = (size.width <= 800 || size.height <= 600) ? smallScreenFraction : fraction;
 
@@ -216,9 +216,9 @@ public class Utils {
      * larger than the screen in a particular axis, then that
      * axis is centered to the component.
      */
-    public static void centerInScreen(Component c) {
-        Dimension screenSize = toolkit.getScreenSize();
-        Dimension componentSize = c.getSize();
+    public static void centerInScreen(final Component c) {
+        final Dimension screenSize = toolkit.getScreenSize();
+        final Dimension componentSize = c.getSize();
 
         componentSize.width = (componentSize.width > screenSize.width) ? screenSize.width : componentSize.width;
         componentSize.height = (componentSize.height > screenSize.height) ? screenSize.height : componentSize.height;
@@ -234,15 +234,15 @@ public class Utils {
      * is larger than the outer component (in either axis), the
      * component is centered to the screen using centerInScreen().
      */
-    public static void centerIn(Component inner, Component outer) {
+    public static void centerIn(final Component inner, final Component outer) {
         if (outer == null) {
             centerInScreen(inner);
             return;
         }
 
-        Dimension parentSize = outer.getSize();
-        Point pLoc = outer.getLocationOnScreen();
-        Dimension componentSize = inner.getSize();
+        final Dimension parentSize = outer.getSize();
+        final Point pLoc = outer.getLocationOnScreen();
+        final Dimension componentSize = inner.getSize();
 
         if (componentSize.width > parentSize.width || componentSize.height > parentSize.height) {
             centerInScreen(inner);
@@ -259,13 +259,13 @@ public class Utils {
      * appended. Will also use a '.' to separate if not contained
      * in the extension.
      */
-    public static File appendExtension(File file, String ext) {
-        String name = file.getName();
+    public static File appendExtension(final File file, final String ext) {
+        final String name = file.getName();
         if (name.endsWith(ext)) {
             return file;
         }
 
-        StringBuffer sb = new StringBuffer(file.getPath());
+        final StringBuffer sb = new StringBuffer(file.getPath());
         if (ext.charAt(0) != '.') {
             sb.append('.');
         }
@@ -278,7 +278,7 @@ public class Utils {
     /**
      * Create a &lt;font&gt; tag with the given color.
      */
-    public static void setFontColor(StringBuffer sb, Color color) {
+    public static void setFontColor(final StringBuffer sb, final Color color) {
         setFontColor(sb, color.getRed(), color.getGreen(), color.getBlue());
     }// setFontColor()
 
@@ -286,7 +286,7 @@ public class Utils {
     /**
      * Create a &lt;font&gt; tag with the given color.
      */
-    public static void setFontColor(StringBuffer sb, int r, int g, int b) {
+    public static void setFontColor(final StringBuffer sb, final int r, final int g, final int b) {
         sb.append("<font color=\"#");
         fastToHex(sb, r);
         fastToHex(sb, g);
@@ -298,7 +298,7 @@ public class Utils {
     /**
      * Popup an Error message dialog
      */
-    public static void popupError(JFrame parent, String title, String text) {
+    public static void popupError(final JFrame parent, final String title, final String text) {
         JOptionPane.showMessageDialog(parent, text, title,
                 JOptionPane.ERROR_MESSAGE);
     }// popupError()
@@ -306,7 +306,7 @@ public class Utils {
     /**
      * Popup an Info message dialog
      */
-    public static void popupInfo(JFrame parent, String title, String text) {
+    public static void popupInfo(final JFrame parent, final String title, final String text) {
         JOptionPane.showMessageDialog(parent, text, title,
                 JOptionPane.INFORMATION_MESSAGE);
     }// popupError()
@@ -336,7 +336,7 @@ public class Utils {
     /********************************************************************
      * Given a resource name, extract a URL for the given resource.
      ********************************************************************/
-    public static URL getURL(String name) {
+    public static URL getURL(final String name) {
         if (classLoader == null) {
             return null;
         }
@@ -348,8 +348,8 @@ public class Utils {
     /********************************************************************
      * Get an ImageIcon. Return null if an ImageIcon could not be found.
      ********************************************************************/
-    public static ImageIcon getImageIcon(String name) {
-        URL url = getURL(name);
+    public static ImageIcon getImageIcon(final String name) {
+        final URL url = getURL(name);
         if (url != null) {
             return new ImageIcon(url);
         }
@@ -363,8 +363,8 @@ public class Utils {
      * if the resource could not be found.
      ********************************************************************/
     public static InputStream getInputStream(
-            String name) throws java.io.IOException {
-        URL url = getURL(name);
+            final String name) throws java.io.IOException {
+        final URL url = getURL(name);
         if (url != null) {
             return url.openStream();
         }
@@ -378,8 +378,8 @@ public class Utils {
      * Gets an InputStreamReader to the named resource.
      ********************************************************************/
     public static InputStreamReader getInputStreamReader(
-            String name) throws java.io.IOException {
-        URL url = getURL(name);
+            final String name) throws java.io.IOException {
+        final URL url = getURL(name);
         if (url != null) {
             return new InputStreamReader(url.openStream());
         }
@@ -396,7 +396,7 @@ public class Utils {
      * <p>
      * A null string is returned if an error occurs.
      ********************************************************************/
-    public static String getText(String name) {
+    public static String getText(final String name) {
         BufferedReader br = null;
         StringBuffer sb = null;
 
@@ -411,12 +411,12 @@ public class Utils {
             }
 
             return sb.toString();
-        } catch (IOException e) {
+        } catch (final IOException e) {
         } finally {
             if (br != null) {
                 try {
                     br.close();
-                } catch (IOException e) {
+                } catch (final IOException e) {
                 }
             }
         }
@@ -429,7 +429,7 @@ public class Utils {
      * Uses MessageFormat to replace the given argument with
      * the argument provided.
      ********************************************************************/
-    public static String getText(String name, Object arg1) {
+    public static String getText(final String name, final Object arg1) {
         return MessageFormat.format(getText(name), new Object[]{arg1});
     }// getText()
 
@@ -438,7 +438,7 @@ public class Utils {
      * Uses MessageFormat to replace the given argument with
      * the arguments provided.
      ********************************************************************/
-    public static String getText(String name, Object[] args) {
+    public static String getText(final String name, final Object[] args) {
         return MessageFormat.format(getText(name), args);
     }// getText()
 
@@ -449,8 +449,8 @@ public class Utils {
      * <p>
      * null if error
      ********************************************************************/
-    public static Image getImage(String name) {
-        URL url = getURL(name);
+    public static Image getImage(final String name) {
+        final URL url = getURL(name);
         if (url != null) {
             return syncCreateImage(toolkit.getImage(url));
         }
@@ -465,7 +465,7 @@ public class Utils {
      * <p>
      * null if error
      */
-    public static Image getImage(URL url) {
+    public static Image getImage(final URL url) {
         if (url != null) {
             return syncCreateImage(toolkit.getImage(url));
         }
@@ -480,8 +480,8 @@ public class Utils {
      * <p>
      * null if error
      ********************************************************************/
-    public static Icon getIcon(String name) {
-        URL url = getURL(name);
+    public static Icon getIcon(final String name) {
+        final URL url = getURL(name);
         if (url != null) {
             return new ImageIcon(url);
         }
@@ -501,8 +501,8 @@ public class Utils {
      * @param ip ImageProducer image source.
      * @return the completed Image object.
      */
-    public static Image syncCreateImage(ImageProducer ip) {
-        Image img = toolkit.createImage(ip);
+    public static Image syncCreateImage(final ImageProducer ip) {
+        final Image img = toolkit.createImage(ip);
         return syncCreateImage(img);
     }// syncCreateImage()
 
@@ -518,14 +518,14 @@ public class Utils {
      * @param img the image source.
      * @return the completed Image object.
      */
-    public static Image syncCreateImage(Image img) {
+    public static Image syncCreateImage(final Image img) {
         synchronized (tracker) {
             tracker.addImage(img, 0);
 
             try {
                 tracker.waitForID(0);
                 tracker.removeImage(img, 0);
-            } catch (InterruptedException e) {
+            } catch (final InterruptedException e) {
                 return null;
             }
 
@@ -543,10 +543,10 @@ public class Utils {
      * If resource is missing, a popup-error message is displayed.
      * <p>.
      ********************************************************************/
-    public static String getLocalString(String key) {
+    public static String getLocalString(final String key) {
         try {
             return resourceBundle.getString(key);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             showNoLocalStringPopup(key, e);
         }
 
@@ -561,18 +561,18 @@ public class Utils {
      * Quotes have no special meaning.
      * <p>.
      ********************************************************************/
-    public static String[] getLocalStringArray(String key) {
+    public static String[] getLocalStringArray(final String key) {
         String str = null;
 
         try {
             str = resourceBundle.getString(key);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             showNoLocalStringPopup(key, e);
             return new String[0];
         }
 
-        StringTokenizer st = new StringTokenizer(str, ",\n\r");
-        String[] array = new String[st.countTokens()];
+        final StringTokenizer st = new StringTokenizer(str, ",\n\r");
+        final String[] array = new String[st.countTokens()];
         for (int i = 0; i < array.length; i++) {
             array[i] = st.nextToken().trim();
         }
@@ -587,15 +587,15 @@ public class Utils {
      * Quotes have no special meaning.
      * <p>.
      ********************************************************************/
-    public static int[] getLocalIntArray(String key) {
-        String[] str = getLocalStringArray(key);
-        int[] array = new int[str.length];
+    public static int[] getLocalIntArray(final String key) {
+        final String[] str = getLocalStringArray(key);
+        final int[] array = new int[str.length];
 
         try {
             for (int i = 0; i < array.length; i++) {
                 array[i] = Integer.parseInt(str[i]);
             }
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             showNoLocalStringPopup(key, e);
         }
 
@@ -609,7 +609,7 @@ public class Utils {
      * If resource is missing, a popup-error message is displayed.
      * <p>.
      ********************************************************************/
-    public static String getLocalString(String key, Object arg1) {
+    public static String getLocalString(final String key, final Object arg1) {
         return MessageFormat.format(getLocalString(key), new Object[]{arg1});
     }// getLocalString()
 
@@ -621,7 +621,7 @@ public class Utils {
      * If resource is missing, a popup-error message is displayed.
      * <p>.
      ********************************************************************/
-    public static String getLocalString(String key, Object arg1, Object arg2) {
+    public static String getLocalString(final String key, final Object arg1, final Object arg2) {
         return MessageFormat
                 .format(getLocalString(key), new Object[]{arg1, arg2});
     }// getLocalString()
@@ -634,8 +634,8 @@ public class Utils {
      * If resource is missing, a popup-error message is displayed.
      * <p>.
      ********************************************************************/
-    public static String getLocalString(String key, Object arg1, Object arg2,
-                                        Object arg3) {
+    public static String getLocalString(final String key, final Object arg1, final Object arg2,
+                                        final Object arg3) {
         return MessageFormat
                 .format(getLocalString(key), new Object[]{arg1, arg2, arg3});
     }// getLocalString()
@@ -648,7 +648,7 @@ public class Utils {
      * If resource is missing, a popup-error message is displayed.
      * <p>.
      ********************************************************************/
-    public static String getLocalString(String key, Object[] args) {
+    public static String getLocalString(final String key, final Object[] args) {
         return MessageFormat.format(getLocalString(key), args);
     }// getLocalString()
 
@@ -658,10 +658,10 @@ public class Utils {
      * <p>.
      * If there is NO resource present, returns 'null'.
      ********************************************************************/
-    public static String getLocalStringNoEx(String key) {
+    public static String getLocalStringNoEx(final String key) {
         try {
             return resourceBundle.getString(key);
-        } catch (MissingResourceException e) {
+        } catch (final MissingResourceException e) {
         }
 
         return null;
@@ -671,8 +671,8 @@ public class Utils {
     /**
      * What we display if we are missing a resource
      */
-    private static void showNoLocalStringPopup(String resourceKey,
-                                               Exception e) {
+    private static void showNoLocalStringPopup(final String resourceKey,
+                                               final Exception e) {
         String title = getLocalStringNoEx(UTILS_RES_ERR_DLG_TITLE);
         String text = getLocalStringNoEx(UTILS_RES_ERR_DLG_TEXT);
 
@@ -719,7 +719,7 @@ public class Utils {
             // expand 3-digit to 6 digit
             if (length == 4) {
                 // screw math!
-                StringBuffer sb = new StringBuffer(6);
+                final StringBuffer sb = new StringBuffer(6);
                 sb.append(lcColor.charAt(0));
                 sb.append(lcColor.charAt(0));
                 sb.append(lcColor.charAt(1));
@@ -737,13 +737,13 @@ public class Utils {
                     //
                     final int colorBits = (int) Long.parseLong(lcColor, 16);
                     return new Color(colorBits, (length == 9));
-                } catch (Exception e) {
+                } catch (final Exception e) {
                 }
             }
         } else if (lcColor.startsWith("rgb")) {
             lcColor = lcColor.substring(3); // remove "rgb"
-            StringTokenizer st = new StringTokenizer(lcColor, "(), ");
-            String[] sRGB = new String[3];
+            final StringTokenizer st = new StringTokenizer(lcColor, "(), ");
+            final String[] sRGB = new String[3];
             int idx = 0;
             while (st.hasMoreTokens() && idx < 3) {
                 sRGB[idx] = st.nextToken();
@@ -753,7 +753,7 @@ public class Utils {
             if (idx == 3)    // not enough values, if idx is less than 2
             {
                 try {
-                    int rgb[] = new int[3];
+                    final int[] rgb = new int[3];
                     for (int i = 0; i < sRGB.length; i++) {
                         if (sRGB[i].endsWith("%") && sRGB[i].length() > 1) {
                             final int percent = Integer.parseInt(
@@ -765,7 +765,7 @@ public class Utils {
                     }
 
                     return new Color(rgb[0], rgb[1], rgb[2]);
-                } catch (Exception e) {
+                } catch (final Exception e) {
                 }
             }
         }
@@ -783,7 +783,7 @@ public class Utils {
      * "RRGGBBAA". No '#' is prepended. The String length
      * is always 8 characters, zero-padded as necessary.
      ********************************************************************/
-    public static String colorToHex(Color color) {
+    public static String colorToHex(final Color color) {
         return colorToHex(color, false);
     }// colorToHex()
 
@@ -792,8 +792,8 @@ public class Utils {
      * Converts a Color to its Hexadecimal equivalent, and
      * prepends a '#' sign if withPound is true.
      */
-    public static String colorToHex(Color color, boolean withPound) {
-        StringBuffer sb = new StringBuffer(9);
+    public static String colorToHex(final Color color, final boolean withPound) {
+        final StringBuffer sb = new StringBuffer(9);
         if (withPound) {
             sb.append('#');
         }
@@ -809,8 +809,8 @@ public class Utils {
      * Converts a color to HTML hex color in the following format:
      * <code>#RRGGBB</code>. Alpha values are not used.
      */
-    public static String colorToHTMLHex(Color color) {
-        StringBuffer sb = new StringBuffer(8);
+    public static String colorToHTMLHex(final Color color) {
+        final StringBuffer sb = new StringBuffer(8);
         sb.append('#');
         fastToHex(sb, color.getRed());
         fastToHex(sb, color.getBlue());
@@ -828,7 +828,7 @@ public class Utils {
      *
      * @param blend match background of component if true.
      */
-    public static JEditorPane createTextLabel(boolean blend) {
+    public static JEditorPane createTextLabel(final boolean blend) {
         return createTextLabel(null, blend, false);
     }// createTextLabel()
 
@@ -842,7 +842,7 @@ public class Utils {
      * @param text  the initial text.
      * @param blend match background of component if true.
      */
-    public static JEditorPane createTextLabel(String text, boolean blend) {
+    public static JEditorPane createTextLabel(final String text, final boolean blend) {
         return createTextLabel(text, blend, false);
     }// createTextLabel()
 
@@ -855,7 +855,7 @@ public class Utils {
      * @param blend       match background of component if true.
      * @param isFocusable true if this component can receive focus events
      */
-    public static JEditorPane createTextLabel(String text, boolean blend,
+    public static JEditorPane createTextLabel(final String text, final boolean blend,
                                               final boolean isFocusable) {
         // use antialiasing only if non-blended
         JEditorPane jep = null;
@@ -879,7 +879,7 @@ public class Utils {
 
         // set the content type to HTML, and the the document base
         jep.setContentType("text/html");
-        Document doc = jep.getDocument();
+        final Document doc = jep.getDocument();
         if (doc instanceof HTMLDocument) {
             ((HTMLDocument) doc).setBase(Utils.getResourceBase());
         }
@@ -910,8 +910,8 @@ public class Utils {
     /**
      * Scale an Image to the given width and height (in pixels)
      */
-    public static Image getScaledImage(Image src, int w, int h) {
-        AreaAveragingScaleFilter scaleFilter = new AreaAveragingScaleFilter(w,
+    public static Image getScaledImage(final Image src, final int w, final int h) {
+        final AreaAveragingScaleFilter scaleFilter = new AreaAveragingScaleFilter(w,
                 h);
         return syncCreateImage(toolkit.createImage(
                 new FilteredImageSource(src.getSource(), scaleFilter)));
@@ -921,11 +921,11 @@ public class Utils {
     /**
      * Scale an ImageIcon to the given width and height (in pixels)
      */
-    public static ImageIcon rescaleImageIcon(ImageIcon src, int w, int h) {
+    public static ImageIcon rescaleImageIcon(final ImageIcon src, final int w, final int h) {
         if (src.getIconWidth() != w || src.getIconHeight() != h) {
-            AreaAveragingScaleFilter scaleFilter = new AreaAveragingScaleFilter(
+            final AreaAveragingScaleFilter scaleFilter = new AreaAveragingScaleFilter(
                     w, h);
-            Image img = syncCreateImage(toolkit.createImage(
+            final Image img = syncCreateImage(toolkit.createImage(
                     new FilteredImageSource(src.getImage().getSource(),
                             scaleFilter)));
             return new ImageIcon(img);
@@ -955,9 +955,9 @@ public class Utils {
                 w = (int) (h * aspect);
             }
 
-            AreaAveragingScaleFilter scaleFilter = new AreaAveragingScaleFilter(
+            final AreaAveragingScaleFilter scaleFilter = new AreaAveragingScaleFilter(
                     w, h);
-            Image img = syncCreateImage(toolkit.createImage(
+            final Image img = syncCreateImage(toolkit.createImage(
                     new FilteredImageSource(src.getImage().getSource(),
                             scaleFilter)));
             return new ImageIcon(img);
@@ -970,9 +970,9 @@ public class Utils {
     /**
      * Return a scaled image that is proportionally scaled via the given factor (e.g., 0.5f = 1/2 size).
      */
-    public static Image getScaledImage(Image src, float factor) {
-        int w = (int) (src.getWidth(null) * factor);
-        int h = (int) (src.getHeight(null) * factor);
+    public static Image getScaledImage(final Image src, final float factor) {
+        final int w = (int) (src.getWidth(null) * factor);
+        final int h = (int) (src.getHeight(null) * factor);
         return getScaledImage(src, w, h);
     }
 
@@ -982,14 +982,14 @@ public class Utils {
      * at that index. The toString() method is used to convert the
      * Object argument into text.
      */
-    public static String format(String format, Object args[]) {
-        StringBuffer output = new StringBuffer(4096);
-        StringBuffer accum = new StringBuffer(64);
+    public static String format(final String format, final Object[] args) {
+        final StringBuffer output = new StringBuffer(4096);
+        final StringBuffer accum = new StringBuffer(64);
 
         boolean inBrace = false;
-        StringTokenizer st = new StringTokenizer(format, "{}", true);
+        final StringTokenizer st = new StringTokenizer(format, "{}", true);
         while (st.hasMoreTokens()) {
-            String tok = st.nextToken();
+            final String tok = st.nextToken();
             if ("{".equals(tok) && !inBrace) {
                 inBrace = true;
             } else if ("}".equals(tok) && inBrace) {
@@ -997,7 +997,7 @@ public class Utils {
                 int i = -1;
                 try {
                     i = Integer.parseInt(accum.toString());
-                } catch (Exception e) {
+                } catch (final Exception e) {
                 }
 
                 if (i >= 0 && i < args.length) {
@@ -1023,7 +1023,7 @@ public class Utils {
      * could have lookup table and index via shifting...
      * this is ONLY for values of i between [0,255]
      */
-    private static void fastToHex(StringBuffer sb, int i) {
+    private static void fastToHex(final StringBuffer sb, final int i) {
         sb.append(HEX[i >> 4]);
         sb.append(HEX[i & 0x0000000F]);
     }// fastToHex()
@@ -1040,11 +1040,11 @@ public class Utils {
      * <p>
      * This requires the classLoader variable to be set.
      */
-    private static void setResourceBundle(Locale locale) {
+    private static void setResourceBundle(final Locale locale) {
         try {
             resourceBundle = ResourceBundle
                     .getBundle(BASE_RESOURCE_FILE, locale, classLoader);
-        } catch (MissingResourceException mre) {
+        } catch (final MissingResourceException mre) {
             System.err.println(mre);
             popupError(null, "ERROR: Cannot Start",
                     "Resource File cannot be found!\n" + mre.getMessage());
@@ -1057,27 +1057,27 @@ public class Utils {
      * Constructs a formatted text field that only allows 'Word' characters
      * to be entered (a-z, A-Z, 0-9, underscore).
      */
-    public static JTextField createWordTextField(int cols) {
-        JTextField jtf = new JTextField(cols);
-        AbstractDocument doc = (AbstractDocument) jtf.getDocument();
+    public static JTextField createWordTextField(final int cols) {
+        final JTextField jtf = new JTextField(cols);
+        final AbstractDocument doc = (AbstractDocument) jtf.getDocument();
         doc.setDocumentFilter(new DocumentFilter() {
-            public void insertString(DocumentFilter.FilterBypass fb, int offset,
-                                     String text,
-                                     AttributeSet attr) throws BadLocationException {
+            public void insertString(final DocumentFilter.FilterBypass fb, final int offset,
+                                     final String text,
+                                     final AttributeSet attr) throws BadLocationException {
                 this.replace(fb, offset, 0, text, attr);
             }// insertString()
 
-            public void replace(DocumentFilter.FilterBypass fb, int offset,
-                                int length, String text,
-                                AttributeSet attr) throws BadLocationException {
+            public void replace(final DocumentFilter.FilterBypass fb, final int offset,
+                                final int length, final String text,
+                                final AttributeSet attr) throws BadLocationException {
                 fb.replace(offset, length, getValidWordString(text), attr);
             }// replace()
 
-            private String getValidWordString(String in) {
-                StringBuffer buffer = new StringBuffer(in);
+            private String getValidWordString(final String in) {
+                final StringBuffer buffer = new StringBuffer(in);
 
                 for (int i = buffer.length() - 1; i >= 0; i--) {
-                    char c = buffer.charAt(i);
+                    final char c = buffer.charAt(i);
 
                     if (!isValidWord(c)) {
                         buffer.deleteCharAt(i);
@@ -1086,7 +1086,7 @@ public class Utils {
                 return buffer.toString();
             }// getValidWordString()
 
-            private boolean isValidWord(char c) {
+            private boolean isValidWord(final char c) {
                 // check letters (A-Z, a-z)
                 if ((c >= 0x0041 && c <= 0x005A) || (c >= 0x0061 && c <= 0x007A)) {
                     return true;
@@ -1116,27 +1116,27 @@ public class Utils {
      * <b>!,.,-,_,@</b>. This is not (by any means) RFC822 compliant,
      * but allows most email addresses through.
      */
-    public static JTextField createEmailTextField(int cols) {
-        JTextField jtf = new JTextField(cols);
-        AbstractDocument doc = (AbstractDocument) jtf.getDocument();
+    public static JTextField createEmailTextField(final int cols) {
+        final JTextField jtf = new JTextField(cols);
+        final AbstractDocument doc = (AbstractDocument) jtf.getDocument();
         doc.setDocumentFilter(new DocumentFilter() {
-            public void insertString(DocumentFilter.FilterBypass fb, int offset,
-                                     String text,
-                                     AttributeSet attr) throws BadLocationException {
+            public void insertString(final DocumentFilter.FilterBypass fb, final int offset,
+                                     final String text,
+                                     final AttributeSet attr) throws BadLocationException {
                 this.replace(fb, offset, 0, text, attr);
             }// insertString()
 
-            public void replace(DocumentFilter.FilterBypass fb, int offset,
-                                int length, String text,
-                                AttributeSet attr) throws BadLocationException {
+            public void replace(final DocumentFilter.FilterBypass fb, final int offset,
+                                final int length, final String text,
+                                final AttributeSet attr) throws BadLocationException {
                 fb.replace(offset, length, getValidEmailString(text), attr);
             }// replace()
 
-            private String getValidEmailString(String in) {
-                StringBuffer buffer = new StringBuffer(in);
+            private String getValidEmailString(final String in) {
+                final StringBuffer buffer = new StringBuffer(in);
 
                 for (int i = buffer.length() - 1; i >= 0; i--) {
-                    char c = buffer.charAt(i);
+                    final char c = buffer.charAt(i);
 
                     if (!isValidEmail(c)) {
                         buffer.deleteCharAt(i);
@@ -1145,7 +1145,7 @@ public class Utils {
                 return buffer.toString();
             }// getValidEmailString()
 
-            private boolean isValidEmail(char c) {
+            private boolean isValidEmail(final char c) {
                 // check letters (A-Z, a-z)
                 if ((c >= 0x0041 && c <= 0x005A) || (c >= 0x0061 && c <= 0x007A)) {
                     return true;
@@ -1157,8 +1157,8 @@ public class Utils {
                 }
 
                 // check misc chars
-                for (int i = 0; i < EMAIL_ALLOWED.length; i++) {
-                    if (c == EMAIL_ALLOWED[i]) {
+                for (char aEMAIL_ALLOWED : EMAIL_ALLOWED) {
+                    if (c == aEMAIL_ALLOWED) {
                         return true;
                     }
                 }
@@ -1175,24 +1175,24 @@ public class Utils {
      * These are defined as ASCII alphanumerics (a-z, A-Z, 0-9), plus many
      * additional characters, including: ;,/,?,:,@,&,=,+,$,,,-,_,.,!,~,*,',|,%
      */
-    public static JTextField createURITextField(int cols) {
-        JTextField jtf = new JTextField(cols);
-        AbstractDocument doc = (AbstractDocument) jtf.getDocument();
+    public static JTextField createURITextField(final int cols) {
+        final JTextField jtf = new JTextField(cols);
+        final AbstractDocument doc = (AbstractDocument) jtf.getDocument();
         doc.setDocumentFilter(new DocumentFilter() {
-            public void insertString(DocumentFilter.FilterBypass fb, int offset,
-                                     String text,
-                                     AttributeSet attr) throws BadLocationException {
+            public void insertString(final DocumentFilter.FilterBypass fb, final int offset,
+                                     final String text,
+                                     final AttributeSet attr) throws BadLocationException {
                 replace(fb, offset, 0, text, attr);
             }// insertString()
 
-            public void replace(DocumentFilter.FilterBypass fb, int offset,
-                                int length, String text,
-                                AttributeSet attr) throws BadLocationException {
+            public void replace(final DocumentFilter.FilterBypass fb, final int offset,
+                                final int length, final String text,
+                                final AttributeSet attr) throws BadLocationException {
                 fb.replace(offset, length, getValidURLString(text), attr);
             }// replace()
 
-            private String getValidURLString(String in) {
-                StringBuffer buffer = new StringBuffer(in);
+            private String getValidURLString(final String in) {
+                final StringBuffer buffer = new StringBuffer(in);
 
                 for (int i = buffer.length() - 1; i >= 0; i--) {
                     final char c = buffer.charAt(i);
@@ -1205,7 +1205,7 @@ public class Utils {
                 return buffer.toString();
             }// getValidURLString()
 
-            private boolean isValidURL(char c) {
+            private boolean isValidURL(final char c) {
                 // check letters (A-Z, a-z)
                 if ((c >= 0x0041 && c <= 0x005A) || (c >= 0x0061 && c <= 0x007A)) {
                     return true;
@@ -1217,8 +1217,8 @@ public class Utils {
                 }
 
                 // check misc chars
-                for (int i = 0; i < URL_ALLOWED.length; i++) {
-                    if (c == URL_ALLOWED[i]) {
+                for (char aURL_ALLOWED : URL_ALLOWED) {
+                    if (c == aURL_ALLOWED) {
                         return true;
                     }
                 }
@@ -1248,9 +1248,9 @@ public class Utils {
      * Should never return null. NOTE that a entry of "" will return "" (array length 1).
      * An array length of 0 is never returned.
      */
-    public static String[] parseCSV(String input) {
-        Matcher m = REAL_COMMAS.matcher(input);
-        ArrayList<String> matchList = new ArrayList<String>();
+    public static String[] parseCSV(final String input) {
+        final Matcher m = REAL_COMMAS.matcher(input);
+        final ArrayList<String> matchList = new ArrayList<>();
 
         // find all matches (except last)
         // we trim extra whitespace from ends (no effect if within quotes)
@@ -1271,7 +1271,7 @@ public class Utils {
         // cleanup
         for (int i = 0; i < matches.length; i++) {
             if (matches[i].length() > 0) {
-                StringBuffer sb = new StringBuffer(matches[i]);
+                final StringBuffer sb = new StringBuffer(matches[i]);
                 // step 1: remove (if present) start/end quotes
                 if (sb.charAt(0) == '\"') {
                     sb.deleteCharAt(0);
@@ -1313,7 +1313,7 @@ public class Utils {
      * trimming) is null or empty, returns an array of length 0.
      * XE for "eXtended Edition".
      */
-    public static String[] parseCSVXE(String input) {
+    public static String[] parseCSVXE(final String input) {
         if (input == null || "".equals(input.trim())) {
             return new String[0];
         }
@@ -1326,10 +1326,10 @@ public class Utils {
      * Gets a common-bundle (non-localized) String.
      * If the key is not found, an exception is thrown.
      */
-    public static String getCommonString(String key) {
+    public static String getCommonString(final String key) {
         try {
             return commonBundle.getString(key);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new IllegalStateException(
                     "Error/Missing Common Bundle Property: " + key);
         }
@@ -1340,11 +1340,11 @@ public class Utils {
      * The string array is parsed with the parseCSV() method.
      * If the key is not found, an exception is thrown.
      */
-    public static String[] getCommonStringArray(String key) {
+    public static String[] getCommonStringArray(final String key) {
         try {
             return parseCSV(commonBundle.getString(key));
 
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new IllegalStateException(
                     "Error/Missing Common Bundle Property: " + key);
         }
@@ -1370,14 +1370,14 @@ public class Utils {
         final int toFindLen = toFind.length();
         final int toReplaceLen = toReplace.length();
 
-        StringBuffer sb = new StringBuffer(input);
+        final StringBuffer sb = new StringBuffer(input);
 
         int idx = 0;
         int start = sb.indexOf(toFind, idx);
-        boolean isModified = (start != -1);
+        final boolean isModified = (start != -1);
 
         while (start != -1) {
-            int end = start + toFindLen;
+            final int end = start + toFindLen;
             sb.replace(start, end, toReplace);
 
             // repeat search
@@ -1409,7 +1409,7 @@ public class Utils {
             return null;
         }
 
-        StringBuffer sb = new StringBuffer(input);
+        final StringBuffer sb = new StringBuffer(input);
         boolean isModified = false;
 
         for (int i = 0; i < toFind.length; i++) {
@@ -1421,7 +1421,7 @@ public class Utils {
             isModified = (isModified) || (start != -1);
 
             while (start != -1) {
-                int end = start + toFindLen;
+                final int end = start + toFindLen;
                 sb.replace(start, end, toReplace[i]);
 
                 // repeat search
@@ -1459,7 +1459,7 @@ public class Utils {
             final Object basic = lookup
                     .invoke(null, new Object[]{"javax.jnlp.BasicService"});
             return true;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             // exception == false
         }
         return false;
@@ -1469,7 +1469,7 @@ public class Utils {
     /**
      * Null-safe object comparison.
      */
-    public static boolean areEqual(Object obj1, Object obj2) {
+    public static boolean areEqual(final Object obj1, final Object obj2) {
         return (obj1 == null) ? (obj2 == null) : obj1.equals(obj2);
     }// areEqual()
 

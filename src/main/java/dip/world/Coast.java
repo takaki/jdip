@@ -290,7 +290,7 @@ public enum Coast {
     public static String normalize(final String input) throws OrderException {
         // start matching.
         String matchInput = input;
-        for (Pattern pattern : patterns) {
+        for (final Pattern pattern : patterns) {
             final Matcher m = pattern.matcher(matchInput);
             final StringBuffer sb = new StringBuffer(matchInput.length());
 

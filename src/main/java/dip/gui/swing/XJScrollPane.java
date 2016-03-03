@@ -49,7 +49,7 @@ public class XJScrollPane extends JScrollPane {
     /**
      * Create an XJScrollPane
      */
-    public XJScrollPane(Component view) {
+    public XJScrollPane(final Component view) {
         super(view, defaultVsbPolicy, defaultHsbPolicy);
     }// XJScrollPane()
 

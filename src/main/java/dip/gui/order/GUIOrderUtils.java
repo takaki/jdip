@@ -63,11 +63,11 @@ final class GUIOrderUtils {
      * <p>
      * GUIOrder.BORDER_INVALID is appended to the StringBuffer, if 'false' is returned.
      */
-    public static boolean checkBorder(GUIOrder guiOrder, Location location,
-                                      Unit.Type unitType, Phase phase,
-                                      StringBuffer sb) {
-        Class baseClass = guiOrder.getClass().getSuperclass();
-        Border border = location.getProvince()
+    public static boolean checkBorder(final GUIOrder guiOrder, final Location location,
+                                      final Unit.Type unitType, final Phase phase,
+                                      final StringBuffer sb) {
+        final Class baseClass = guiOrder.getClass().getSuperclass();
+        final Border border = location.getProvince()
                 .getTransit(location, unitType, phase, baseClass).orElse(null);
         if (border != null) {
             sb.append(Utils.getLocalString(GUIOrder.BORDER_INVALID,
@@ -82,8 +82,8 @@ final class GUIOrderUtils {
     /**
      * Creates the points for an Octagon about center point of a given radius.
      */
-    public static Point2D.Float[] makeOctagon(Point2D.Float center,
-                                              float radius) {
+    public static Point2D.Float[] makeOctagon(final Point2D.Float center,
+                                              final float radius) {
         // A polygon has 8 sides. All sides are equal lengths. The top/bottom & r/l sides if
         // bisected will form a right triangle with angles (67.5, 90, and 22.5). One side is
         // the radius; thus the length ('a') of the bisected side of the triangle is:
@@ -94,9 +94,9 @@ final class GUIOrderUtils {
         //
         // compute a:
         // note: 22.5 degrees = 360 / 8 / 2. or 2*PI/8/2 = PI/8.
-        float a = (float) Math.tan(Math.PI / 8) * radius;
+        final float a = (float) Math.tan(Math.PI / 8) * radius;
 
-        Point2D.Float[] points = new Point2D.Float[8];
+        final Point2D.Float[] points = new Point2D.Float[8];
         for (int i = 0; i < points.length; i++) {
             points[i] = new Point2D.Float();
         }
@@ -135,12 +135,12 @@ final class GUIOrderUtils {
     /**
      * Creates the points for an equilateral Triangle about center point of a given radius.
      */
-    public static Point2D.Float[] makeTriangle(Point2D.Float center,
-                                               float radius) {
-        float a = (float) (Math.cos(Math.PI / 6) * radius);
-        float b = (float) (Math.sin(Math.PI / 6) * radius);
+    public static Point2D.Float[] makeTriangle(final Point2D.Float center,
+                                               final float radius) {
+        final float a = (float) (Math.cos(Math.PI / 6) * radius);
+        final float b = (float) (Math.sin(Math.PI / 6) * radius);
 
-        Point2D.Float[] points = new Point2D.Float[3];
+        final Point2D.Float[] points = new Point2D.Float[3];
         for (int i = 0; i < points.length; i++) {
             points[i] = new Point2D.Float();
         }
@@ -176,10 +176,10 @@ final class GUIOrderUtils {
      * condition occurs where the internal value mu is NaN, we will return the
      * point (x1,y1).
      */
-    public static Point2D.Float getLineCircleIntersection(float x1, float y1,
-                                                          float x2, float y2,
-                                                          float x3, float y3,
-                                                          float r) {
+    public static Point2D.Float getLineCircleIntersection(final float x1, final float y1,
+                                                          final float x2, final float y2,
+                                                          final float x3, final float y3,
+                                                          final float r) {
         // how to respect radius:
         /*
             via circle-line intersection:
@@ -189,9 +189,9 @@ final class GUIOrderUtils {
 			
 			intersection coordinates in ix, iy
 		*/
-        float a = square(x2 - x1) + square(y2 - y1);
-        float b = 2 * ((x2 - x1) * (x1 - x3) + (y2 - y1) * (y1 - y3));
-        float c = square(x3) + square(y3) + square(x1) + square(
+        final float a = square(x2 - x1) + square(y2 - y1);
+        final float b = 2 * ((x2 - x1) * (x1 - x3) + (y2 - y1) * (y1 - y3));
+        final float c = square(x3) + square(y3) + square(x1) + square(
                 y1) - 2 * (x3 * x1 + y3 * y1) - square(r);
 
         // x,y are calculated points of intersection
@@ -204,13 +204,13 @@ final class GUIOrderUtils {
 
         // these put it 'before' the unit
         //
-        float mu = (float) ((-b - Math.sqrt(square(b) - 4 * a * c)) / (2 * a));
+        final float mu = (float) ((-b - Math.sqrt(square(b) - 4 * a * c)) / (2 * a));
 
         if (Float.isNaN(mu)) {
             return new Point2D.Float(x1, y1);
         }
 
-        Point2D.Float pt = new Point2D.Float();
+        final Point2D.Float pt = new Point2D.Float();
         pt.x = x1 + mu * (x2 - x1);
         pt.y = y1 + mu * (y2 - y1);
 
@@ -250,10 +250,10 @@ final class GUIOrderUtils {
      * condition occurs where the internal value mu is NaN, we will return the
      * point (x1,y1).
      */
-    public static Point2D.Float getLineCircleIntersectOuter(float x1, float y1,
-                                                            float x2, float y2,
-                                                            float x3, float y3,
-                                                            float r) {
+    public static Point2D.Float getLineCircleIntersectOuter(final float x1, final float y1,
+                                                            final float x2, final float y2,
+                                                            final float x3, final float y3,
+                                                            final float r) {
         // how to respect radius:
 		/*
 			via circle-line intersection:
@@ -263,20 +263,20 @@ final class GUIOrderUtils {
 			
 			intersection coordinates in ix, iy
 		*/
-        float a = square(x2 - x1) + square(y2 - y1);
-        float b = 2 * ((x2 - x1) * (x1 - x3) + (y2 - y1) * (y1 - y3));
-        float c = square(x3) + square(y3) + square(x1) + square(
+        final float a = square(x2 - x1) + square(y2 - y1);
+        final float b = 2 * ((x2 - x1) * (x1 - x3) + (y2 - y1) * (y1 - y3));
+        final float c = square(x3) + square(y3) + square(x1) + square(
                 y1) - 2 * (x3 * x1 + y3 * y1) - square(r);
 
         // x,y are calculated points of intersection
         // these put it 'past' the unit
-        float mu = (float) ((-b + Math.sqrt(square(b) - 4 * a * c)) / (2 * a));
+        final float mu = (float) ((-b + Math.sqrt(square(b) - 4 * a * c)) / (2 * a));
 
         if (Float.isNaN(mu)) {
             return new Point2D.Float(x1, y1);
         }
 
-        Point2D.Float pt = new Point2D.Float();
+        final Point2D.Float pt = new Point2D.Float();
         pt.x = x1 + mu * (x2 - x1);
         pt.y = y1 + mu * (y2 - y1);
 
@@ -313,14 +313,14 @@ final class GUIOrderUtils {
      * <p>
      * mmdOrderElementName = e.g., MapMetadata.EL_HOLD
      */
-    public static void makeStyled(SVGElement element, MapMetadata mmd,
-                                  String mmdOrderElementName, Power power) {
+    public static void makeStyled(final SVGElement element, final MapMetadata mmd,
+                                  final String mmdOrderElementName, final Power power) {
         element.setAttributeNS(null, CSSConstants.CSS_STROKE_PROPERTY,
                 mmd.getPowerColor(power));
-        String filter = mmd.getOrderParamString(mmdOrderElementName,
+        final String filter = mmd.getOrderParamString(mmdOrderElementName,
                 MapMetadata.ATT_FILTERID);
         if (filter.length() > 0) {
-            StringBuffer sb = new StringBuffer(filter.length() + 6);
+            final StringBuffer sb = new StringBuffer(filter.length() + 6);
             sb.append("url(#");
             sb.append(filter);
             sb.append(')');
@@ -334,12 +334,12 @@ final class GUIOrderUtils {
      * <p>
      * mmdOrderElementName = e.g., MapMetadata.EL_HOLD
      */
-    public static void makeStyled(SVGElement[] elements, MapMetadata mmd,
-                                  String mmdOrderElementName, Power power) {
+    public static void makeStyled(final SVGElement[] elements, final MapMetadata mmd,
+                                  final String mmdOrderElementName, final Power power) {
         String filter = mmd.getOrderParamString(mmdOrderElementName,
                 MapMetadata.ATT_FILTERID);
         if (filter.length() > 0) {
-            StringBuffer sb = new StringBuffer(filter.length() + 6);
+            final StringBuffer sb = new StringBuffer(filter.length() + 6);
             sb.append("url(#");
             sb.append(filter);
             sb.append(')');
@@ -348,15 +348,14 @@ final class GUIOrderUtils {
             filter = null;
         }
 
-        String powerColor = mmd.getPowerColor(power);
+        final String powerColor = mmd.getPowerColor(power);
 
-        for (int i = 0; i < elements.length; i++) {
-            elements[i].setAttributeNS(null, CSSConstants.CSS_STROKE_PROPERTY,
+        for (SVGElement element : elements) {
+            element.setAttributeNS(null, CSSConstants.CSS_STROKE_PROPERTY,
                     powerColor);
             if (filter != null) {
-                elements[i]
-                        .setAttributeNS(null, SVGConstants.SVG_FILTER_ATTRIBUTE,
-                                filter);
+                element.setAttributeNS(null, SVGConstants.SVG_FILTER_ATTRIBUTE,
+                        filter);
             }
         }
     }// makeStyled()
@@ -364,9 +363,9 @@ final class GUIOrderUtils {
     /**
      * Sets the higlight of an element. Assumes that hilight is not set to 'none'
      */
-    public static void makeHilight(SVGElement element, MapMetadata mmd,
-                                   String mmdOrderElementName) {
-        String cssStyle = mmd.getOrderParamString(mmdOrderElementName,
+    public static void makeHilight(final SVGElement element, final MapMetadata mmd,
+                                   final String mmdOrderElementName) {
+        final String cssStyle = mmd.getOrderParamString(mmdOrderElementName,
                 MapMetadata.ATT_HILIGHT_CLASS);
         element.setAttributeNS(null, SVGConstants.SVG_CLASS_ATTRIBUTE,
                 cssStyle);
@@ -375,12 +374,12 @@ final class GUIOrderUtils {
     /**
      * Sets the higlight of an array of elements. Assumes that hilight is not set to 'none'
      */
-    public static void makeHilight(SVGElement[] elements, MapMetadata mmd,
-                                   String mmdOrderElementName) {
-        String cssStyle = mmd.getOrderParamString(mmdOrderElementName,
+    public static void makeHilight(final SVGElement[] elements, final MapMetadata mmd,
+                                   final String mmdOrderElementName) {
+        final String cssStyle = mmd.getOrderParamString(mmdOrderElementName,
                 MapMetadata.ATT_HILIGHT_CLASS);
-        for (int i = 0; i < elements.length; i++) {
-            elements[i].setAttributeNS(null, SVGConstants.SVG_CLASS_ATTRIBUTE,
+        for (SVGElement element : elements) {
+            element.setAttributeNS(null, SVGConstants.SVG_CLASS_ATTRIBUTE,
                     cssStyle);
         }
     }// makeHilight()
@@ -389,8 +388,8 @@ final class GUIOrderUtils {
     /**
      * Adds the given end-Marker to an element (usually a Line)
      */
-    public static void addMarker(SVGElement element, MapMetadata mmd,
-                                 String mmdOrderElementName) {
+    public static void addMarker(final SVGElement element, final MapMetadata mmd,
+                                 final String mmdOrderElementName) {
         element.setAttributeNS(null, CSSConstants.CSS_MARKER_END_PROPERTY,
                 "url(#" + mmd.getOrderParamString(mmdOrderElementName,
                         MapMetadata.ATT_MARKERID) + ')');
@@ -401,16 +400,16 @@ final class GUIOrderUtils {
      * Given a TurnState, determines if any order exists that matches the
      * given Move order. Returns null if no matching Move order found.
      */
-    public static Move findMatchingMove(MapInfo mapInfo, Province src,
-                                        Province dest) {
-        Power[] powers = mapInfo.getDisplayablePowers();
-        for (int i = 0; i < powers.length; i++) {
-            List orders = mapInfo.getTurnState().getOrders(powers[i]);
-            Iterator iter = orders.iterator();
+    public static Move findMatchingMove(final MapInfo mapInfo, final Province src,
+                                        final Province dest) {
+        final Power[] powers = mapInfo.getDisplayablePowers();
+        for (Power power : powers) {
+            final List orders = mapInfo.getTurnState().getOrders(power);
+            final Iterator iter = orders.iterator();
             while (iter.hasNext()) {
-                Orderable o = (Orderable) iter.next();
+                final Orderable o = (Orderable) iter.next();
                 if (o instanceof Move) {
-                    Move mv = (Move) o;
+                    final Move mv = (Move) o;
                     if (mv.getSource().isProvinceEqual(src) && mv.getDest()
                             .isProvinceEqual(dest)) {
                         return mv;
@@ -427,13 +426,13 @@ final class GUIOrderUtils {
      * Given a TurnState, determines if any order exists that matches the
      * given Hold order. Returns null if no matching Hold order found.
      */
-    public static Hold findMatchingHold(MapInfo mapInfo, Province src) {
-        Power[] powers = mapInfo.getDisplayablePowers();
-        for (int i = 0; i < powers.length; i++) {
-            List orders = mapInfo.getTurnState().getOrders(powers[i]);
-            Iterator iter = orders.iterator();
+    public static Hold findMatchingHold(final MapInfo mapInfo, final Province src) {
+        final Power[] powers = mapInfo.getDisplayablePowers();
+        for (Power power : powers) {
+            final List orders = mapInfo.getTurnState().getOrders(power);
+            final Iterator iter = orders.iterator();
             while (iter.hasNext()) {
-                Orderable o = (Orderable) iter.next();
+                final Orderable o = (Orderable) iter.next();
                 if (o instanceof Hold && o.getSource().isProvinceEqual(src)) {
                     return (Hold) o;
                 }
@@ -451,18 +450,18 @@ final class GUIOrderUtils {
      * Note that only the displayable powers are used to check
      * the support.
      */
-    public static int getMatchingSupportCount(MapInfo mapInfo, Province supSrc,
-                                              Province supDest) {
+    public static int getMatchingSupportCount(final MapInfo mapInfo, final Province supSrc,
+                                              final Province supDest) {
         int count = 0;
 
-        Power[] powers = mapInfo.getDisplayablePowers();
-        for (int i = 0; i < powers.length; i++) {
-            List orders = mapInfo.getTurnState().getOrders(powers[i]);
-            Iterator iter = orders.iterator();
+        final Power[] powers = mapInfo.getDisplayablePowers();
+        for (Power power : powers) {
+            final List orders = mapInfo.getTurnState().getOrders(power);
+            final Iterator iter = orders.iterator();
             while (iter.hasNext()) {
-                Orderable o = (Orderable) iter.next();
+                final Orderable o = (Orderable) iter.next();
                 if (o instanceof Support) {
-                    Support sup = (Support) o;
+                    final Support sup = (Support) o;
                     if (sup.getSupportedSrc().isProvinceEqual(supSrc) && sup
                             .getSupportedDest().isProvinceEqual(supDest)) {
                         count++;
@@ -483,8 +482,8 @@ final class GUIOrderUtils {
      * All negative widths are treated alike; DPB_LINE_WIDTH times the value of the
      * smallest width in the line-width list (index 0).
      */
-    public static float getLineWidth(MapInfo mapInfo, String mmdElementName,
-                                     String mmdElementType, int support) {
+    public static float getLineWidth(final MapInfo mapInfo, final String mmdElementName,
+                                     final String mmdElementType, final int support) {
         int idx = support;
         if (support < 0) {
             idx = 0;
@@ -503,9 +502,9 @@ final class GUIOrderUtils {
     /**
      * Returns the midpoint of a line.
      */
-    public static Point2D.Float getLineMidpoint(float x1, float y1, float x2,
-                                                float y2) {
-        Point2D.Float p2d = new Point2D.Float();
+    public static Point2D.Float getLineMidpoint(final float x1, final float y1, final float x2,
+                                                final float y2) {
+        final Point2D.Float p2d = new Point2D.Float();
 
         p2d.x = (x1 + x2) / 2.0f;
         p2d.y = (y1 + y2) / 2.0f;
@@ -517,9 +516,9 @@ final class GUIOrderUtils {
      * Create a &lt;use&gt; element with a SYMBOL_FAILEDORDER at the
      * given coordinates, sized appropriately.
      */
-    public static SVGUseElement createFailedOrderSymbol(MapInfo mapInfo,
-                                                        float x, float y) {
-        MapMetadata.SymbolSize symbolSize = mapInfo.getMapMetadata()
+    public static SVGUseElement createFailedOrderSymbol(final MapInfo mapInfo,
+                                                        final float x, final float y) {
+        final MapMetadata.SymbolSize symbolSize = mapInfo.getMapMetadata()
                 .getSymbolSize(DefaultMapRenderer2.SYMBOL_FAILEDORDER);
 
         return SVGUtils.createUseElement(mapInfo.getDocument(),
@@ -533,7 +532,7 @@ final class GUIOrderUtils {
      * Determine if the passed SVGGElement has any children. If it does,
      * delete them.
      */
-    public static void deleteChildren(SVGGElement g) {
+    public static void deleteChildren(final SVGGElement g) {
         if (g == null) {
             throw new IllegalArgumentException();
         }
@@ -558,8 +557,8 @@ final class GUIOrderUtils {
         }
 
         final Power[] displayedPowers = mapInfo.getDisplayablePowers();
-        for (int i = 0; i < displayedPowers.length; i++) {
-            if (displayedPowers[i] == power) {
+        for (Power displayedPower : displayedPowers) {
+            if (displayedPower == power) {
                 return true;
             }
         }
@@ -582,7 +581,7 @@ final class GUIOrderUtils {
                 try {
                     parent.removeChild(node);
                     return true;
-                } catch (DOMException e) {
+                } catch (final DOMException e) {
                     return false;
                 }
             }
@@ -597,7 +596,7 @@ final class GUIOrderUtils {
     /**
      * Squares the given value
      */
-    private static float square(float v) {
+    private static float square(final float v) {
         return (v * v);
     }// square()
 
@@ -606,7 +605,7 @@ final class GUIOrderUtils {
      * Formats a Floating-Point value into a String,
      * using the jDip default precision.
      */
-    public static String floatToString(float v) {
+    public static String floatToString(final float v) {
         return SVGUtils.floatToString(v);
     }// toString()
 
@@ -614,7 +613,7 @@ final class GUIOrderUtils {
      * Formats a Floating-Point value into a StringBuffer,
      * using the jDip default precision.
      */
-    public static void appendFloat(StringBuffer sb, float v) {
+    public static void appendFloat(final StringBuffer sb, final float v) {
         SVGUtils.appendFloat(sb, v);
     }// appendFloat()
 

@@ -160,9 +160,9 @@ public class MapPanel extends JPanel {
     /** Set Default Cursor */
     static {
         // Attempt to set default cursor.
-        java.awt.Toolkit tk = java.awt.Toolkit.getDefaultToolkit();
-        Dimension d = tk.getBestCursorSize(32, 32);
-        int colors = tk.getMaximumCursorColors();
+        final java.awt.Toolkit tk = java.awt.Toolkit.getDefaultToolkit();
+        final Dimension d = tk.getBestCursorSize(32, 32);
+        final int colors = tk.getMaximumCursorColors();
 
         // determine if the platform supports custom cursors.
         if (!d.equals(new Dimension(0, 0)) && (colors != 0)) {
@@ -253,7 +253,7 @@ public class MapPanel extends JPanel {
     /**
      * Creates a MapPanel
      */
-    public MapPanel(ClientFrame clientFrame) {
+    public MapPanel(final ClientFrame clientFrame) {
         super(new BorderLayout());
 
         startTime = System.currentTimeMillis();
@@ -305,7 +305,7 @@ public class MapPanel extends JPanel {
     /**
      * Set the SVG Document from XML Document
      */
-    private void setDocument(Document xmlDoc, Variant variant) {
+    private void setDocument(final Document xmlDoc, final Variant variant) {
         Log.println("MP: setDocument()");
 
         // setup private loader-listeners
@@ -333,7 +333,7 @@ public class MapPanel extends JPanel {
             svgCanvas.setDocument(transform(xmlDoc,
                     new VariantManager().getVariantPackageJarURL(variant)
                             .toString()));
-        } catch (Exception e) {
+        } catch (final Exception e) {
             ErrorDialog.displaySerious(clientFrame, e);
         }
 
@@ -452,7 +452,7 @@ public class MapPanel extends JPanel {
     /**
      * DOMUI event hook
      */
-    protected void setDOMUIEventListener(DOMUIEventListener domEventListener) {
+    protected void setDOMUIEventListener(final DOMUIEventListener domEventListener) {
         eventListener = domEventListener;
     }// setDOMUIEventListener()
 
@@ -475,7 +475,7 @@ public class MapPanel extends JPanel {
         if (turnState == null) {
             cb = new ViewControlBar(this);
         } else {
-            String mode = clientFrame.getMode();
+            final String mode = clientFrame.getMode();
 
             if (mode == ClientFrame.MODE_NONE || mode == ClientFrame.MODE_REVIEW) {
                 cb = new ViewControlBar(this);
@@ -529,7 +529,7 @@ public class MapPanel extends JPanel {
      * NOTE: this is currently disabled for OS X due to
      * weird bugs.
      */
-    public void setMapCursor(Cursor cursor) {
+    public void setMapCursor(final Cursor cursor) {
         if (!Utils.isOSX()) {
             svgCanvas.setCursor(cursor);
         }
@@ -609,7 +609,7 @@ public class MapPanel extends JPanel {
             symbolPack = null;
             world = null;
             turnState = null;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             Log.println("MapPanel::close() exception...");
             Log.println(e);
         }
@@ -618,8 +618,8 @@ public class MapPanel extends JPanel {
     /**
      * Convenience method: updates the rendering of a province.
      */
-    public void updateProvince(Province province) {
-        RenderCommand rc = mapRenderer.getRenderCommandFactory()
+    public void updateProvince(final Province province) {
+        final RenderCommand rc = mapRenderer.getRenderCommandFactory()
                 .createRCRenderProvince(mapRenderer, province);
         mapRenderer.execRenderCommand(rc);
     }// updateProvince()
@@ -629,15 +629,15 @@ public class MapPanel extends JPanel {
      * Sets which labels are enabled/disabled
      */
     private void setMenuLabelOptions() {
-        MapMetadata mmd = mapRenderer.getMapMetadata();
+        final MapMetadata mmd = mapRenderer.getMapMetadata();
         if (mmd == null) {
             return;
         }
 
-        ClientMenu cm = clientFrame.getClientMenu();
-        boolean fullLabels = mmd
+        final ClientMenu cm = clientFrame.getClientMenu();
+        final boolean fullLabels = mmd
                 .getDisplayParamBoolean(MapMetadata.ATT_LABELS_FULL, false);
-        boolean briefLabels = mmd
+        final boolean briefLabels = mmd
                 .getDisplayParamBoolean(MapMetadata.ATT_LABELS_BRIEF, false);
 
         // if no label layers, disable all label support
@@ -654,7 +654,7 @@ public class MapPanel extends JPanel {
      * Sets min, max, and scale factor variables from metadata (if found)
      */
     private void setScalingParameters() {
-        MapMetadata mmd = mapRenderer.getMapMetadata();
+        final MapMetadata mmd = mapRenderer.getMapMetadata();
         if (mmd == null) {
             return;
         }
@@ -669,7 +669,7 @@ public class MapPanel extends JPanel {
 
         // swap values if min/max switched.
         if (minZoom > maxZoom) {
-            int tmp = minZoom;
+            final int tmp = minZoom;
             minZoom = maxZoom;
             maxZoom = tmp;
         }
@@ -686,7 +686,7 @@ public class MapPanel extends JPanel {
     private class MP_GVTRenderListener extends GVTTreeRendererAdapter {
         private boolean loaded = false;
 
-        public void gvtRenderingStarted(GVTTreeRendererEvent e) {
+        public void gvtRenderingStarted(final GVTTreeRendererEvent e) {
             Log.printTimed(startTime, "MapPanel() GVTRender start.");
             if (!loaded) {
                 statusBar.incPBValue();
@@ -694,7 +694,7 @@ public class MapPanel extends JPanel {
             }
         }// gvtRenderingStarted()
 
-        public void gvtRenderingCompleted(GVTTreeRendererEvent e) {
+        public void gvtRenderingCompleted(final GVTTreeRendererEvent e) {
             Log.printTimed(startTime, "MapPanel() GVTRender completing...");
             if (!loaded) {
                 statusBar.incPBValue();
@@ -704,7 +704,7 @@ public class MapPanel extends JPanel {
                 try {
                     mapRenderer = new DefaultMapRenderer2(MapPanel.this,
                             symbolPack);
-                } catch (MapException me) {
+                } catch (final MapException me) {
                     ErrorDialog.displaySerious(clientFrame, me);
                     svgCanvas.stopProcessing();
                     statusBar.hidePB();
@@ -793,19 +793,19 @@ public class MapPanel extends JPanel {
      * NOTE: we use setDocument(), and thus this really isn't used.
      */
     private class MP_DocumentListener extends SVGDocumentLoaderAdapter {
-        public void documentLoadingStarted(SVGDocumentLoaderEvent e) {
+        public void documentLoadingStarted(final SVGDocumentLoaderEvent e) {
             Log.printTimed(startTime, "MapPanel() DocumentLoad started.");
             clientFrame.getClientMenu().setViewRenderItemsEnabled(false);
             statusBar.incPBValue();
             //statusBar.setText(Utils.getLocalString(DOC_LOAD_STARTED));
         }// documentLoadingStarted()
 
-        public void documentLoadingFailed(SVGDocumentLoaderEvent e) {
+        public void documentLoadingFailed(final SVGDocumentLoaderEvent e) {
             statusBar.setText(Utils.getLocalString(DOC_LOAD_FAILED));
             statusBar.hidePB();
         }// documentLoadingFailed()
 
-        public void documentLoadingCompleted(SVGDocumentLoaderEvent e) {
+        public void documentLoadingCompleted(final SVGDocumentLoaderEvent e) {
             Log.printTimed(startTime, "MapPanel() DocumentLoad completed.");
             statusBar.incPBValue();
             statusBar.setText(Utils.getLocalString(DOC_LOAD_COMPLETED));
@@ -818,18 +818,18 @@ public class MapPanel extends JPanel {
      * Statusbar messages
      */
     private class MP_GVTTreeBuilderListener extends GVTTreeBuilderAdapter {
-        public void gvtBuildStarted(GVTTreeBuilderEvent e) {
+        public void gvtBuildStarted(final GVTTreeBuilderEvent e) {
             Log.printTimed(startTime, "MapPanel() GVTTreeBuild completed.");
             statusBar.incPBValue();
             statusBar.setText(Utils.getLocalString(GVT_BUILD_STARTED));
         }// documentLoadingStarted()
 
-        public void gvtBuildFailed(GVTTreeBuilderEvent e) {
+        public void gvtBuildFailed(final GVTTreeBuilderEvent e) {
             statusBar.setText(Utils.getLocalString(GVT_BUILD_FAILED));
             statusBar.hidePB();
         }// documentLoadingFailed()
 
-        public void gvtBuildCompleted(GVTTreeBuilderEvent e) {
+        public void gvtBuildCompleted(final GVTTreeBuilderEvent e) {
             Log.printTimed(startTime, "MapPanel() GVTTreeBuild completed.");
             statusBar.incPBValue();
             statusBar.setText(Utils.getLocalString(GVT_BUILD_COMPLETED));
@@ -843,7 +843,7 @@ public class MapPanel extends JPanel {
      */
     private class MP_PropertyListener extends AbstractCFPListener {
 
-        public void actionWorldCreated(World w) {
+        public void actionWorldCreated(final World w) {
             if (mapRenderer != null) {
                 throw new IllegalStateException();
             } else {
@@ -851,13 +851,13 @@ public class MapPanel extends JPanel {
             }
         }// actionWorldCreated()
 
-        public void actionWorldDestroyed(World w) {
+        public void actionWorldDestroyed(final World w) {
             if (mapRenderer != null) {
                 close();
             }
         }// actionWorldDestroyed()
 
-        public void actionValOptsChanged(ValidationOptions options) {
+        public void actionValOptsChanged(final ValidationOptions options) {
             if (mapRenderer != null) {
                 // if we have an OrderControl bar or derivitive
                 // update its order validation options
@@ -868,14 +868,14 @@ public class MapPanel extends JPanel {
             }
         }// actionValOptsChanged()
 
-        public void actionModeChanged(String mode) {
+        public void actionModeChanged(final String mode) {
             if (mapRenderer != null) {
                 setControlBar();
                 statusBar.clearText();
             }
         }// actionModeChanged()
 
-        public synchronized void actionTurnstateChanged(TurnState ts) {
+        public synchronized void actionTurnstateChanged(final TurnState ts) {
             if (mapRenderer != null) {
                 turnState = ts;
                 position = turnState.getPosition();
@@ -888,14 +888,14 @@ public class MapPanel extends JPanel {
                     position = turnState.getPosition();
 
                     // load URL and resolve
-                    World.VariantInfo vi = world.getVariantInfo();
-                    Variant variant = new VariantManager()
+                    final World.VariantInfo vi = world.getVariantInfo();
+                    final Variant variant = new VariantManager()
                             .getVariant(vi.getVariantName(),
                                     vi.getVariantVersion()).orElse(null);
 
                     // TODO: clean this loading logic up
                     if (variant == null) {
-                        Exception e = new IllegalStateException(
+                        final Exception e = new IllegalStateException(
                                 Utils.getLocalString(MP_VARIANT_NOT_FOUND, "?",
                                         "?"));
 
@@ -908,7 +908,7 @@ public class MapPanel extends JPanel {
                         mg = variant.getDefaultMapGraphic().orElse(null);
 
                         if (mg == null) {
-                            Exception e = new IllegalStateException(
+                            final Exception e = new IllegalStateException(
                                     Utils.getLocalString(MP_VARIANT_NOT_FOUND,
                                             vi.getVariantName(),
                                             vi.getMapName()));
@@ -917,10 +917,10 @@ public class MapPanel extends JPanel {
                         }
                     }
 
-                    URL url = new VariantManager().getResource(variant, mg.getURI()).orElse(null);
+                    final URL url = new VariantManager().getResource(variant, mg.getURI()).orElse(null);
                     if (url == null) {
 
-                        Exception e = new IllegalStateException(
+                        final Exception e = new IllegalStateException(
                                 Utils.getLocalString(MP_VARIANT_NOT_FOUND,
                                         vi.getVariantName(), vi.getMapName()));
 
@@ -940,13 +940,13 @@ public class MapPanel extends JPanel {
                     statusBar.setText(Utils.getLocalString(DOC_LOAD_STARTED));
 
                     try {
-                        SymbolInjector si = new SymbolInjector(clientFrame,
+                        final SymbolInjector si = new SymbolInjector(clientFrame,
                                 variant, mg, symbolPack);
                         statusBar.incPBValue();
                         si.inject();
                         statusBar.incPBValue();
                         setDocument(si.getDocument(), variant);
-                    } catch (Exception e) {
+                    } catch (final Exception e) {
                         statusBar
                                 .setText(Utils.getLocalString(DOC_LOAD_FAILED));
                         statusBar.hidePB();
@@ -966,32 +966,32 @@ public class MapPanel extends JPanel {
         private String lastModeText = null;
 
         public void managerResumed(
-                org.apache.batik.bridge.UpdateManagerEvent e) {
+                final org.apache.batik.bridge.UpdateManagerEvent e) {
         }
 
         public void managerStarted(
-                org.apache.batik.bridge.UpdateManagerEvent e) {
+                final org.apache.batik.bridge.UpdateManagerEvent e) {
         }
 
         public void managerStopped(
-                org.apache.batik.bridge.UpdateManagerEvent e) {
+                final org.apache.batik.bridge.UpdateManagerEvent e) {
         }
 
         public void managerSuspended(
-                org.apache.batik.bridge.UpdateManagerEvent e) {
+                final org.apache.batik.bridge.UpdateManagerEvent e) {
         }
 
         public void updateCompleted(
-                org.apache.batik.bridge.UpdateManagerEvent e) {
+                final org.apache.batik.bridge.UpdateManagerEvent e) {
             resetText();
         }// updateCompleted()
 
-        public void updateFailed(org.apache.batik.bridge.UpdateManagerEvent e) {
+        public void updateFailed(final org.apache.batik.bridge.UpdateManagerEvent e) {
             resetText();
         }// updateFailed()
 
         public void updateStarted(
-                org.apache.batik.bridge.UpdateManagerEvent e) {
+                final org.apache.batik.bridge.UpdateManagerEvent e) {
             lastModeText = statusBar.getModeText();
             statusBar.setModeText(updateMessage);
         }// updateStarted()
@@ -1062,9 +1062,9 @@ public class MapPanel extends JPanel {
      */
     private Document transform(final Document inDoc,
                                final String uri) throws TransformerException, TransformerConfigurationException, IOException {
-        TransformerFactory tFactory = TransformerFactory.newInstance();
+        final TransformerFactory tFactory = TransformerFactory.newInstance();
 
-        Transformer transformer = tFactory.newTransformer();
+        final Transformer transformer = tFactory.newTransformer();
 
 
         // Now, apply the transformation to the input document.
@@ -1081,15 +1081,15 @@ public class MapPanel extends JPanel {
         //     (new DOMSource(inDoc),
         //     new DOMResult(outDoc.getDocumentElement()));
         //
-        StringWriter sw = new StringWriter();
-        StreamResult result = new StreamResult(sw);
+        final StringWriter sw = new StringWriter();
+        final StreamResult result = new StreamResult(sw);
         transformer.transform(new DOMSource(inDoc), result);
         sw.flush();
         sw.close();
 
-        String parser = XMLResourceDescriptor.getXMLParserClassName();
-        SAXSVGDocumentFactory f = new SAXSVGDocumentFactory(parser);
-        SVGDocument outDoc = f
+        final String parser = XMLResourceDescriptor.getXMLParserClassName();
+        final SAXSVGDocumentFactory f = new SAXSVGDocumentFactory(parser);
+        final SVGDocument outDoc = f
                 .createSVGDocument(uri, new StringReader(sw.toString()));
 
         return outDoc;

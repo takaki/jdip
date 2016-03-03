@@ -36,7 +36,7 @@ public class UndoAddOrder extends XAbstractUndoableEdit implements java.io.Seria
     private Orderable order;
 
 
-    public UndoAddOrder(UndoRedoManager urm, Orderable order) {
+    public UndoAddOrder(final UndoRedoManager urm, final Orderable order) {
         super(urm);
         this.order = order;
     }// UndoAddOrder

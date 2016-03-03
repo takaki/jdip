@@ -46,7 +46,7 @@ public class Hold extends Order {
     /**
      * Creates a Hold order
      */
-    protected Hold(Power power, Location src, Unit.Type srcUnit) {
+    protected Hold(final Power power, final Location src, final Unit.Type srcUnit) {
         super(power, src, srcUnit);
     }// Hold()
 
@@ -74,7 +74,7 @@ public class Hold extends Order {
 
 
     public String toBriefString() {
-        StringBuffer sb = new StringBuffer(64);
+        final StringBuffer sb = new StringBuffer(64);
 
         super.appendBrief(sb);
         sb.append(' ');
@@ -85,7 +85,7 @@ public class Hold extends Order {
 
 
     public String toFullString() {
-        StringBuffer sb = new StringBuffer(128);
+        final StringBuffer sb = new StringBuffer(128);
 
         super.appendFull(sb);
         sb.append(' ');
@@ -95,7 +95,7 @@ public class Hold extends Order {
     }// toFullString()
 
 
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (obj instanceof Hold && super.equals(obj)) {
             return true;
         }
@@ -103,15 +103,15 @@ public class Hold extends Order {
     }// equals()
 
 
-    public void validate(TurnState state, ValidationOptions valOpts,
-                         RuleOptions ruleOpts) throws OrderException {
+    public void validate(final TurnState state, final ValidationOptions valOpts,
+                         final RuleOptions ruleOpts) throws OrderException {
         checkSeasonMovement(state, orderNameFull);
         checkPower(power, state,
                 false);    // inactive powers can issue Hold orders
         super.validate(state, valOpts, ruleOpts);
 
         // validate Borders
-        Border border = src.getProvince()
+        final Border border = src.getProvince()
                 .getTransit(src, srcUnitType, state.getPhase(),
                         this.getClass()).orElse(null);
         if (border != null) {
@@ -125,8 +125,8 @@ public class Hold extends Order {
     /**
      * No verification is required for Hold orders.
      */
-    public void verify(Adjudicator adjudicator) {
-        OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
+    public void verify(final Adjudicator adjudicator) {
+        final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
         thisOS.setVerified(true);
     }// verify()
 
@@ -138,17 +138,17 @@ public class Hold extends Order {
      * <li>Moves to this space
      * </ol>
      */
-    public void determineDependencies(Adjudicator adjudicator) {
+    public void determineDependencies(final Adjudicator adjudicator) {
         addSupportsOfAndMovesToSource(adjudicator);
     }// determineDependencies()
 
     /**
      * Hold order evaluation logic.
      */
-    public void evaluate(Adjudicator adjudicator) {
+    public void evaluate(final Adjudicator adjudicator) {
         Log.println("--- evaluate() dip.order.Hold ---");
 
-        OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
+        final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
 
         // calculate support
         thisOS.setDefMax(thisOS.getSupport(false));

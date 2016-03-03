@@ -336,7 +336,7 @@ public class Border implements Serializable {
      */
     private List<Class<? extends Order>> parseClasses2Objs(final String in,
                                                            final String superClassName) throws InvalidBorderException {
-        Class<? extends Order> superClass;
+        final Class<? extends Order> superClass;
         try {
             superClass = Class.forName(superClassName).asSubclass(Order.class);
         } catch (final ClassNotFoundException e) {
@@ -347,7 +347,7 @@ public class Border implements Serializable {
 
         final List<Class<? extends Order>> list = new ArrayList<>(10);
         for (final String st : in.split("[, ]+")) {
-            Class<? extends Order> cls;
+            final Class<? extends Order> cls;
 
             try {
                 cls = Class.forName(st).asSubclass(Order.class);
@@ -415,7 +415,7 @@ public class Border implements Serializable {
         // check from
         int nResults = 0;
         int failResults = 0;
-        boolean fromMatched = from.stream()
+        final boolean fromMatched = from.stream()
                 .anyMatch(aFrom -> aFrom.equalsLoosely(fromLoc));
 
         // we only apply criteria if 'from' was not specified, or

@@ -34,14 +34,14 @@ public class MapException extends java.lang.Exception {
     /**
      * Constructs a new exception with the specified detail message.
      */
-    public MapException(String message) {
+    public MapException(final String message) {
         super(message);
     }// MapException()
 
     /**
      * Constructs a new exception with the specified detail message and cause.
      */
-    public MapException(String message, Throwable cause) {
+    public MapException(final String message, final Throwable cause) {
         super(message, cause);
     }// MapException()
 
@@ -50,7 +50,7 @@ public class MapException extends java.lang.Exception {
      * (cause==null ? null : cause.toString()) (which typically contains the class
      * and detail message of cause).
      */
-    public MapException(Throwable cause) {
+    public MapException(final Throwable cause) {
         super(cause);
     }// MapException()
 

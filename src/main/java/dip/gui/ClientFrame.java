@@ -213,7 +213,7 @@ public class ClientFrame extends JFrame {
     /**
      * It all starts here ....
      */
-    public static void main(String args[]) {
+    public static void main(final String[] args) {
         new ClientFrame(args);
     }// main()
 
@@ -221,9 +221,9 @@ public class ClientFrame extends JFrame {
     /**
      * Create a ClientFrame, the main screen for the GUI Client.
      */
-    public ClientFrame(String args[]) {
+    public ClientFrame(final String[] args) {
         super();
-        long ttime = System.currentTimeMillis();        // total time
+        final long ttime = System.currentTimeMillis();        // total time
         long dtime = ttime;                                // delta time
 
         // parse command-line args
@@ -241,13 +241,13 @@ public class ClientFrame extends JFrame {
         // set Batik XMLReader based on JAXP XMLReader.
         // this should work for JDK 1.5, 1.4, etc.
         try {
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            XMLReader xmlReader = factory.newSAXParser().getXMLReader();
+            final SAXParserFactory factory = SAXParserFactory.newInstance();
+            final XMLReader xmlReader = factory.newSAXParser().getXMLReader();
             XMLResourceDescriptor
                     .setXMLParserClassName(xmlReader.getClass().getName());
             Log.println("Batik XMLReader: ",
                     XMLResourceDescriptor.getXMLParserClassName());
-        } catch (Exception e) {
+        } catch (final Exception e) {
             ErrorDialog.displayFatal(this, e);
         }
 
@@ -302,7 +302,7 @@ public class ClientFrame extends JFrame {
                 }
                 Log.println(lafClassName);
                 UIManager.setLookAndFeel(lafClassName);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 // do nothing; swing will load default L&F
                 Log.println(e);
             }
@@ -341,10 +341,10 @@ public class ClientFrame extends JFrame {
 
         // init Tools
         ToolManager.init(new File[]{toolDirPath});
-        Tool[] tools = ToolManager.getTools();
-        ToolProxyImpl toolProxy = new ToolProxyImpl(this);
-        for (int i = 0; i < tools.length; i++) {
-            tools[i].setToolProxy(toolProxy);
+        final Tool[] tools = ToolManager.getTools();
+        final ToolProxyImpl toolProxy = new ToolProxyImpl(this);
+        for (Tool tool : tools) {
+            tool.setToolProxy(toolProxy);
         }
         dtime = Log.printDelta(dtime, "CF: tool setup time: ");
 
@@ -380,7 +380,7 @@ public class ClientFrame extends JFrame {
         // frame listener, handles JFrame close events
         setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent e) {
+            public void windowClosing(final WindowEvent e) {
                 persistMan.exit();
             }
         });
@@ -418,7 +418,7 @@ public class ClientFrame extends JFrame {
         dtime = Log.printDelta(dtime, "CF: point e: ");
 
         // register menu listeners
-        MenuHandler mh = new MenuHandler();
+        final MenuHandler mh = new MenuHandler();
         mh.registerMenuItems();
 
         // get default order formatting options
@@ -508,7 +508,7 @@ public class ClientFrame extends JFrame {
      * Set if we are suppressing MapMetadata placement errors.
      * This should only be set by Map Editors.
      */
-    public void setMMDSuppressed(boolean value) {
+    public void setMMDSuppressed(final boolean value) {
         isMMDSuppressed = value;
     }// setMMDSuppressed()
 
@@ -530,7 +530,7 @@ public class ClientFrame extends JFrame {
     /**
      * Set the user-specified Order Format Options (OFO)
      */
-    public synchronized void setOFO(OrderFormatOptions value) {
+    public synchronized void setOFO(final OrderFormatOptions value) {
         orderFormatOptions = value;
     }// setOFO()
 
@@ -596,7 +596,7 @@ public class ClientFrame extends JFrame {
     /**
      * Set the OrderDisplayPanel
      */
-    synchronized void setOrderDisplayPanel(OrderDisplayPanel odp) {
+    synchronized void setOrderDisplayPanel(final OrderDisplayPanel odp) {
         orderDisplayPanel = odp;
     }// setOrderDisplayPanel()
 
@@ -604,7 +604,7 @@ public class ClientFrame extends JFrame {
     /**
      * Set the OrderStatusPanel
      */
-    synchronized void setOrderStatusPanel(OrderStatusPanel osp) {
+    synchronized void setOrderStatusPanel(final OrderStatusPanel osp) {
         orderStatusPanel = osp;
     }// setOrderStatusPanel()
 
@@ -612,14 +612,14 @@ public class ClientFrame extends JFrame {
     /**
      * Set the UndoRedoManager
      */
-    synchronized void setUndoRedoManager(UndoRedoManager urm) {
+    synchronized void setUndoRedoManager(final UndoRedoManager urm) {
         undoManager = urm;
     }// setUndoRedoManager()
 
     /**
      * Set the MapPanel
      */
-    synchronized void setMapPanel(MapPanel mp) {
+    synchronized void setMapPanel(final MapPanel mp) {
         mapPanel = mp;
     }// setMapPanel()
 
@@ -645,7 +645,7 @@ public class ClientFrame extends JFrame {
      * object to perform additional, as-needed,
      * game setup. A Null argument is not permitted.
      */
-    public synchronized void createWorld(World w) {
+    public synchronized void createWorld(final World w) {
         // safety check
         if (w == null) {
             throw new IllegalArgumentException();
@@ -662,7 +662,7 @@ public class ClientFrame extends JFrame {
         // setup the world. NOTE: GUIGameSetup objects absolutely
         // must fire a WorldCreated event and a TurnstateChanged
         // event.
-        GUIGameSetup ggs = (GUIGameSetup) world.getGameSetup();
+        final GUIGameSetup ggs = (GUIGameSetup) world.getGameSetup();
         ggs.setup(this, world);
 
         // validate something here
@@ -726,7 +726,7 @@ public class ClientFrame extends JFrame {
      * Fired when the World object was created.
      * This is typically only sent by the GUIGameSetup object.
      */
-    protected void fireWorldCreated(World w) {
+    protected void fireWorldCreated(final World w) {
         checkNotNull(w);
         synchronized (fireLock) {
             firePropertyChange(EVT_WORLD_CREATED, null, w);
@@ -754,7 +754,7 @@ public class ClientFrame extends JFrame {
      * <p>
      * null is not acceptable.
      */
-    public void fireTurnstateChanged(TurnState ts) {
+    public void fireTurnstateChanged(final TurnState ts) {
         checkNotNull(ts);
         synchronized (fireLock) {
             firePropertyChange(EVT_TURNSTATE_CHANGED, null, ts);
@@ -769,7 +769,7 @@ public class ClientFrame extends JFrame {
      * <b>Note: The OLD event value (TurnState) will always be null for this
      * event; otherwise 'update' events will not fire.</b>
      */
-    public void fireTurnstateResolved(TurnState ts) {
+    public void fireTurnstateResolved(final TurnState ts) {
         checkNotNull(ts);
         synchronized (fireLock) {
             firePropertyChange(EVT_TURNSTATE_RESOLVED, null, ts);
@@ -781,7 +781,7 @@ public class ClientFrame extends JFrame {
      * Fired when the MapMetadata object is ready, or if
      * it is not ready (null), such as when a map is reloaded.
      */
-    public void fireMMDReady(MapMetadata mmd) {
+    public void fireMMDReady(final MapMetadata mmd) {
         firePropertyChange(EVT_MMD_READY, null, mmd);
     }// fireTurnstateChanged()
 
@@ -798,7 +798,7 @@ public class ClientFrame extends JFrame {
     /**
      * Fired when an order was created
      */
-    public final void fireOrderCreated(Orderable newOrder) {
+    public final void fireOrderCreated(final Orderable newOrder) {
         synchronized (fireLock) {
             checkNotNull(newOrder);
             firePropertyChange(EVT_ORDER_CREATED, null, newOrder);
@@ -808,7 +808,7 @@ public class ClientFrame extends JFrame {
     /**
      * Fired when an order was deleted
      */
-    public final void fireOrderDeleted(Orderable deletedOrder) {
+    public final void fireOrderDeleted(final Orderable deletedOrder) {
         synchronized (fireLock) {
             checkNotNull(deletedOrder);
             firePropertyChange(EVT_ORDER_DELETED, deletedOrder, null);
@@ -818,7 +818,7 @@ public class ClientFrame extends JFrame {
     /**
      * Fired when multiple orders were created
      */
-    public final void fireMultipleOrdersCreated(Orderable[] createdOrders) {
+    public final void fireMultipleOrdersCreated(final Orderable[] createdOrders) {
         synchronized (fireLock) {
             checkNotNull(createdOrders);
             firePropertyChange(EVT_MULTIPLE_ORDERS_CREATED, null,
@@ -829,7 +829,7 @@ public class ClientFrame extends JFrame {
     /**
      * Fired when multiple orders were deleted
      */
-    public final void fireMultipleOrdersDeleted(Orderable[] deletedOrders) {
+    public final void fireMultipleOrdersDeleted(final Orderable[] deletedOrders) {
         synchronized (fireLock) {
             checkNotNull(deletedOrders);
             firePropertyChange(EVT_MULTIPLE_ORDERS_DELETED, deletedOrders,
@@ -840,7 +840,7 @@ public class ClientFrame extends JFrame {
     /**
      * Fired when displayed orders have changed
      */
-    public final void fireDisplayablePowersChanged(Power[] oldPowers,
+    public final void fireDisplayablePowersChanged(final Power[] oldPowers,
                                                    final Power[] newPowers) {
         synchronized (fireLock) {
             checkNotNull(newPowers);
@@ -853,7 +853,7 @@ public class ClientFrame extends JFrame {
     /**
      * Fired when Powers for which orders may be entered have changed
      */
-    public final void fireOrderablePowersChanged(Power[] oldPowers,
+    public final void fireOrderablePowersChanged(final Power[] oldPowers,
                                                  final Power[] newPowers) {
         synchronized (fireLock) {
             checkNotNull(newPowers);
@@ -876,7 +876,7 @@ public class ClientFrame extends JFrame {
     /**
      * Fired if we have added a turnstate
      */
-    public final void fireTurnStateAdded(TurnState newTS) {
+    public final void fireTurnStateAdded(final TurnState newTS) {
         synchronized (fireLock) {
             checkNotNull(newTS);
             firePropertyChange(EVT_TURNSTATE_ADDED, null, newTS);
@@ -895,8 +895,8 @@ public class ClientFrame extends JFrame {
     /**
      * Fired if we change the order Validation Options. New/Old options sent.
      */
-    public final void fireValidationOptionsChanged(ValidationOptions oldOpts,
-                                                   ValidationOptions newOpts) {
+    public final void fireValidationOptionsChanged(final ValidationOptions oldOpts,
+                                                   final ValidationOptions newOpts) {
         checkNotNull(oldOpts);
         checkNotNull(newOpts);
         firePropertyChange(EVT_VALOPTS_CHANGED, oldOpts, newOpts);
@@ -906,7 +906,7 @@ public class ClientFrame extends JFrame {
     /**
      * Change the operating mode for this ClientFrame.<br>
      */
-    public final synchronized void fireChangeMode(String newMode) {
+    public final synchronized void fireChangeMode(final String newMode) {
         if (newMode != MODE_ORDER && newMode != MODE_REVIEW && newMode != MODE_EDIT && newMode != MODE_NONE) {
             throw new IllegalArgumentException("bad mode constant");
         }
@@ -920,10 +920,10 @@ public class ClientFrame extends JFrame {
      * Prints the currently registered listeners to stdout. For debugging only.
      */
     public void dbgPrintListeners() {
-        PropertyChangeListener[] pcls = getPropertyChangeListeners();
+        final PropertyChangeListener[] pcls = getPropertyChangeListeners();
         System.out.println("ClientFrame listeners: " + pcls.length);
-        for (int i = 0; i < pcls.length; i++) {
-            System.out.println("     " + pcls[i].getClass().getName());
+        for (PropertyChangeListener pcl : pcls) {
+            System.out.println("     " + pcl.getClass().getName());
         }
     }// dbgPrintListeners()
 
@@ -933,10 +933,10 @@ public class ClientFrame extends JFrame {
      * major.minor.revision (language)
      */
     public static String getVersion() {
-        String revision = Utils.getLocalStringNoEx(KEY_VERSION_REVISION);
-        String language = Utils.getLocalStringNoEx(KEY_CURRENT_LANGUAGE);
+        final String revision = Utils.getLocalStringNoEx(KEY_VERSION_REVISION);
+        final String language = Utils.getLocalStringNoEx(KEY_CURRENT_LANGUAGE);
 
-        StringBuffer sb = new StringBuffer(80);
+        final StringBuffer sb = new StringBuffer(80);
         sb.append(VERSION_MAJOR);
         sb.append('.');
         sb.append(VERSION_MINOR);
@@ -983,10 +983,10 @@ public class ClientFrame extends JFrame {
      * drag events.
      */
     private class CFDropTargetListener extends FileDropTargetListener {
-        public void processDroppedFiles(File[] files) {
-            for (int i = 0; i < files.length; i++) {
+        public void processDroppedFiles(final File[] files) {
+            for (File file : files) {
                 if (files.length >= 0) {
-                    World world = ClientFrame.this.persistMan
+                    final World world = ClientFrame.this.persistMan
                             .acceptDrag(files[0], ClientFrame.this.getWorld());
                     if (world != null) {
                         world.setGameSetup(new DefaultGUIGameSetup());
@@ -1014,11 +1014,11 @@ public class ClientFrame extends JFrame {
      * Property Listener for listening to Settings Changes
      */
     private class ModeListener implements PropertyChangeListener {
-        public void propertyChange(PropertyChangeEvent evt) {
-            String evtName = evt.getPropertyName();
+        public void propertyChange(final PropertyChangeEvent evt) {
+            final String evtName = evt.getPropertyName();
 
             if (evtName == EVT_MODE_CHANGED) {
-                String newMode = (String) evt.getNewValue();
+                final String newMode = (String) evt.getNewValue();
 
                 if (newMode == MODE_NONE) {
                     statusBar.clearModeText();
@@ -1072,38 +1072,38 @@ public class ClientFrame extends JFrame {
     /**
      * Setup command-line options and parse the command line.
      */
-    private void parseCmdLine(String args[]) {
+    private void parseCmdLine(final String[] args) {
         // parameterized options
-        StringParam argLocale = new StringParam("lang",
+        final StringParam argLocale = new StringParam("lang",
                 "force language to the specified ISO-639 2-letter type (e.g., \"de\", \"en\", \"fr\")",
                 2, 2, true, false);
 
-        FileParam argLogFile = new FileParam("log",
+        final FileParam argLogFile = new FileParam("log",
                 "writes logging information to file or stdout [if \"stdout\" specified]",
                 FileParam.NO_ATTRIBUTES, StringParam.OPTIONAL,
                 FileParam.SINGLE_VALUED);
 
-        FileParam argVariantPath = new FileParam("variantpath",
+        final FileParam argVariantPath = new FileParam("variantpath",
                 "load variant plugins from specified directory",
                 FileParam.IS_DIR & FileParam.IS_READABLE & FileParam.EXISTS,
                 FileParam.OPTIONAL, FileParam.SINGLE_VALUED);
 
         // boolean options
-        BooleanParam validateOpt = new BooleanParam("validate",
+        final BooleanParam validateOpt = new BooleanParam("validate",
                 "validate XML and SVG data files");
 
-        BooleanParam splashOpt = new BooleanParam("nosplash",
+        final BooleanParam splashOpt = new BooleanParam("nosplash",
                 "do not show splash screen");
 
         // validate option
-        BooleanParam defaultGUI = new BooleanParam("defaultgui",
+        final BooleanParam defaultGUI = new BooleanParam("defaultgui",
                 "do not apply GUI enhancements");
 
         // verbose help text
-        String helpText = " ";
+        final String helpText = " ";
 
         // main command line handler
-        CmdLineHandler cl = new VersionCmdLineHandler(getVersion(),
+        final CmdLineHandler cl = new VersionCmdLineHandler(getVersion(),
                 new HelpCmdLineHandler(helpText, "jdip",
                         "Adjudicator and Game Manager for multiplayer diplomacy-based strategy games",
                         // options
@@ -1116,7 +1116,7 @@ public class ClientFrame extends JFrame {
 
         // if Locale has been set, use it.
         if (argLocale.isSet()) {
-            Locale locale = new Locale(argLocale.getValue().toLowerCase());
+            final Locale locale = new Locale(argLocale.getValue().toLowerCase());
             System.out.println(
                     "Using Language: " + locale.getLanguage() + " [" + locale
                             .getDisplayLanguage() + "]");
@@ -1148,7 +1148,7 @@ public class ClientFrame extends JFrame {
     /**
      * Check if an argument is null; throw IllegalArgumentException if so
      */
-    private void checkNotNull(Object arg) {
+    private void checkNotNull(final Object arg) {
         if (arg == null) {
             throw new IllegalArgumentException("null argument!");
         }
@@ -1161,7 +1161,7 @@ public class ClientFrame extends JFrame {
     public void resolveOrders() {
         if (orderDisplayPanel != null) {
             final TurnState resolvedTurnState = getTurnState();
-            StdAdjudicator stdJudge = new StdAdjudicator(getGUIOrderFactory(),
+            final StdAdjudicator stdJudge = new StdAdjudicator(getGUIOrderFactory(),
                     resolvedTurnState);
             stdJudge.setStatReporting(true);        // report order statistics
             stdJudge.setPowerOrderChecking(true);    // check for cheats & bugs
@@ -1197,7 +1197,7 @@ public class ClientFrame extends JFrame {
 
             // show results (if desired)
             if (GeneralPreferencePanel.getShowResolutionResults()) {
-                TurnState priorTS = getWorld()
+                final TurnState priorTS = getWorld()
                         .getPreviousTurnState(newTurnState).get();
                 ResultWriter.displayDialog(ClientFrame.this, priorTS, getOFO());
             }
@@ -1337,7 +1337,7 @@ public class ClientFrame extends JFrame {
         // file
         //
         public void onFileNewStd() {
-            World world = persistMan.newGame();
+            final World world = persistMan.newGame();
             if (world != null) {
                 createWorld(world);
                 persistMan.updateTitle();
@@ -1345,7 +1345,7 @@ public class ClientFrame extends JFrame {
         }// onFileNewStd()
 
         public void onFileNewF2F() {
-            World world = persistMan.newF2FGame();
+            final World world = persistMan.newF2FGame();
             if (world != null) {
                 createWorld(world);
                 persistMan.updateTitle();
@@ -1353,14 +1353,14 @@ public class ClientFrame extends JFrame {
         }// onFileNewStd()
 
         public void onFileOpen() {
-            World world = persistMan.open();
+            final World world = persistMan.open();
             if (world != null) {
                 createWorld(world);
             }
         }
 
         public void onFileImport() {
-            World world = persistMan.importJudge(getWorld());
+            final World world = persistMan.importJudge(getWorld());
             if (world != null) {
                 world.setGameSetup(new DefaultGUIGameSetup());
                 createWorld(world);
@@ -1369,7 +1369,7 @@ public class ClientFrame extends JFrame {
         }
 
         public void onFileImportFloc() {
-            World world = persistMan.importFloc();
+            final World world = persistMan.importFloc();
             if (world != null) {
                 world.setGameSetup(new DefaultGUIGameSetup());
                 createWorld(world);
@@ -1442,7 +1442,7 @@ public class ClientFrame extends JFrame {
         //
         public void onOrdersValOpts() {
             if (getOrderDisplayPanel() != null) {
-                ValidationOptions newOpts = ValidationOptionsDialog
+                final ValidationOptions newOpts = ValidationOptionsDialog
                         .displayDialog(ClientFrame.this, valOpts);
                 fireValidationOptionsChanged(valOpts, newOpts);
                 valOpts = newOpts;
@@ -1469,7 +1469,7 @@ public class ClientFrame extends JFrame {
         //
         public void onHistorySelect() {
             if (orderDisplayPanel != null) {
-                Phase phase = SelectPhaseDialog.displayDialog(ClientFrame.this);
+                final Phase phase = SelectPhaseDialog.displayDialog(ClientFrame.this);
                 if (phase != null) {
                     fireTurnstateChanged(world.getTurnState(phase));
                 }
@@ -1480,7 +1480,7 @@ public class ClientFrame extends JFrame {
         //
         public void onViewNamesNone() {
             if (mapPanel != null) {
-                RenderCommand rc = mapPanel.getRenderCommandFactory()
+                final RenderCommand rc = mapPanel.getRenderCommandFactory()
                         .createRCSetLabel(mapPanel.getMapRenderer(),
                                 MapRenderer2.VALUE_LABELS_NONE);
                 execRenderCommand(rc);
@@ -1489,7 +1489,7 @@ public class ClientFrame extends JFrame {
 
         public void onViewNamesShort() {
             if (mapPanel != null) {
-                RenderCommand rc = mapPanel.getRenderCommandFactory()
+                final RenderCommand rc = mapPanel.getRenderCommandFactory()
                         .createRCSetLabel(mapPanel.getMapRenderer(),
                                 MapRenderer2.VALUE_LABELS_BRIEF);
                 execRenderCommand(rc);
@@ -1498,7 +1498,7 @@ public class ClientFrame extends JFrame {
 
         public void onViewNamesFull() {
             if (mapPanel != null) {
-                RenderCommand rc = mapPanel.getRenderCommandFactory()
+                final RenderCommand rc = mapPanel.getRenderCommandFactory()
                         .createRCSetLabel(mapPanel.getMapRenderer(),
                                 MapRenderer2.VALUE_LABELS_FULL);
                 execRenderCommand(rc);
@@ -1507,9 +1507,9 @@ public class ClientFrame extends JFrame {
 
         public void onViewSC() {
             if (mapPanel != null) {
-                boolean value = clientMenu
+                final boolean value = clientMenu
                         .getSelected(ClientMenu.VIEW_SUPPLY_CENTERS);
-                RenderCommand rc = mapPanel.getRenderCommandFactory()
+                final RenderCommand rc = mapPanel.getRenderCommandFactory()
                         .createRCSetDisplaySC(mapPanel.getMapRenderer(), value);
                 execRenderCommand(rc);
             }
@@ -1517,8 +1517,8 @@ public class ClientFrame extends JFrame {
 
         public void onViewUnits() {
             if (mapPanel != null) {
-                boolean value = clientMenu.getSelected(ClientMenu.VIEW_UNITS);
-                RenderCommand rc = mapPanel.getRenderCommandFactory()
+                final boolean value = clientMenu.getSelected(ClientMenu.VIEW_UNITS);
+                final RenderCommand rc = mapPanel.getRenderCommandFactory()
                         .createRCSetDisplayUnits(mapPanel.getMapRenderer(),
                                 value);
                 execRenderCommand(rc);
@@ -1527,9 +1527,9 @@ public class ClientFrame extends JFrame {
 
         public void onViewDislodged() {
             if (mapPanel != null) {
-                boolean value = clientMenu
+                final boolean value = clientMenu
                         .getSelected(ClientMenu.VIEW_DISLODGED_UNITS);
-                RenderCommand rc = mapPanel.getRenderCommandFactory()
+                final RenderCommand rc = mapPanel.getRenderCommandFactory()
                         .createRCSetDisplayDislodgedUnits(
                                 mapPanel.getMapRenderer(), value);
                 execRenderCommand(rc);
@@ -1540,9 +1540,9 @@ public class ClientFrame extends JFrame {
 
         public void onViewUnordered() {
             if (mapPanel != null) {
-                boolean value = clientMenu
+                final boolean value = clientMenu
                         .getSelected(ClientMenu.VIEW_UNORDERED);
-                RenderCommand rc = mapPanel.getRenderCommandFactory()
+                final RenderCommand rc = mapPanel.getRenderCommandFactory()
                         .createRCSetDisplayUnordered(mapPanel.getMapRenderer(),
                                 value);
                 execRenderCommand(rc);
@@ -1551,9 +1551,9 @@ public class ClientFrame extends JFrame {
 
         public void onViewInfluence() {
             if (mapPanel != null) {
-                boolean value = clientMenu
+                final boolean value = clientMenu
                         .getSelected(ClientMenu.VIEW_INFLUENCE);
-                RenderCommand rc = mapPanel.getRenderCommandFactory()
+                final RenderCommand rc = mapPanel.getRenderCommandFactory()
                         .createRCSetInfluenceMode(mapPanel.getMapRenderer(),
                                 value);
                 execRenderCommand(rc);
@@ -1568,9 +1568,9 @@ public class ClientFrame extends JFrame {
 
         public void onViewShowMap() {
             if (mapPanel != null) {
-                boolean value = clientMenu
+                final boolean value = clientMenu
                         .getSelected(ClientMenu.VIEW_SHOW_MAP);
-                RenderCommand rc = mapPanel.getRenderCommandFactory()
+                final RenderCommand rc = mapPanel.getRenderCommandFactory()
                         .createRCShowMap(mapPanel.getMapRenderer(), value);
                 execRenderCommand(rc);
             }
@@ -1623,8 +1623,8 @@ public class ClientFrame extends JFrame {
         /**
          * Helper method for View methods
          */
-        private void execRenderCommand(RenderCommand rc) {
-            MapRenderer2 mr2 = mapPanel.getMapRenderer();
+        private void execRenderCommand(final RenderCommand rc) {
+            final MapRenderer2 mr2 = mapPanel.getMapRenderer();
             mr2.execRenderCommand(rc);
         }// execRenderCommand
 

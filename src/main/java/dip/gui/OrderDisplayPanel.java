@@ -131,7 +131,7 @@ public class OrderDisplayPanel extends JPanel {
     /**
      * Creates an OrderDisplayPanel
      */
-    public OrderDisplayPanel(ClientFrame clientFrame) {
+    public OrderDisplayPanel(final ClientFrame clientFrame) {
         // init
         this.clientFrame = clientFrame;
         orderParser = OrderParser.getInstance();
@@ -189,17 +189,17 @@ public class OrderDisplayPanel extends JPanel {
      * @param undoable - <b>true</b> if this is an undoable action
      * @return <b>true</b> if the order was accepted
      */
-    public synchronized boolean addOrder(Orderable order, boolean undoable) {
+    public synchronized boolean addOrder(final Orderable order, final boolean undoable) {
         try {
             addOrderRaw(order, undoable);
             orderList.clearSelection();
             return true;
-        } catch (OrderWarning ow) {
+        } catch (final OrderWarning ow) {
             // order is still acceptable (and was accepted), but issue a warning message.
             Utils.popupError(clientFrame,
                     Utils.getLocalString(ORD_ERR_AMBIGUOUS), ow.getMessage());
             return true;
-        } catch (OrderException e) {
+        } catch (final OrderException e) {
             // invalid order; we must exit method here
             Utils.popupError(clientFrame, Utils.getLocalString(ORD_ERR_INVALID),
                     e.getMessage());
@@ -220,7 +220,7 @@ public class OrderDisplayPanel extends JPanel {
      * @param undoable  - <b>true</b> if this is an undoable action
      * @return <b>true</b> if the order was accepted
      */
-    public synchronized boolean addOrder(String orderText, boolean undoable) {
+    public synchronized boolean addOrder(final String orderText, final boolean undoable) {
         // null orders not permitted.
         if (orderText == null) {
             throw new IllegalArgumentException();
@@ -230,12 +230,12 @@ public class OrderDisplayPanel extends JPanel {
             addOrderRaw(orderText, undoable);
             orderList.clearSelection();
             return true;
-        } catch (OrderWarning ow) {
+        } catch (final OrderWarning ow) {
             // order is still acceptable (and was accepted), but issue a warning message.
             Utils.popupError(clientFrame,
                     Utils.getLocalString(ORD_ERR_AMBIGUOUS), ow.getMessage());
             return true;
-        } catch (OrderException e) {
+        } catch (final OrderException e) {
             // invalid order; we must exit method here
             Utils.popupError(clientFrame, Utils.getLocalString(ORD_ERR_INVALID),
                     e.getMessage());
@@ -255,8 +255,8 @@ public class OrderDisplayPanel extends JPanel {
      * @param undoable  - <b>true</b> if this is an undoable action
      * @throws OrderException - if the order fails validation
      */
-    public synchronized void addOrderRaw(String orderText,
-                                         boolean undoable) throws OrderException {
+    public synchronized void addOrderRaw(final String orderText,
+                                         final boolean undoable) throws OrderException {
         // null orders not permitted.
         if (orderText == null) {
             throw new IllegalArgumentException();
@@ -268,7 +268,7 @@ public class OrderDisplayPanel extends JPanel {
         }
 
         // parse order
-        Orderable order = orderParser
+        final Orderable order = orderParser
                 .parse(clientFrame.getGUIOrderFactory(), orderText, null,
                         turnState, false, true);
 
@@ -286,8 +286,8 @@ public class OrderDisplayPanel extends JPanel {
      * @param undoable - <b>true</b> if this is an undoable action
      * @throws OrderException - if the order fails validation
      */
-    public synchronized void addOrderRaw(Orderable order,
-                                         boolean undoable) throws OrderException {
+    public synchronized void addOrderRaw(final Orderable order,
+                                         final boolean undoable) throws OrderException {
         // null orders not permitted.
         if (order == null) {
             throw new IllegalArgumentException();
@@ -311,7 +311,7 @@ public class OrderDisplayPanel extends JPanel {
 
         try {
             order.validate(turnState, valOpts, world.getRuleOptions());
-        } catch (OrderWarning ow) {
+        } catch (final OrderWarning ow) {
             orderWarning = ow;
         }
 
@@ -324,7 +324,7 @@ public class OrderDisplayPanel extends JPanel {
         // actually add/replace the order in the turnstate
         // if an order already exists for this province (unit),
         // the old order is returned.
-        Orderable replacedOrder = addOrderToTS(order);
+        final Orderable replacedOrder = addOrderToTS(order);
 
         // HOWEVER, if the new order is an exact duplicate of the old
         // order, the addOrderToTS() will not replace the old order.
@@ -339,7 +339,7 @@ public class OrderDisplayPanel extends JPanel {
                     // we don't do anything;
 
                     // 2 actions involved in this case...
-                    CompoundEdit miniEdit = new CompoundEdit();
+                    final CompoundEdit miniEdit = new CompoundEdit();
                     miniEdit.addEdit(
                             new UndoDeleteOrder(undoManager, replacedOrder));
                     miniEdit.addEdit(new UndoAddOrder(undoManager, order));
@@ -379,8 +379,9 @@ public class OrderDisplayPanel extends JPanel {
      * @param undoable - <b>true</b> if this is an undoable action
      * @return A list of OrderExceptions, or null
      */
-    public synchronized Map<Orderable, OrderException> addOrdersRaw(Orderable[] orders,
-                                                                    boolean undoable) {
+    public synchronized Map<Orderable, OrderException> addOrdersRaw(
+            final Orderable[] orders,
+            final boolean undoable) {
         // null orders not permitted.
         if (orders == null) {
             throw new IllegalArgumentException();
@@ -391,26 +392,26 @@ public class OrderDisplayPanel extends JPanel {
             throw new IllegalStateException("not in editable state");
         }
 
-        LinkedHashMap<Orderable, OrderException> map = new LinkedHashMap<Orderable, OrderException>(19);
-        ArrayList<Orderable> ordersAdded = new ArrayList<Orderable>(orders.length);
-        ArrayList<Orderable> ordersDeleted = new ArrayList<Orderable>(orders.length);
+        final LinkedHashMap<Orderable, OrderException> map = new LinkedHashMap<>(
+                19);
+        final ArrayList<Orderable> ordersAdded = new ArrayList<>(orders.length);
+        final ArrayList<Orderable> ordersDeleted = new ArrayList<>(orders.length);
 
-        for (int i = 0; i < orders.length; i++) {
-            Orderable order = orders[i];
+        for (final Orderable order : orders) {
             boolean failed = false;
 
             try {
                 order.validate(turnState, valOpts, world.getRuleOptions());
                 checkAdjustments(order.getPower());
-            } catch (OrderWarning ow) {
+            } catch (final OrderWarning ow) {
                 map.put(order, ow);
-            } catch (OrderException oe) {
+            } catch (final OrderException oe) {
                 map.put(order, oe);
                 failed = true;
             }
 
             if (!failed) {
-                Orderable replacedOrder = addOrderToTS(order);
+                final Orderable replacedOrder = addOrderToTS(order);
 
                 // check for duplicates; these are ignored
                 if (!order.equals(replacedOrder)) {
@@ -432,7 +433,7 @@ public class OrderDisplayPanel extends JPanel {
                 clientFrame.fireMultipleOrdersDeleted(tmpDel);
             }
 
-            Orderable[] tmpAdd = (Orderable[]) ordersAdded
+            final Orderable[] tmpAdd = (Orderable[]) ordersAdded
                     .toArray(new Orderable[ordersAdded.size()]);
             clientFrame.fireMultipleOrdersCreated(tmpAdd);
 
@@ -441,7 +442,7 @@ public class OrderDisplayPanel extends JPanel {
                     undoManager.addEdit(
                             new UndoAddMultipleOrders(undoManager, tmpAdd));
                 } else {
-                    CompoundEdit bigEdit = new CompoundEdit();
+                    final CompoundEdit bigEdit = new CompoundEdit();
                     bigEdit.addEdit(
                             new UndoDeleteMultipleOrders(undoManager, tmpDel));
                     bigEdit.addEdit(
@@ -466,12 +467,12 @@ public class OrderDisplayPanel extends JPanel {
      * @param undoable - <b>true</b> if this is an undoable action
      * @return <b>true</b> if the order was found and removed
      */
-    public synchronized boolean removeOrder(Orderable order, boolean undoable) {
+    public synchronized boolean removeOrder(final Orderable order, final boolean undoable) {
         if (!isOrderable(order)) {
             return false;
         }
 
-        boolean found = removeOrderFromTS(order);
+        final boolean found = removeOrderFromTS(order);
         assert (found);
 
         if (undoable && found) {
@@ -497,14 +498,12 @@ public class OrderDisplayPanel extends JPanel {
      * @param undoable - <b>true</b> if this is an undoable action
      * @return <b>true</b> if <i>all</i> orders were found and removed
      */
-    public synchronized boolean removeOrders(Orderable[] orders,
-                                             boolean undoable) {
+    public synchronized boolean removeOrders(final Orderable[] orders,
+                                             final boolean undoable) {
         int count = 0;
-        ArrayList<Orderable> deletedOrderList = new ArrayList<Orderable>(orders.length);
+        final ArrayList<Orderable> deletedOrderList = new ArrayList<>(orders.length);
 
-        for (int i = 0; i < orders.length; i++) {
-            Orderable order = orders[i];
-
+        for (final Orderable order : orders) {
             if (isOrderable(order)) {
                 assert (removeOrderFromTS(order));
                 deletedOrderList.add(order);
@@ -512,7 +511,7 @@ public class OrderDisplayPanel extends JPanel {
             }
         }
 
-        Orderable[] deletedOrders = (Orderable[]) deletedOrderList
+        final Orderable[] deletedOrders = (Orderable[]) deletedOrderList
                 .toArray(new Orderable[deletedOrderList.size()]);
 
         if (undoable) {
@@ -541,16 +540,17 @@ public class OrderDisplayPanel extends JPanel {
      *
      * @param undoable - <b>true</b> if this is an undoable action
      */
-    public synchronized void removeAllOrders(boolean undoable) {
+    public synchronized void removeAllOrders(final boolean undoable) {
         Orderable[] deletedOrderArray = null;
 
         //synchronized(clientFrame.getLock())
         {
             // clear the orders from the turnstate.
             // keep cleared orders in a temporary arraylist
-            ArrayList<Orderable> deletedOrders = new ArrayList<>(100);
-            for (int i = 0; i < orderablePowers.length; i++) {
-                List<Orderable> orders = turnState.getOrders(orderablePowers[i]);
+            final ArrayList<Orderable> deletedOrders = new ArrayList<>(100);
+            for (Power orderablePower : orderablePowers) {
+                final List<Orderable> orders = turnState
+                        .getOrders(orderablePower);
                 if (orders.size() > 0) {
                     deletedOrders.addAll(orders);
                     orders.clear();
@@ -573,7 +573,7 @@ public class OrderDisplayPanel extends JPanel {
                 // Use "Clear All" as a display name. Note, though, that
                 // it doesn't nescessarily mean that we clear *all* orders, though,
                 // [depends upon orderablePowers setting]
-                CompoundEdit ce = new UndoClearAll();
+                final CompoundEdit ce = new UndoClearAll();
                 ce.addEdit(new UndoDeleteMultipleOrders(undoManager,
                         deletedOrderArray));
                 ce.end();
@@ -593,12 +593,12 @@ public class OrderDisplayPanel extends JPanel {
      * group. This is <b>always</b> an undoable action.
      */
     public synchronized void removeSelected() {
-        Object[] selected = orderList.getSelectedValues();
+        final Object[] selected = orderList.getSelectedValues();
         if (selected.length == 0) {
             return;
         }
 
-        Orderable[] selectedOrders = new Orderable[selected.length];
+        final Orderable[] selectedOrders = new Orderable[selected.length];
 
         // selected objects correspond to those in the order list
         // they should all be DisplayOrder objects.
@@ -655,7 +655,7 @@ public class OrderDisplayPanel extends JPanel {
      * for this to work properly. <code>null</code> values are
      * not permitted.
      */
-    public void setSorting(String sortType, boolean reversed) {
+    public void setSorting(final String sortType, final boolean reversed) {
         if (sortType != null) {
             DOComparator sortComparator = null;
 
@@ -686,7 +686,7 @@ public class OrderDisplayPanel extends JPanel {
      * <p>
      * defaultValue cannot be null.
      */
-    public static String parseSortValue(String in, String defaultValue) {
+    public static String parseSortValue(final String in, final String defaultValue) {
         if (defaultValue != SORT_POWER && defaultValue != SORT_PROVINCE && defaultValue != SORT_ORDER && defaultValue != SORT_UNIT && defaultValue != null) {
             throw new IllegalArgumentException();
         }
@@ -730,16 +730,16 @@ public class OrderDisplayPanel extends JPanel {
      * The main reason for this behavior is reduce rendering events
      * and undo/redo actions.
      */
-    private Orderable addOrderToTS(Orderable order) {
+    private Orderable addOrderToTS(final Orderable order) {
         boolean isDuplicate = false;
         Orderable replacedOrder = null;
 
         //synchronized(clientFrame.getLock())
         {
-            List orders = turnState.getOrders(order.getPower());
-            Iterator iter = orders.iterator();
+            final List orders = turnState.getOrders(order.getPower());
+            final Iterator iter = orders.iterator();
             while (iter.hasNext()) {
-                Orderable listOrder = (Orderable) iter.next();
+                final Orderable listOrder = (Orderable) iter.next();
                 if (listOrder.getSource().isProvinceEqual(order.getSource())) {
                     replacedOrder = listOrder;
                     isDuplicate = listOrder.equals(order);
@@ -766,10 +766,10 @@ public class OrderDisplayPanel extends JPanel {
      * for a unit (province) exist, only the first will be removed.
      * This returns <b>true</b> if the order was found and removed.
      */
-    private boolean removeOrderFromTS(Orderable order) {
+    private boolean removeOrderFromTS(final Orderable order) {
         //synchronized(clientFrame.getLock())
         {
-            List<Orderable> orders = turnState.getOrders(order.getPower());
+            final List<Orderable> orders = turnState.getOrders(order.getPower());
             return orders.remove(order);
         }
     }// removeOrderFromTS()
@@ -779,15 +779,15 @@ public class OrderDisplayPanel extends JPanel {
      * If power is not in the list of Orderable powers, return false.
      * Also return false if turnstate has been resolved.
      */
-    private boolean isOrderable(Orderable order) {
+    private boolean isOrderable(final Orderable order) {
         // we are reviewing orders
         if (turnState.isResolved()) {
             return false;
         }
 
 
-        for (int i = 0; i < orderablePowers.length; i++) {
-            if (orderablePowers[i] == order.getPower()) {
+        for (Power orderablePower : orderablePowers) {
+            if (orderablePower == order.getPower()) {
                 return true;
             }
         }
@@ -805,14 +805,14 @@ public class OrderDisplayPanel extends JPanel {
      * <p>
      * This only works during the Adjustment phase.
      */
-    private void checkAdjustments(Power power) throws OrderException {
+    private void checkAdjustments(final Power power) throws OrderException {
         if (adjMap != null) {
-            Adjustment.AdjustmentInfo adjInfo = adjMap.get(power);
-            int numOrders = turnState.getOrders(power).size();
-            int max = Math.abs(adjInfo.getAdjustmentAmount());
+            final Adjustment.AdjustmentInfo adjInfo = adjMap.get(power);
+            final int numOrders = turnState.getOrders(power).size();
+            final int max = Math.abs(adjInfo.getAdjustmentAmount());
 
             if (numOrders >= max) {
-                String dlgtext = MessageFormat.format(Utils.getText(
+                final String dlgtext = MessageFormat.format(Utils.getText(
                         Utils.getLocalString(DLG_TOOMANY_TEXT_LOCATION)),
                         new Object[]{power, new Integer(max)});
 
@@ -827,49 +827,49 @@ public class OrderDisplayPanel extends JPanel {
      */
     protected class ODPPropertyListener extends AbstractCFPListener {
 
-        public void actionOrderCreated(Orderable order) {
+        public void actionOrderCreated(final Orderable order) {
             orderListModel.addOrder(order);
         }// actionOrderCreated()
 
-        public void actionOrderDeleted(Orderable order) {
+        public void actionOrderDeleted(final Orderable order) {
             orderListModel.removeOrder(order);
         }// actionOrderDeleted()
 
-        public void actionOrdersCreated(Orderable[] orders) {
+        public void actionOrdersCreated(final Orderable[] orders) {
             orderListModel.addOrders(orders);
         }// actionOrdersCreated()
 
-        public void actionOrdersDeleted(Orderable[] orders) {
+        public void actionOrdersDeleted(final Orderable[] orders) {
             orderListModel.removeOrders(orders);
         }// actionOrdersDeleted()
 
-        public void actionOrderablePowersChanged(Power[] oldPowers,
-                                                 Power[] newPowers) {
+        public void actionOrderablePowersChanged(final Power[] oldPowers,
+                                                 final Power[] newPowers) {
             orderablePowers = newPowers;
         }// actionOrderablePowersChanged()
 
-        public void actionDisplayablePowersChanged(Power[] oldPowers,
-                                                   Power[] newPowers) {
+        public void actionDisplayablePowersChanged(final Power[] oldPowers,
+                                                   final Power[] newPowers) {
             displayablePowers = newPowers;
             if (turnState != null) {
                 orderListModel.updateFromTurnState();
             }
         }// actionDisplayablePowersChanged()
 
-        public void actionValOptsChanged(ValidationOptions options) {
+        public void actionValOptsChanged(final ValidationOptions options) {
             valOpts = options;
             if (turnState != null) {
                 orderListModel.revalidateAllOrders();
             }
         }// actionValOptsChanged()
 
-        public synchronized void actionWorldCreated(World w) {
+        public synchronized void actionWorldCreated(final World w) {
             world = w;
             undoManager = clientFrame.getUndoRedoManager();
             valOpts = clientFrame.getValidationOptions();
         }// actionWorldCreated()
 
-        public void actionWorldDestroyed(World w) {
+        public void actionWorldDestroyed(final World w) {
             orderListModel.removeAllOrders();
             orderListModel.setSortComparator(new DOSortProvince());
 
@@ -880,7 +880,7 @@ public class OrderDisplayPanel extends JPanel {
             orderablePowers = null;
         }// actionWorldDestroyed()
 
-        public void actionTurnstateChanged(TurnState ts) {
+        public void actionTurnstateChanged(final TurnState ts) {
             turnState = ts;
             if (turnState.getPhase()
                     .getPhaseType() == Phase.PhaseType.ADJUSTMENT) {
@@ -895,7 +895,7 @@ public class OrderDisplayPanel extends JPanel {
             orderList.clearSelection();
         }// actionTurnstateChanged()
 
-        public synchronized void actionModeChanged(String newMode) {
+        public synchronized void actionModeChanged(final String newMode) {
             if (newMode == ClientFrame.MODE_ORDER) {
                 isEditable = true;
                 orderList.setEnabled(true);
@@ -941,7 +941,7 @@ public class OrderDisplayPanel extends JPanel {
          * Create an OrderListModel object
          */
         public OrderListModel() {
-            list = new ArrayList<DisplayOrder>(50);
+            list = new ArrayList<>(50);
             comparator = new DOSortProvince();    // default comparator
         }// OrderListModel()
 
@@ -955,14 +955,14 @@ public class OrderDisplayPanel extends JPanel {
         /**
          * Returns the object (DisplayOrder) at the given index.
          */
-        public Object getElementAt(int index) {
+        public Object getElementAt(final int index) {
             return list.get(index);
         }// getElementAt()
 
         /**
          * Set the Sort Comparator. Null comparators are not allowed.
          */
-        public void setSortComparator(DOComparator comp) {
+        public void setSortComparator(final DOComparator comp) {
             if (comp == null) {
                 throw new IllegalArgumentException("null comp");
             }
@@ -980,7 +980,7 @@ public class OrderDisplayPanel extends JPanel {
          * <p>
          * A null comparator is not allowed.
          */
-        public void sort(DOComparator comp) {
+        public void sort(final DOComparator comp) {
             if (comp == null) {
                 throw new IllegalArgumentException("null comp");
             }
@@ -1017,7 +1017,7 @@ public class OrderDisplayPanel extends JPanel {
          * that is in the list of Powers that are allowed to be displayed
          * will be added to the list.
          */
-        public void addOrder(Orderable order) {
+        public void addOrder(final Orderable order) {
             if (isDisplayable(order)) {
                 synchronized (list) {
                     list.add(createDisplayOrder(order));
@@ -1031,13 +1031,13 @@ public class OrderDisplayPanel extends JPanel {
          * that are in the list of Powers that are allowed to be displayed
          * are added to the list.
          */
-        public void addOrders(Orderable[] orders) {
+        public void addOrders(final Orderable[] orders) {
             int addCount = 0;
 
             synchronized (list) {
-                for (int i = 0; i < orders.length; i++) {
-                    if (isDisplayable(orders[i])) {
-                        list.add(createDisplayOrder(orders[i]));
+                for (Orderable order : orders) {
+                    if (isDisplayable(order)) {
+                        list.add(createDisplayOrder(order));
                         addCount++;
                     }
                 }
@@ -1052,13 +1052,13 @@ public class OrderDisplayPanel extends JPanel {
         /**
          * Removes all DisplayOrders matching this order.
          */
-        public void removeOrder(Orderable order) {
+        public void removeOrder(final Orderable order) {
             // note: if duplicates are present, this will remove duplicates
             // no displayed-power checking is required here
             synchronized (list) {
-                Iterator<DisplayOrder> iter = list.iterator();
+                final Iterator<DisplayOrder> iter = list.iterator();
                 while (iter.hasNext()) {
-                    DisplayOrder displayOrder = iter.next();
+                    final DisplayOrder displayOrder = iter.next();
                     if (displayOrder.getOrder() == order) {
                         iter.remove();
                     }
@@ -1075,13 +1075,13 @@ public class OrderDisplayPanel extends JPanel {
             // note: if duplicates are present, this will remove duplicates
             // no displayed-power checking is required here
             synchronized (list) {
-                Iterator<DisplayOrder> iter = list.iterator();
+                final Iterator<DisplayOrder> iter = list.iterator();
                 while (iter.hasNext()) {
-                    DisplayOrder displayOrder = iter.next();
+                    final DisplayOrder displayOrder = iter.next();
                     final Orderable doOrder = displayOrder.getOrder();
 
-                    for (int i = 0; i < orders.length; i++) {
-                        if (doOrder == orders[i]) {
+                    for (Orderable order : orders) {
+                        if (doOrder == order) {
                             iter.remove();
                         }
                     }
@@ -1114,9 +1114,9 @@ public class OrderDisplayPanel extends JPanel {
             synchronized (list) {
                 list.clear();
 
-                Iterator<Orderable> iter = turnState.getAllOrders().iterator();
+                final Iterator<Orderable> iter = turnState.getAllOrders().iterator();
                 while (iter.hasNext()) {
-                    Orderable order = iter.next();
+                    final Orderable order = iter.next();
                     if (isDisplayable(order)) {
                         list.add(createDisplayOrder(order));
                     }
@@ -1132,15 +1132,15 @@ public class OrderDisplayPanel extends JPanel {
          */
         public void revalidateAllOrders() {
             synchronized (list) {
-                Iterator<DisplayOrder> iter = list.iterator();
+                final Iterator<DisplayOrder> iter = list.iterator();
                 while (iter.hasNext()) {
-                    DisplayOrder displayOrder = iter.next();
+                    final DisplayOrder displayOrder = iter.next();
 
                     try {
                         displayOrder.getOrder().validate(turnState, valOpts,
                                 world.getRuleOptions());
                         displayOrder.setInvalid(false);
-                    } catch (OrderException e) {
+                    } catch (final OrderException e) {
                         displayOrder.setInvalid(true);
                     }
                 }
@@ -1163,8 +1163,8 @@ public class OrderDisplayPanel extends JPanel {
          * Checks if an Order is in the Displayed Power array.
          */
         private boolean isDisplayable(final Orderable order) {
-            for (int i = 0; i < displayablePowers.length; i++) {
-                if (order.getPower() == displayablePowers[i]) {
+            for (Power displayablePower : displayablePowers) {
+                if (order.getPower() == displayablePower) {
                     return true;
                 }
             }
@@ -1176,13 +1176,13 @@ public class OrderDisplayPanel extends JPanel {
          * Creates a DisplayOrder and sets whether it is valid
          * and/or if it has failed.
          */
-        private DisplayOrder createDisplayOrder(Orderable order) {
-            DisplayOrder displayOrder = new DisplayOrder(order);
+        private DisplayOrder createDisplayOrder(final Orderable order) {
+            final DisplayOrder displayOrder = new DisplayOrder(order);
 
             // validate
             try {
                 order.validate(turnState, valOpts, world.getRuleOptions());
-            } catch (OrderException e) {
+            } catch (final OrderException e) {
                 displayOrder.setInvalid(true);
             }
 
@@ -1202,11 +1202,11 @@ public class OrderDisplayPanel extends JPanel {
      */
     private class OrderListRenderer extends DefaultListCellRenderer {
 
-        public Component getListCellRendererComponent(JList list, Object value,
-                                                      int index,
-                                                      boolean isSelected,
-                                                      boolean cellHasFocus) {
-            Component component = super
+        public Component getListCellRendererComponent(final JList list, final Object value,
+                                                      final int index,
+                                                      final boolean isSelected,
+                                                      final boolean cellHasFocus) {
+            final Component component = super
                     .getListCellRendererComponent(list, value, index,
                             isSelected, cellHasFocus);
 
@@ -1220,12 +1220,12 @@ public class OrderDisplayPanel extends JPanel {
             }
 
             // set text, w/ or w/o conversion, depending upon if we are unicode-aware
-            Font f = component.getFont();
+            final Font f = component.getFont();
             if (!f.canDisplay('\u2192')) {
                 // search for unicode-arrow; replace with "->"
-                String text = ((JLabel) this).getText();
+                final String text = ((JLabel) this).getText();
                 if (text != null) {
-                    StringBuffer buffer = new StringBuffer(text);
+                    final StringBuffer buffer = new StringBuffer(text);
                     boolean isChanged = false;
 
                     for (int i = buffer.length() - 1; i >= 0; i--) {
@@ -1278,7 +1278,7 @@ public class OrderDisplayPanel extends JPanel {
         /**
          * Create a DisplayOrder
          */
-        public DisplayOrder(Orderable order) {
+        public DisplayOrder(final Orderable order) {
             if (order == null) {
                 throw new IllegalArgumentException("null order");
             }
@@ -1296,7 +1296,7 @@ public class OrderDisplayPanel extends JPanel {
         /**
          * Set if the order is invalid (failed validation)
          */
-        public void setInvalid(boolean value) {
+        public void setInvalid(final boolean value) {
             isInvalid = value;
         }
 
@@ -1310,7 +1310,7 @@ public class OrderDisplayPanel extends JPanel {
         /**
          * Set if the order should be highlighted
          */
-        public void setHighlighted(boolean value) {
+        public void setHighlighted(final boolean value) {
             isHilite = value;
         }
 
@@ -1324,7 +1324,7 @@ public class OrderDisplayPanel extends JPanel {
         /**
          * Set if the order failed
          */
-        public void setFailed(boolean value) {
+        public void setFailed(final boolean value) {
             isFailed = value;
         }
 
@@ -1332,7 +1332,7 @@ public class OrderDisplayPanel extends JPanel {
          * Return HTML formatted text to display.
          */
         public String toString() {
-            StringBuffer sb = new StringBuffer(128);
+            final StringBuffer sb = new StringBuffer(128);
             sb.append("<html>");
 
             if (isInvalid) {
@@ -1374,7 +1374,7 @@ public class OrderDisplayPanel extends JPanel {
          * The compare method. This essentially returns the result of
          * compareDisplayOrders() unless the sort is reversed.
          */
-        public final int compare(Object o1, Object o2) {
+        public final int compare(final Object o1, final Object o2) {
             final int result = compareDisplayOrders((DisplayOrder) o1,
                     (DisplayOrder) o2);
             return ((isAscending) ? result : -result);
@@ -1383,7 +1383,7 @@ public class OrderDisplayPanel extends JPanel {
         /**
          * Sets the sort direction. Ascending by default.
          */
-        public final void setAscending(boolean value) {
+        public final void setAscending(final boolean value) {
             isAscending = value;
         }
 
@@ -1398,19 +1398,19 @@ public class OrderDisplayPanel extends JPanel {
          * Mark the highlighted items in a collection of orders.
          * NOTE: the Iterator must return DisplayOrder objects.
          */
-        public void setHighlighting(Iterator<DisplayOrder> iter) {
+        public void setHighlighting(final Iterator<DisplayOrder> iter) {
             boolean toHilite = true;
             Object lastObject = null;
 
             if (iter.hasNext()) {
-                DisplayOrder first = iter.next();
+                final DisplayOrder first = iter.next();
                 first.setHighlighted(toHilite);
                 lastObject = getComparisonObject(first);
             }
 
             while (iter.hasNext()) {
-                DisplayOrder next = iter.next();
-                Object nextObject = getComparisonObject(next);
+                final DisplayOrder next = iter.next();
+                final Object nextObject = getComparisonObject(next);
 
                 if (!lastObject.equals(nextObject)) {
                     toHilite = !toHilite;
@@ -1430,7 +1430,7 @@ public class OrderDisplayPanel extends JPanel {
         /**
          * Determine if we are the same Comparator type
          */
-        public boolean equals(Object obj) {
+        public boolean equals(final Object obj) {
             return (obj instanceof DOSortPower);
         }// equals()
 
@@ -1438,14 +1438,14 @@ public class OrderDisplayPanel extends JPanel {
          * DOComparator Implementation. Passed parameters are
          * assumed to be DisplayOrder objects.
          */
-        protected int compareDisplayOrders(DisplayOrder do1, DisplayOrder do2) {
-            Power p1 = do1.getOrder().getPower();
-            Power p2 = do2.getOrder().getPower();
+        protected int compareDisplayOrders(final DisplayOrder do1, final DisplayOrder do2) {
+            final Power p1 = do1.getOrder().getPower();
+            final Power p2 = do2.getOrder().getPower();
 
             return p1.compareTo(p2);
         }// compare()
 
-        protected Object getComparisonObject(DisplayOrder displayedOrder) {
+        protected Object getComparisonObject(final DisplayOrder displayedOrder) {
             return displayedOrder.getOrder().getPower();
         }// getComparisonObject()
     }// inner class DOSortPower
@@ -1458,16 +1458,16 @@ public class OrderDisplayPanel extends JPanel {
         /**
          * Determine if we are the same Comparator type
          */
-        public boolean equals(Object obj) {
+        public boolean equals(final Object obj) {
             return (obj instanceof DOSortProvince);
         }// equals()
 
         /**
          * DOComparator Implementation.
          */
-        protected int compareDisplayOrders(DisplayOrder do1, DisplayOrder do2) {
-            Province pr1 = do1.getOrder().getSource().getProvince();
-            Province pr2 = do2.getOrder().getSource().getProvince();
+        protected int compareDisplayOrders(final DisplayOrder do1, final DisplayOrder do2) {
+            final Province pr1 = do1.getOrder().getSource().getProvince();
+            final Province pr2 = do2.getOrder().getSource().getProvince();
 
             return pr1.compareTo(pr2);
         }// compare()
@@ -1475,7 +1475,7 @@ public class OrderDisplayPanel extends JPanel {
         /**
          * DOComparator Implementation.
          */
-        protected Object getComparisonObject(DisplayOrder displayedOrder) {
+        protected Object getComparisonObject(final DisplayOrder displayedOrder) {
             return displayedOrder.getOrder().getSource().getProvince();
         }// getComparisonObject()
     }// inner class DOSortProvince
@@ -1488,16 +1488,16 @@ public class OrderDisplayPanel extends JPanel {
         /**
          * Determine if we are the same Comparator type
          */
-        public boolean equals(Object obj) {
+        public boolean equals(final Object obj) {
             return (obj instanceof DOSortUnit);
         }// equals()
 
         /**
          * DOComparator Implementation.
          */
-        protected int compareDisplayOrders(DisplayOrder do1, DisplayOrder do2) {
-            String name1 = do1.getOrder().getSourceUnitType().getFullName();
-            String name2 = do2.getOrder().getSourceUnitType().getFullName();
+        protected int compareDisplayOrders(final DisplayOrder do1, final DisplayOrder do2) {
+            final String name1 = do1.getOrder().getSourceUnitType().getFullName();
+            final String name2 = do2.getOrder().getSourceUnitType().getFullName();
 
             return name1.compareTo(name2);
         }// compare()
@@ -1505,7 +1505,7 @@ public class OrderDisplayPanel extends JPanel {
         /**
          * DOComparator Implementation.
          */
-        protected Object getComparisonObject(DisplayOrder displayedOrder) {
+        protected Object getComparisonObject(final DisplayOrder displayedOrder) {
             return displayedOrder.getOrder().getSourceUnitType();
         }// getComparisonObject()
     }// inner class DOSortUnit
@@ -1518,16 +1518,16 @@ public class OrderDisplayPanel extends JPanel {
         /**
          * Determine if we are the same Comparator type
          */
-        public boolean equals(Object obj) {
+        public boolean equals(final Object obj) {
             return (obj instanceof DOSortOrder);
         }// equals()
 
         /**
          * DOComparator Implementation.
          */
-        protected int compareDisplayOrders(DisplayOrder do1, DisplayOrder do2) {
-            String ordName1 = do1.getOrder().getFullName();
-            String ordName2 = do2.getOrder().getFullName();
+        protected int compareDisplayOrders(final DisplayOrder do1, final DisplayOrder do2) {
+            final String ordName1 = do1.getOrder().getFullName();
+            final String ordName2 = do2.getOrder().getFullName();
 
             return ordName1.compareTo(ordName2);
         }// compare()
@@ -1535,7 +1535,7 @@ public class OrderDisplayPanel extends JPanel {
         /**
          * DOComparator Implementation.
          */
-        protected Object getComparisonObject(DisplayOrder displayedOrder) {
+        protected Object getComparisonObject(final DisplayOrder displayedOrder) {
             return displayedOrder.getOrder().getBriefName();
         }// getComparisonObject()
     }// inner class DOSortOrder
@@ -1549,15 +1549,15 @@ public class OrderDisplayPanel extends JPanel {
      */
     protected void makeLayout() {
         // start layout
-        int w1[] = {0};
-        int h1[] = {0, 5, 0};    // 3 pixels between scroll list & sort buttons
+        final int[] w1 = {0};
+        final int[] h1 = {0, 5, 0};    // 3 pixels between scroll list & sort buttons
 
-        HIGLayout hl = new HIGLayout(w1, h1);
+        final HIGLayout hl = new HIGLayout(w1, h1);
         hl.setColumnWeight(1, 1);
         hl.setRowWeight(1, 1);
         setLayout(hl);
 
-        HIGConstraints c = new HIGConstraints();
+        final HIGConstraints c = new HIGConstraints();
 
         add(orderListScrollPane, c.rc(1, 1, "lrtb"));
         add(makeSortPanel(), c.rc(3, 1));
@@ -1570,10 +1570,10 @@ public class OrderDisplayPanel extends JPanel {
      */
     protected JPanel makeSortPanel() {
         // label
-        JLabel label = new JLabel(Utils.getLocalString(LABEL_SORT));
+        final JLabel label = new JLabel(Utils.getLocalString(LABEL_SORT));
 
         // combobox
-        JComboBox<String> sortCombo = new JComboBox<String>();
+        final JComboBox<String> sortCombo = new JComboBox<>();
         sortCombo.setEditable(false);
         sortCombo.addItem(Utils.getLocalString(LABEL_SORT_POWER));
         sortCombo.addItem(Utils.getLocalString(LABEL_SORT_PROVINCE));
@@ -1581,8 +1581,8 @@ public class OrderDisplayPanel extends JPanel {
         sortCombo.addItem(Utils.getLocalString(LABEL_SORT_ORDER));
         sortCombo.setSelectedItem(Utils.getLocalString(LABEL_SORT_PROVINCE));
         sortCombo.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                String item = (String) ((JComboBox) e.getSource())
+            public void actionPerformed(final ActionEvent e) {
+                final String item = (String) ((JComboBox) e.getSource())
                         .getSelectedItem();
                 if (item == Utils.getLocalString(LABEL_SORT_POWER)) {
                     orderListModel.sort(new DOSortPower());
@@ -1597,7 +1597,7 @@ public class OrderDisplayPanel extends JPanel {
         });
 
         // layout
-        JPanel sortPanel = new JPanel(null);
+        final JPanel sortPanel = new JPanel(null);
         sortPanel.setLayout(new BoxLayout(sortPanel, BoxLayout.X_AXIS));
         sortPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
         sortPanel.add(label);

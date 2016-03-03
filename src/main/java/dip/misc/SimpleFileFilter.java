@@ -95,7 +95,7 @@ public class SimpleFileFilter extends FileFilter implements FilenameFilter {
      * Note: Extension should not contain a period. Thus "jdip" is valid,
      * but ".jdip" is an invalid extension.
      */
-    public SimpleFileFilter(String extension, String description) {
+    public SimpleFileFilter(final String extension, final String description) {
         if (extension == null || description == null || extension
                 .length() == 0) {
             throw new IllegalArgumentException();
@@ -128,7 +128,7 @@ public class SimpleFileFilter extends FileFilter implements FilenameFilter {
     /**
      * Implementation of FileFilter
      */
-    public boolean accept(File f) {
+    public boolean accept(final File f) {
         if (f != null) {
             if (f.isDirectory()) {
                 return true;
@@ -142,7 +142,7 @@ public class SimpleFileFilter extends FileFilter implements FilenameFilter {
     /**
      * Implementation of FilenameFilter
      */
-    public boolean accept(File dir, String name) {
+    public boolean accept(final File dir, final String name) {
         if (name == null || dir == null) {
             return true;
         } else {
@@ -153,7 +153,7 @@ public class SimpleFileFilter extends FileFilter implements FilenameFilter {
     /**
      * Checks if user added extension; if not, the extension is added.
      */
-    public File appendExtension(File file) {
+    public File appendExtension(final File file) {
         if (!ext.equalsIgnoreCase(getExtension(file))) {
             return new File(file.getAbsolutePath() + '.' + ext);
         }
@@ -165,7 +165,7 @@ public class SimpleFileFilter extends FileFilter implements FilenameFilter {
      * Gets the extension from a given file. Does not include last ".".
      * Returns an empty string ("") if no extension found.
      */
-    public static String getExtension(File file) {
+    public static String getExtension(final File file) {
         final String filename = file.getName();
         final int idx = filename.lastIndexOf('.');
 
@@ -180,14 +180,14 @@ public class SimpleFileFilter extends FileFilter implements FilenameFilter {
     /**
      * case-insensitive extension match to dotted extension
      */
-    private boolean isMatch(File file) {
+    private boolean isMatch(final File file) {
         return isMatch(file.getName());
     }// isMatch()
 
     /**
      * case-insensitive extension match to dotted extension
      */
-    private boolean isMatch(String filename) {
+    private boolean isMatch(final String filename) {
         final int fnLen = filename.length();
         final int dextLen = dottedExt.length();
 

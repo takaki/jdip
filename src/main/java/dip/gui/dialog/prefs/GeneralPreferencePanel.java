@@ -140,7 +140,7 @@ public class GeneralPreferencePanel extends PreferencePanel {
         saveDir.setEditable(false);
         browseSaveDir = new JButton(Utils.getLocalString(GPP_SAVE_DIR_BUTTON));
         browseSaveDir.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(final ActionEvent e) {
                 directoryBrowse();
             }// actionPerformed()
         });
@@ -148,7 +148,7 @@ public class GeneralPreferencePanel extends PreferencePanel {
 
         clearMRU = new JButton(Utils.getLocalString(GPP_CLEAR_MRU_BUTTON));
         clearMRU.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(final ActionEvent e) {
                 clearFileList();
                 cf.getClientMenu().updateRecentFiles();
             }// actionPerformed()
@@ -166,7 +166,7 @@ public class GeneralPreferencePanel extends PreferencePanel {
         // order sorting :: implement
         arr = new String[]{OrderDisplayPanel.SORT_POWER, OrderDisplayPanel.SORT_PROVINCE, OrderDisplayPanel.SORT_UNIT, OrderDisplayPanel.SORT_ORDER};
 
-        String[] arr2 = new String[]{Utils.getLocalString(
+        final String[] arr2 = new String[]{Utils.getLocalString(
                 OrderDisplayPanel.LABEL_SORT_POWER), Utils.getLocalString(
                 OrderDisplayPanel.LABEL_SORT_PROVINCE), Utils.getLocalString(
                 OrderDisplayPanel.LABEL_SORT_UNIT), Utils.getLocalString(
@@ -184,35 +184,35 @@ public class GeneralPreferencePanel extends PreferencePanel {
         getSettings();
 
         // mini-panels
-        JPanel clrPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        final JPanel clrPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         clrPanel.add(new JLabel(Utils.getLocalString(GPP_CLEAR_MRU_TEXT)));
         clrPanel.add(Box.createHorizontalStrut(5));
         clrPanel.add(clearMRU);
 
-        JPanel orderP = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        final JPanel orderP = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         orderP.add(new JLabel(Utils.getLocalString(GPP_ORDER_SORT_LABEL)));
         orderP.add(Box.createHorizontalStrut(5));
         orderP.add(orderSorting);
         orderP.add(Box.createHorizontalStrut(10));
         orderP.add(reverseSort);
 
-        JPanel mapP = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        final JPanel mapP = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         mapP.add(new JLabel(Utils.getLocalString(GPP_MAP_LABEL)));
         mapP.add(Box.createHorizontalStrut(5));
         mapP.add(mapLabels);
 
         // layout
-        int h1[] = {BORDER, 0, 8, 0, 8, 0, 8, 0, 3, 0, 7, 36,    // upto row 12
+        final int[] h1 = {BORDER, 0, 8, 0, 8, 0, 8, 0, 3, 0, 7, 36,    // upto row 12
                 0, 3, 0, 10, 0, 8, 0, BORDER};
-        int w1[] = {BORDER, 10, 0, 5, 0, BORDER};
+        final int[] w1 = {BORDER, 10, 0, 5, 0, BORDER};
 
-        HIGLayout l1 = new HIGLayout(w1, h1);
+        final HIGLayout l1 = new HIGLayout(w1, h1);
         l1.setColumnWeight(3, 1);
         l1.setRowWeight(19, 1);
         setLayout(l1);
 
 
-        HIGConstraints c = new HIGConstraints();
+        final HIGConstraints c = new HIGConstraints();
         add(saveWindowSettings, c.rcwh(2, 2, 4, 1, "l"));
         add(showResolution, c.rcwh(4, 2, 4, 1, "l"));
 
@@ -239,17 +239,17 @@ public class GeneralPreferencePanel extends PreferencePanel {
 
     private void directoryBrowse() {
         // setup
-        JDirectoryChooser chooser = new JDirectoryChooser();
+        final JDirectoryChooser chooser = new JDirectoryChooser();
         chooser.setMultiSelectionEnabled(false);
 
         // set directory
-        String path = saveDir.getText();
+        final String path = saveDir.getText();
         if (!"".equals(path)) {
             chooser.setCurrentDirectory(new File(path));
         }
 
         chooser.setDialogTitle(Utils.getLocalString(DIALOG_TITLE));
-        int choice = chooser.showDialog(cf,
+        final int choice = chooser.showDialog(cf,
                 Utils.getLocalString(XJFileChooser.BTN_DIR_SELECT));
         if (choice == JDirectoryChooser.APPROVE_OPTION) {
             saveDir.setText(chooser.getSelectedFile().getAbsolutePath());
@@ -258,7 +258,7 @@ public class GeneralPreferencePanel extends PreferencePanel {
 
 
     public void apply() {
-        Preferences prefs = SharedPrefs.getUserNode();
+        final Preferences prefs = SharedPrefs.getUserNode();
 
         // apply settings
         prefs.putBoolean(NODE_SAVE_WINDOW_SETTINGS,
@@ -276,7 +276,7 @@ public class GeneralPreferencePanel extends PreferencePanel {
 
         try {
             prefs.flush();
-        } catch (BackingStoreException bse) {
+        } catch (final BackingStoreException bse) {
         }
     }// apply()
 
@@ -303,10 +303,10 @@ public class GeneralPreferencePanel extends PreferencePanel {
 
 
     private void getSettings() {
-        Preferences prefs = SharedPrefs.getUserNode();
+        final Preferences prefs = SharedPrefs.getUserNode();
         try {
             prefs.sync();
-        } catch (BackingStoreException bse) {
+        } catch (final BackingStoreException bse) {
         }
 
         saveWindowSettings.setSelected(
@@ -339,7 +339,7 @@ public class GeneralPreferencePanel extends PreferencePanel {
      * Preferences. Never returns null.
      */
     public static String getMapLabelSetting() {
-        Preferences prefs = SharedPrefs.getUserNode();
+        final Preferences prefs = SharedPrefs.getUserNode();
         final String mlSetting = MapRenderer2
                 .parseLabelValue(prefs.get(NODE_MAP_LABEL_LEVEL, null),
                         MapRenderer2.VALUE_LABELS_NONE);
@@ -352,7 +352,7 @@ public class GeneralPreferencePanel extends PreferencePanel {
      * Returns <code>true</code> if sort direction is reversed.
      */
     public static boolean getOrderSortReverse() {
-        Preferences prefs = SharedPrefs.getUserNode();
+        final Preferences prefs = SharedPrefs.getUserNode();
         return prefs.getBoolean(NODE_ORDER_SORTING_REVERSE, false);
     }// getOrderSortReverse()
 
@@ -362,7 +362,7 @@ public class GeneralPreferencePanel extends PreferencePanel {
      * Never returns null.
      */
     public static String getOrderSortMode() {
-        Preferences prefs = SharedPrefs.getUserNode();
+        final Preferences prefs = SharedPrefs.getUserNode();
         final String osSetting = OrderDisplayPanel
                 .parseSortValue(prefs.get(NODE_ORDER_SORTING, null),
                         OrderDisplayPanel.SORT_PROVINCE);
@@ -370,14 +370,14 @@ public class GeneralPreferencePanel extends PreferencePanel {
     }// getOrderSortMode()
 
 
-    public static void getWindowSettings(Component c) {
-        Preferences prefs = SharedPrefs.getUserNode();
+    public static void getWindowSettings(final Component c) {
+        final Preferences prefs = SharedPrefs.getUserNode();
 
         if (prefs.getBoolean(NODE_SAVE_WINDOW_SETTINGS, false)) {
-            int x = prefs.getInt(NODE_WINDOW_X, 50);
-            int y = prefs.getInt(NODE_WINDOW_Y, 50);
-            int w = prefs.getInt(NODE_WINDOW_WIDTH, 600);
-            int h = prefs.getInt(NODE_WINDOW_HEIGHT, 400);
+            final int x = prefs.getInt(NODE_WINDOW_X, 50);
+            final int y = prefs.getInt(NODE_WINDOW_Y, 50);
+            final int w = prefs.getInt(NODE_WINDOW_WIDTH, 600);
+            final int h = prefs.getInt(NODE_WINDOW_HEIGHT, 400);
             c.setSize(w, h);
             c.setLocation(x, y);
         } else {
@@ -387,8 +387,8 @@ public class GeneralPreferencePanel extends PreferencePanel {
     }// getWindowSettings()
 
 
-    public static void saveWindowSettings(Component c) {
-        Preferences prefs = SharedPrefs.getUserNode();
+    public static void saveWindowSettings(final Component c) {
+        final Preferences prefs = SharedPrefs.getUserNode();
 
         if (prefs.getBoolean(NODE_SAVE_WINDOW_SETTINGS, false)) {
             prefs.putInt(NODE_WINDOW_X, c.getX());
@@ -398,7 +398,7 @@ public class GeneralPreferencePanel extends PreferencePanel {
         }
         try {
             prefs.flush();
-        } catch (BackingStoreException bse) {
+        } catch (final BackingStoreException bse) {
         }
     }// saveWindowSettings()
 
@@ -408,15 +408,15 @@ public class GeneralPreferencePanel extends PreferencePanel {
     public static String[] getRecentFileNamesFromPrefs() {
         if (fileCache == null) {
             // load from preferences
-            Preferences prefs = SharedPrefs.getUserNode();
+            final Preferences prefs = SharedPrefs.getUserNode();
 
             // get files
-            ArrayList al = new ArrayList(NUM_RECENT_FILES);
+            final ArrayList al = new ArrayList(NUM_RECENT_FILES);
             for (int i = 0; i < NUM_RECENT_FILES; i++) {
-                String s = prefs.get(NODE_RECENT_FILE + String.valueOf(i), "");
+                final String s = prefs.get(NODE_RECENT_FILE + String.valueOf(i), "");
                 if (s != null && s.length() > 0) {
                     // do NOT add file if it doesn't exist.
-                    File file = new File(s);
+                    final File file = new File(s);
                     if (file.exists()) {
                         al.add(file);
                     }
@@ -425,9 +425,9 @@ public class GeneralPreferencePanel extends PreferencePanel {
 
             // add to cache & create a String of just the name
             fileCache = new LRUCache(NUM_RECENT_FILES);
-            String[] s = new String[al.size()];
+            final String[] s = new String[al.size()];
             for (int i = 0; i < al.size(); i++) {
-                File file = (File) al.get(i);
+                final File file = (File) al.get(i);
                 fileCache.put(file.getName(), file);
                 s[i] = file.getName();
             }
@@ -445,7 +445,7 @@ public class GeneralPreferencePanel extends PreferencePanel {
     }// getRecentFileNamesFromPrefs()
 
     // this may return null!!
-    public static File getFileFromName(String name) {
+    public static File getFileFromName(final String name) {
         if (fileCache != null) {
             return (File) fileCache.get(name);
         }
@@ -457,17 +457,17 @@ public class GeneralPreferencePanel extends PreferencePanel {
     public static String[] getRecentFileNamesFromCache() {
         if (fileCache != null) {
             // load from cache; sort and check for file existence before returning
-            ArrayList names = new ArrayList(NUM_RECENT_FILES);
-            Iterator iter = fileCache.entrySet().iterator();
+            final ArrayList names = new ArrayList(NUM_RECENT_FILES);
+            final Iterator iter = fileCache.entrySet().iterator();
             while (iter.hasNext()) {
-                Map.Entry mapEntry = (Map.Entry) iter.next();
-                File file = (File) mapEntry.getValue();
+                final Map.Entry mapEntry = (Map.Entry) iter.next();
+                final File file = (File) mapEntry.getValue();
                 if (file.exists()) {
                     names.add(mapEntry.getKey());
                 }
             }
 
-            String[] fileNames = (String[]) names
+            final String[] fileNames = (String[]) names
                     .toArray(new String[names.size()]);
             Arrays.sort(fileNames, collator);
             return fileNames;
@@ -487,9 +487,9 @@ public class GeneralPreferencePanel extends PreferencePanel {
      * Don't forget to update menus as well, after calling this
      * method.
      */
-    public static void setRecentFileName(File file) {
+    public static void setRecentFileName(final File file) {
         if (fileCache != null) {
-            String name = file.getName();
+            final String name = file.getName();
             if (fileCache.containsKey(name)) {
                 fileCache.get(name);    // update access order (if entry exists)
             } else {
@@ -506,14 +506,14 @@ public class GeneralPreferencePanel extends PreferencePanel {
     public static void clearFileList() {
         if (fileCache != null) {
             fileCache.clear();
-            Preferences prefs = SharedPrefs.getUserNode();
+            final Preferences prefs = SharedPrefs.getUserNode();
             for (int i = 0; i < NUM_RECENT_FILES; i++) {
                 prefs.remove(NODE_RECENT_FILE + String.valueOf(i));
             }
 
             try {
                 prefs.flush();
-            } catch (BackingStoreException bse) {
+            } catch (final BackingStoreException bse) {
             }
         }
     }// clearFileList()
@@ -525,15 +525,15 @@ public class GeneralPreferencePanel extends PreferencePanel {
     private static void saveRecentFileNames() {
         if (fileCache != null) {
             // get node
-            Preferences prefs = SharedPrefs.getUserNode();
+            final Preferences prefs = SharedPrefs.getUserNode();
 
             // use an iterator to preerve access-order.
             // save in reverse-order
             int idx = NUM_RECENT_FILES - 1;
-            Iterator iter = fileCache.entrySet().iterator();
+            final Iterator iter = fileCache.entrySet().iterator();
             while (iter.hasNext()) {
-                Map.Entry mapEntry = (Map.Entry) iter.next();
-                File file = (File) mapEntry.getValue();
+                final Map.Entry mapEntry = (Map.Entry) iter.next();
+                final File file = (File) mapEntry.getValue();
 
                 prefs.put((NODE_RECENT_FILE + String.valueOf(idx)),
                         file.getPath());
@@ -548,7 +548,7 @@ public class GeneralPreferencePanel extends PreferencePanel {
 
             try {
                 prefs.flush();
-            } catch (BackingStoreException bse) {
+            } catch (final BackingStoreException bse) {
             }
         }
     }// saveRecentFileNames()
@@ -558,7 +558,7 @@ public class GeneralPreferencePanel extends PreferencePanel {
      * Returns the default save-game directory, or an empty directory ("") if none.
      */
     public static File getDefaultGameDir() {
-        Preferences prefs = SharedPrefs.getUserNode();
+        final Preferences prefs = SharedPrefs.getUserNode();
         return new File(prefs.get(NODE_DEFAULT_GAME_DIR, ""));
     }// getDefaultGameDir()
 
@@ -574,11 +574,11 @@ public class GeneralPreferencePanel extends PreferencePanel {
     /**
      * Returns a given setting from preferences
      */
-    private static boolean getSetting(String key, boolean defaultValue) {
-        Preferences prefs = SharedPrefs.getUserNode();
+    private static boolean getSetting(final String key, final boolean defaultValue) {
+        final Preferences prefs = SharedPrefs.getUserNode();
         try {
             prefs.sync();
-        } catch (BackingStoreException bse) {
+        } catch (final BackingStoreException bse) {
         }
         return prefs.getBoolean(key, defaultValue);
     }// getSetting()
@@ -590,7 +590,7 @@ public class GeneralPreferencePanel extends PreferencePanel {
      * directory.
      */
     public static File getVariantDir() {
-        Preferences prefs = SharedPrefs.getUserNode();
+        final Preferences prefs = SharedPrefs.getUserNode();
         File file = null;
         final String text = prefs.get(NODE_VARIANT_DIR, null);
         if (text != null) {
@@ -614,23 +614,23 @@ public class GeneralPreferencePanel extends PreferencePanel {
      * <p>
      * This will return null if no file was selected.
      */
-    public static File setVariantDir(JFrame frame, boolean immediateCommit) {
-        JDirectoryChooser chooser = new JDirectoryChooser();
+    public static File setVariantDir(final JFrame frame, final boolean immediateCommit) {
+        final JDirectoryChooser chooser = new JDirectoryChooser();
         chooser.setMultiSelectionEnabled(false);
         chooser.setDialogTitle(
                 Utils.getLocalString(SELECT_VARIANT_DIALOG_TITLE));
 
         File file = null;
-        int choice = chooser.showDialog(frame,
+        final int choice = chooser.showDialog(frame,
                 Utils.getLocalString(XJFileChooser.BTN_DIR_SELECT));
         if (choice == JDirectoryChooser.APPROVE_OPTION) {
             file = chooser.getSelectedFile().getAbsoluteFile();
             if (immediateCommit && file != null) {
-                Preferences prefs = SharedPrefs.getUserNode();
+                final Preferences prefs = SharedPrefs.getUserNode();
                 prefs.put(NODE_VARIANT_DIR, file.toString());
                 try {
                     prefs.sync();
-                } catch (BackingStoreException bse) {
+                } catch (final BackingStoreException bse) {
                 }
             }
         }

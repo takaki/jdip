@@ -113,7 +113,7 @@ public abstract class MapRenderer2 {
      * Default Constructor
      * JSVGCanvas and SVGDocument of MapPanel <b>must not be null</b>
      */
-    public MapRenderer2(MapPanel mp) throws MapException {
+    public MapRenderer2(final MapPanel mp) throws MapException {
         Log.printTimed(mp.startTime, "MR2 constructor start");
         mapPanel = mp;
 
@@ -159,7 +159,7 @@ public abstract class MapRenderer2 {
      * Execute a RenderCommand. No commands are executed until the TurnState
      * has been set.
      */
-    public synchronized void execRenderCommand(RenderCommand rc) {
+    public synchronized void execRenderCommand(final RenderCommand rc) {
         if (rc instanceof RenderCommandFactory.RCSetTurnstate) {
             // focus
             mapPanel.requestFocusInWindow();
@@ -175,9 +175,9 @@ public abstract class MapRenderer2 {
                         "MR2::execRenderCommand(): removing pending events from queue. size: ",
                         String.valueOf(tempQueue.size()));
 
-                RunnableQueue rq = getRunnableQueue();
+                final RunnableQueue rq = getRunnableQueue();
                 if (rq != null) {
-                    Iterator iter = tempQueue.iterator();
+                    final Iterator iter = tempQueue.iterator();
                     while (iter.hasNext()) {
                         rq.invokeLater(((RenderCommand) iter.next()));
                     }
@@ -190,7 +190,7 @@ public abstract class MapRenderer2 {
             // if we have queued events, add them.
             Log.println("MR2::execRenderCommand(): adding to RunnableQueue: ",
                     rc);
-            RunnableQueue rq = getRunnableQueue();
+            final RunnableQueue rq = getRunnableQueue();
             if (rq != null) {
                 rq.invokeLater(rc);
             }
@@ -263,16 +263,16 @@ public abstract class MapRenderer2 {
      * If a command is currently executing, it is not affected.
      * Adds the given commands (or none, if null) to the queue.
      */
-    protected void clearAndExecute(RenderCommand rc1, RenderCommand rc2) {
+    protected void clearAndExecute(final RenderCommand rc1, final RenderCommand rc2) {
         Log.println("MR2::clearAndExecute()");
 
-        RunnableQueue rq = getRunnableQueue();
+        final RunnableQueue rq = getRunnableQueue();
         if (rq != null) {
             synchronized (rq.getIteratorLock()) {
                 // kill our pending render events
-                Iterator iter = rq.iterator();
+                final Iterator iter = rq.iterator();
                 while (iter.hasNext()) {
-                    Object obj = iter.next();
+                    final Object obj = iter.next();
                     if (obj instanceof RenderCommand) {
                         Log.println("   killing: ", obj);
                         ((RenderCommand) obj).die();
@@ -297,16 +297,16 @@ public abstract class MapRenderer2 {
      * Listener class for order updates and TurnState changes
      */
     private class CFPropertyListener extends AbstractCFPListener {
-        public void actionOrderCreated(Orderable order) {
+        public void actionOrderCreated(final Orderable order) {
             orderCreated((GUIOrder) order);
         }
 
-        public void actionOrderDeleted(Orderable order) {
+        public void actionOrderDeleted(final Orderable order) {
             orderDeleted((GUIOrder) order);
         }
 
-        public void actionOrdersCreated(Orderable[] orders) {
-            GUIOrder[] guiOrders = new GUIOrder[orders.length];
+        public void actionOrdersCreated(final Orderable[] orders) {
+            final GUIOrder[] guiOrders = new GUIOrder[orders.length];
             for (int i = 0; i < guiOrders.length; i++) {
                 guiOrders[i] = (GUIOrder) orders[i];
             }
@@ -314,8 +314,8 @@ public abstract class MapRenderer2 {
             multipleOrdersCreated(guiOrders);
         }
 
-        public void actionOrdersDeleted(Orderable[] orders) {
-            GUIOrder[] guiOrders = new GUIOrder[orders.length];
+        public void actionOrdersDeleted(final Orderable[] orders) {
+            final GUIOrder[] guiOrders = new GUIOrder[orders.length];
             for (int i = 0; i < guiOrders.length; i++) {
                 guiOrders[i] = (GUIOrder) orders[i];
             }
@@ -323,20 +323,20 @@ public abstract class MapRenderer2 {
             multipleOrdersDeleted(guiOrders);
         }
 
-        public void actionDisplayablePowersChanged(Power[] oldPowers,
-                                                   Power[] newPowers) {
+        public void actionDisplayablePowersChanged(final Power[] oldPowers,
+                                                   final Power[] newPowers) {
             displayablePowersChanged(newPowers);
         }
 
-        public void actionTurnstateChanged(TurnState ts) {
+        public void actionTurnstateChanged(final TurnState ts) {
             // OPTIMIZATION:
             // any pending queued events may be deleted, because
             // we are changing the turnstate and doing a complete re-render.
             //
-            RenderCommand rc1 = getRenderCommandFactory()
+            final RenderCommand rc1 = getRenderCommandFactory()
                     .createRCSetTurnstate(MapRenderer2.this, ts);
 
-            RenderCommand rc2 = getRenderCommandFactory()
+            final RenderCommand rc2 = getRenderCommandFactory()
                     .createRCRenderAll(MapRenderer2.this);
 
             clearAndExecute(rc1, rc2);
@@ -350,7 +350,7 @@ public abstract class MapRenderer2 {
      * Does a case-insensitive compare. Instance equality is preserved.
      * Returns the given default if parsing fails.
      */
-    public static String parseLabelValue(String in, String defaultValue) {
+    public static String parseLabelValue(final String in, final String defaultValue) {
         if (defaultValue != VALUE_LABELS_NONE && defaultValue != VALUE_LABELS_FULL && defaultValue != VALUE_LABELS_BRIEF && defaultValue != null) {
             throw new IllegalArgumentException();
         }

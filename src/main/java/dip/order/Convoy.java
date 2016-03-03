@@ -58,9 +58,9 @@ public class Convoy extends Order {
     /**
      * Creates a Convoy order
      */
-    protected Convoy(Power power, Location src, Unit.Type srcUnit,
-                     Location convoySrc, Power convoyPower,
-                     Unit.Type convoyUnitType, Location convoyDest) {
+    protected Convoy(final Power power, final Location src, final Unit.Type srcUnit,
+                     final Location convoySrc, final Power convoyPower,
+                     final Unit.Type convoyUnitType, final Location convoyDest) {
         super(power, src, srcUnit);
 
         if (convoySrc == null || convoyUnitType == null || convoyDest == null) {
@@ -135,7 +135,7 @@ public class Convoy extends Order {
 
 
     public String toBriefString() {
-        StringBuffer sb = new StringBuffer(64);
+        final StringBuffer sb = new StringBuffer(64);
 
         super.appendBrief(sb);
         sb.append(' ');
@@ -152,7 +152,7 @@ public class Convoy extends Order {
 
 
     public String toFullString() {
-        StringBuffer sb = new StringBuffer(128);
+        final StringBuffer sb = new StringBuffer(128);
 
         super.appendFull(sb);
         sb.append(' ');
@@ -168,9 +168,9 @@ public class Convoy extends Order {
     }// toFullString()
 
 
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (obj instanceof Convoy) {
-            Convoy convoy = (Convoy) obj;
+            final Convoy convoy = (Convoy) obj;
             if (super.equals(convoy) && this.convoySrc
                     .equals(convoy.convoySrc) && this.convoyUnitType
                     .equals(convoy.convoyUnitType) && this.convoyDest
@@ -182,8 +182,8 @@ public class Convoy extends Order {
     }// equals()
 
 
-    public void validate(TurnState state, ValidationOptions valOpts,
-                         RuleOptions ruleOpts) throws OrderException {
+    public void validate(final TurnState state, final ValidationOptions valOpts,
+                         final RuleOptions ruleOpts) throws OrderException {
         // v.0: 	check phase, basic validation
         checkSeasonMovement(state, orderNameFull);
         checkPower(power, state, true);
@@ -191,8 +191,8 @@ public class Convoy extends Order {
 
         if (valOpts.getOption(ValidationOptions.KEY_GLOBAL_PARSING)
                 .equals(ValidationOptions.VALUE_GLOBAL_PARSING_STRICT)) {
-            Position position = state.getPosition();
-            Province srcProvince = src.getProvince();
+            final Position position = state.getPosition();
+            final Province srcProvince = src.getProvince();
 
             // v.1: src unit type must be a fleet, in a body of water
             // OR in a convoyable coast.
@@ -214,7 +214,7 @@ public class Convoy extends Order {
 
             // v.2: 	a) type-match unit type with current state, and unit must exist
             // 		b) unit type must be ARMY
-            Unit convoyUnit = position.getUnit(convoySrc.getProvince()).orElse(null);
+            final Unit convoyUnit = position.getUnit(convoySrc.getProvince()).orElse(null);
             convoyUnitType = getValidatedUnitType(convoySrc.getProvince(),
                     convoyUnitType, convoyUnit);
             if (!convoyUnitType.equals(Unit.Type.ARMY)) {
@@ -242,7 +242,7 @@ public class Convoy extends Order {
 
             // v.4:	a *theoretical* convoy route must exist between
             //		convoySrc and convoyDest
-            Path path = new Path(position);
+            final Path path = new Path(position);
             if (!path.isPossibleConvoyRoute(convoySrc, convoyDest)) {
                 throw new OrderException(Utils.getLocalString(CONVOY_NO_ROUTE,
                         convoySrc.toLongString(), convoyDest.toLongString()));
@@ -273,8 +273,8 @@ public class Convoy extends Order {
     /**
      * Checks for matching Move orders.
      */
-    public void verify(Adjudicator adjudicator) {
-        OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
+    public void verify(final Adjudicator adjudicator) {
+        final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
         if (thisOS.getEvalState() == Tristate.UNCERTAIN) {
             // check for a matching move order.
             //
@@ -282,11 +282,11 @@ public class Convoy extends Order {
             // kidnap armies that prefer not to be convoyed.
             boolean foundMatchingMove = false;
 
-            OrderState matchingOS = adjudicator
+            final OrderState matchingOS = adjudicator
                     .findOrderStateBySrc(getConvoySrc());
             if (matchingOS != null) {
                 if (matchingOS.getOrder() instanceof Move) {
-                    Move convoyedMove = (Move) matchingOS.getOrder();
+                    final Move convoyedMove = (Move) matchingOS.getOrder();
 
                     // check that Move has been verified; if it has not,
                     // we should just immediately verify it (though we could
@@ -326,7 +326,7 @@ public class Convoy extends Order {
      * <li>Supports to this space (only considered if attacked, to prevent dislodgement)
      * </ol>
      */
-    public void determineDependencies(Adjudicator adjudicator) {
+    public void determineDependencies(final Adjudicator adjudicator) {
         addSupportsOfAndMovesToSource(adjudicator);
     }// determineDependencies()
 
@@ -334,10 +334,10 @@ public class Convoy extends Order {
     /**
      * Convoy order evaluation logic
      */
-    public void evaluate(Adjudicator adjudicator) {
+    public void evaluate(final Adjudicator adjudicator) {
         Log.println("--- evaluate() dip.order.Convoy ---");
 
-        OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
+        final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
 
         // calculate support
         thisOS.setDefMax(thisOS.getSupport(false));
@@ -364,9 +364,9 @@ public class Convoy extends Order {
             // we will also succeed if there are *no* moves against us, or if all the
             // moves against us have failed.
             boolean isSuccess = true;
-            OrderState[] depMovesToSrc = thisOS.getDependentMovesToSource();
-            for (int i = 0; i < depMovesToSrc.length; i++) {
-                if (depMovesToSrc[i].getEvalState() != Tristate.FAILURE) {
+            final OrderState[] depMovesToSrc = thisOS.getDependentMovesToSource();
+            for (OrderState aDepMovesToSrc : depMovesToSrc) {
+                if (aDepMovesToSrc.getEvalState() != Tristate.FAILURE) {
                     isSuccess = false;
                     break;
                 }

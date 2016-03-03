@@ -69,9 +69,9 @@ public class GUIConvoy extends Convoy implements GUIOrder {
     /**
      * Creates a GUIConvoy
      */
-    protected GUIConvoy(Power power, Location src, Unit.Type srcUnitType,
-                        Location convoySrc, Power convoyPower,
-                        Unit.Type convoySrcUnitType, Location convoyDest) {
+    protected GUIConvoy(final Power power, final Location src, final Unit.Type srcUnitType,
+                        final Location convoySrc, final Power convoyPower,
+                        final Unit.Type convoySrcUnitType, final Location convoyDest) {
         super(power, src, srcUnitType, convoySrc, convoyPower,
                 convoySrcUnitType, convoyDest);
     }// GUIConvoy()
@@ -79,12 +79,12 @@ public class GUIConvoy extends Convoy implements GUIOrder {
     /**
      * This only accepts Convoy orders. All others will throw an IllegalArgumentException.
      */
-    public void deriveFrom(Orderable order) {
+    public void deriveFrom(final Orderable order) {
         if (!(order instanceof Convoy)) {
             throw new IllegalArgumentException();
         }
 
-        Convoy convoy = (Convoy) order;
+        final Convoy convoy = (Convoy) order;
         power = convoy.getPower();
         src = convoy.getSource();
         srcUnitType = convoy.getSourceUnitType();
@@ -99,8 +99,8 @@ public class GUIConvoy extends Convoy implements GUIOrder {
     }// deriveFrom()
 
 
-    public boolean testLocation(StateInfo stateInfo, Location location,
-                                StringBuffer sb) {
+    public boolean testLocation(final StateInfo stateInfo, final Location location,
+                                final StringBuffer sb) {
         sb.setLength(0);
 
         if (isComplete()) {
@@ -109,13 +109,13 @@ public class GUIConvoy extends Convoy implements GUIOrder {
         }
 
 
-        Position position = stateInfo.getPosition();
-        Province province = location.getProvince();
+        final Position position = stateInfo.getPosition();
+        final Province province = location.getProvince();
 
         if (currentLocNum == 0) {
             // set Convoy origin (supporting unit)
             // We will check unit ownership too, if appropriate
-            Unit unit = position.getUnit(province).orElse(null);
+            final Unit unit = position.getUnit(province).orElse(null);
             if (unit != null) {
                 if (!stateInfo.canIssueOrder(unit.getPower())) {
                     sb.append(Utils.getLocalString(GUIOrder.NOT_OWNER,
@@ -174,7 +174,7 @@ public class GUIConvoy extends Convoy implements GUIOrder {
             // strict parsing is enabled. We are more selective.
             // The location must contain a coastal Army unit
             //
-            Unit unit = position.getUnit(province).orElse(null);
+            final Unit unit = position.getUnit(province).orElse(null);
             if (unit != null) {
                 if (unit.getType() == Unit.Type.ARMY) {
                     if (province.isCoastal()) {
@@ -218,7 +218,7 @@ public class GUIConvoy extends Convoy implements GUIOrder {
 
             // strict parsing is enabled. We are more selective. Check for a possible convoy route.
             if (province.isCoastal()) {
-                Path path = new Path(position);
+                final Path path = new Path(position);
                 if (path.isPossibleConvoyRoute(convoySrc,
                         new Location(province, Coast.NONE))) {
                     // check borders
@@ -267,15 +267,15 @@ public class GUIConvoy extends Convoy implements GUIOrder {
     }// clearLocations()
 
 
-    public boolean setLocation(StateInfo stateInfo, Location location,
-                               StringBuffer sb) {
+    public boolean setLocation(final StateInfo stateInfo, final Location location,
+                               final StringBuffer sb) {
         if (isComplete()) {
             return false;
         }
 
         if (testLocation(stateInfo, location, sb)) {
             if (currentLocNum == 0) {
-                Unit unit = stateInfo.getPosition()
+                final Unit unit = stateInfo.getPosition()
                         .getUnit(location.getProvince()).orElse(null);
                 src = new Location(location.getProvince(), unit.getCoast());
                 power = unit.getPower();
@@ -283,7 +283,7 @@ public class GUIConvoy extends Convoy implements GUIOrder {
                 currentLocNum++;
                 return true;
             } else if (currentLocNum == 1) {
-                Unit unit = stateInfo.getPosition()
+                final Unit unit = stateInfo.getPosition()
                         .getUnit(location.getProvince()).orElse(null);
                 convoySrc = new Location(location.getProvince(),
                         unit.getCoast());
@@ -325,21 +325,21 @@ public class GUIConvoy extends Convoy implements GUIOrder {
     /**
      * Always throws an IllegalArgumentException
      */
-    public void setParam(Parameter param, Object value) {
+    public void setParam(final Parameter param, final Object value) {
         throw new IllegalArgumentException();
     }
 
     /**
      * Always throws an IllegalArgumentException
      */
-    public Object getParam(Parameter param) {
+    public Object getParam(final Parameter param) {
         throw new IllegalArgumentException();
     }
 
 
-    public void removeFromDOM(MapInfo mapInfo) {
+    public void removeFromDOM(final MapInfo mapInfo) {
         if (group != null) {
-            SVGGElement powerGroup = mapInfo
+            final SVGGElement powerGroup = mapInfo
                     .getPowerSVGGElement(power, LAYER_LOWEST);
             GUIOrderUtils.removeChild(powerGroup, group);
             group = null;
@@ -351,7 +351,7 @@ public class GUIConvoy extends Convoy implements GUIOrder {
      * Draws a dashed line to a triangle surrounding convoyed unit, and then a
      * dashed line from convoyed unit to destination.
      */
-    public void updateDOM(MapInfo mapInfo) {
+    public void updateDOM(final MapInfo mapInfo) {
         // if we are not displayable, we exit, after remove the order (if
         // it was created)
         if (!GUIOrderUtils.isDisplayable(power, mapInfo)) {
@@ -391,18 +391,18 @@ public class GUIConvoy extends Convoy implements GUIOrder {
         SVGElement[] elements = null;
 
         // create hilight line
-        String cssStyle = mapInfo.getMapMetadata()
+        final String cssStyle = mapInfo.getMapMetadata()
                 .getOrderParamString(MapMetadata.EL_CONVOY,
                         MapMetadata.ATT_HILIGHT_CLASS);
         if (!cssStyle.equalsIgnoreCase("none")) {
-            float offset = mapInfo.getMapMetadata()
+            final float offset = mapInfo.getMapMetadata()
                     .getOrderParamFloat(MapMetadata.EL_CONVOY,
                             MapMetadata.ATT_HILIGHT_OFFSET);
             elements = drawOrder(mapInfo, offset, false);
             GUIOrderUtils.makeHilight(elements, mapInfo.getMapMetadata(),
                     MapMetadata.EL_CONVOY);
-            for (int i = 0; i < elements.length; i++) {
-                group.appendChild(elements[i]);
+            for (SVGElement element : elements) {
+                group.appendChild(element);
             }
         }
 
@@ -410,30 +410,30 @@ public class GUIConvoy extends Convoy implements GUIOrder {
         elements = drawOrder(mapInfo, 0, true);
         GUIOrderUtils.makeStyled(elements, mapInfo.getMapMetadata(),
                 MapMetadata.EL_CONVOY, power);
-        for (int i = 0; i < elements.length; i++) {
-            group.appendChild(elements[i]);
+        for (SVGElement element : elements) {
+            group.appendChild(element);
         }
 
         // draw 'failed' marker, if appropriate.
         if (!mapInfo.getTurnState().isOrderSuccessful(this)) {
-            SVGElement useElement = GUIOrderUtils
+            final SVGElement useElement = GUIOrderUtils
                     .createFailedOrderSymbol(mapInfo, failPt.x, failPt.y);
             group.appendChild(useElement);
         }
     }// updateDOM()
 
 
-    private SVGElement[] drawOrder(MapInfo mapInfo, float offset,
-                                   boolean addMarker) {
+    private SVGElement[] drawOrder(final MapInfo mapInfo, final float offset,
+                                   final boolean addMarker) {
         // setup
-        SVGElement[] elements = new SVGElement[3];
+        final SVGElement[] elements = new SVGElement[3];
 
-        Position position = mapInfo.getTurnState().getPosition();
-        MapMetadata mmd = mapInfo.getMapMetadata();
-        Point2D.Float ptSrc = mmd.getUnitPt(src.getProvince(), src.getCoast());
-        Point2D.Float ptConvoySrc = mmd
+        final Position position = mapInfo.getTurnState().getPosition();
+        final MapMetadata mmd = mapInfo.getMapMetadata();
+        final Point2D.Float ptSrc = mmd.getUnitPt(src.getProvince(), src.getCoast());
+        final Point2D.Float ptConvoySrc = mmd
                 .getUnitPt(convoySrc.getProvince(), convoySrc.getCoast());
-        Point2D.Float ptConvoyDest = mmd
+        final Point2D.Float ptConvoyDest = mmd
                 .getUnitPt(convoyDest.getProvince(), convoyDest.getCoast());
 
         ptSrc.x += offset;
@@ -444,7 +444,7 @@ public class GUIConvoy extends Convoy implements GUIOrder {
         ptConvoyDest.y += offset;
 
         // radius
-        float radius = mmd.getOrderRadius(MapMetadata.EL_CONVOY,
+        final float radius = mmd.getOrderRadius(MapMetadata.EL_CONVOY,
                 mapInfo.getSymbolName(getConvoyUnitType()));
 
         // draw line to convoyed unit
@@ -469,14 +469,14 @@ public class GUIConvoy extends Convoy implements GUIOrder {
                         MapMetadata.ATT_STROKESTYLE));
 
         // draw triangle around supported unit
-        Point2D.Float[] triPts = GUIOrderUtils
+        final Point2D.Float[] triPts = GUIOrderUtils
                 .makeTriangle(ptConvoySrc, radius);
 
-        StringBuffer sb = new StringBuffer(160);
-        for (int i = 0; i < triPts.length; i++) {
-            GUIOrderUtils.appendFloat(sb, triPts[i].x);
+        final StringBuffer sb = new StringBuffer(160);
+        for (Point2D.Float triPt1 : triPts) {
+            GUIOrderUtils.appendFloat(sb, triPt1.x);
             sb.append(',');
-            GUIOrderUtils.appendFloat(sb, triPts[i].y);
+            GUIOrderUtils.appendFloat(sb, triPt1.y);
             sb.append(' ');
         }
 
@@ -499,13 +499,13 @@ public class GUIConvoy extends Convoy implements GUIOrder {
         //
         Point2D.Float newPtFrom = null;
         float maxDistSquared = 0.0f;
-        for (int i = 0; i < triPts.length; i++) {
-            float distSquared = (float) (Math
-                    .pow((ptConvoyDest.x - triPts[i].x), 2.0) + Math
-                    .pow((ptConvoyDest.y - triPts[i].y), 2.0));
+        for (Point2D.Float triPt : triPts) {
+            final float distSquared = (float) (Math
+                    .pow((ptConvoyDest.x - triPt.x), 2.0) + Math
+                    .pow((ptConvoyDest.y - triPt.y), 2.0));
             if (distSquared > maxDistSquared) {
                 maxDistSquared = distSquared;
-                newPtFrom = triPts[i];
+                newPtFrom = triPt;
             }
         }
 
@@ -515,9 +515,9 @@ public class GUIConvoy extends Convoy implements GUIOrder {
             // we do this because the destination unit may have an order, and this
             // results in a better display.
             //
-            Unit.Type destUnitType = position.getUnit(convoyDest.getProvince()).orElse(null)
+            final Unit.Type destUnitType = position.getUnit(convoyDest.getProvince()).orElse(null)
                     .getType();
-            float moveRadius = mmd.getOrderRadius(MapMetadata.EL_MOVE,
+            final float moveRadius = mmd.getOrderRadius(MapMetadata.EL_MOVE,
                     mapInfo.getSymbolName(destUnitType));
             newPtTo = GUIOrderUtils
                     .getLineCircleIntersection(newPtFrom.x, newPtFrom.y,

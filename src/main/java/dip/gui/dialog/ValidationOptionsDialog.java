@@ -74,9 +74,9 @@ public class ValidationOptionsDialog extends HeaderDialog {
      * Display the ValidationOptions dialog, and return the chosen options
      * (or the old options, if cancelled).
      */
-    public static ValidationOptions displayDialog(ClientFrame parent,
-                                                  ValidationOptions oldOptions) {
-        ValidationOptionsDialog vod = new ValidationOptionsDialog(parent,
+    public static ValidationOptions displayDialog(final ClientFrame parent,
+                                                  final ValidationOptions oldOptions) {
+        final ValidationOptionsDialog vod = new ValidationOptionsDialog(parent,
                 oldOptions);
         vod.pack();
         vod.setSize(Utils.getScreenSize(0.45f));
@@ -89,7 +89,7 @@ public class ValidationOptionsDialog extends HeaderDialog {
     /**
      * Display the ValidationOptions dialog
      */
-    public static ValidationOptions displayDialog(ClientFrame parent) {
+    public static ValidationOptions displayDialog(final ClientFrame parent) {
         return displayDialog(parent, null);
     }// displayDialog()
 
@@ -102,8 +102,8 @@ public class ValidationOptionsDialog extends HeaderDialog {
     }// getValidationOptions()
 
 
-    private ValidationOptionsDialog(ClientFrame parent,
-                                    ValidationOptions oldOptions) {
+    private ValidationOptionsDialog(final ClientFrame parent,
+                                    final ValidationOptions oldOptions) {
         super(parent, Utils.getLocalString(DIALOG_TITLE), true);
         this.parent = parent;
         this.oldOpts = (oldOptions == null) ? (new ValidationOptions()) : oldOptions;
@@ -111,7 +111,7 @@ public class ValidationOptionsDialog extends HeaderDialog {
         // clone old options into new validation options.
         try {
             valOpts = (ValidationOptions) oldOpts.clone();
-        } catch (CloneNotSupportedException e) {
+        } catch (final CloneNotSupportedException e) {
             System.err.println(e);    // print error; should not occur
             valOpts = oldOpts;        // we'll continue, but no protection of old data.
         }
@@ -144,7 +144,7 @@ public class ValidationOptionsDialog extends HeaderDialog {
     }// ValidationOptionsDialog()
 
 
-    public void close(String actionCommand) {
+    public void close(final String actionCommand) {
         returnedOpts = (isOKorAccept(actionCommand)) ? valOpts : oldOpts;
         dispose();
     }// close()
@@ -159,10 +159,10 @@ public class ValidationOptionsDialog extends HeaderDialog {
      * and for main option (at top of panel)
      */
     private void updatePanel() {
-        int currentIndex = optionList.getSelectedIndex();
+        final int currentIndex = optionList.getSelectedIndex();
         if (currentIndex < 0) {
-            for (int i = 0; i < radioButtons.length; i++) {
-                radioButtons[i].setVisible(false);
+            for (JRadioButton radioButton : radioButtons) {
+                radioButton.setVisible(false);
             }
             description.setText(makeHTML(Utils.getLocalString(INIT_TEXT)));
             return;
@@ -172,9 +172,9 @@ public class ValidationOptionsDialog extends HeaderDialog {
         description.setText(makeHTML(dopts[currentIndex].getDescription()));
 
         // radio-button setup
-        String[] bText = dopts[currentIndex].getDisplayValues();
-        String[] bTips = dopts[currentIndex].getValueDescriptions();
-        Object[] oVals = dopts[currentIndex].getValues();    // possible values
+        final String[] bText = dopts[currentIndex].getDisplayValues();
+        final String[] bTips = dopts[currentIndex].getValueDescriptions();
+        final Object[] oVals = dopts[currentIndex].getValues();    // possible values
 
         if (bTips.length != bText.length) {
             Utils.popupError(parent, "Resource Error",
@@ -183,8 +183,8 @@ public class ValidationOptionsDialog extends HeaderDialog {
             return;
         }
 
-        int nButtons = bText.length;
-        Object value = valOpts.getOption(
+        final int nButtons = bText.length;
+        final Object value = valOpts.getOption(
                 dopts[currentIndex].getKey());    // currently selected value
 
         for (int i = 0; i < radioButtons.length; i++) {
@@ -207,14 +207,14 @@ public class ValidationOptionsDialog extends HeaderDialog {
 
 
     private class RBListener implements ActionListener {
-        public void actionPerformed(ActionEvent e) {
+        public void actionPerformed(final ActionEvent e) {
             // set options according to what we found from the button group.
             // if possible. The action command corresponds to the button index,
             // which corresponds to the index in the values array, since all
             // arrays in ValidationOptions correspond.
             if (radioButtons != null) {
-                int listIdx = optionList.getSelectedIndex();
-                int idx = Integer.parseInt(e.getActionCommand());
+                final int listIdx = optionList.getSelectedIndex();
+                final int idx = Integer.parseInt(e.getActionCommand());
                 valOpts.setOption(dopts[listIdx].getKey(),
                         dopts[listIdx].getValues()[idx]);
             }
@@ -227,16 +227,16 @@ public class ValidationOptionsDialog extends HeaderDialog {
         dopts = valOpts.getOptions();
 
         // create an array of option-names for the list.
-        String[] options = new String[dopts.length];
+        final String[] options = new String[dopts.length];
         for (int i = 0; i < options.length; i++) {
             options[i] = dopts[i].getDisplayName();
         }
 
-        optionList = new JList<String>(options);
+        optionList = new JList<>(options);
         optionList.setBorder(new EtchedBorder());
         optionList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         optionList.addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e) {
+            public void valueChanged(final ListSelectionEvent e) {
                 updatePanel();
             }
         });
@@ -245,30 +245,30 @@ public class ValidationOptionsDialog extends HeaderDialog {
 
     private void makeVODLayout() {
         // layout subpanel (description + radio buttons)
-        int w1[] = {25, 0};
-        int h1[] = {10, 0, 3, 0, 3, 0, 3, 0, 3, 0, 3, 0, 3, 0};
+        final int[] w1 = {25, 0};
+        final int[] h1 = {10, 0, 3, 0, 3, 0, 3, 0, 3, 0, 3, 0, 3, 0};
 
-        HIGLayout l1 = new HIGLayout(w1, h1);
+        final HIGLayout l1 = new HIGLayout(w1, h1);
         l1.setColumnWeight(2, 1);
         l1.setRowWeight(14, 1);
 
-        JPanel subPanel = new JPanel();
+        final JPanel subPanel = new JPanel();
         subPanel.setLayout(l1);
-        HIGConstraints c = new HIGConstraints();
+        final HIGConstraints c = new HIGConstraints();
 
         subPanel.add(new JPanel(), c.rcwh(14, 1, 2, 1));
         for (int i = 0; i < radioButtons.length; i++) {
             subPanel.add(radioButtons[i], c.rc((2 * (i + 1)), 2, "l"));
         }
 
-        JPanel rightPanel = new JPanel();
+        final JPanel rightPanel = new JPanel();
         rightPanel.setLayout(new BorderLayout());
         rightPanel.add(description, BorderLayout.NORTH);
         rightPanel.add(subPanel, BorderLayout.CENTER);
         rightPanel.add(new JSeparator(), BorderLayout.SOUTH);
         rightPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
 
-        JPanel contentPanel = new JPanel(new BorderLayout());
+        final JPanel contentPanel = new JPanel(new BorderLayout());
         contentPanel.add(optionList, BorderLayout.WEST);
         contentPanel.add(rightPanel, BorderLayout.CENTER);
 
@@ -276,7 +276,7 @@ public class ValidationOptionsDialog extends HeaderDialog {
         setContentPane(contentPanel);
     }// makeVODLayout()
 
-    private String makeHTML(String in) {
+    private String makeHTML(final String in) {
         sb.setLength(0);
         sb.append("<html><font face=\"Arial, Helvetica\" size=\"-1\">");
         sb.append(in);

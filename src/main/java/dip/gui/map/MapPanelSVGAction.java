@@ -75,19 +75,19 @@ public class MapPanelSVGAction {
         public TranscoderErrorHandler() {
         }
 
-        public void error(TranscoderException ex) {
+        public void error(final TranscoderException ex) {
             showErrorDialog(ex);
         }
 
-        public void fatalError(TranscoderException ex) {
+        public void fatalError(final TranscoderException ex) {
             showErrorDialog(ex);
         }
 
-        public void warning(TranscoderException ex) {
+        public void warning(final TranscoderException ex) {
             showErrorDialog(ex);
         }
 
-        private void showErrorDialog(TranscoderException ex) {
+        private void showErrorDialog(final TranscoderException ex) {
             ErrorDialog.displayGeneral(null, ex);
         }// showErrorDialog()
 
@@ -100,11 +100,11 @@ public class MapPanelSVGAction {
     public static class Print implements ActionListener {
         private final MapPanel mp;
 
-        public Print(MapPanel mp) {
+        public Print(final MapPanel mp) {
             this.mp = mp;
         }// Print()
 
-        public void actionPerformed(ActionEvent e) {
+        public void actionPerformed(final ActionEvent e) {
             final Document document = mp.getSVGDocument();
             if (document == null) {
                 return;
@@ -112,7 +112,7 @@ public class MapPanelSVGAction {
 
             new Thread(getPMTG(mp), "jdipPrintThread") {
                 public void run() {
-                    PrintTranscoder pt = new PrintTranscoder();
+                    final PrintTranscoder pt = new PrintTranscoder();
                     pt.addTranscodingHint(PrintTranscoder.KEY_SHOW_PAGE_DIALOG,
                             Boolean.TRUE);
                     pt.addTranscodingHint(
@@ -124,13 +124,13 @@ public class MapPanelSVGAction {
                             PrintTranscoder.VALUE_PAGE_ORIENTATION_LANDSCAPE);
 
                     // clone document
-                    Document cloneDoc = (Document) document.cloneNode(true);
-                    TranscoderInput input = new TranscoderInput(cloneDoc);
+                    final Document cloneDoc = (Document) document.cloneNode(true);
+                    final TranscoderInput input = new TranscoderInput(cloneDoc);
                     pt.transcode(input, null);
 
                     try {
                         pt.print();
-                    } catch (java.awt.print.PrinterException ex) {
+                    } catch (final java.awt.print.PrinterException ex) {
                         ErrorDialog.displayGeneral(null, ex);
                     }
                 }// run()
@@ -147,14 +147,14 @@ public class MapPanelSVGAction {
         /**
          * JPG export: default quality of 0.8 (80%)
          **/
-        public ExportJPG(MapPanel mp) {
+        public ExportJPG(final MapPanel mp) {
             super(mp, new JPEGTranscoder(), SimpleFileFilter.JPG_FILTER);
         }// ExportJPG()
 
         /**
          * Set JPEG-specific options
          */
-        public void setOptions(Transcoder t) {
+        public void setOptions(final Transcoder t) {
             super.setOptions(t);
             //t.addTranscodingHint(ImageTranscoder.KEY_BACKGROUND_COLOR, Color.WHITE);
         }// ExportJPG()
@@ -169,14 +169,14 @@ public class MapPanelSVGAction {
         /**
          * Create a PNG Export object
          */
-        public ExportPNG(MapPanel mp) {
+        public ExportPNG(final MapPanel mp) {
             super(mp, new PNGTranscoder(), SimpleFileFilter.PNG_FILTER);
         }// ExportPNG()
 
         /**
          * Set PNG options
          */
-        public void setOptions(Transcoder t) {
+        public void setOptions(final Transcoder t) {
             super.setOptions(t);
             //t.addTranscodingHint(ImageTranscoder.KEY_BACKGROUND_COLOR, Color.WHITE);
         }// ExportJPG()
@@ -187,14 +187,14 @@ public class MapPanelSVGAction {
      * Implements exporting as PDF
      */
     public static class ExportPDF extends Export {
-        public ExportPDF(MapPanel mp) {
+        public ExportPDF(final MapPanel mp) {
             super(mp, new PDFTranscoder(), SimpleFileFilter.PDF_FILTER);
         }// ExportPDF()
 
         /**
          * DO NOT apply Image export settings for PDF.
          */
-        public void setOptions(Transcoder t) {
+        public void setOptions(final Transcoder t) {
         }// ExportJPG()
     }// nested class ExportPDF
 
@@ -206,11 +206,11 @@ public class MapPanelSVGAction {
     public static class ExportSVG implements ActionListener {
         private final MapPanel mp;
 
-        public ExportSVG(MapPanel mp) {
+        public ExportSVG(final MapPanel mp) {
             this.mp = mp;
         }// ExportJPG()
 
-        public void actionPerformed(ActionEvent e) {
+        public void actionPerformed(final ActionEvent e) {
             final Document document = mp.getSVGDocument();
             if (document == null) {
                 return;
@@ -219,14 +219,14 @@ public class MapPanelSVGAction {
             new Thread(getPMTG(mp), "jdipExportSVGThread") {
                 public void run() {
                     // get the file
-                    File file = getSaveFile(mp.getClientFrame(),
+                    final File file = getSaveFile(mp.getClientFrame(),
                             SimpleFileFilter.SVG_FILTER);
                     if (file == null) {
                         return;
                     }
 
                     // create a transcoder, set error handler
-                    SVGTranscoder transcoder = new SVGTranscoder();
+                    final SVGTranscoder transcoder = new SVGTranscoder();
                     transcoder.setErrorHandler(new TranscoderErrorHandler());
                     ExportPreferencePanel.applyTranscodingHints(transcoder);
 
@@ -236,25 +236,25 @@ public class MapPanelSVGAction {
                             .cloneNode(true);
 
                     // create the transcoder input
-                    TranscoderInput input = new TranscoderInput(cloneDoc);
+                    final TranscoderInput input = new TranscoderInput(cloneDoc);
                     Writer writer = null;
 
                     try {
                         // create the transcoder output -- it must be a Writer!
                         writer = new BufferedWriter(new FileWriter(file));
-                        TranscoderOutput output = new TranscoderOutput(writer);
+                        final TranscoderOutput output = new TranscoderOutput(writer);
 
                         // save image
                         transcoder.transcode(input, output);
 
                         writer.flush();
-                    } catch (Exception ex) {
+                    } catch (final Exception ex) {
                         ErrorDialog.displayFileIO(null, ex, file.getName());
                     } finally {
                         if (writer != null) {
                             try {
                                 writer.close();
-                            } catch (IOException e) {
+                            } catch (final IOException e) {
                                 ErrorDialog
                                         .displayFileIO(null, e, file.getName());
                             }
@@ -277,8 +277,8 @@ public class MapPanelSVGAction {
         /**
          * Export
          */
-        public Export(MapPanel mp, Transcoder t,
-                      SimpleFileFilter simpleFileFilter) {
+        public Export(final MapPanel mp, final Transcoder t,
+                      final SimpleFileFilter simpleFileFilter) {
             if (mp == null || t == null || simpleFileFilter == null) {
                 throw new IllegalArgumentException();
             }
@@ -294,7 +294,7 @@ public class MapPanelSVGAction {
          * thus, subclasses should call their super() constructor unless
          * they wish to override the preference settings.
          */
-        public void setOptions(Transcoder t) {
+        public void setOptions(final Transcoder t) {
             ExportPreferencePanel.applyTranscodingHints(t);
         }// setOptions()
 
@@ -302,7 +302,7 @@ public class MapPanelSVGAction {
         /**
          * Perform the Export
          */
-        public void actionPerformed(ActionEvent e) {
+        public void actionPerformed(final ActionEvent e) {
             final Document document = mp.getSVGDocument();
             if (document == null) {
                 return;
@@ -311,7 +311,7 @@ public class MapPanelSVGAction {
             new Thread(getPMTG(mp), "jdipExportThread") {
                 public void run() {
                     // get the file
-                    File file = getSaveFile(mp.getClientFrame(),
+                    final File file = getSaveFile(mp.getClientFrame(),
                             simpleFileFilter);
                     if (file == null) {
                         return;
@@ -326,7 +326,7 @@ public class MapPanelSVGAction {
                     // create the transcoder input, after cloning the document.
                     final Document cloneDoc = (Document) document
                             .cloneNode(true);
-                    TranscoderInput input = new TranscoderInput(cloneDoc);
+                    final TranscoderInput input = new TranscoderInput(cloneDoc);
 
                     OutputStream ostream = null;
 
@@ -334,18 +334,18 @@ public class MapPanelSVGAction {
                         // create the transcoder output
                         ostream = new BufferedOutputStream(
                                 new FileOutputStream(file));
-                        TranscoderOutput output = new TranscoderOutput(ostream);
+                        final TranscoderOutput output = new TranscoderOutput(ostream);
 
                         // save image
                         transcoder.transcode(input, output);
                         ostream.flush();
-                    } catch (Exception ex) {
+                    } catch (final Exception ex) {
                         ErrorDialog.displayFileIO(null, ex, file.getName());
                     } finally {
                         if (ostream != null) {
                             try {
                                 ostream.close();
-                            } catch (IOException e) {
+                            } catch (final IOException e) {
                                 ErrorDialog
                                         .displayFileIO(null, e, file.getName());
                             }
@@ -360,14 +360,14 @@ public class MapPanelSVGAction {
     /**
      * Popup a "save as" file requester
      */
-    private static synchronized File getSaveFile(ClientFrame cf,
-                                                 SimpleFileFilter simpleFileFilter) {
-        XJFileChooser chooser = XJFileChooser.getXJFileChooser();
+    private static synchronized File getSaveFile(final ClientFrame cf,
+                                                 final SimpleFileFilter simpleFileFilter) {
+        final XJFileChooser chooser = XJFileChooser.getXJFileChooser();
         chooser.addFileFilter(simpleFileFilter);
         chooser.setFileFilter(simpleFileFilter);
         chooser.setCurrentDirectory(GeneralPreferencePanel.getDefaultGameDir());
         chooser.setSelectedFile(new File(cf.getPM().getSuggestedExportName()));
-        File file = chooser
+        final File file = chooser
                 .displaySave(cf, Utils.getLocalString("MapPanel.export.title"));
         chooser.dispose();
         return file;
@@ -376,7 +376,7 @@ public class MapPanelSVGAction {
     /**
      * Get the PM thread group from a MapPanel
      */
-    private static ThreadGroup getPMTG(MapPanel mp) {
+    private static ThreadGroup getPMTG(final MapPanel mp) {
         return mp.getClientFrame().getPM().getPMThreadGroup();
     }// getPMTG()
 

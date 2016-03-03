@@ -107,15 +107,15 @@ public class DisplayPreferencePanel extends PreferencePanel {
 
         // layout
         //                   2      4      6    8   10     13   15       18    20     22     23
-        int h1[] = {BORDER, 0, 15, 35, 10, 0, 2, 0, 2, 0, 0, 2, 0, 2, 0, 0, 15, 0, 5, 0, 10, 0, 15, 0, BORDER};
-        int w1[] = {BORDER, INDENT, 0, 10, 0, 15, 0, 25, 0, 4, 0, 0, 0, BORDER};
+        final int[] h1 = {BORDER, 0, 15, 35, 10, 0, 2, 0, 2, 0, 0, 2, 0, 2, 0, 0, 15, 0, 5, 0, 10, 0, 15, 0, BORDER};
+        final int[] w1 = {BORDER, INDENT, 0, 10, 0, 15, 0, 25, 0, 4, 0, 0, 0, BORDER};
 
-        HIGLayout l1 = new HIGLayout(w1, h1);
+        final HIGLayout l1 = new HIGLayout(w1, h1);
         l1.setColumnWeight(13, 1);
         l1.setRowWeight(23, 1);
         setLayout(l1);
 
-        HIGConstraints c = new HIGConstraints();
+        final HIGConstraints c = new HIGConstraints();
 
         add(new GradientJLabel(Utils.getLocalString(I18N_ORDFMT_GROUP_NAME)),
                 c.rcwh(2, 2, 12, 1, "lr"));
@@ -164,7 +164,7 @@ public class DisplayPreferencePanel extends PreferencePanel {
         add(cbPossessive, c.rcwh(18, 3, 11, 1, "l"));
         add(cbDot, c.rcwh(20, 3, 11, 1, "l"));
 
-        JPanel arrowPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        final JPanel arrowPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         arrowPanel.add(new JLabel(Utils.getLocalString(I18N_ARROW_STYLE)));
         arrowPanel.add(Box.createHorizontalStrut(4));
         arrowPanel.add(arrowBox);
@@ -180,7 +180,7 @@ public class DisplayPreferencePanel extends PreferencePanel {
 
 
     public void apply() {
-        Preferences prefs = SharedPrefs.getUserNode();
+        final Preferences prefs = SharedPrefs.getUserNode();
 
         // set preference nodes
         prefs.putByteArray(NODE_ORDERFORMAT_ENCODED, orderFormat.encode());
@@ -190,7 +190,7 @@ public class DisplayPreferencePanel extends PreferencePanel {
 
         try {
             prefs.flush();
-        } catch (BackingStoreException bse) {
+        } catch (final BackingStoreException bse) {
         }
 
         // refresh OrderPanel
@@ -218,10 +218,10 @@ public class DisplayPreferencePanel extends PreferencePanel {
     public static OrderFormatOptions getOrderFormatOptions() {
         OrderFormatOptions ofo = OrderFormatOptions.createDefault();
 
-        Preferences prefs = SharedPrefs.getUserNode();
+        final Preferences prefs = SharedPrefs.getUserNode();
         try {
             prefs.sync();
-        } catch (BackingStoreException bse) {
+        } catch (final BackingStoreException bse) {
         }
 
         final byte[] encodedBytes = prefs
@@ -240,17 +240,17 @@ public class DisplayPreferencePanel extends PreferencePanel {
      * Make ChoiceSelections, from preferences (or default values).
      */
     private void makeChoiceSelections() {
-        Preferences prefs = SharedPrefs.getUserNode();
+        final Preferences prefs = SharedPrefs.getUserNode();
         try {
             prefs.sync();
-        } catch (BackingStoreException bse) {
+        } catch (final BackingStoreException bse) {
         }
 
         // defaults:
         orderFormat = getOrderFormatOptions();
 
         // change listener
-        ExampleChangeListener ecl = new ExampleChangeListener();
+        final ExampleChangeListener ecl = new ExampleChangeListener();
 
         // order-format radiobutton setings
         csPower = new ChoiceSelection(
@@ -321,7 +321,7 @@ public class DisplayPreferencePanel extends PreferencePanel {
         orderFormat.setArrow((String) arrowBox.getSelectedItem());
 
         // update the example text
-        StringBuffer sb = new StringBuffer(128);
+        final StringBuffer sb = new StringBuffer(128);
         sb.append("<html><b>");
         sb.append(OrderFormat.getFormatExample(orderFormat,
                 clientFrame.getGUIOrderFactory()));
@@ -500,13 +500,13 @@ public class DisplayPreferencePanel extends PreferencePanel {
      * Listens for radiobutton changes, and updates the Example text.
      */
     private class ExampleChangeListener implements ChangeListener, ActionListener {
-        public void stateChanged(ChangeEvent e) {
+        public void stateChanged(final ChangeEvent e) {
             if (example != null) {
                 updateExampleAndFormatOptions();
             }
         }// stateChanged()
 
-        public void actionPerformed(ActionEvent e) {
+        public void actionPerformed(final ActionEvent e) {
             if (example != null) {
                 updateExampleAndFormatOptions();
             }

@@ -34,8 +34,8 @@ public class XJEditorPane extends JEditorPane {
     /**
      * Override paint with new RenderingHints
      */
-    public void paint(Graphics g) {
-        Graphics2D g2 = (Graphics2D) g;
+    public void paint(final Graphics g) {
+        final Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         super.paint(g);

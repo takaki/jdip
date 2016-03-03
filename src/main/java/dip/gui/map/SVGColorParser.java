@@ -47,9 +47,9 @@ public class SVGColorParser {
     /**
      * Get the color; returns Color.BLACK if all parsing fails.
      */
-    public static Color parseColor(String cssColor) {
+    public static Color parseColor(final String cssColor) {
         init();
-        Color color = cm.getColor(cssColor);
+        final Color color = cm.getColor(cssColor);
         if (color != null) {
             return color;
         }
@@ -106,16 +106,16 @@ public class SVGColorParser {
         /**
          * Create an XStringMap
          */
-        public XColorStringMap(StringMap sm) {
+        public XColorStringMap(final StringMap sm) {
             super(sm);
         }// XColorStringMap()
 
         /**
          * Uses String.equals() instead of referential equality
          */
-        public Object get(String key) {
-            int hash = key.hashCode() & 0x7FFFFFFF;
-            int index = hash % table.length;
+        public Object get(final String key) {
+            final int hash = key.hashCode() & 0x7FFFFFFF;
+            final int index = hash % table.length;
 
             for (Entry e = table[index]; e != null; e = e.next) {
                 if ((e.hash == hash) && e.key.equals(key)) {
@@ -129,12 +129,12 @@ public class SVGColorParser {
         /**
          * Uses get() and returns a Color, or null
          */
-        public Color getColor(String key) {
-            RGBColorValue value = (RGBColorValue) get(key);
+        public Color getColor(final String key) {
+            final RGBColorValue value = (RGBColorValue) get(key);
             if (value != null) {
-                float r = ((FloatValue) value.getRed()).getFloatValue();
-                float g = ((FloatValue) value.getGreen()).getFloatValue();
-                float b = ((FloatValue) value.getBlue()).getFloatValue();
+                final float r = ((FloatValue) value.getRed()).getFloatValue();
+                final float g = ((FloatValue) value.getGreen()).getFloatValue();
+                final float b = ((FloatValue) value.getBlue()).getFloatValue();
                 return new Color((int) r, (int) g, (int) b);
             }
 

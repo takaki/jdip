@@ -29,7 +29,7 @@ public class RegexFormatter extends DefaultFormatter {
      * <code>pattern</code> specifies the regular expression that will
      * be used to determine if a value is legal.
      */
-    public RegexFormatter(String pattern) throws PatternSyntaxException {
+    public RegexFormatter(final String pattern) throws PatternSyntaxException {
         this();
         setPattern(Pattern.compile(pattern));
     }
@@ -39,7 +39,7 @@ public class RegexFormatter extends DefaultFormatter {
      * <code>pattern</code> specifies the regular expression that will
      * be used to determine if a value is legal.
      */
-    public RegexFormatter(Pattern pattern) {
+    public RegexFormatter(final Pattern pattern) {
         this();
         setPattern(pattern);
     }
@@ -48,7 +48,7 @@ public class RegexFormatter extends DefaultFormatter {
      * Sets the pattern that will be used to determine if a value is
      * legal.
      */
-    public void setPattern(Pattern pattern) {
+    public void setPattern(final Pattern pattern) {
         this.pattern = pattern;
     }
 
@@ -64,7 +64,7 @@ public class RegexFormatter extends DefaultFormatter {
      * Sets the <code>Matcher</code> used in the most recent test
      * if a value is legal.
      */
-    protected void setMatcher(Matcher matcher) {
+    protected void setMatcher(final Matcher matcher) {
         this.matcher = matcher;
     }
 
@@ -87,11 +87,11 @@ public class RegexFormatter extends DefaultFormatter {
      * @return Object representation of text
      * @throws ParseException if there is an error in the conversion
      */
-    public Object stringToValue(String text) throws ParseException {
-        Pattern pattern = getPattern();
+    public Object stringToValue(final String text) throws ParseException {
+        final Pattern pattern = getPattern();
 
         if (pattern != null) {
-            Matcher matcher = pattern.matcher(text);
+            final Matcher matcher = pattern.matcher(text);
 
             if (matcher.matches()) {
                 setMatcher(matcher);

@@ -67,7 +67,7 @@ public class GUIWaive extends Waive implements GUIOrder {
     /**
      * Creates a GUIWaive
      */
-    protected GUIWaive(Power power, Location source) {
+    protected GUIWaive(final Power power, final Location source) {
         super(power, source);
     }// GUIWaive()
 
@@ -75,12 +75,12 @@ public class GUIWaive extends Waive implements GUIOrder {
     /**
      * This only accepts Waive orders. All others will throw an IllegalArgumentException.
      */
-    public void deriveFrom(Orderable order) {
+    public void deriveFrom(final Orderable order) {
         if (!(order instanceof Waive)) {
             throw new IllegalArgumentException();
         }
 
-        Waive waive = (Waive) order;
+        final Waive waive = (Waive) order;
         power = waive.getPower();
         src = waive.getSource();
         srcUnitType = waive.getSourceUnitType();
@@ -90,8 +90,8 @@ public class GUIWaive extends Waive implements GUIOrder {
     }// deriveFrom()
 
 
-    public boolean testLocation(StateInfo stateInfo, Location location,
-                                StringBuffer sb) {
+    public boolean testLocation(final StateInfo stateInfo, final Location location,
+                                final StringBuffer sb) {
         sb.setLength(0);
 
         if (isComplete()) {
@@ -100,11 +100,11 @@ public class GUIWaive extends Waive implements GUIOrder {
         }
 
 
-        Position position = stateInfo.getPosition();
-        Province province = location.getProvince();
+        final Position position = stateInfo.getPosition();
+        final Province province = location.getProvince();
 
         if (province.hasSupplyCenter()) {
-            Power SCOwner = position.getSupplyCenterOwner(province).orElse(null);
+            final Power SCOwner = position.getSupplyCenterOwner(province).orElse(null);
 
             // general screening, applicable to all build options
             //
@@ -125,7 +125,7 @@ public class GUIWaive extends Waive implements GUIOrder {
 
             // indicate if we have no builds available
             //
-            Adjustment.AdjustmentInfo adjInfo = stateInfo.getAdjustmenInfoMap()
+            final Adjustment.AdjustmentInfo adjInfo = stateInfo.getAdjustmenInfoMap()
                     .get(SCOwner);
             if (adjInfo.getAdjustmentAmount() <= 0) {
                 sb.append(Utils.getLocalString(NOWAIVE_NO_BUILDS_AVAILABLE,
@@ -136,7 +136,7 @@ public class GUIWaive extends Waive implements GUIOrder {
 
             // build-option-specific, based upon RuleOptions
             //
-            RuleOptions ruleOpts = stateInfo.getRuleOptions();
+            final RuleOptions ruleOpts = stateInfo.getRuleOptions();
             if (ruleOpts.getOptionValue(
                     RuleOptions.Option.OPTION_BUILDS) == RuleOptions.OptionValue.VALUE_BUILDS_ANY_OWNED) {
                 sb.append(
@@ -193,8 +193,8 @@ public class GUIWaive extends Waive implements GUIOrder {
     }// clearLocations()
 
 
-    public boolean setLocation(StateInfo stateInfo, Location location,
-                               StringBuffer sb) {
+    public boolean setLocation(final StateInfo stateInfo, final Location location,
+                               final StringBuffer sb) {
         if (testLocation(stateInfo, location, sb)) {
             currentLocNum++;
 
@@ -230,20 +230,20 @@ public class GUIWaive extends Waive implements GUIOrder {
     /**
      * Always throws an IllegalArgumentException
      */
-    public void setParam(Parameter param, Object value) {
+    public void setParam(final Parameter param, final Object value) {
         throw new IllegalArgumentException();
     }
 
     /**
      * Always throws an IllegalArgumentException
      */
-    public Object getParam(Parameter param) {
+    public Object getParam(final Parameter param) {
         throw new IllegalArgumentException();
     }
 
-    public void removeFromDOM(MapInfo mapInfo) {
+    public void removeFromDOM(final MapInfo mapInfo) {
         if (group != null) {
-            SVGGElement powerGroup = mapInfo
+            final SVGGElement powerGroup = mapInfo
                     .getPowerSVGGElement(power, LAYER_HIGHEST);
             GUIOrderUtils.removeChild(powerGroup, group);
             group = null;
@@ -254,7 +254,7 @@ public class GUIWaive extends Waive implements GUIOrder {
     /**
      * Places a unit in the desired area.
      */
-    public void updateDOM(MapInfo mapInfo) {
+    public void updateDOM(final MapInfo mapInfo) {
         // if we are not displayable, we exit, after remove the order (if
         // it was created)
         if (!GUIOrderUtils.isDisplayable(power, mapInfo)) {
@@ -298,21 +298,21 @@ public class GUIWaive extends Waive implements GUIOrder {
 
         // draw 'failed' marker, if appropriate.
         if (!mapInfo.getTurnState().isOrderSuccessful(this)) {
-            SVGElement useElement = GUIOrderUtils
+            final SVGElement useElement = GUIOrderUtils
                     .createFailedOrderSymbol(mapInfo, failPt.x, failPt.y);
             group.appendChild(useElement);
         }
     }// updateDOM()
 
 
-    private SVGElement drawOrder(MapInfo mapInfo) {
-        MapMetadata mmd = mapInfo.getMapMetadata();
+    private SVGElement drawOrder(final MapInfo mapInfo) {
+        final MapMetadata mmd = mapInfo.getMapMetadata();
 
         // center point is over the Supply Center -- not over the 'unit' or 'dislodged unit' position.
-        Point2D.Float center = mmd.getSCPt(src.getProvince());
+        final Point2D.Float center = mmd.getSCPt(src.getProvince());
 
         // get 'integer' and float data
-        float radius = mmd.getOrderRadius(MapMetadata.EL_WAIVE,
+        final float radius = mmd.getOrderRadius(MapMetadata.EL_WAIVE,
                 DefaultMapRenderer2.SYMBOL_WAIVEDBUILD);
 
         // calculate failPt.
@@ -321,10 +321,10 @@ public class GUIWaive extends Waive implements GUIOrder {
 
         // A Waive consists of a WaivedBuidl symbol
         //
-        MapMetadata.SymbolSize symbolSize = mmd
+        final MapMetadata.SymbolSize symbolSize = mmd
                 .getSymbolSize(DefaultMapRenderer2.SYMBOL_WAIVEDBUILD);
 
-        SVGElement element = SVGUtils.createUseElement(mapInfo.getDocument(),
+        final SVGElement element = SVGUtils.createUseElement(mapInfo.getDocument(),
                 "#" + DefaultMapRenderer2.SYMBOL_WAIVEDBUILD, null,    // no ID
                 null,    // no special style
                 center.x, center.y, symbolSize);

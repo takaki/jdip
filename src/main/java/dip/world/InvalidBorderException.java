@@ -31,7 +31,7 @@ class InvalidBorderException extends Exception {
     /**
      * Create an InvalidBorderException
      */
-    public InvalidBorderException(String message) {
+    public InvalidBorderException(final String message) {
         super(message);
     }// InvalidBorderException()
 

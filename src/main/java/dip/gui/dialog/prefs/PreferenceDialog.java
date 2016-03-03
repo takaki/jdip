@@ -52,8 +52,8 @@ public class PreferenceDialog extends HeaderDialog {
     /**
      * Show the Preferences dialog.
      */
-    public static void displayDialog(ClientFrame parent) {
-        PreferenceDialog pd = new PreferenceDialog(parent);
+    public static void displayDialog(final ClientFrame parent) {
+        final PreferenceDialog pd = new PreferenceDialog(parent);
         pd.createPanels();
         pd.pack();
         pd.setSize(new Dimension(450, 550));
@@ -62,7 +62,7 @@ public class PreferenceDialog extends HeaderDialog {
     }// displayDialog()
 
 
-    private PreferenceDialog(ClientFrame parent) {
+    private PreferenceDialog(final ClientFrame parent) {
         super(parent, Utils.getLocalString(TITLE), true);
         this.parent = parent;
 
@@ -82,8 +82,8 @@ public class PreferenceDialog extends HeaderDialog {
         tabbedPanels[1] = new DisplayPreferencePanel(parent);
         tabbedPanels[2] = new ExportPreferencePanel(parent);
 
-        for (int i = 0; i < tabbedPanels.length; i++) {
-            tabPane.addTab(tabbedPanels[i].getName(), tabbedPanels[i]);
+        for (PreferencePanel tabbedPanel : tabbedPanels) {
+            tabPane.addTab(tabbedPanel.getName(), tabbedPanel);
         }
     }// createPanels()
 
@@ -91,16 +91,16 @@ public class PreferenceDialog extends HeaderDialog {
     /**
      * Apply or Cancel settings after closing dialog
      */
-    public void close(String actionCommand) {
+    public void close(final String actionCommand) {
         super.close(actionCommand);
 
         if (isCloseOrCancel(actionCommand)) {
-            for (int i = 0; i < tabbedPanels.length; i++) {
-                tabbedPanels[i].cancel();
+            for (PreferencePanel tabbedPanel : tabbedPanels) {
+                tabbedPanel.cancel();
             }
         } else {
-            for (int i = 0; i < tabbedPanels.length; i++) {
-                tabbedPanels[i].apply();
+            for (PreferencePanel tabbedPanel : tabbedPanels) {
+                tabbedPanel.apply();
             }
         }
     }// close()
