@@ -275,8 +275,8 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
                         domEventListener, true);
 
         // create a complete set of Tracker objects for all provinces
-        for (int i = 0; i < provinces.length; i++) {
-            trackerMap.put(provinces[i], new Tracker());
+        for (Province province : provinces) {
+            trackerMap.put(province, new Tracker());
         }
 
         // add province hilites to Tracker object
@@ -293,15 +293,15 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
             rq.invokeLater(new Runnable() {
                 public void run() {
                     synchronized (trackerMap) {
-                        for (int i = 0; i < provinces.length; i++) {
-                            if (provinces[i].hasSupplyCenter()) {
+                        for (Province province : provinces) {
+                            if (province.hasSupplyCenter()) {
                                 // create element
-                                final SVGElement element = makeSCUse(provinces[i],
+                                final SVGElement element = makeSCUse(province,
                                         null);
 
                                 // add element to tracker
                                 final Tracker tracker = (Tracker) trackerMap
-                                        .get(provinces[i]);
+                                        .get(province);
                                 tracker.setSCElement(element);
 
                                 // add to DOM
@@ -345,10 +345,10 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
         // Remove other mouse/key listeners
         final SVGElement[] mouseElements = SVGUtils
                 .idFinderSVG(layerMap.get(LAYER_MOUSE));
-        for (int i = 0; i < mouseElements.length; i++) {
-            if (mouseElements[i] instanceof EventTarget) {
+        for (SVGElement mouseElement : mouseElements) {
+            if (mouseElement instanceof EventTarget) {
                 // add mouse listeners
-                final EventTarget et = (EventTarget) mouseElements[i];
+                final EventTarget et = (EventTarget) mouseElement;
                 et.removeEventListener(SVGConstants.SVG_EVENT_CLICK,
                         domEventListener, false);
                 et.removeEventListener(SVGConstants.SVG_EVENT_MOUSEOUT,
@@ -431,9 +431,9 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
                 final MapInfo mapInfo = new DMRMapInfo(turnState);
 
                 // render orders and update provinces
-                for (int i = 0; i < orders.length; i++) {
-                    orders[i].updateDOM(mapInfo);
-                    unsyncUpdateProvince(orders[i].getSource().getProvince());
+                for (GUIOrder order : orders) {
+                    order.updateDOM(mapInfo);
+                    unsyncUpdateProvince(order.getSource().getProvince());
                 }
 
                 // update dependent orders
@@ -452,9 +452,9 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
                 final MapInfo mapInfo = new DMRMapInfo(turnState);
 
                 // render orders and update provinces
-                for (int i = 0; i < orders.length; i++) {
-                    orders[i].removeFromDOM(mapInfo);
-                    unsyncUpdateProvince(orders[i].getSource().getProvince());
+                for (GUIOrder order : orders) {
+                    order.removeFromDOM(mapInfo);
+                    unsyncUpdateProvince(order.getSource().getProvince());
                 }
 
                 // update dependent orders
@@ -597,14 +597,14 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
                         }
 
                         // create an order layer for each power. append the z order ID
-                        for (int i = 0; i < powers.length; i++) {
+                        for (Power power : powers) {
                             final SVGGElement gElement = (SVGGElement) doc
                                     .createElementNS(
                                             SVGDOMImplementation.SVG_NAMESPACE_URI,
                                             SVGConstants.SVG_G_TAG);
                             // make layer name (needs to be unique)
                             final StringBuffer sb = new StringBuffer(32);
-                            sb.append(getPowerName(powers[i]));
+                            sb.append(getPowerName(power));
                             sb.append('_');
                             sb.append(String.valueOf(z));
 
@@ -612,7 +612,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
                                     SVGConstants.SVG_ID_ATTRIBUTE,
                                     sb.toString());
                             orderLayer.appendChild(gElement);
-                            powerOrderMap[z].put(powers[i], gElement);
+                            powerOrderMap[z].put(power, gElement);
                         }
                     }
                 }
@@ -665,17 +665,17 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
 
         // displayedPowers contains the powers that are visible.
         // go thru all powers, setting the visibility
-        for (int i = 0; i < powers.length; i++) {
+        for (Power power : powers) {
             boolean isVisible = false;
-            for (int j = 0; j < displayedPowers.length; j++) {
-                if (powers[i] == displayedPowers[j]) {
+            for (Power displayedPower : displayedPowers) {
+                if (power == displayedPower) {
                     isVisible = true;
                     break;
                 }
             }
 
             // set visibility
-            setPowerOrderVisibility(powers[i], isVisible);
+            setPowerOrderVisibility(power, isVisible);
         }
     }// unsyncSetVisiblePowers()
 
@@ -686,8 +686,8 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      */
     protected void unsyncRemoveAllOrdersFromDOM() {
         for (int z = 0; z < powerOrderMap.length; z++) {
-            for (int i = 0; i < powers.length; i++) {
-                final SVGGElement powerNode = getPowerSVGGElement(powers[i], z);
+            for (Power power : powers) {
+                final SVGGElement powerNode = getPowerSVGGElement(power, z);
 
                 Node child = powerNode.getFirstChild();
                 while (child != null) {
@@ -758,8 +758,8 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
 
             final Power[] visiblePowers = (Power[]) oldRenderSettings
                     .get(MapRenderer2.KEY_SHOW_ORDERS_FOR_POWERS);
-            for (int i = 0; i < visiblePowers.length; i++) {
-                setPowerOrderVisibility(visiblePowers[i], false);
+            for (Power visiblePower : visiblePowers) {
+                setPowerOrderVisibility(visiblePower, false);
             }
 
             // reset renderSetting influence state, since we just cleared it
@@ -770,8 +770,8 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
             }
 
             // update province CSS values
-            for (int i = 0; i < provinces.length; i++) {
-                unsyncUpdateProvince(provinces[i]);
+            for (Province province : provinces) {
+                unsyncUpdateProvince(province);
             }
         } else {
             // EXITING influence mode
@@ -854,8 +854,8 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
             if (order.isDependent()) {
                 if (addedOrders != null) {
                     // do not update if we are in the addedOrders branch
-                    for (int i = 0; i < addedOrders.length; i++) {
-                        if (order == addedOrders[i]) {
+                    for (GUIOrder addedOrder : addedOrders) {
+                        if (order == addedOrder) {
                             break;
                         }
                     }
@@ -900,8 +900,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      * Unsynchronized updater: Renders ALL provinces but NOT orders
      */
     protected void unsyncUpdateAllProvinces() {
-        for (int i = 0; i < provinces.length; i++) {
-            final Province province = provinces[i];
+        for (final Province province : provinces) {
             final Tracker tracker = (Tracker) trackerMap.get(province);
             unsyncUpdateProvince(tracker, province, false);
         }
@@ -1199,18 +1198,18 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
         // check symbol presence
         final Map map = SVGUtils
                 .tagFinderSVG(Arrays.asList(SYMBOLS), doc.getRootElement());
-        for (int i = 0; i < SYMBOLS.length; i++) {
-            if (map.get(SYMBOLS[i]) == null) {
+        for (String SYMBOL1 : SYMBOLS) {
+            if (map.get(SYMBOL1) == null) {
                 throw new MapException(
-                        "Missing required <symbol> or <g> element with id=\"" + SYMBOLS[i] + "\".");
+                        "Missing required <symbol> or <g> element with id=\"" + SYMBOL1 + "\".");
             }
         }
 
         // check MMD
-        for (int i = 0; i < SYMBOLS.length; i++) {
-            if (mapMeta.getSymbolSize(SYMBOLS[i]) == null) {
+        for (String SYMBOL : SYMBOLS) {
+            if (mapMeta.getSymbolSize(SYMBOL) == null) {
                 throw new MapException(
-                        "Missing required <jdipNS:SYMBOLSIZE> element for symbol name \"" + SYMBOLS[i] + "\"");
+                        "Missing required <jdipNS:SYMBOLSIZE> element for symbol name \"" + SYMBOL + "\"");
             }
         }
 
@@ -1223,10 +1222,10 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
     private void mapLayers() throws MapException {
         SVGUtils.tagFinderSVG(layerMap, Arrays.asList(LAYERS),
                 doc.getRootElement());
-        for (int i = 0; i < LAYERS.length; i++) {
-            if (layerMap.get(LAYERS[i]) == null) {
+        for (String LAYER : LAYERS) {
+            if (layerMap.get(LAYER) == null) {
                 throw new MapException(
-                        "Missing required layer (<g> element) with id=\"" + LAYERS[i] + "\".");
+                        "Missing required layer (<g> element) with id=\"" + LAYER + "\".");
             }
         }
     }// mapLayers()
@@ -1244,9 +1243,9 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
         final SVGElement[] mouseElements = SVGUtils
                 .idFinderSVG((SVGElement) layerMap.get(LAYER_MOUSE));
 
-        for (int i = 0; i < mouseElements.length; i++) {
+        for (SVGElement mouseElement : mouseElements) {
             // get id, which must be a province with or without a coast
-            final String id = mouseElements[i]
+            final String id = mouseElement
                     .getAttribute(SVGConstants.SVG_ID_ATTRIBUTE);
 
             // parse ID; determine if there is a coast.
@@ -1260,14 +1259,14 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
             }
 
             // can we even target this element??
-            if (mouseElements[i] instanceof EventTarget) {
+            if (mouseElement instanceof EventTarget) {
                 // map the location, but only if the coast is defined.
                 if (coast != Coast.UNDEFINED) {
                     locMap.put(id.toLowerCase(), new Location(province, coast));
                 }
             } else {
                 throw new MapException(
-                        LAYER_MOUSE + "element: " + mouseElements[i] + " cannot be targetted by mouse events.");
+                        LAYER_MOUSE + "element: " + mouseElement + " cannot be targetted by mouse events.");
             }
         }
     }// validateAndSetupMouseRegions()
@@ -1286,12 +1285,12 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
         // Make a list of all possible provinces with underscores
         final ArrayList<String> uscoreProvList = new ArrayList<>(125);    // stores underscore-preceded names
         final ArrayList<Province> lookupProvList = new ArrayList<>(125);    // stores corresponding Province
-        for (int i = 0; i < provinces.length; i++) {
-            final String[] shortNames = provinces[i].getShortNames()
+        for (Province province : provinces) {
+            final String[] shortNames = province.getShortNames()
                     .toArray(new String[0]);
-            for (int j = 0; j < shortNames.length; j++) {
-                uscoreProvList.add('_' + shortNames[j]);
-                lookupProvList.add(provinces[i]);
+            for (String shortName : shortNames) {
+                uscoreProvList.add('_' + shortName);
+                lookupProvList.add(province);
             }
         }
 

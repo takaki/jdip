@@ -1157,8 +1157,8 @@ public class Utils {
                 }
 
                 // check misc chars
-                for (int i = 0; i < EMAIL_ALLOWED.length; i++) {
-                    if (c == EMAIL_ALLOWED[i]) {
+                for (char aEMAIL_ALLOWED : EMAIL_ALLOWED) {
+                    if (c == aEMAIL_ALLOWED) {
                         return true;
                     }
                 }
@@ -1217,8 +1217,8 @@ public class Utils {
                 }
 
                 // check misc chars
-                for (int i = 0; i < URL_ALLOWED.length; i++) {
-                    if (c == URL_ALLOWED[i]) {
+                for (char aURL_ALLOWED : URL_ALLOWED) {
+                    if (c == aURL_ALLOWED) {
                         return true;
                     }
                 }

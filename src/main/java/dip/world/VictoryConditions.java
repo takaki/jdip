@@ -130,8 +130,8 @@ public class VictoryConditions implements Serializable {
         // from the passed HashMap
         final List<Power> powers = turnState.getWorld().getMap().getPowers();
         final List<AdjustmentInfo> adjInfo = new ArrayList<>();
-        for (int i = 0; i < powers.size(); i++) {
-            adjInfo.add(adjMap.get(powers.get(i)));
+        for (Power power : powers) {
+            adjInfo.add(adjMap.get(power));
         }
 
 

@@ -308,17 +308,17 @@ public class OrderParser {
         final int startIdx = (ptok == null) ? 0 : ptok.length();
 
         // string replacement
-        for (int i = 0; i < REPLACEMENTS.length; i++) {
+        for (String[] REPLACEMENT : REPLACEMENTS) {
             int idx = startIdx;
-            int start = sb.indexOf(REPLACEMENTS[i][0], idx);
+            int start = sb.indexOf(REPLACEMENT[0], idx);
 
             while (start != -1) {
-                final int end = start + REPLACEMENTS[i][0].length();
-                sb.replace(start, end, REPLACEMENTS[i][1]);
+                final int end = start + REPLACEMENT[0].length();
+                sb.replace(start, end, REPLACEMENT[1]);
 
                 // repeat search
-                idx = start + REPLACEMENTS[i][1].length();
-                start = sb.indexOf(REPLACEMENTS[i][0], idx);
+                idx = start + REPLACEMENT[1].length();
+                start = sb.indexOf(REPLACEMENT[0], idx);
             }
         }
 
@@ -791,11 +791,11 @@ public class OrderParser {
     // deletes any strings in the stringBuffer that match
     // strings specified in toDelete
     private void delChars(final StringBuffer sb, final String[] toDelete) {
-        for (int i = 0; i < toDelete.length; i++) {
-            int idx = sb.indexOf(toDelete[i]);
+        for (String aToDelete : toDelete) {
+            int idx = sb.indexOf(aToDelete);
             while (idx != -1) {
-                sb.delete(idx, idx + toDelete[i].length());
-                idx = sb.indexOf(toDelete[i], idx);
+                sb.delete(idx, idx + aToDelete.length());
+                idx = sb.indexOf(aToDelete, idx);
             }
         }
     }// delChars()

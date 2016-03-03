@@ -140,16 +140,16 @@ public class ToolManager {
     private File[] searchForFiles(final File[] searchPaths) {
         final List<File> fileList = new ArrayList<>();
 
-        for (int spIdx = 0; spIdx < searchPaths.length; spIdx++) {
-            Log.println("Searching for tools on: ", searchPaths[spIdx]);
-            final File[] list = searchPaths[spIdx].listFiles();
+        for (File searchPath : searchPaths) {
+            Log.println("Searching for tools on: ", searchPath);
+            final File[] list = searchPath.listFiles();
             if (list != null) {
-                for (int i = 0; i < list.length; i++) {
-                    if (list[i].isFile()) {
-                        final String fileName = list[i].getPath();
+                for (File aList : list) {
+                    if (aList.isFile()) {
+                        final String fileName = aList.getPath();
                         if (fileName.endsWith(TOOL_EXT_JAR)) {
-                            Log.println("found tool: ", list[i]);
-                            fileList.add(list[i]);
+                            Log.println("found tool: ", aList);
+                            fileList.add(aList);
                         }
                     }
                 }

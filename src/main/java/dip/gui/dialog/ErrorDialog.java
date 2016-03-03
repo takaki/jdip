@@ -884,9 +884,9 @@ public class ErrorDialog extends TextViewer {
 
 
             // system properties
-            for (final Iterator iter = list.iterator(); iter.hasNext(); ) {
+            for (Object aList : list) {
                 sb.append("\n  ");
-                sb.append(iter.next());
+                sb.append(aList);
             }
 
             sb.append('\n');

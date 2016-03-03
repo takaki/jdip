@@ -159,8 +159,7 @@ public class SymbolInjector {
         assert (symbols != null);
         assert (symbols.size() > 0);
 
-        for (int i = 0; i < symbols.size(); i++) {
-            final Symbol symbol = symbols.get(i);
+        for (final Symbol symbol : symbols) {
             final Element element = defsElementMap.get(symbol.getName());
             if (element == null) {
                 // does not exist! add
@@ -254,10 +253,10 @@ public class SymbolInjector {
         final String oldCSS = cdsNode.getData();
 
         // collision check
-        for (int i = 0; i < cssStyles.length; i++) {
-            if (oldCSS.indexOf(cssStyles[i].getName()) >= 0) {
+        for (CSSStyle cssStyle1 : cssStyles) {
+            if (oldCSS.indexOf(cssStyle1.getName()) >= 0) {
                 throw new IOException(
-                        "Map and SymbolPack contain same CSS style: \"" + cssStyles[i]
+                        "Map and SymbolPack contain same CSS style: \"" + cssStyle1
                                 .getName() + "\"");
             }
         }
@@ -268,10 +267,10 @@ public class SymbolInjector {
 
         sb.append("/* merged CSS from SymbolPack */\n");
 
-        for (int i = 0; i < cssStyles.length; i++) {
-            sb.append(cssStyles[i].getName());
+        for (CSSStyle cssStyle : cssStyles) {
+            sb.append(cssStyle.getName());
             sb.append(' ');
-            sb.append(cssStyles[i].getStyle());
+            sb.append(cssStyle.getStyle());
             sb.append('\n');
         }
 

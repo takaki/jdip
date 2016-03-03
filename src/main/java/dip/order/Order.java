@@ -199,8 +199,7 @@ public abstract class Order extends Object implements Orderable, java.io.Seriali
         ArrayList<OrderState> depSup = null;
 
         final List<OrderState> orderStates = adjudicator.getOrderStates();
-        for (int osIdx = 0; osIdx < orderStates.size(); osIdx++) {
-            final OrderState dependentOS = orderStates.get(osIdx);
+        for (final OrderState dependentOS : orderStates) {
             final Orderable order = dependentOS.getOrder();
 
             if (order != this) // always exclude self

@@ -546,8 +546,7 @@ public class Support extends Order {
 
             final OrderState[] depMovesToSrc = thisOS.getDependentMovesToSource();
 
-            for (int i = 0; i < depMovesToSrc.length; i++) {
-                final OrderState depMoveOS = depMovesToSrc[i];
+            for (final OrderState depMoveOS : depMovesToSrc) {
                 final Move depMove = (Move) depMoveOS.getOrder();
 
                 Log.println("  checking against move: ", depMove);
@@ -665,7 +664,7 @@ public class Support extends Order {
                                 // if we ever decide to just use the Szykman rule, instead of the
                                 // 2000 rules, comment out the above and just leave this order
                                 // uncertain.
-								/*
+                                /*
 								Log.println("** no 2000 rule used: leaving uncertain");
 								evalResult = pickState(evalResult, Tristate.UNCERTAIN);
 								*/

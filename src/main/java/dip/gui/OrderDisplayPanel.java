@@ -397,8 +397,7 @@ public class OrderDisplayPanel extends JPanel {
         final ArrayList<Orderable> ordersAdded = new ArrayList<>(orders.length);
         final ArrayList<Orderable> ordersDeleted = new ArrayList<>(orders.length);
 
-        for (int i = 0; i < orders.length; i++) {
-            final Orderable order = orders[i];
+        for (final Orderable order : orders) {
             boolean failed = false;
 
             try {
@@ -504,9 +503,7 @@ public class OrderDisplayPanel extends JPanel {
         int count = 0;
         final ArrayList<Orderable> deletedOrderList = new ArrayList<>(orders.length);
 
-        for (int i = 0; i < orders.length; i++) {
-            final Orderable order = orders[i];
-
+        for (final Orderable order : orders) {
             if (isOrderable(order)) {
                 assert (removeOrderFromTS(order));
                 deletedOrderList.add(order);
@@ -551,8 +548,9 @@ public class OrderDisplayPanel extends JPanel {
             // clear the orders from the turnstate.
             // keep cleared orders in a temporary arraylist
             final ArrayList<Orderable> deletedOrders = new ArrayList<>(100);
-            for (int i = 0; i < orderablePowers.length; i++) {
-                final List<Orderable> orders = turnState.getOrders(orderablePowers[i]);
+            for (Power orderablePower : orderablePowers) {
+                final List<Orderable> orders = turnState
+                        .getOrders(orderablePower);
                 if (orders.size() > 0) {
                     deletedOrders.addAll(orders);
                     orders.clear();
@@ -788,8 +786,8 @@ public class OrderDisplayPanel extends JPanel {
         }
 
 
-        for (int i = 0; i < orderablePowers.length; i++) {
-            if (orderablePowers[i] == order.getPower()) {
+        for (Power orderablePower : orderablePowers) {
+            if (orderablePower == order.getPower()) {
                 return true;
             }
         }
@@ -1037,9 +1035,9 @@ public class OrderDisplayPanel extends JPanel {
             int addCount = 0;
 
             synchronized (list) {
-                for (int i = 0; i < orders.length; i++) {
-                    if (isDisplayable(orders[i])) {
-                        list.add(createDisplayOrder(orders[i]));
+                for (Orderable order : orders) {
+                    if (isDisplayable(order)) {
+                        list.add(createDisplayOrder(order));
                         addCount++;
                     }
                 }
@@ -1082,8 +1080,8 @@ public class OrderDisplayPanel extends JPanel {
                     final DisplayOrder displayOrder = iter.next();
                     final Orderable doOrder = displayOrder.getOrder();
 
-                    for (int i = 0; i < orders.length; i++) {
-                        if (doOrder == orders[i]) {
+                    for (Orderable order : orders) {
+                        if (doOrder == order) {
                             iter.remove();
                         }
                     }
@@ -1165,8 +1163,8 @@ public class OrderDisplayPanel extends JPanel {
          * Checks if an Order is in the Displayed Power array.
          */
         private boolean isDisplayable(final Orderable order) {
-            for (int i = 0; i < displayablePowers.length; i++) {
-                if (order.getPower() == displayablePowers[i]) {
+            for (Power displayablePower : displayablePowers) {
+                if (order.getPower() == displayablePower) {
                     return true;
                 }
             }

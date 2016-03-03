@@ -115,9 +115,9 @@ public class NGDVariantSelect extends JPanel implements NewGameDialog.NGDTabPane
             final Variant[] variants = new VariantManager().getVariants()
                     .toArray(new Variant[0]);
             defaultVariant = null;
-            for (int i = 0; i < variants.length; i++) {
-                if (variants[i].isDefault()) {
-                    defaultVariant = variants[i];
+            for (Variant variant : variants) {
+                if (variant.isDefault()) {
+                    defaultVariant = variant;
                 }
             }
 
@@ -189,8 +189,8 @@ public class NGDVariantSelect extends JPanel implements NewGameDialog.NGDTabPane
         final Variant[] variants = new VariantManager().getVariants()
                 .toArray(new Variant[0]);
         listModel.clear();
-        for (int i = 0; i < variants.length; i++) {
-            listModel.addElement(variants[i].getName());
+        for (Variant variant : variants) {
+            listModel.addElement(variant.getName());
         }
     }// makeVariantList()
 

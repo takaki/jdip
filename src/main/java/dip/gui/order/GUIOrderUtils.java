@@ -350,13 +350,12 @@ final class GUIOrderUtils {
 
         final String powerColor = mmd.getPowerColor(power);
 
-        for (int i = 0; i < elements.length; i++) {
-            elements[i].setAttributeNS(null, CSSConstants.CSS_STROKE_PROPERTY,
+        for (SVGElement element : elements) {
+            element.setAttributeNS(null, CSSConstants.CSS_STROKE_PROPERTY,
                     powerColor);
             if (filter != null) {
-                elements[i]
-                        .setAttributeNS(null, SVGConstants.SVG_FILTER_ATTRIBUTE,
-                                filter);
+                element.setAttributeNS(null, SVGConstants.SVG_FILTER_ATTRIBUTE,
+                        filter);
             }
         }
     }// makeStyled()
@@ -379,8 +378,8 @@ final class GUIOrderUtils {
                                    final String mmdOrderElementName) {
         final String cssStyle = mmd.getOrderParamString(mmdOrderElementName,
                 MapMetadata.ATT_HILIGHT_CLASS);
-        for (int i = 0; i < elements.length; i++) {
-            elements[i].setAttributeNS(null, SVGConstants.SVG_CLASS_ATTRIBUTE,
+        for (SVGElement element : elements) {
+            element.setAttributeNS(null, SVGConstants.SVG_CLASS_ATTRIBUTE,
                     cssStyle);
         }
     }// makeHilight()
@@ -404,8 +403,8 @@ final class GUIOrderUtils {
     public static Move findMatchingMove(final MapInfo mapInfo, final Province src,
                                         final Province dest) {
         final Power[] powers = mapInfo.getDisplayablePowers();
-        for (int i = 0; i < powers.length; i++) {
-            final List orders = mapInfo.getTurnState().getOrders(powers[i]);
+        for (Power power : powers) {
+            final List orders = mapInfo.getTurnState().getOrders(power);
             final Iterator iter = orders.iterator();
             while (iter.hasNext()) {
                 final Orderable o = (Orderable) iter.next();
@@ -429,8 +428,8 @@ final class GUIOrderUtils {
      */
     public static Hold findMatchingHold(final MapInfo mapInfo, final Province src) {
         final Power[] powers = mapInfo.getDisplayablePowers();
-        for (int i = 0; i < powers.length; i++) {
-            final List orders = mapInfo.getTurnState().getOrders(powers[i]);
+        for (Power power : powers) {
+            final List orders = mapInfo.getTurnState().getOrders(power);
             final Iterator iter = orders.iterator();
             while (iter.hasNext()) {
                 final Orderable o = (Orderable) iter.next();
@@ -456,8 +455,8 @@ final class GUIOrderUtils {
         int count = 0;
 
         final Power[] powers = mapInfo.getDisplayablePowers();
-        for (int i = 0; i < powers.length; i++) {
-            final List orders = mapInfo.getTurnState().getOrders(powers[i]);
+        for (Power power : powers) {
+            final List orders = mapInfo.getTurnState().getOrders(power);
             final Iterator iter = orders.iterator();
             while (iter.hasNext()) {
                 final Orderable o = (Orderable) iter.next();
@@ -558,8 +557,8 @@ final class GUIOrderUtils {
         }
 
         final Power[] displayedPowers = mapInfo.getDisplayablePowers();
-        for (int i = 0; i < displayedPowers.length; i++) {
-            if (displayedPowers[i] == power) {
+        for (Power displayedPower : displayedPowers) {
+            if (displayedPower == power) {
                 return true;
             }
         }

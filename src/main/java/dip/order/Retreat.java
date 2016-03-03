@@ -167,8 +167,7 @@ public class Retreat extends Move {
         List<OrderState> depMTDest = null;
 
         final List<OrderState> orderStates = adjudicator.getOrderStates();
-        for (int osIdx = 0; osIdx < orderStates.size(); osIdx++) {
-            final OrderState dependentOS = orderStates.get(osIdx);
+        for (final OrderState dependentOS : orderStates) {
             final Orderable order = dependentOS.getOrder();
 
             if (order instanceof Retreat && order != this) {
@@ -238,8 +237,7 @@ public class Retreat extends Move {
                 Tristate evalResult = Tristate.UNCERTAIN;
                 boolean isStrongerThanAllOthers = false;
 
-                for (int i = 0; i < depMovesToDest.length; i++) {
-                    final OrderState depMoveOS = depMovesToDest[i];
+                for (final OrderState depMoveOS : depMovesToDest) {
                     final Move depMove = (Move) depMoveOS.getOrder();
 
                     if (depMoveOS.isRetreatStrengthSet()) {

@@ -277,17 +277,17 @@ public class TestParser {
 
         // find order.
         String[] params = null;
-        for (int i = 0; i < ORDER_ARGS.length; i++) {
-            if (toks[0].equalsIgnoreCase(ORDER_ARGS[i][0])) {
-                if (toks.length != ORDER_ARGS[i].length) {
+        for (String[] ORDER_ARG : ORDER_ARGS) {
+            if (toks[0].equalsIgnoreCase(ORDER_ARG[0])) {
+                if (toks.length != ORDER_ARG.length) {
                     System.out.println(
                             "ERROR: in result of order pair starting at line: " + orp
                                     .getLineNumber());
                     System.out.println(
-                            "Invalid number of arguments; " + (ORDER_ARGS[i].length - 1) + " are required.");
+                            "Invalid number of arguments; " + (ORDER_ARG.length - 1) + " are required.");
                     System.exit(1);
                 } else {
-                    params = ORDER_ARGS[i];
+                    params = ORDER_ARG;
                 }
             }
         }
@@ -631,9 +631,9 @@ public class TestParser {
         // clear positions in this world
         final Position pos = turnState.getPosition();
         final Province[] provs = pos.getProvinces().toArray(new Province[0]);
-        for (int i = 0; i < provs.length; i++) {
-            pos.setUnit(provs[i], null);
-            pos.setDislodgedUnit(provs[i], null);
+        for (Province prov : provs) {
+            pos.setUnit(prov, null);
+            pos.setDislodgedUnit(prov, null);
         }
 
         System.out.println(
@@ -832,9 +832,9 @@ public class TestParser {
      */
     private String getKeyword(final String line) {
         final String lcLine = line.trim().toLowerCase();
-        for (int i = 0; i < KEYWORDS.length; i++) {
-            if (lcLine.startsWith(KEYWORDS[i][0])) {
-                return KEYWORDS[i][1];
+        for (String[] KEYWORD : KEYWORDS) {
+            if (lcLine.startsWith(KEYWORD[0])) {
+                return KEYWORD[1];
             }
         }
 

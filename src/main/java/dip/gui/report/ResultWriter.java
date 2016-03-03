@@ -206,20 +206,20 @@ public class ResultWriter {
 
         // Print results, by power.
         final StringBuffer sb = new StringBuffer(4096);
-        for (int i = 0; i < allPowers.length; i++) {
+        for (Power allPower : allPowers) {
             // SKIP power if eliminated.
-            if (!position.isEliminated(allPowers[i])) {
+            if (!position.isEliminated(allPower)) {
                 // power name
                 sb.append("<div class=\"indent1cm\"><b>");
-                sb.append(allPowers[i]);
+                sb.append(allPower);
                 sb.append(':');
                 sb.append("</b>");
 
                 // non-order results
-                printNonOrderResultsForPower(sb, allPowers[i], otherResults);
+                printNonOrderResultsForPower(sb, allPower, otherResults);
 
                 // order results
-                printOrderResultsForPower(sb, allPowers[i], orderResults);
+                printOrderResultsForPower(sb, allPower, orderResults);
 
                 sb.append("</div>");
             }

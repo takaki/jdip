@@ -227,8 +227,8 @@ public class DislodgedParser {
             sb.append(", unit=");
             sb.append(unit);
             sb.append(", locNames=");
-            for (int i = 0; i < retreatLocs.length; i++) {
-                sb.append(retreatLocs[i]);
+            for (String retreatLoc : retreatLocs) {
+                sb.append(retreatLoc);
                 sb.append(',');
             }
             sb.append(']');
@@ -330,8 +330,8 @@ public class DislodgedParser {
 
             boolean foundMatch = false;
 
-            for (int i = 0; i < destroyeds.length; i++) {
-                final Matcher m = destroyeds[i].matcher(line);
+            for (Pattern destroyed : destroyeds) {
+                final Matcher m = destroyed.matcher(line);
                 if (m.lookingAt()) {
                     disList.add(new DislodgedInfo(m.group(1), m.group(2),
                             ParserUtils.filter(m.group(3).trim()), null));

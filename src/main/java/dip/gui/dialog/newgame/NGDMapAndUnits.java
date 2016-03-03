@@ -175,9 +175,9 @@ public class NGDMapAndUnits extends JPanel implements NewGameDialog.NGDTabPane {
     public void setSelectedMap(final MapGraphic mg) {
         final ListItem[] items = mapSelector.getItems();
         if (items != null) {
-            for (int i = 0; i < items.length; i++) {
-                if (mg == items[i].getReference()) {
-                    mapSelector.setSelectedItem(items[i]);
+            for (ListItem item : items) {
+                if (mg == item.getReference()) {
+                    mapSelector.setSelectedItem(item);
                     break;
                 }
             }
@@ -190,10 +190,10 @@ public class NGDMapAndUnits extends JPanel implements NewGameDialog.NGDTabPane {
     public void setSelectedMap(final String mgName) {
         final ListItem[] items = mapSelector.getItems();
         if (items != null) {
-            for (int i = 0; i < items.length; i++) {
-                final MapGraphic mg = (MapGraphic) items[i].getReference();
+            for (ListItem item : items) {
+                final MapGraphic mg = (MapGraphic) item.getReference();
                 if (mg.getName().equalsIgnoreCase(mgName)) {
-                    mapSelector.setSelectedItem(items[i]);
+                    mapSelector.setSelectedItem(item);
                     break;
                 }
             }
@@ -206,9 +206,9 @@ public class NGDMapAndUnits extends JPanel implements NewGameDialog.NGDTabPane {
     public void setSelectedSymbolPack(final SymbolPack sp) {
         final ListItem[] items = symbolSelector.getItems();
         if (items != null) {
-            for (int i = 0; i < items.length; i++) {
-                if (sp == items[i].getReference()) {
-                    symbolSelector.setSelectedItem(items[i]);
+            for (ListItem item : items) {
+                if (sp == item.getReference()) {
+                    symbolSelector.setSelectedItem(item);
                     break;
                 }
             }
@@ -221,10 +221,10 @@ public class NGDMapAndUnits extends JPanel implements NewGameDialog.NGDTabPane {
     public void setSelectedSymbolPack(final String symbolPackName) {
         final ListItem[] items = symbolSelector.getItems();
         if (items != null) {
-            for (int i = 0; i < items.length; i++) {
-                if (((SymbolPack) items[i].getReference()).getName()
+            for (ListItem item : items) {
+                if (((SymbolPack) item.getReference()).getName()
                         .equalsIgnoreCase(symbolPackName)) {
-                    symbolSelector.setSelectedItem(items[i]);
+                    symbolSelector.setSelectedItem(item);
                     break;
                 }
             }
@@ -311,9 +311,9 @@ public class NGDMapAndUnits extends JPanel implements NewGameDialog.NGDTabPane {
          */
         public void setSelectedItemByName(final String name) {
             if (name != null) {
-                for (int i = 0; i < items.length; i++) {
-                    if (items[i].getLabel().equalsIgnoreCase(name)) {
-                        setSelectedItem(items[i]);
+                for (ListItem item : items) {
+                    if (item.getLabel().equalsIgnoreCase(name)) {
+                        setSelectedItem(item);
                         break;
                     }
                 }

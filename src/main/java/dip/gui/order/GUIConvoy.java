@@ -401,8 +401,8 @@ public class GUIConvoy extends Convoy implements GUIOrder {
             elements = drawOrder(mapInfo, offset, false);
             GUIOrderUtils.makeHilight(elements, mapInfo.getMapMetadata(),
                     MapMetadata.EL_CONVOY);
-            for (int i = 0; i < elements.length; i++) {
-                group.appendChild(elements[i]);
+            for (SVGElement element : elements) {
+                group.appendChild(element);
             }
         }
 
@@ -410,8 +410,8 @@ public class GUIConvoy extends Convoy implements GUIOrder {
         elements = drawOrder(mapInfo, 0, true);
         GUIOrderUtils.makeStyled(elements, mapInfo.getMapMetadata(),
                 MapMetadata.EL_CONVOY, power);
-        for (int i = 0; i < elements.length; i++) {
-            group.appendChild(elements[i]);
+        for (SVGElement element : elements) {
+            group.appendChild(element);
         }
 
         // draw 'failed' marker, if appropriate.
@@ -473,10 +473,10 @@ public class GUIConvoy extends Convoy implements GUIOrder {
                 .makeTriangle(ptConvoySrc, radius);
 
         final StringBuffer sb = new StringBuffer(160);
-        for (int i = 0; i < triPts.length; i++) {
-            GUIOrderUtils.appendFloat(sb, triPts[i].x);
+        for (Point2D.Float triPt1 : triPts) {
+            GUIOrderUtils.appendFloat(sb, triPt1.x);
             sb.append(',');
-            GUIOrderUtils.appendFloat(sb, triPts[i].y);
+            GUIOrderUtils.appendFloat(sb, triPt1.y);
             sb.append(' ');
         }
 
@@ -499,13 +499,13 @@ public class GUIConvoy extends Convoy implements GUIOrder {
         //
         Point2D.Float newPtFrom = null;
         float maxDistSquared = 0.0f;
-        for (int i = 0; i < triPts.length; i++) {
+        for (Point2D.Float triPt : triPts) {
             final float distSquared = (float) (Math
-                    .pow((ptConvoyDest.x - triPts[i].x), 2.0) + Math
-                    .pow((ptConvoyDest.y - triPts[i].y), 2.0));
+                    .pow((ptConvoyDest.x - triPt.x), 2.0) + Math
+                    .pow((ptConvoyDest.y - triPt.y), 2.0));
             if (distSquared > maxDistSquared) {
                 maxDistSquared = distSquared;
-                newPtFrom = triPts[i];
+                newPtFrom = triPt;
             }
         }
 

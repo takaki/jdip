@@ -166,8 +166,8 @@ public class GUIRetreat extends Retreat implements GUIOrder {
             final List<Location> retreatLocs = rc
                     .getValidLocations(getSource());
 
-            for (int i = 0; i < retreatLocs.size(); i++) {
-                if (retreatLocs.get(i).getProvince() == province) {
+            for (Location retreatLoc : retreatLocs) {
+                if (retreatLoc.getProvince() == province) {
                     sb.append(Utils.getLocalString(CLICK_TO_SET_DEST));
                     return true;
                 }

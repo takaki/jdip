@@ -561,8 +561,7 @@ public final class OrderState {
                              final int defaultStrength) {
         int strength = defaultStrength;
 
-        for (int i = 0; i < supportList.length; i++) {
-            final OrderState os = supportList[i];
+        for (final OrderState os : supportList) {
             if (os.getEvalState() == Tristate.SUCCESS || (!isCertain && os
                     .getEvalState() == Tristate.UNCERTAIN)) {
                 strength++;

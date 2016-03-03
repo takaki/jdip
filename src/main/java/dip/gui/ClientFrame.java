@@ -343,8 +343,8 @@ public class ClientFrame extends JFrame {
         ToolManager.init(new File[]{toolDirPath});
         final Tool[] tools = ToolManager.getTools();
         final ToolProxyImpl toolProxy = new ToolProxyImpl(this);
-        for (int i = 0; i < tools.length; i++) {
-            tools[i].setToolProxy(toolProxy);
+        for (Tool tool : tools) {
+            tool.setToolProxy(toolProxy);
         }
         dtime = Log.printDelta(dtime, "CF: tool setup time: ");
 
@@ -922,8 +922,8 @@ public class ClientFrame extends JFrame {
     public void dbgPrintListeners() {
         final PropertyChangeListener[] pcls = getPropertyChangeListeners();
         System.out.println("ClientFrame listeners: " + pcls.length);
-        for (int i = 0; i < pcls.length; i++) {
-            System.out.println("     " + pcls[i].getClass().getName());
+        for (PropertyChangeListener pcl : pcls) {
+            System.out.println("     " + pcl.getClass().getName());
         }
     }// dbgPrintListeners()
 
@@ -984,7 +984,7 @@ public class ClientFrame extends JFrame {
      */
     private class CFDropTargetListener extends FileDropTargetListener {
         public void processDroppedFiles(final File[] files) {
-            for (int i = 0; i < files.length; i++) {
+            for (File file : files) {
                 if (files.length >= 0) {
                     final World world = ClientFrame.this.persistMan
                             .acceptDrag(files[0], ClientFrame.this.getWorld());

@@ -313,8 +313,8 @@ public class GUIBuild extends Build implements GUIOrder {
         // no offset required
         //
         final SVGElement[] elements = drawOrder(mapInfo);
-        for (int i = 0; i < elements.length; i++) {
-            group.appendChild(elements[i]);
+        for (SVGElement element : elements) {
+            group.appendChild(element);
         }
 
         // draw 'failed' marker, if appropriate.

@@ -106,8 +106,8 @@ final class MenuController {
      */
     private void removeActionListeners(final AbstractButton ab) {
         final ActionListener[] al = ab.getActionListeners();
-        for (int i = 0; i < al.length; i++) {
-            ab.removeActionListener(al[i]);
+        for (ActionListener anAl : al) {
+            ab.removeActionListener(anAl);
         }
     }// removeActionListeners()
 

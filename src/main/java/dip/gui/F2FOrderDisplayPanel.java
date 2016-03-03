@@ -393,8 +393,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
         final Adjustment.AdjustmentInfoMap f2fAdjMap = Adjustment
                 .getAdjustmentInfo(turnState, world.getRuleOptions(), powers);
 
-        for (int i = 0; i < powers.size(); i++) {
-            final Power power = powers.get(i);
+        for (final Power power : powers) {
             if (!pos.isEliminated(power) && power.isActive()) {
                 // create icon, if possible
                 Icon icon = null;
@@ -463,8 +462,8 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
         final Power[] powers = world.getMap().getPowers().toArray(new Power[0]);
         final List<TabComponent> tabSelectionOrderList = new ArrayList<>(powers.length);
 
-        for (int i = 0; i < powers.length; i++) {
-            final TabComponent tc = getTabComponent(powers[i]);
+        for (Power power : powers) {
+            final TabComponent tc = getTabComponent(power);
             if (tabPane.isEnabledAt(tabPane.indexOfComponent(tc))) {
                 tabSelectionOrderList.add(tc);
             }
@@ -589,8 +588,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
             // set enabled tabs (submitted == disabled)
             boolean aSubmit = false;
             final Power[] powers = world.getMap().getPowers().toArray(new Power[0]);
-            for (int i = 0; i < powers.length; i++) {
-                final Power power = powers[i];
+            for (final Power power : powers) {
                 final boolean value = state.getSubmitted(power);
                 aSubmit = (value) ? true : aSubmit;
                 setTabEnabled(power, !value);
@@ -631,8 +629,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
             final Power[] powers = world.getMap().getPowers().toArray(new Power[0]);
 
             // set submitted
-            for (int i = 0; i < powers.length; i++) {
-                final Power power = powers[i];
+            for (final Power power : powers) {
                 entryState.setSubmitted(power, !isTabEnabled(power));
             }
 
