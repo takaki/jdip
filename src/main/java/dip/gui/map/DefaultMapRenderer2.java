@@ -177,10 +177,10 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
     protected static final String UNORDERED = "unordered";
 
     // instance variables
-    protected final Map trackerMap;            // for rendering units & dislodged units; keyed by Province
-    protected final HashMap layerMap;        // layers to which we render; keyed by LAYER; includes label layers
-    private final HashMap renderSettings;    // control rendering options.
-    private final HashMap locMap;            // maps multicoastal province ids -> Location objects for multicoastal provinces
+    protected final Map<Province, Tracker> trackerMap;            // for rendering units & dislodged units; keyed by Province
+    protected final HashMap<String, SVGGElement> layerMap;        // layers to which we render; keyed by LAYER; includes label layers
+    private final HashMap<Object, Object> renderSettings;    // control rendering options.
+    private final HashMap<String, Location> locMap;            // maps multicoastal province ids -> Location objects for multicoastal provinces
     private final HashMap[] powerOrderMap;
     private HashMap oldRenderSettings;        // old render settings
 
@@ -215,10 +215,10 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
                 .toArray(new Power[0]);
 
         // setup object maps
-        trackerMap = new HashMap(113);
+        trackerMap = new HashMap<Province, Tracker>(113);
         renderSettings = new HashMap(11);
-        layerMap = new HashMap(11);
-        locMap = new HashMap(17);
+        layerMap = new HashMap<String, SVGGElement>(11);
+        locMap = new HashMap<String, Location>(17);
 
         // power order hashmap (now with z-axis) setup
         powerOrderMap = new HashMap[Z_LAYER_NAMES.length];
@@ -344,7 +344,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
 
         // Remove other mouse/key listeners
         SVGElement[] mouseElements = SVGUtils
-                .idFinderSVG((SVGElement) layerMap.get(LAYER_MOUSE));
+                .idFinderSVG(layerMap.get(LAYER_MOUSE));
         for (int i = 0; i < mouseElements.length; i++) {
             if (mouseElements[i] instanceof EventTarget) {
                 // add mouse listeners
@@ -383,7 +383,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      * Get a mapped layer
      */
     public SVGGElement getLayer(String key) {
-        return (SVGGElement) layerMap.get(key);
+        return layerMap.get(key);
     }// getLayer()
 
     /**
@@ -549,7 +549,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
             return new Location(province, Coast.UNDEFINED);
         }
 
-        return (Location) locMap.get(id);
+        return locMap.get(id);
     }// getLocation()
 
 
@@ -563,14 +563,14 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
         if (rq != null) {
             rq.invokeLater(new Runnable() {
                 public void run() {
-                    SVGGElement orderLayer = (SVGGElement) layerMap
+                    SVGGElement orderLayer = layerMap
                             .get(LAYER_ORDERS);
 
                     for (int z = (powerOrderMap.length - 1); z >= 0; z--) {
                         // determine which order layer we should use.
                         if (z == 0) {
                             // special case: this has its own explicit group in the SVG file
-                            orderLayer = (SVGGElement) layerMap
+                            orderLayer = layerMap
                                     .get(HIGHEST_ORDER_LAYER);
                         } else {
                             // typical case
@@ -580,7 +580,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
                             // higher z orders
                             //
 
-                            SVGGElement parentLayer = (SVGGElement) layerMap
+                            SVGGElement parentLayer = layerMap
                                     .get(LAYER_ORDERS);
 
                             // create order layer under ORDER_LAYERS layer (e.g., id="Layer1", or id="Layer2")
@@ -743,16 +743,16 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
             }
 
             // hide layers we don't want (units, orders, sc)
-            SVGElement elLayer = (SVGElement) layerMap.get(LAYER_SC);
+            SVGElement elLayer = layerMap.get(LAYER_SC);
             setElementVisibility(elLayer, false);
 
-            elLayer = (SVGElement) layerMap.get(LAYER_UNITS);
+            elLayer = layerMap.get(LAYER_UNITS);
             setElementVisibility(elLayer, false);
 
-            elLayer = (SVGElement) layerMap.get(LAYER_DISLODGED_UNITS);
+            elLayer = layerMap.get(LAYER_DISLODGED_UNITS);
             setElementVisibility(elLayer, false);
 
-            elLayer = (SVGElement) layerMap
+            elLayer = layerMap
                     .get(LAYER_MAP);    // always show map in influence mode
             setElementVisibility(elLayer, true);
 
@@ -807,18 +807,18 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
             // 		KEY_SHOW_ORDERS_FOR_POWERS
             // 		LAYER_SC
             //
-            setElementVisibility((SVGElement) layerMap.get(LAYER_UNITS),
+            setElementVisibility(layerMap.get(LAYER_UNITS),
                     ((Boolean) getRenderSetting(KEY_SHOW_UNITS))
                             .booleanValue());
             setElementVisibility(
                     (SVGElement) layerMap.get(LAYER_DISLODGED_UNITS),
                     ((Boolean) getRenderSetting(KEY_SHOW_DISLODGED_UNITS))
                             .booleanValue());
-            setElementVisibility((SVGElement) layerMap.get(LAYER_SC),
+            setElementVisibility(layerMap.get(LAYER_SC),
                     ((Boolean) getRenderSetting(KEY_SHOW_SUPPLY_CENTERS))
                             .booleanValue());
             unsyncSetVisiblePowers();    // takes care of KEY_SHOW_ORDERS_FOR_POWERS
-            setElementVisibility((SVGElement) layerMap.get(LAYER_MAP),
+            setElementVisibility(layerMap.get(LAYER_MAP),
                     ((Boolean) getRenderSetting(KEY_SHOW_MAP)).booleanValue());
 
             // destroy old render settings
@@ -915,7 +915,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      */
     protected void unsyncUpdateProvince(Province province,
                                         boolean forceUpdate) {
-        Tracker tracker = (Tracker) trackerMap.get(province);
+        Tracker tracker = trackerMap.get(province);
         unsyncUpdateProvince(tracker, province, forceUpdate);
     }// unsyncUpdateProvince()
 
@@ -1055,7 +1055,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
         } else if (oldElement == null && posUnit != null) {
             // case 2: new unit not null, old unit null: create new element, then add
             newElement = makeUnitUse(posUnit, province, isDislodged);
-            SVGElement layer = (SVGElement) ((isDislodged) ? layerMap
+            SVGElement layer = ((isDislodged) ? layerMap
                     .get(LAYER_DISLODGED_UNITS) : layerMap.get(LAYER_UNITS));
             layer.appendChild(newElement);
         } else {
@@ -1284,9 +1284,9 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      */
     private void addProvinceHilitesToTracker() {
         // Make a list of all possible provinces with underscores
-        ArrayList uscoreProvList = new ArrayList(
+        ArrayList<String> uscoreProvList = new ArrayList<String>(
                 125);    // stores underscore-preceded names
-        ArrayList lookupProvList = new ArrayList(
+        ArrayList<Province> lookupProvList = new ArrayList<Province>(
                 125);    // stores corresponding Province
         for (int i = 0; i < provinces.length; i++) {
             String[] shortNames = provinces[i].getShortNames()
@@ -1308,8 +1308,8 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
         for (int i = 0; i < lookupProvList.size(); i++) {
             SVGElement element = (SVGElement) map.get(uscoreProvList.get(i));
             if (element != null) {
-                Tracker tracker = (Tracker) trackerMap
-                        .get((Province) lookupProvList.get(i));
+                Tracker tracker = trackerMap
+                        .get(lookupProvList.get(i));
                 tracker.setProvinceHiliteElement(element);
             }
         }
@@ -1355,10 +1355,10 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
     private boolean isOrdered(Province province) {
         Unit unit = getPhaseApropriateUnit(province);
         if (unit != null) {
-            List list = turnState.getOrders(unit.getPower());
-            Iterator iter = list.iterator();
+            List<dip.order.Order> list = turnState.getOrders(unit.getPower());
+            Iterator<dip.order.Order> iter = list.iterator();
             while (iter.hasNext()) {
-                Orderable order = (Orderable) iter.next();
+                Orderable order = iter.next();
                 if (order.getSource().isProvinceEqual(province)) {
                     return true;
                 }

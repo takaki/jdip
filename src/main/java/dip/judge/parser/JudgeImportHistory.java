@@ -558,9 +558,9 @@ public final class JudgeImportHistory {
 
         Log.println("  :created power->order mapping");
 
-        final HashMap orderMap = new HashMap(powers.length);
+        final HashMap<Power, LinkedList<dip.order.Order>> orderMap = new HashMap<Power, LinkedList<dip.order.Order>>(powers.length);
         for (final Power power1 : powers) {
-            orderMap.put(power1, new LinkedList());
+            orderMap.put(power1, new LinkedList<dip.order.Order>());
         }
 
         // process all orders
@@ -574,7 +574,7 @@ public final class JudgeImportHistory {
             try {
                 order.validate(ts, valOpts, ruleOpts);
 
-                final List list = (LinkedList) orderMap.get(order.getPower());
+                final List list = orderMap.get(order.getPower());
                 list.add(order);
 
                 results.addAll(njo.getResults());
@@ -599,7 +599,7 @@ public final class JudgeImportHistory {
                 try {
                     order.validate(ts, valOpts, ruleOpts);
 
-                    final List list = (LinkedList) orderMap
+                    final List list = orderMap
                             .get(order.getPower());
                     list.add(order);
 
@@ -711,7 +711,7 @@ public final class JudgeImportHistory {
 
         // set orders in turnstate
         for (final Power power : powers) {
-            ts.setOrders(power, (LinkedList) orderMap.get(power));
+            ts.setOrders(power, orderMap.get(power));
         }
 
         // process dislodged unit info, to determine retreat paths
@@ -770,9 +770,9 @@ public final class JudgeImportHistory {
         // create units for all successfull move (retreat) orders in destination province
         // create orderMap, which maps powers to their respective order list
         final Power[] powers = map.getPowers().toArray(new Power[0]);
-        final HashMap orderMap = new HashMap(powers.length);
+        final HashMap<Power, LinkedList<dip.order.Order>> orderMap = new HashMap<Power, LinkedList<dip.order.Order>>(powers.length);
         for (final Power power1 : powers) {
-            orderMap.put(power1, new LinkedList());
+            orderMap.put(power1, new LinkedList<dip.order.Order>());
         }
 
         // validate all parsed orders
@@ -790,7 +790,7 @@ public final class JudgeImportHistory {
             try {
                 order.validate(ts, valOpts, ruleOpts);
 
-                final List list = (LinkedList) orderMap.get(order.getPower());
+                final List list = orderMap.get(order.getPower());
                 list.add(order);
 
                 results.addAll(njo.getResults());
@@ -874,7 +874,7 @@ public final class JudgeImportHistory {
 
         // set orders in turnstate
         for (final Power power : powers) {
-            ts.setOrders(power, (LinkedList) orderMap.get(power));
+            ts.setOrders(power, orderMap.get(power));
         }
 
         // process adjustment info ownership info (if any)
@@ -939,9 +939,9 @@ public final class JudgeImportHistory {
 
             // create orderMap, which maps powers to their respective order list
             final Power[] powers = map.getPowers().toArray(new Power[0]);
-            final HashMap orderMap = new HashMap(powers.length);
+            final HashMap<Power, LinkedList<dip.order.Order>> orderMap = new HashMap<Power, LinkedList<dip.order.Order>>(powers.length);
             for (final Power power1 : powers) {
-                orderMap.put(power1, new LinkedList());
+                orderMap.put(power1, new LinkedList<dip.order.Order>());
             }
 
             // parse all orders
@@ -986,7 +986,7 @@ public final class JudgeImportHistory {
                         newOrder.validate(ts, valOpts, ruleOpts);
 
                         if (!isDefaulted) {
-                            final List list = (LinkedList) orderMap
+                            final List list = orderMap
                                     .get(newOrder.getPower());
                             list.add(newOrder);
                         }
@@ -1040,7 +1040,7 @@ public final class JudgeImportHistory {
 
             // set orders in turnstate
             for (final Power power : powers) {
-                ts.setOrders(power, (LinkedList) orderMap.get(power));
+                ts.setOrders(power, orderMap.get(power));
             }
         }
 
