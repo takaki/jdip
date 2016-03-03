@@ -575,7 +575,7 @@ public final class JudgeImportHistory {
             try {
                 order.validate(ts, valOpts, ruleOpts);
 
-                final List list = orderMap.get(order.getPower());
+                final List<Orderable> list = orderMap.get(order.getPower());
                 list.add(order);
 
                 results.addAll(njo.getResults());
@@ -600,7 +600,7 @@ public final class JudgeImportHistory {
                 try {
                     order.validate(ts, valOpts, ruleOpts);
 
-                    final List list = orderMap
+                    final List<Orderable> list = orderMap
                             .get(order.getPower());
                     list.add(order);
 
@@ -792,7 +792,7 @@ public final class JudgeImportHistory {
             try {
                 order.validate(ts, valOpts, ruleOpts);
 
-                final List list = orderMap.get(order.getPower());
+                final List<Orderable> list = orderMap.get(order.getPower());
                 list.add(order);
 
                 results.addAll(njo.getResults());

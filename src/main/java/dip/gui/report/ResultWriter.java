@@ -141,11 +141,11 @@ public class ResultWriter {
      * a specific power).
      */
     private String getGeneralResults() {
-        List resultList = turnState.getResultList();
+        List<Result> resultList = turnState.getResultList();
 
         // we want only results with a 'null' power.
         // these results are addressed to all.
-        List<Result> generalResults = new ArrayList(32);
+        List<Result> generalResults = new ArrayList<>(32);
         Iterator<Result> iter = resultList.iterator();
         while (iter.hasNext()) {
             Result r = (Result) iter.next();
@@ -184,7 +184,7 @@ public class ResultWriter {
     private String getPerPowerResults() {
         // Seperate results into OrderResults and 'regular' Results
         List orderResults = new ArrayList(128);
-        List<Result> otherResults = new ArrayList<Result>(64);
+        List<Result> otherResults = new ArrayList<>(64);
 
         List<Result> resultList = turnState.getResultList();
         Iterator<Result> iter = resultList.iterator();
@@ -265,13 +265,13 @@ public class ResultWriter {
      * the order.
      */
     private void printOrderResultsForPower(StringBuffer sb, Power power,
-                                           List results) {
+                                           List<OrderResult> results) {
         // create a mapping of orders -> a list of results. As we find results, add
         // it to the map.
         LinkedHashMap ordMap = new LinkedHashMap(17);
-        ArrayList substList = new ArrayList();
+        ArrayList<OrderResult> substList = new ArrayList<>();
 
-        Iterator iter = results.iterator();
+        Iterator<OrderResult> iter = results.iterator();
         while (iter.hasNext()) {
             OrderResult or = (OrderResult) iter.next();
             Orderable order = or.getOrder();
@@ -284,12 +284,12 @@ public class ResultWriter {
                 } else {
                     if (!ordMap.containsKey(order)) {
                         // create the entry
-                        List list = new ArrayList();
+                        List<OrderResult> list = new ArrayList<>();
                         list.add(or);
                         ordMap.put(order, list);
                     } else {
                         // add to the list
-                        List list = (List) ordMap.get(order);
+                        List<OrderResult> list = (List) ordMap.get(order);
                         list.add(or);
                     }
                 }
