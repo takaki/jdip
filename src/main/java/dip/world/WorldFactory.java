@@ -32,8 +32,8 @@ import dip.world.variant.data.InitialState;
 import dip.world.variant.data.ProvinceData;
 import dip.world.variant.data.Variant;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -90,38 +90,34 @@ public class WorldFactory {
 
         Log.println("WorldFactory.createWorld(): " + variant.getName());
 
-        final List<Province> provinces = new ArrayList<>(100);
-        final Map<String, Province> provNameMap = new HashMap<>();    // mapping of names->provinces
-
         // gather all province data, and create provinces
         final List<ProvinceData> provinceDataArray = variant.getProvinceData();
-        for (int i = 0; i < provinceDataArray.size(); i++) {
-            final ProvinceData provinceData = provinceDataArray.get(i);
+        final List<Province> provinces = IntStream
+                .range(0, provinceDataArray.size()).mapToObj(i -> {
+                    final ProvinceData provinceData = provinceDataArray.get(i);
+                    // get short names
+                    final List<String> shortNames = provinceData
+                            .getShortNames();
 
-            // get short names
-            final List<String> shortNames = provinceData.getShortNames();
+                    // create Province object
+                    return new Province(provinceData.getFullName(), shortNames,
+                            i, provinceData.getConvoyableCoast());
+                }).collect(Collectors.toList());
 
-            // verify uniqueness of names
-            if (!isUnique(provNameMap, provinceData.getFullName(),
-                    shortNames)) {
+        // verify uniqueness of names
+        final Map<String, Province> provNameMap = new HashMap<>();    // mapping of names->provinces
+        provinces.stream().forEach(province -> {
+            final String fullname = province.getFullName();
+            final List<String> shortNames = province.getShortNames();
+            if (!isUnique(provNameMap, fullname, shortNames)) {
                 throw new InvalidWorldException(
                         Utils.getLocalString(WF_PROV_NON_UNIQUE,
-                                provinceData.getFullName()));
+                                province.getFullName()));
             }
-
-            // create Province object
-            final Province province = new Province(provinceData.getFullName(),
-                    shortNames, i, provinceData.getConvoyableCoast());
-
-            // add Province data to list
-            provinces.add(province);
-
-            // add Province names (all) to our name->province map
-            provNameMap.put(province.getFullName().toLowerCase(), province);
-
-            province.getShortNames().stream().forEach(lcProvName -> provNameMap
-                    .put(lcProvName.toLowerCase(), province));
-        }
+            provNameMap.put(fullname.toLowerCase(), province);
+            shortNames.stream().forEach(shortname -> provNameMap
+                    .put(shortname.toLowerCase(), province));
+        });
 
         // gather all adjacency data
         // parse adjacency data for all provinces
@@ -402,7 +398,7 @@ public class WorldFactory {
     // verify all names are unique. (hasn't yet been added to the map)
     private static boolean isUnique(final Map<String, Province> provNameMap,
                                     final String fullname,
-                                    final List<String> shortnames) {
+                                    final Collection<String> shortnames) {
         return !(provNameMap.containsKey(fullname.toLowerCase()) || shortnames
                 .stream().anyMatch(shortname -> provNameMap
                         .containsKey(shortname.toLowerCase())));
