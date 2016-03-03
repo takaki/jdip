@@ -549,7 +549,7 @@ public class OrderDisplayPanel extends JPanel {
             // keep cleared orders in a temporary arraylist
             final ArrayList<Orderable> deletedOrders = new ArrayList<>(100);
             for (Power orderablePower : orderablePowers) {
-                final List<Orderable> orders = turnState
+                final List<Order> orders = turnState
                         .getOrders(orderablePower);
                 if (orders.size() > 0) {
                     deletedOrders.addAll(orders);
@@ -769,7 +769,7 @@ public class OrderDisplayPanel extends JPanel {
     private boolean removeOrderFromTS(final Orderable order) {
         //synchronized(clientFrame.getLock())
         {
-            final List<Orderable> orders = turnState.getOrders(order.getPower());
+            final List<Order> orders = turnState.getOrders(order.getPower());
             return orders.remove(order);
         }
     }// removeOrderFromTS()
@@ -1114,7 +1114,7 @@ public class OrderDisplayPanel extends JPanel {
             synchronized (list) {
                 list.clear();
 
-                final Iterator<Orderable> iter = turnState.getAllOrders().iterator();
+                final Iterator<Order> iter = turnState.getAllOrders().iterator();
                 while (iter.hasNext()) {
                     final Orderable order = iter.next();
                     if (isDisplayable(order)) {

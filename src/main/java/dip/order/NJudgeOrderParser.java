@@ -225,7 +225,7 @@ public final class NJudgeOrderParser {
      * Class that holds an Order and Text Results
      */
     public static class NJudgeOrder {
-        private final Orderable order;
+        private final Order order;
         private final List<Result> results;
         private final boolean isAdjustment;
         private final Power specialAdjustmentPower;
@@ -237,7 +237,7 @@ public final class NJudgeOrderParser {
          * Create an NJudgeOrder, which is an Orderable with
          * a dip.order.Result result(s).
          */
-        public NJudgeOrder(final Orderable order, final List<Result> results,
+        public NJudgeOrder(final Order order, final List<Result> results,
                            final boolean isAdjustmentPhase) {
             this(order, results, isAdjustmentPhase, null, false, 0, 0);
         }// NJudgeOrder()
@@ -245,7 +245,7 @@ public final class NJudgeOrderParser {
         /**
          * Create an NJudgeOrder
          */
-        public NJudgeOrder(final Orderable order, final Result aResult,
+        public NJudgeOrder(final Order order, final Result aResult,
                            final boolean isAdjustmentPhase) {
             this(order, createResultList(aResult), isAdjustmentPhase, null,
                     false, 0, 0);
@@ -279,7 +279,7 @@ public final class NJudgeOrderParser {
         /**
          * Create an NJudgeOrder
          */
-        private NJudgeOrder(final Orderable order, final List<Result> results,
+        private NJudgeOrder(final Order order, final List<Result> results,
                             final boolean isAdjustment, final Power power,
                             final boolean isWaive,
                             final int unusedPendingBuilds,
@@ -300,7 +300,7 @@ public final class NJudgeOrderParser {
         /**
          * Returns the Order
          */
-        public Orderable getOrder() {
+        public Order getOrder() {
             return order;
         }// getOrder()
 
@@ -461,7 +461,7 @@ public final class NJudgeOrderParser {
             final OrderPrefix prefix = new OrderPrefix(pc, tokens);
 
             // parse predicate
-            final Orderable order = parsePredicate(pc, prefix, tokens);
+            final Order order = parsePredicate(pc, prefix, tokens);
 
             // parse text results into real results
             final List<Result> results = createResults(pc, order, resultList);
@@ -493,9 +493,9 @@ public final class NJudgeOrderParser {
     /**
      * Parse the rest of the order
      */
-    private Orderable parsePredicate(final ParseContext pc,
-                                     final OrderPrefix op,
-                                     final String[] tokens) throws OrderException {
+    private Order parsePredicate(final ParseContext pc,
+                                 final OrderPrefix op,
+                                 final String[] tokens) throws OrderException {
         final String type = op.orderName;
 
         if (Objects.equals(type, ORDER_HOLD) || Objects
@@ -692,10 +692,10 @@ public final class NJudgeOrderParser {
      * <p>
      * Format: [prefix] (HOLD || DISBAND).
      */
-    private Orderable parseHoldOrDisband(final ParseContext pc,
-                                         final OrderPrefix op,
-                                         final String[] tokens,
-                                         final String type) {
+    private Order parseHoldOrDisband(final ParseContext pc,
+                                     final OrderPrefix op,
+                                     final String[] tokens,
+                                     final String type) {
         // NO additional parsing
         //
         if (Objects.equals(type, ORDER_HOLD)) {
@@ -714,8 +714,8 @@ public final class NJudgeOrderParser {
     }// parseHoldOrDisband()
 
 
-    private Orderable parseMove(final ParseContext pc, final OrderPrefix op,
-                                final String[] tokens) throws OrderException {
+    private Order parseMove(final ParseContext pc, final OrderPrefix op,
+                            final String[] tokens) throws OrderException {
         /*
 
 			3-StP: Army St Petersburg -> Moscow.  (*bounce*)
@@ -797,8 +797,8 @@ public final class NJudgeOrderParser {
     }// findNextMoveToken()
 
 
-    private Orderable parseSupport(final ParseContext pc, final OrderPrefix op,
-                                   final String[] tokens) throws OrderException {
+    private Order parseSupport(final ParseContext pc, final OrderPrefix op,
+                               final String[] tokens) throws OrderException {
         /*
 
 		"B-Bel: Army Belgium SUPPORT K-Hol Army Holland.";
@@ -899,8 +899,8 @@ public final class NJudgeOrderParser {
      * PREFIX CONVOY [power] unit location -> location
      * remember, power is optional!
      */
-    private Orderable parseConvoy(final ParseContext pc, final OrderPrefix op,
-                                  final String[] tokens) throws OrderException {
+    private Order parseConvoy(final ParseContext pc, final OrderPrefix op,
+                              final String[] tokens) throws OrderException {
         /*
 
 		"1-Smy: Fleet Ionian Sea CONVOY 			Army Bulgaria -> Serbia.";
@@ -1204,7 +1204,7 @@ public final class NJudgeOrderParser {
             // parse action
             final boolean isDefault = "default".equalsIgnoreCase(m.group(2));
 
-            final Orderable order;
+            final Order order;
             if ("build".equalsIgnoreCase(m.group(2))) {
                 order = pc.orderFactory.createBuild(power, location, unit);
             } else {

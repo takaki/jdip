@@ -83,7 +83,7 @@ import java.util.Objects;
  * This is a pretty large class, and could be split into 3 separate
  * classes (1 for each phase).
  */
-public class StdAdjudicator implements Adjudicator {
+public final class StdAdjudicator implements Adjudicator {
     // il8n messages
     private static final String STDADJ_DUP_ORDER = "STDADJ_DUP_ORDER";
     private static final String STDADJ_MV_NO_UNIT = "STDADJ_MV_NO_UNIT";
@@ -361,7 +361,7 @@ public class StdAdjudicator implements Adjudicator {
         final List<Power> powers = world.getMap().getPowers();
 
         for (final Power power : powers) {
-            final Iterator<Orderable> iter = turnState.getOrders(power).iterator();
+            final Iterator<Order> iter = turnState.getOrders(power).iterator();
             while (iter.hasNext()) {
                 final Orderable order = iter.next();
                 if (order.getPower() != power) {
@@ -393,9 +393,9 @@ public class StdAdjudicator implements Adjudicator {
         //
         // make sure that each location in the OrderState mapping has a corresponding unit,
         // If an order exists for a province without a unit, the order is deleted.
-        final List<Orderable> orderList = turnState.getAllOrders();
+        final List<Order> orderList = turnState.getAllOrders();
         // temporary list for holding orders; ASSUME that we won't be adding too many orders.
-        final ArrayList<OrderState> osList = new ArrayList<>(orderList.size());
+        final List<OrderState> osList = new ArrayList<>(orderList.size());
 
         for (final Object anOrderList : orderList) {
             final Order order = (Order) anOrderList;
@@ -1095,7 +1095,7 @@ public class StdAdjudicator implements Adjudicator {
         // ensure that each dislodged unit has one, and only one, order.
         //
         // during the retreat phase, we are only concerned with dislodged units.
-        final List<Orderable> orderList = turnState.getAllOrders();
+        final List<Order> orderList = turnState.getAllOrders();
         final ArrayList<OrderState> osList = new ArrayList<>(orderList.size());
 
         for (final Object anOrderList : orderList) {
@@ -1341,7 +1341,7 @@ public class StdAdjudicator implements Adjudicator {
             int orderCount = 0;
             final int adjAmount = ai.getAdjustmentAmount();
 
-            final List<Orderable> orders = turnState.getOrders(power);
+            final List<Order> orders = turnState.getOrders(power);
             for (final Orderable order : orders) {
 
                 if (order instanceof Remove && adjAmount > 0) {

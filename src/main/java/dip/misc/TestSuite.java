@@ -1061,7 +1061,7 @@ public final class TestSuite {
                 // add orders, first clearing any existing orders in the turnstate
                 currentTS.clearAllOrders();
                 for (Order order : orders) {
-                    final List<Orderable> orderList = currentTS
+                    final List<Order> orderList = currentTS
                             .getOrders(order.getPower());
                     orderList.add(order);
                     currentTS.setOrders(order.getPower(), orderList);

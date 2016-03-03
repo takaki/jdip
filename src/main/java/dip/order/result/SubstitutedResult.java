@@ -21,6 +21,7 @@
 //
 package dip.order.result;
 
+import dip.order.Order;
 import dip.order.Orderable;
 
 /**
@@ -34,14 +35,14 @@ import dip.order.Orderable;
  * new order.
  */
 public class SubstitutedResult extends OrderResult {
-    private Orderable newOrder = null;
+    private Order newOrder = null;
 
 
     /**
      * Create a SubstitutedResult. Note that oldOrder may be null, but
      * newOrder is not allowed to be null.
      */
-    public SubstitutedResult(final Orderable oldOrder, final Orderable newOrder,
+    public SubstitutedResult(final Orderable oldOrder, final Order newOrder,
                              final String message) {
         super();
         if (newOrder == null) {
@@ -64,7 +65,7 @@ public class SubstitutedResult extends OrderResult {
      * Returns the substituted (new) order that replaces the
      * old order (or no order, if an order was created).
      */
-    public Orderable getSubstitutedOrder() {
+    public Order getSubstitutedOrder() {
         return newOrder;
     }// getSubstitutedOrder()
 

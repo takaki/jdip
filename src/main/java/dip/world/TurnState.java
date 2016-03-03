@@ -22,6 +22,7 @@
 //
 package dip.world;
 
+import dip.order.Order;
 import dip.order.Orderable;
 import dip.order.result.OrderResult;
 import dip.order.result.OrderResult.ResultType;
@@ -61,7 +62,7 @@ public class TurnState implements Serializable {
     // instance variables (we serialize all of this)
     private Phase phase;
     private ArrayList<Result> resultList;                // order results, post-adjudication
-    private Map<Power, List<Orderable>> orderMap;                // Map of power=>orders
+    private Map<Power, List<Order>> orderMap;                // Map of power=>orders
     private boolean isSCOwnerChanged;        // 'true' if any supply centers changed ownership
     private Position position;                // Position data (majority of game state)
     private transient World world;                // makes it easier when we just pass a turnstate
@@ -178,14 +179,14 @@ public class TurnState implements Serializable {
      * <p>
      * Manipulations to this list will not be reflected in the TurnState object.
      */
-    public List<Orderable> getAllOrders() {
-        final List<Orderable> list = new ArrayList<>(75);
+    public List<Order> getAllOrders() {
+        final List<Order> list = new ArrayList<>(75);
 
-        for (final Entry<Power, List<Orderable>> mapEntry : orderMap
+        for (final Entry<Power, List<Order>> mapEntry : orderMap
                 .entrySet()) {
-            final List<Orderable> orders = mapEntry.getValue();
+            final List<Order> orders = mapEntry.getValue();
 
-            for (final Orderable order : orders) {
+            for (final Order order : orders) {
                 list.add(order);
             }
         }
@@ -208,7 +209,7 @@ public class TurnState implements Serializable {
      * Note that modifications to the returned order List will be reflected
      * in the TurnState.
      */
-    public List<Orderable> getOrders(final Power power) {
+    public List<Order> getOrders(final Power power) {
         Objects.requireNonNull(power);
         return orderMap.computeIfAbsent(power, k -> new ArrayList<>(15));
     }// getOrders()
@@ -216,7 +217,7 @@ public class TurnState implements Serializable {
     /**
      * Sets the orders for the given Power, deleting any existing orders for the power
      */
-    public void setOrders(final Power power, final List<Orderable> list) {
+    public void setOrders(final Power power, final List<Order> list) {
         Objects.requireNonNull(power);
         Objects.requireNonNull(list);
 

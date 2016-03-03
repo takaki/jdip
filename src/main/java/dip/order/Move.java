@@ -971,9 +971,9 @@ public class Move extends Order {
             Log.println("    self-atk-cert: ",
                     thisOS.getAtkSelfSupportCertain());
             Log.println("  # nonself supports: ",
-                    thisOS.getDependentSupports().length);
+                    thisOS.getDependentSupports().size());
             Log.println("  #    self supports: ",
-                    thisOS.getDependentSelfSupports().length);
+                    thisOS.getDependentSelfSupports().size());
             Log.println("  dislodged?: ", thisOS.getDislodgedState());
         }
 
@@ -1059,9 +1059,9 @@ public class Move extends Order {
             // "dml" = "destination move list"
             boolean isBetterThanAllOtherMoves = true;
 
-            final OrderState[] dml = thisOS.getDependentMovesToDestination();
+            final List<OrderState> dml = thisOS.getDependentMovesToDestination();
 
-            Log.println("  # dep dest moves: ", dml.length);
+            Log.println("  # dep dest moves: ", dml.size());
 
             for (final OrderState os : dml) {
                 if (Log.isLogging()) {
@@ -1407,9 +1407,9 @@ public class Move extends Order {
      * It would be used instead of the dml iterator code in move.evaluate()
      */
     private boolean isBetterWithoutSelfSupport(final OrderState thisOS) {
-        final OrderState[] dml = thisOS.getDependentMovesToDestination();
+        final List<OrderState> dml = thisOS.getDependentMovesToDestination();
         Log.println("   Move::isBetterWithoutSelfSupport(); dml.length: ",
-                dml.length);
+                dml.size());
 
         for (final OrderState os : dml) {
             // 3.d
