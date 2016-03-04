@@ -96,8 +96,7 @@ public class SimpleFileFilter extends FileFilter implements FilenameFilter {
      * but ".jdip" is an invalid extension.
      */
     public SimpleFileFilter(final String extension, final String description) {
-        if (extension == null || description == null || extension
-                .length() == 0) {
+        if (extension == null || description == null || extension.isEmpty()) {
             throw new IllegalArgumentException();
         }
 

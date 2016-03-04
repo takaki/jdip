@@ -258,7 +258,7 @@ public class DislodgedParser {
                 line = br.readLine();
                 while (line != null) {
                     line = line.trim().toLowerCase();
-                    if (line.length() > 0) {
+                    if (!line.isEmpty()) {
                         // if we are 'end header regex', we end
                         // though typically having a zero-length trimmed line will do that too
                         //

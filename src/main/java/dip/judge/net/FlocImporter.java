@@ -155,7 +155,7 @@ public class FlocImporter implements Runnable {
             }
 
             // see if game is registered
-            if (text.length() == 0 || text.indexOf(NOT_REGISTERED) >= 0) {
+            if (text.isEmpty() || text.indexOf(NOT_REGISTERED) >= 0) {
                 fic.flocImportUnregistered();
                 return;
             }

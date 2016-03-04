@@ -150,7 +150,7 @@ public class MultiOrderEntry {
 
                     // now check length, after trimming
                     // (otherwise, lines with just whitespace will be interpreted as an order)
-                    if (line.length() > 0) {
+                    if (!line.isEmpty()) {
                         nOrders++;
 
                         // trim anything after (and including) a "(*" for cut-and-pastes

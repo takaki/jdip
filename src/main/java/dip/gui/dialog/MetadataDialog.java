@@ -308,14 +308,14 @@ public class MetadataDialog extends HeaderDialog {
             gmd.setGameURI(convertURI(gameURI.getText()));
 
             gmd.setJudgeName(
-                    (judgeName.getText().length() == 0) ? null : judgeName
+                    (judgeName.getText().isEmpty()) ? null : judgeName
                             .getText());
 
             gmd.setModeratorName(
-                    (modName.getText().length() == 0) ? null : modName
+                    (modName.getText().isEmpty()) ? null : modName
                             .getText());
             gmd.setModeratorEmail(
-                    (modEmail.getText().length() == 0) ? null : modEmail
+                    (modEmail.getText().isEmpty()) ? null : modEmail
                             .getText());
             gmd.setModeratorURI(convertURI(modURI.getText()));
         }// write()

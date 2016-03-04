@@ -35,6 +35,7 @@ import dip.world.Power;
 import dip.world.RuleOptions;
 import dip.world.TurnState;
 import dip.world.Unit;
+import dip.world.Unit.Type;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -55,8 +56,6 @@ public class Retreat extends Move {
     private static final String RETREAT_FAIL_DPB = "RETREAT_FAIL_DPB";
     private static final String RETREAT_FAIL_MULTIPLE = "RETREAT_FAIL_MULTIPLE";
 
-
-    private Tristate evalResult = Tristate.UNCERTAIN;
     private static final String orderNameFull = "Retreat";    // brief order name is still 'M'
 
 
@@ -64,7 +63,7 @@ public class Retreat extends Move {
      * Creates a Retreat order
      */
     protected Retreat(final Power power, final Location src,
-                      final Unit.Type srcUnitType, final Location dest) {
+                      final Type srcUnitType, final Location dest) {
         super(power, src, srcUnitType, dest, false);
     }// Move()
 
@@ -72,7 +71,6 @@ public class Retreat extends Move {
      * Creates a Retreat order
      */
     protected Retreat() {
-        super();
     }// Retreat()
 
     /**
@@ -112,7 +110,7 @@ public class Retreat extends Move {
         final Position position = state.getPosition();
         final Unit unit = position.getDislodgedUnit(src.getProvince())
                 .orElse(null);
-        super.validate(valOpts, unit);
+        validate(valOpts, unit);
 
         if (valOpts.getOption(ValidationOptions.KEY_GLOBAL_PARSING)
                 .equals(ValidationOptions.VALUE_GLOBAL_PARSING_STRICT)) {
@@ -224,7 +222,7 @@ public class Retreat extends Move {
             final List<OrderState> depMovesToDest = thisOS
                     .getDependentMovesToDestination();
 
-            if (depMovesToDest.size() == 0) {
+            if (depMovesToDest.isEmpty()) {
                 // typical case
                 Log.println("    SUCCESS!");
                 thisOS.setEvalState(Tristate.SUCCESS);

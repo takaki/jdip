@@ -319,7 +319,7 @@ final class GUIOrderUtils {
                 mmd.getPowerColor(power));
         final String filter = mmd.getOrderParamString(mmdOrderElementName,
                 MapMetadata.ATT_FILTERID);
-        if (filter.length() > 0) {
+        if (!filter.isEmpty()) {
             final StringBuffer sb = new StringBuffer(filter.length() + 6);
             sb.append("url(#");
             sb.append(filter);
@@ -338,7 +338,7 @@ final class GUIOrderUtils {
                                   final String mmdOrderElementName, final Power power) {
         String filter = mmd.getOrderParamString(mmdOrderElementName,
                 MapMetadata.ATT_FILTERID);
-        if (filter.length() > 0) {
+        if (!filter.isEmpty()) {
             final StringBuffer sb = new StringBuffer(filter.length() + 6);
             sb.append("url(#");
             sb.append(filter);

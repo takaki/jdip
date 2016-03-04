@@ -271,7 +271,7 @@ public class StateWriter {
             if (canShow) {
                 // print submission/elimination information
                 final List orders = turnState.getOrders(allPower);
-                if (orders.size() > 0) {
+                if (!orders.isEmpty()) {
                     final Iterator iter = orders.iterator();
                     while (iter.hasNext()) {
                         final Order order = (Order) iter.next();

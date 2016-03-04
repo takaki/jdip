@@ -183,7 +183,7 @@ public class FlocImportDialog extends HeaderDialog implements FlocImportCallback
                 return;
             }
 
-            if (gameName.length() == 0) {
+            if (gameName.isEmpty()) {
                 Utils.popupError(clientFrame,
                         Utils.getLocalString(NOT_REGISTERED_TITLE),
                         Utils.getLocalString(INVALID_INPUT_TEXT));

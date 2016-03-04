@@ -157,7 +157,7 @@ public class SymbolInjector {
 
         final List<Symbol> symbols = sp.getSymbols();
         assert (symbols != null);
-        assert (symbols.size() > 0);
+        assert (!symbols.isEmpty());
 
         for (final Symbol symbol : symbols) {
             final Element element = defsElementMap.get(symbol.getName());

@@ -1278,7 +1278,7 @@ public class Utils {
 
         // cleanup
         for (int i = 0; i < matches.length; i++) {
-            if (matches[i].length() > 0) {
+            if (!matches[i].isEmpty()) {
                 final StringBuffer sb = new StringBuffer(matches[i]);
                 // step 1: remove (if present) start/end quotes
                 if (sb.charAt(0) == '\"') {

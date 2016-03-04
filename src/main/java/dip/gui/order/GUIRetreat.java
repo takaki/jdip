@@ -125,7 +125,7 @@ public class GUIRetreat extends Retreat implements GUIOrder {
                         new Location(province, unit.getCoast()));
 
                 // if we have no valid retreat locations, inform that we must disband
-                if (retreatLocs.size() == 0) {
+                if (retreatLocs.isEmpty()) {
                     sb.append(Utils.getLocalString(UNIT_MUST_DISBAND));
                     return false;
                 }
@@ -421,7 +421,7 @@ public class GUIRetreat extends Retreat implements GUIOrder {
      * Generate text message containing valid retreat locations (if any). Assumes non-zero retreatLocs length.
      */
     private String getRetLocText(final List<Location> retreatLocs) {
-        if (retreatLocs.size() == 0) {
+        if (retreatLocs.isEmpty()) {
             throw new IllegalStateException();
         } else {
             final StringBuffer tmp = new StringBuffer(64);

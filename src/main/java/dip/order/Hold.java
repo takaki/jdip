@@ -174,7 +174,7 @@ public class Hold extends Order {
         if (thisOS.getEvalState() == Tristate.UNCERTAIN) {
             // if no moves against this order, we must succeed.
             // Otherwise, MOVE orders will determine if we are dislodged and thus fail.
-            if (thisOS.getDependentMovesToSource().size() == 0) {
+            if (thisOS.getDependentMovesToSource().isEmpty()) {
                 thisOS.setEvalState(Tristate.SUCCESS);
                 thisOS.setDislodgedState(Tristate.NO);
             }

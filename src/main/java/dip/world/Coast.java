@@ -297,7 +297,7 @@ public enum Coast {
             while (result) {
                 if (m.groupCount() == 2) {
                     // catch empty group "()"
-                    if (m.group(1).length() == 0) {
+                    if (m.group(1).isEmpty()) {
                         return Optional.empty();
                     }
 

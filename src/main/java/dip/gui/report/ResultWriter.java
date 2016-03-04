@@ -367,7 +367,7 @@ public class ResultWriter {
             while (it.hasNext()) {
                 final OrderResult or = (OrderResult) it.next();
                 final String msg = or.getMessage(ofo);
-                if (msg.length() > 0) {
+                if (!msg.isEmpty()) {
                     nonEmptyList.add(msg);
                 }
             }

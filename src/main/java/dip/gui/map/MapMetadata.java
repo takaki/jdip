@@ -1116,7 +1116,7 @@ public class MapMetadata {
          */
         private Object[] parseDim(final String in, final Element el,
                                   final String attributeName) throws MapException {
-            if (in.length() == 0 || in.indexOf('%') >= 0 || in
+            if (in.isEmpty() || in.indexOf('%') >= 0 || in
                     .indexOf('-') >= 0) {
                 throw new MapException("Element " + el
                         .getTagName() + " attribute " + attributeName + " cannot have a % (relative size) in width or height attributes, or be zero or negative.");

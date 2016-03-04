@@ -427,7 +427,7 @@ public class OrderDisplayPanel extends JPanel {
         if (!ordersAdded.isEmpty())    // make sure we added at least one order
         {
             Orderable[] tmpDel = null;
-            if (ordersDeleted.size() > 0) {
+            if (!ordersDeleted.isEmpty()) {
                 tmpDel = (Orderable[]) ordersDeleted
                         .toArray(new Orderable[ordersAdded.size()]);
                 clientFrame.fireMultipleOrdersDeleted(tmpDel);
@@ -455,7 +455,7 @@ public class OrderDisplayPanel extends JPanel {
             clientFrame.fireStateModified();
         }
 
-        return ((map.size() > 0) ? map : null);
+        return ((!map.isEmpty()) ? map : null);
     }// addOrdersRaw()
 
 
@@ -551,7 +551,7 @@ public class OrderDisplayPanel extends JPanel {
             for (Power orderablePower : orderablePowers) {
                 final List<Order> orders = turnState
                         .getOrders(orderablePower);
-                if (orders.size() > 0) {
+                if (!orders.isEmpty()) {
                     deletedOrders.addAll(orders);
                     orders.clear();
                 }

@@ -163,7 +163,7 @@ public class OrderFormat {
         String text = input;
 
         // pluralize, but not if input is empty
-        if (isPlural && input.length() > 0) {
+        if (isPlural && !input.isEmpty()) {
             text = text + "s";
         }
 
@@ -473,7 +473,7 @@ public class OrderFormat {
                     }
 
                     if (isTrue) {
-                        assert tokens[1].length() > 0;
+                        assert !tokens[1].isEmpty();
                         final String tok = tokens[1].substring(1);
                         final Object obj = procStaticKeyword(ofo, order, tok);
                         return obj == null ? tok : obj.toString();

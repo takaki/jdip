@@ -420,7 +420,7 @@ public class GeneralPreferencePanel extends PreferencePanel {
             final ArrayList al = new ArrayList(NUM_RECENT_FILES);
             for (int i = 0; i < NUM_RECENT_FILES; i++) {
                 final String s = prefs.get(NODE_RECENT_FILE + String.valueOf(i), "");
-                if (s != null && s.length() > 0) {
+                if (s != null && !s.isEmpty()) {
                     // do NOT add file if it doesn't exist.
                     final File file = new File(s);
                     if (file.exists()) {

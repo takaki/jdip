@@ -225,7 +225,7 @@ public class HTMLFormat {
             return;
         }
 
-        if (index.length() > 0) {
+        if (!index.isEmpty()) {
             sb.append(objs[parseOrLookupInt(index)]);
         } else {
             System.err.println(

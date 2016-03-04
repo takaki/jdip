@@ -239,7 +239,7 @@ public class TestParser {
         System.out.println(numprocessed + " order(s) parsed");
         System.out.println(failedCases.size() + " order(s) failed");
 
-        if (failedCases.size() > 0) {
+        if (!failedCases.isEmpty()) {
             System.out.println("\nFailed orders, and failure reasons follow:");
 
             iter = failedCases.iterator();
@@ -252,7 +252,7 @@ public class TestParser {
         System.out.println("TestParser completed on " + new Date());
 
         // clean or error exit
-        if (failedCases.size() > 0) {
+        if (!failedCases.isEmpty()) {
             System.exit(1);
         } else {
             System.exit(0);
@@ -711,7 +711,7 @@ public class TestParser {
                 }
 
                 // allow blank/empty/only-whitespace lines (but don't parse them)
-                if (line.length() > 0) {
+                if (!line.isEmpty()) {
                     // cut off any text after the first '#'
 
 
