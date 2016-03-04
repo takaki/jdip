@@ -22,7 +22,7 @@
 //
 package dip.gui.dialog;
 
-import dip.gui.ClientMenu;
+import dip.gui.ClientMenu.Item;
 import dip.gui.dialog.prefs.GeneralPreferencePanel;
 import dip.gui.swing.XJEditorPane;
 import dip.gui.swing.XJFileChooser;
@@ -50,7 +50,13 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringWriter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -143,6 +149,7 @@ public class TextViewer extends HeaderDialog {
         textPane.setFont(tvFont);
 
         new java.awt.dnd.DropTarget(textPane, new FileDropTargetListener() {
+            @Override
             public void processDroppedFiles(final File[] files) {
                 final Document doc = textPane.getDocument();
 
@@ -182,6 +189,7 @@ public class TextViewer extends HeaderDialog {
 
         // allow a modifiable transfer handler
         textPane.setTransferHandler(new javax.swing.TransferHandler() {
+            @Override
             public void exportToClipboard(final JComponent comp, final Clipboard clip,
                                           final int action) {
                 if (comp instanceof JTextComponent) {
@@ -201,7 +209,7 @@ public class TextViewer extends HeaderDialog {
                                 final StringWriter sw = new StringWriter();
                                 final HTMLWriter hw = new HTMLWriter(sw,
                                         (HTMLDocument) doc, selStart,
-                                        (selEnd - selStart));
+                                        selEnd - selStart);
                                 hw.write();
                                 text = filterHTML(
                                         filterExportedText(sw.toString()));
@@ -214,7 +222,7 @@ public class TextViewer extends HeaderDialog {
                         // this is the standard cop-out that always works.
                         if (text == null) {
                             text = doc.getText(selStart, selEnd - selStart);
-                            text = TextViewer.this.filterExportedText(text);
+                            text = filterExportedText(text);
                         }
 
                         final StringSelection contents = new StringSelection(text);
@@ -235,6 +243,7 @@ public class TextViewer extends HeaderDialog {
             }
 
 
+            @Override
             public boolean importData(final JComponent comp, final Transferable t) {
                 if (comp instanceof JTextComponent && textPane.isEditable()) {
                     // we don't want the BEST flavor, we want the Java String
@@ -301,12 +310,13 @@ public class TextViewer extends HeaderDialog {
                 return false;
             }// importData()
 
+            @Override
             public boolean canImport(final JComponent comp,
                                      final DataFlavor[] transferFlavors) {
                 if (comp instanceof JTextComponent && textPane.isEditable()) {
                     // any text type is acceptable.
-                    return (DataFlavor
-                            .selectBestTextFlavor(transferFlavors) != null);
+                    return DataFlavor
+                            .selectBestTextFlavor(transferFlavors) != null;
                 }
                 return false;
             }// canImport()
@@ -407,6 +417,7 @@ public class TextViewer extends HeaderDialog {
         /**
          * This method must be implemented by subclasses
          */
+        @Override
         public abstract void run();
 
         /**
@@ -451,6 +462,7 @@ public class TextViewer extends HeaderDialog {
     /**
      * Set Font. Use is not recommended if content type is "text/html".
      */
+    @Override
     public void setFont(final Font font) {
         textPane.setFont(font);
     }// setFont()
@@ -531,6 +543,7 @@ public class TextViewer extends HeaderDialog {
     /**
      * Close() override. Calls AcceptListener (if any) on OK or Close actions.
      */
+    @Override
     protected void close(final String actionCommand) {
         if (isOKorAccept(actionCommand)) {
             // if no accept() handler, assume accepted.
@@ -561,14 +574,14 @@ public class TextViewer extends HeaderDialog {
         final JMenuBar menuBar = new JMenuBar();
         final JTextComponentMenuListener menuListener = new JTextComponentMenuListener(
                 textPane);
-        JMenuItem menuItem = null;
+        JMenuItem menuItem;
 
         // FILE menu
-        ClientMenu.Item cmItem = new ClientMenu.Item(MENU_FILE);
+        Item cmItem = new Item(MENU_FILE);
         JMenu menu = new JMenu(cmItem.getName());
         menu.setMnemonic(cmItem.getMnemonic());
 
-        menuItem = new ClientMenu.Item(MENU_ITEM_SAVEAS).makeMenuItem(false);
+        menuItem = new Item(MENU_ITEM_SAVEAS).makeMenuItem(false);
         menuItem.setActionCommand(SAVEAS_ACTION_CMD);
         menuItem.addActionListener(menuListener);
         menu.add(menuItem);
@@ -577,22 +590,22 @@ public class TextViewer extends HeaderDialog {
 
         // EDIT menu
         //
-        cmItem = new ClientMenu.Item(MENU_EDIT);
+        cmItem = new Item(MENU_EDIT);
         menu = new JMenu(cmItem.getName());
         menu.setMnemonic(cmItem.getMnemonic());
 
-        final JMenuItem cutMenuItem = new ClientMenu.Item(MENU_ITEM_CUT)
+        final JMenuItem cutMenuItem = new Item(MENU_ITEM_CUT)
                 .makeMenuItem(false);
         cutMenuItem.setActionCommand(DefaultEditorKit.cutAction);
         cutMenuItem.addActionListener(menuListener);
         menu.add(cutMenuItem);
 
-        menuItem = new ClientMenu.Item(MENU_ITEM_COPY).makeMenuItem(false);
+        menuItem = new Item(MENU_ITEM_COPY).makeMenuItem(false);
         menuItem.setActionCommand(DefaultEditorKit.copyAction);
         menuItem.addActionListener(menuListener);
         menu.add(menuItem);
 
-        final JMenuItem pasteMenuItem = new ClientMenu.Item(MENU_ITEM_PASTE)
+        final JMenuItem pasteMenuItem = new Item(MENU_ITEM_PASTE)
                 .makeMenuItem(false);
         pasteMenuItem.setActionCommand(DefaultEditorKit.pasteAction);
         pasteMenuItem.addActionListener(menuListener);
@@ -600,19 +613,22 @@ public class TextViewer extends HeaderDialog {
 
         menu.add(new JSeparator());
 
-        menuItem = new ClientMenu.Item(MENU_ITEM_SELECTALL).makeMenuItem(false);
+        menuItem = new Item(MENU_ITEM_SELECTALL).makeMenuItem(false);
         menuItem.setActionCommand(DefaultEditorKit.selectAllAction);
         menuItem.addActionListener(menuListener);
         menu.add(menuItem);
 
         // add a listener to enable/disable 'paste'
         menu.addMenuListener(new MenuListener() {
+            @Override
             public void menuCanceled(final MenuEvent e) {
             }
 
+            @Override
             public void menuDeselected(final MenuEvent e) {
             }
 
+            @Override
             public void menuSelected(final MenuEvent e) {
                 cutMenuItem.setEnabled(textPane.isEditable());
                 pasteMenuItem.setEnabled(textPane.isEditable());
@@ -638,6 +654,7 @@ public class TextViewer extends HeaderDialog {
             textComponent = component;
         }// JTextComponentMenuListener()
 
+        @Override
         public void actionPerformed(final ActionEvent e) {
             final String action = (String) e.getActionCommand();
             final Action a = textComponent.getActionMap().get(action);
@@ -658,7 +675,7 @@ public class TextViewer extends HeaderDialog {
      * text/HTML, otherwise, it saves as a .txt file.
      */
     protected void saveContents() {
-        File file = null;
+        File file;
         if (textPane.getContentType().equals("text/html")) {
             file = getFileName(SimpleFileFilter.HTML_FILTER);
         } else {

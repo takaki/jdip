@@ -26,12 +26,14 @@ import cz.autel.dmi.HIGConstraints;
 import cz.autel.dmi.HIGLayout;
 import dip.gui.ClientFrame;
 import dip.gui.dialog.ErrorDialog;
+import dip.gui.dialog.newgame.NewGameDialog.NGDTabPane;
 import dip.gui.swing.GradientJLabel;
 import dip.gui.swing.XJScrollPane;
 import dip.misc.Utils;
 import dip.world.InvalidWorldException;
 import dip.world.RuleOptions;
 import dip.world.World;
+import dip.world.World.VariantInfo;
 import dip.world.WorldFactory;
 import dip.world.variant.VariantManager;
 import dip.world.variant.data.MapGraphic;
@@ -46,7 +48,7 @@ import javax.swing.event.ListSelectionListener;
  * Panel for New Game Dialog that allows selection of a map / variant / map graphic.
  * <p>
  */
-public class NGDVariantSelect extends JPanel implements NewGameDialog.NGDTabPane {
+public class NGDVariantSelect extends JPanel implements NGDTabPane {
     // i18n constants
     private static final String TAB_NAME = "NGDvariant.tab.name";
     private static final String LOADING_TEXT = "NGDvariant.text.loading";
@@ -97,6 +99,7 @@ public class NGDVariantSelect extends JPanel implements NewGameDialog.NGDTabPane
         variantList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         variantList.setPrototypeCellValue("MMMMMMMMMMMMMM");
         variantList.addListSelectionListener(new ListSelectionListener() {
+            @Override
             public void valueChanged(final ListSelectionEvent e) {
                 doVariantListSelection();
             }
@@ -149,14 +152,14 @@ public class NGDVariantSelect extends JPanel implements NewGameDialog.NGDTabPane
         }
 
         // create world, based on selected variant
-        World world = null;
+        World world;
         try {
             final WorldFactory wf = WorldFactory.getInstance();
             final Variant variant = ngd.getStartOptionsPanel().getVariant();
             world = WorldFactory.createWorld(variant);
 
             // set basic variant parameters
-            final World.VariantInfo variantInfo = world.getVariantInfo();
+            final VariantInfo variantInfo = world.getVariantInfo();
             variantInfo.setVariantName(variant.getName());
             variantInfo.setVariantVersion(variant.getVersion());
 
@@ -236,6 +239,7 @@ public class NGDVariantSelect extends JPanel implements NewGameDialog.NGDTabPane
     /**
      * Get the tab name.
      */
+    @Override
     public String getTabName() {
         return Utils.getLocalString(TAB_NAME);
     }// getTabName()
@@ -243,6 +247,7 @@ public class NGDVariantSelect extends JPanel implements NewGameDialog.NGDTabPane
     /**
      * The Variant has Changed.
      */
+    @Override
     public void variantChanged(final Variant variant) {
         // DO NOTHING
     }// variantChanged()
@@ -250,6 +255,7 @@ public class NGDVariantSelect extends JPanel implements NewGameDialog.NGDTabPane
     /**
      * The Enabled status has Changed. We do nothing for this tab.
      */
+    @Override
     public void enablingChanged(final boolean enabled) {
         // DO NOTHING
     }// enablingChanged()

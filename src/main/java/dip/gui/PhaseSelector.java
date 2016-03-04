@@ -51,8 +51,8 @@ public class PhaseSelector {
      */
     public PhaseSelector(final ClientFrame parent) {
         this.parent = parent;
-        this.menu = parent.getClientMenu();
-        this.pcl = new PhasePCL();
+        menu = parent.getClientMenu();
+        pcl = new PhasePCL();
         parent.addPropertyChangeListener(pcl);
     }// PhaseSelector()
 
@@ -87,7 +87,7 @@ public class PhaseSelector {
      * Go to the first (initial) phase.
      */
     public void first() {
-        this.currentTS = currentWorld.getInitialTurnState();
+        currentTS = currentWorld.getInitialTurnState();
         parent.fireTurnstateChanged(currentTS);
     }// previous()
 
@@ -95,7 +95,7 @@ public class PhaseSelector {
      * Go to the last phase.
      */
     public void last() {
-        this.currentTS = currentWorld.getLastTurnState();
+        currentTS = currentWorld.getLastTurnState();
         parent.fireTurnstateChanged(currentTS);
     }// previous()
 
@@ -184,8 +184,8 @@ public class PhaseSelector {
      * Update Next/Previous menu items
      */
     private void updateNextPrevious() {
-        menu.setEnabled(ClientMenu.HISTORY_PREVIOUS, (currentPos > 0));
-        menu.setEnabled(ClientMenu.HISTORY_NEXT, (currentPos < maxPos));
+        menu.setEnabled(ClientMenu.HISTORY_PREVIOUS, currentPos > 0);
+        menu.setEnabled(ClientMenu.HISTORY_NEXT, currentPos < maxPos);
     }// updateNextPrevious()
 
 
@@ -223,26 +223,32 @@ public class PhaseSelector {
      */
     private class PhasePCL extends AbstractCFPListener {
 
+        @Override
         public void actionWorldCreated(final World w) {
             setWorld(w);
         }// actionWorldCreated()
 
+        @Override
         public void actionWorldDestroyed(final World w) {
             setWorld(null);
         }// actionWorldDestroyed()
 
+        @Override
         public void actionTurnstateChanged(final TurnState ts) {
             setTurnState(ts);
         }// actionTurnstateChanged()
 
+        @Override
         public void actionTurnstateAdded(final TurnState ts) {
             setCurrentPosition();
         }// actionTurnstateAdded()
 
+        @Override
         public void actionTurnstateRemoved() {
             setCurrentPosition();
         }// actionTurnstateRemoved()
 
+        @Override
         public void actionModeChanged(final String newMode) {
             if (newMode == ClientFrame.MODE_NONE || newMode == ClientFrame.MODE_EDIT) {
                 // disable history menu, completely

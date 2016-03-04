@@ -26,7 +26,17 @@ import dip.misc.Utils;
 import dip.process.Adjudicator;
 import dip.process.OrderState;
 import dip.process.Tristate;
-import dip.world.*;
+import dip.world.Border;
+import dip.world.Coast;
+import dip.world.Location;
+import dip.world.Position;
+import dip.world.Power;
+import dip.world.Province;
+import dip.world.RuleOptions;
+import dip.world.RuleOptions.Option;
+import dip.world.RuleOptions.OptionValue;
+import dip.world.TurnState;
+import dip.world.Unit.Type;
 
 /**
  * Implementation of the Build order.
@@ -52,7 +62,7 @@ public class Build extends Order {
     /**
      * Creates a Build order
      */
-    protected Build(final Power power, final Location src, final Unit.Type srcUnit) {
+    protected Build(final Power power, final Location src, final Type srcUnit) {
         super(power, src, srcUnit);
     }// Build()
 
@@ -60,54 +70,52 @@ public class Build extends Order {
      * Creates a Build order
      */
     protected Build() {
-        super();
     }// Build()
 
+    @Override
     public String getFullName() {
         return orderNameFull;
     }// getName()
 
+    @Override
     public String getBriefName() {
         return orderNameBrief;
     }// getBriefName()
 
 
+    @Override
     public String getDefaultFormat() {
         return orderFormatString;
     }// getFormatBrief()
 
 
+    @Override
     public String toBriefString() {
-        final StringBuffer sb = new StringBuffer(64);
-
-        sb.append(power);
-        sb.append(": ");
-        sb.append(orderNameBrief);
-        sb.append(' ');
-        sb.append(srcUnitType.getShortName());
-        sb.append(' ');
+        final StringBuffer sb = new StringBuffer(
+                String.format("%s: %s %s ", power, orderNameBrief,
+                        srcUnitType.getShortName()));
         src.appendBrief(sb);
 
         return sb.toString();
     }// toBriefString()
 
 
+    @Override
     public String toFullString() {
-        final StringBuffer sb = new StringBuffer(128);
-
-        sb.append(power);
-        sb.append(": ");
-        sb.append(orderNameFull);
-        sb.append(' ');
-        sb.append(srcUnitType.getFullName());
-        sb.append(' ');
+        final StringBuffer sb = new StringBuffer(
+                String.format("%s: %s %s ", power, orderNameFull,
+                        srcUnitType.getFullName()));
         src.appendFull(sb);
 
         return sb.toString();
     }// toFullString()
 
 
+    @Override
     public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
         if (obj instanceof Build) {
             if (super.equals(obj)) {
                 return true;
@@ -145,6 +153,7 @@ public class Build extends Order {
      * cannot know what other orders have been submitted), such as if too many
      * build orders are submitted. verify() could, but currently does not.
      */
+    @Override
     public void validate(final TurnState state, final ValidationOptions valOpts,
                          final RuleOptions ruleOpts) throws OrderException {
         checkSeasonAdjustment(state, orderNameFull);
@@ -156,23 +165,25 @@ public class Build extends Order {
         // basic
         if (position.hasUnit(province)) {
             throw new OrderException(Utils.getLocalString(BUILD_EXISTINGUNIT));
-        } else if (power != position.getSupplyCenterOwner(province).orElse(null)) {
+        }
+        if (power != position.getSupplyCenterOwner(province).orElse(null)) {
             throw new OrderException(
                     Utils.getLocalString(BUILD_OWNED_SUPPLY, power));
-        } else if (power != position
-                .getSupplyCenterHomePower(province).orElse(null) && ruleOpts.getOptionValue(
-                RuleOptions.Option.OPTION_BUILDS) == RuleOptions.OptionValue.VALUE_BUILDS_HOME_ONLY) {
+        }
+        if (power != position.getSupplyCenterHomePower(province)
+                .orElse(null) && ruleOpts.getOptionValue(
+                Option.OPTION_BUILDS) == OptionValue.VALUE_BUILDS_HOME_ONLY) {
             throw new OrderException(Utils.getLocalString(BUILD_HOME_SUPPLY));
         }
 
         // undefined types assumed to be Army
-        if (srcUnitType.equals(Unit.Type.UNDEFINED)) {
-            srcUnitType = Unit.Type.ARMY;
+        if (srcUnitType == Type.UNDEFINED) {
+            srcUnitType = Type.ARMY;
         }
 
         // disallow wing units, if wing unit option prohibited
-        if (srcUnitType == Unit.Type.WING && ruleOpts.getOptionValue(
-                RuleOptions.Option.OPTION_WINGS) == RuleOptions.OptionValue.VALUE_WINGS_DISABLED) {
+        if (srcUnitType == Type.WING && ruleOpts.getOptionValue(
+                Option.OPTION_WINGS) == OptionValue.VALUE_WINGS_DISABLED) {
             throw new OrderException(
                     Utils.getLocalString(BUILD_WING_PROHIBITED));
         }
@@ -181,8 +192,8 @@ public class Build extends Order {
 
         // validate Borders
         final Border border = src.getProvince()
-                .getTransit(src, srcUnitType, state.getPhase(),
-                        this.getClass()).orElse(null);
+                .getTransit(src, srcUnitType, state.getPhase(), getClass())
+                .orElse(null);
         if (border != null) {
             throw new OrderException(
                     Utils.getLocalString(ORD_VAL_BORDER, src.getProvince(),
@@ -190,7 +201,7 @@ public class Build extends Order {
         }
 
         // if coast is still undefined after validation, error!
-        if (src.getCoast().equals(Coast.UNDEFINED)) {
+        if (src.getCoast() == Coast.UNDEFINED) {
             throw new OrderException(Utils.getLocalString(BUILD_MULTICOAST));
         }
 
@@ -202,6 +213,7 @@ public class Build extends Order {
     /**
      * Empty method: Build orders do not require verification.
      */
+    @Override
     public void verify(final Adjudicator adjudicator) {
         final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
         thisOS.setVerified(true);
@@ -210,6 +222,7 @@ public class Build extends Order {
     /**
      * Empty method: Build orders do not require dependency determination.
      */
+    @Override
     public void determineDependencies(final Adjudicator adjudicator) {
     }
 
@@ -223,6 +236,7 @@ public class Build extends Order {
      * <p>
      * Extra build orders are NOT considered in the evaluate() method here.
      */
+    @Override
     public void evaluate(final Adjudicator adjudicator) {
         Log.println("--- evaluate() dip.order.Build ---");
         Log.println("   order: ", this);

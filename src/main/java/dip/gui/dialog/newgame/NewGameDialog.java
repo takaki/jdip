@@ -26,6 +26,7 @@ import dip.gui.ClientFrame;
 import dip.gui.dialog.HeaderDialog;
 import dip.gui.swing.SwingWorker;
 import dip.misc.Help;
+import dip.misc.Help.HelpID;
 import dip.misc.Log;
 import dip.misc.Utils;
 import dip.world.World;
@@ -71,7 +72,7 @@ public class NewGameDialog extends HeaderDialog {
      */
     public static World displayDialog(final ClientFrame parent) {
         return displayDialog(parent, Utils.getLocalString(TITLE),
-                dip.misc.Help.HelpID.NewGame);
+                HelpID.NewGame);
     }// displayDialog()
 
 
@@ -85,7 +86,7 @@ public class NewGameDialog extends HeaderDialog {
      * helpID will use the default NGD help.
      */
     public static World displayDialog(final ClientFrame parent, final String title,
-                                      final Help.HelpID helpID) {
+                                      final HelpID helpID) {
         if (title == null) {
             throw new IllegalArgumentException();
         }
@@ -94,7 +95,7 @@ public class NewGameDialog extends HeaderDialog {
         dialogInstance.setTitle(title);
 
         if (helpID == null) {
-            dialogInstance.setHelpID(dip.misc.Help.HelpID.NewGame);
+            dialogInstance.setHelpID(HelpID.NewGame);
         } else {
             dialogInstance.setHelpID(helpID);
         }
@@ -118,6 +119,7 @@ public class NewGameDialog extends HeaderDialog {
         if (dialogInstance == null) {
             if (loader == null) {
                 loader = new SwingWorker() {
+                    @Override
                     public Object construct() {
                         final long time = System.currentTimeMillis();
                         NewGameDialog ngd = new NewGameDialog(parent);
@@ -144,7 +146,7 @@ public class NewGameDialog extends HeaderDialog {
      */
     private NewGameDialog(final ClientFrame parent) {
         super(parent, Utils.getLocalString(TITLE), true);
-        this.clientFrame = parent;
+        clientFrame = parent;
 
         // create tab pane
         tabPane = new JTabbedPane(JTabbedPane.TOP);
@@ -176,6 +178,7 @@ public class NewGameDialog extends HeaderDialog {
 
         // ensure list selection is visible
         addWindowListener(new WindowAdapter() {
+            @Override
             public void windowOpened(final WindowEvent e) {
                 tabVariant.ensureSelectionIsVisible();
             }
@@ -186,6 +189,7 @@ public class NewGameDialog extends HeaderDialog {
     /**
      * Handle dialog closing
      */
+    @Override
     public void close(final String actionCommand) {
         if (isOKorAccept(actionCommand)) {
             doOK();

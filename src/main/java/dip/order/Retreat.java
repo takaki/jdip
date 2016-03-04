@@ -28,10 +28,16 @@ import dip.process.Adjudicator;
 import dip.process.OrderState;
 import dip.process.RetreatChecker;
 import dip.process.Tristate;
-import dip.world.*;
+import dip.world.Location;
+import dip.world.Position;
+import dip.world.Power;
+import dip.world.RuleOptions;
+import dip.world.TurnState;
+import dip.world.Unit;
+import dip.world.Unit.Type;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of the Retreat order.
@@ -49,16 +55,14 @@ public class Retreat extends Move {
     private static final String RETREAT_FAIL_DPB = "RETREAT_FAIL_DPB";
     private static final String RETREAT_FAIL_MULTIPLE = "RETREAT_FAIL_MULTIPLE";
 
-
-    private Tristate evalResult = Tristate.UNCERTAIN;
     private static final String orderNameFull = "Retreat";    // brief order name is still 'M'
 
 
     /**
      * Creates a Retreat order
      */
-    protected Retreat(final Power power, final Location src, final Unit.Type srcUnitType,
-                      final Location dest) {
+    protected Retreat(final Power power, final Location src,
+                      final Type srcUnitType, final Location dest) {
         super(power, src, srcUnitType, dest, false);
     }// Move()
 
@@ -66,7 +70,6 @@ public class Retreat extends Move {
      * Creates a Retreat order
      */
     protected Retreat() {
-        super();
     }// Retreat()
 
     /**
@@ -77,6 +80,7 @@ public class Retreat extends Move {
     }// isByConvoy()
 
 
+    @Override
     public String getFullName() {
         return orderNameFull;
     }// getFullName()
@@ -85,7 +89,7 @@ public class Retreat extends Move {
     public boolean equals(final Object obj) {
         if (obj instanceof Retreat) {
             final Retreat retreat = (Retreat) obj;
-            if (super.equals(retreat) && this.dest.equals(retreat.dest)) {
+            if (super.equals(retreat) && dest.equals(retreat.dest)) {
                 return true;
             }
         }
@@ -93,6 +97,7 @@ public class Retreat extends Move {
     }// equals()
 
 
+    @Override
     public void validate(final TurnState state, final ValidationOptions valOpts,
                          final RuleOptions ruleOpts) throws OrderException {
         // step 0
@@ -102,8 +107,9 @@ public class Retreat extends Move {
 
         // 1
         final Position position = state.getPosition();
-        final Unit unit = position.getDislodgedUnit(src.getProvince()).orElse(null);
-        super.validate(valOpts, unit);
+        final Unit unit = position.getDislodgedUnit(src.getProvince())
+                .orElse(null);
+        validate(valOpts, unit);
 
         if (valOpts.getOption(ValidationOptions.KEY_GLOBAL_PARSING)
                 .equals(ValidationOptions.VALUE_GLOBAL_PARSING_STRICT)) {
@@ -114,13 +120,14 @@ public class Retreat extends Move {
             }
 
             // validate Borders
-            Border border = src.getProvince()
-                    .getTransit(src, srcUnitType, state.getPhase(),
-                            this.getClass()).orElse(null);
-            if (border != null) {
+            if (src.getProvince()
+                    .getTransit(src, srcUnitType, state.getPhase(), getClass())
+                    .isPresent()) {
                 throw new OrderException(
                         Utils.getLocalString(ORD_VAL_BORDER, src.getProvince(),
-                                border.getDescription()));
+                                src.getProvince().getTransit(src, srcUnitType,
+                                        state.getPhase(), getClass())
+                                        .orElse(null).getDescription()));
             }
 
             // 3: validate destination [must be a legal move] This is important, because
@@ -129,13 +136,14 @@ public class Retreat extends Move {
             dest = dest.getValidatedWithMove(srcUnitType, src);
 
             // check that we can transit into destination (check borders)
-            border = dest.getProvince()
-                    .getTransit(dest, srcUnitType, state.getPhase(),
-                            this.getClass()).orElse(null);
-            if (border != null) {
+            if (dest.getProvince()
+                    .getTransit(dest, srcUnitType, state.getPhase(), getClass())
+                    .isPresent()) {
                 throw new OrderException(
                         Utils.getLocalString(ORD_VAL_BORDER, src.getProvince(),
-                                border.getDescription()));
+                                dest.getProvince().getTransit(dest, srcUnitType,
+                                        state.getPhase(), getClass())
+                                        .orElse(null).getDescription()));
             }
 
             // 4
@@ -151,6 +159,7 @@ public class Retreat extends Move {
     /**
      * No verification is performed.
      */
+    @Override
     public void verify(final Adjudicator adjudicator) {
         final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
         thisOS.setVerified(true);
@@ -161,31 +170,27 @@ public class Retreat extends Move {
      * Retreat orders are only dependent on other
      * retreat orders that are moving to the same destination.
      */
+    @Override
     public void determineDependencies(final Adjudicator adjudicator) {
         // add moves to destination space, and supports of this space
-        final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
-        List<OrderState> depMTDest = null;
-
         final List<OrderState> orderStates = adjudicator.getOrderStates();
-        for (final OrderState dependentOS : orderStates) {
-            final Orderable order = dependentOS.getOrder();
+        final List<OrderState> depMTDest = orderStates.stream()
+                .filter(dependentOS -> {
+                    final Orderable order = dependentOS.getOrder();
 
-            if (order instanceof Retreat && order != this) {
-                final Retreat retreat = (Retreat) order;
+                    if (order instanceof Retreat && order != this) {
+                        final Retreat retreat = (Retreat) order;
 
-                if (retreat.getDest().isProvinceEqual(this.getDest())) {
-                    if (depMTDest == null) {
-                        depMTDest = new ArrayList<>(4);
+                        if (retreat.getDest().isProvinceEqual(getDest())) {
+                            return true;
+                        }
                     }
-                    depMTDest.add(dependentOS);
-                }
-            }
-        }
+                    return false;
+                }).collect(Collectors.toList());
 
         // set dependent moves to destination
-        if (depMTDest != null) {
-            thisOS.setDependentMovesToDestination(depMTDest);
-        }
+        final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
+        thisOS.setDependentMovesToDestination(depMTDest);
     }// determineDependencies()
 
 
@@ -193,6 +198,7 @@ public class Retreat extends Move {
      * If a retreat is valid, it will be successfull unless
      * there exists one or more retreats to the same destination.
      */
+    @Override
     public void evaluate(final Adjudicator adjudicator) {
         final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
 
@@ -217,7 +223,7 @@ public class Retreat extends Move {
             final List<OrderState> depMovesToDest = thisOS
                     .getDependentMovesToDestination();
 
-            if (depMovesToDest.size() == 0) {
+            if (depMovesToDest.isEmpty()) {
                 // typical case
                 Log.println("    SUCCESS!");
                 thisOS.setEvalState(Tristate.SUCCESS);
@@ -238,7 +244,6 @@ public class Retreat extends Move {
                 boolean isStrongerThanAllOthers = false;
 
                 for (final OrderState depMoveOS : depMovesToDest) {
-                    final Move depMove = (Move) depMoveOS.getOrder();
 
                     if (depMoveOS.isRetreatStrengthSet()) {
                         if (thisOS.getRetreatStrength() < depMoveOS
@@ -262,8 +267,7 @@ public class Retreat extends Move {
                                             RETREAT_FAIL_MULTIPLE));
                             isStrongerThanAllOthers = false;
                             break;
-                        } else // >
-                        {
+                        } else {// >
                             // we *may* be stronger than all others
                             Log.println(
                                     "    We may be stronger than all others...");

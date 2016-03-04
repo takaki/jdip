@@ -120,14 +120,14 @@ public class GameMetadata implements Serializable {
      * Sets game comment. Never null. May be empty.
      */
     public void setComment(final String value) {
-        comment = (value == null) ? EMPTY : value;
+        comment = value == null ? EMPTY : value;
     }
 
     /**
      * Sets game name. Never null, may be empty.
      */
     public void setGameName(final String value) {
-        gameName = (value == null) ? EMPTY : value;
+        gameName = value == null ? EMPTY : value;
     }
 
     /**
@@ -155,7 +155,7 @@ public class GameMetadata implements Serializable {
      * Sets textual notes. Never null, but may be empty.
      */
     public void setNotes(final String value) {
-        notes = (value == null) ? EMPTY : value;
+        notes = value == null ? EMPTY : value;
     }
 
     /**
@@ -176,7 +176,7 @@ public class GameMetadata implements Serializable {
      * Sets the game ID: e.g., Boardman, Miller, or EPNum. Never null.
      */
     public void setGameID(final String value) {
-        id = (value == null) ? EMPTY : value;
+        id = value == null ? EMPTY : value;
     }
 
 }// class GameMetadata

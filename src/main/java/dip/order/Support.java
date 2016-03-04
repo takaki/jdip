@@ -27,9 +27,19 @@ import dip.order.result.OrderResult.ResultType;
 import dip.process.Adjudicator;
 import dip.process.OrderState;
 import dip.process.Tristate;
-import dip.world.*;
+import dip.world.Border;
+import dip.world.Coast;
+import dip.world.Location;
+import dip.world.Path;
+import dip.world.Position;
+import dip.world.Power;
+import dip.world.RuleOptions;
+import dip.world.TurnState;
+import dip.world.Unit;
+import dip.world.Unit.Type;
 
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -63,18 +73,19 @@ public class Support extends Order {
             .getLocalString(SUPPORT_FORMAT_NONMOVE);
 
     // instance variables
-    protected Location supSrc = null;
-    protected Location supDest = null;
-    protected Unit.Type supUnitType = null;
-    protected Order narrowingOrder = null;
-    protected Power supPower = null;
+    protected Location supSrc;
+    protected Location supDest;
+    protected Type supUnitType;
+    protected Order narrowingOrder;
+    protected Power supPower;
 
 
     /**
      * Creates a Support order, for supporting a Hold or other <b>non</b>-movement order.
      */
-    protected Support(final Power power, final Location src, final Unit.Type srcUnit,
-                      final Location supSrc, final Power supPower, final Unit.Type supUnit) {
+    protected Support(final Power power, final Location src, final Type srcUnit,
+                      final Location supSrc, final Power supPower,
+                      final Type supUnit) {
         this(power, src, srcUnit, supSrc, supPower, supUnit, null);
     }// Support()
 
@@ -87,18 +98,17 @@ public class Support extends Order {
      * location is not a valid order.
      * <p>
      */
-    protected Support(final Power power, final Location src, final Unit.Type srcUnit,
-                      final Location supSrc, final Power supPower, final Unit.Type supUnit,
-                      final Location supDest) {
+    protected Support(final Power power, final Location src, final Type srcUnit,
+                      final Location supSrc, final Power supPower,
+                      final Type supUnit, final Location supDest) {
         super(power, src, srcUnit);
 
-        if (supSrc == null || supUnit == null) {
-            throw new IllegalArgumentException("null argument(s)");
-        }
+        Objects.requireNonNull(supSrc);
+        Objects.requireNonNull(supUnit);
 
         this.supPower = supPower;
         this.supSrc = supSrc;
-        this.supUnitType = supUnit;
+        supUnitType = supUnit;
         this.supDest = supDest;
     }// Support()
 
@@ -107,7 +117,6 @@ public class Support extends Order {
      * Creates a Support order
      */
     protected Support() {
-        super();
     }// Support()
 
     /**
@@ -141,7 +150,7 @@ public class Support extends Order {
      * <b>Warning:</b> this can be null, if no unit type was set, and
      * no strict validation was performed (via <code>validate()</code>).
      */
-    public Unit.Type getSupportedUnitType() {
+    public Type getSupportedUnitType() {
         return supUnitType;
     }
 
@@ -171,7 +180,7 @@ public class Support extends Order {
      * supporting a Move order verses a non-Move (Hold) order.
      */
     public final boolean isSupportingHold() {
-        return (supDest == null);
+        return supDest == null;
     }
 
     /**
@@ -182,7 +191,7 @@ public class Support extends Order {
      * isSupportingHold()).
      */
     public final boolean isNonMoveSupport() {
-        return (supDest == null);
+        return supDest == null;
     }
 
 
@@ -201,15 +210,18 @@ public class Support extends Order {
     }// getSupportedDest()
 
 
+    @Override
     public String getFullName() {
         return orderNameFull;
     }// getName()
 
+    @Override
     public String getBriefName() {
         return orderNameBrief;
     }// getBriefName()
 
 
+    @Override
     public String getDefaultFormat() {
         if (isSupportingHold()) {
             return orderFormatString_nonmove;
@@ -219,10 +231,11 @@ public class Support extends Order {
     }// getFormatBrief()
 
 
+    @Override
     public String toBriefString() {
         final StringBuffer sb = new StringBuffer(64);
 
-        super.appendBrief(sb);
+        appendBrief(sb);
         sb.append(' ');
         sb.append(orderNameBrief);
         sb.append(' ');
@@ -239,10 +252,11 @@ public class Support extends Order {
     }// toBriefString()
 
 
+    @Override
     public String toFullString() {
         final StringBuffer sb = new StringBuffer(128);
 
-        super.appendFull(sb);
+        appendFull(sb);
         sb.append(' ');
         sb.append(orderNameFull);
         sb.append(' ');
@@ -262,11 +276,11 @@ public class Support extends Order {
     public boolean equals(final Object obj) {
         if (obj instanceof Support) {
             final Support support = (Support) obj;
-            if (super.equals(support) && supUnitType
-                    .equals(support.supUnitType) && supSrc
+            if (super
+                    .equals(support) && supUnitType == support.supUnitType && supSrc
                     .equals(support.supSrc) && supPower
-                    .equals(support.supPower) && ((supDest == support.supDest) || ((supDest != null) && (supDest
-                    .equals(support.supDest))))) {
+                    .equals(support.supPower) && (supDest == support.supDest || supDest != null && supDest
+                    .equals(support.supDest))) {
                 return true;
             }
         }
@@ -274,6 +288,7 @@ public class Support extends Order {
     }// equals()
 
 
+    @Override
     public void validate(final TurnState state, final ValidationOptions valOpts,
                          final RuleOptions ruleOpts) throws OrderException {
         // v.0: 	check season/phase, basic validation
@@ -286,9 +301,9 @@ public class Support extends Order {
             final Position position = state.getPosition();
 
             // validate Borders
-            Border border = src.getProvince()
-                    .getTransit(src, srcUnitType, state.getPhase(),
-                            this.getClass()).orElse(null);
+            final Border border = src.getProvince()
+                    .getTransit(src, srcUnitType, state.getPhase(), getClass())
+                    .orElse(null);
             if (border != null) {
                 throw new OrderException(
                         Utils.getLocalString(ORD_VAL_BORDER, src.getProvince(),
@@ -296,7 +311,8 @@ public class Support extends Order {
             }
 
             // v.1: unit existence / matching
-            final Unit supUnit = position.getUnit(supSrc.getProvince()).orElse(null);
+            final Unit supUnit = position.getUnit(supSrc.getProvince())
+                    .orElse(null);
             supUnitType = getValidatedUnitType(supSrc.getProvince(),
                     supUnitType, supUnit);
 
@@ -317,13 +333,13 @@ public class Support extends Order {
             }
 
             // validate Borders
-            border = supSrc.getProvince()
+            final Border border1 = supSrc.getProvince()
                     .getTransit(supSrc, supUnitType, state.getPhase(),
-                            this.getClass()).orElse(null);
-            if (border != null) {
+                            getClass()).orElse(null);
+            if (border1 != null) {
                 throw new OrderException(
                         Utils.getLocalString(ORD_VAL_BORDER, src.getProvince(),
-                                border.getDescription()));
+                                border1.getDescription()));
             }
 
             // support source (hold) destination (move) validation
@@ -353,14 +369,14 @@ public class Support extends Order {
                 }
 
                 // destination border validation
-                border = supDest.getProvince()
+                final Border border0 = supDest.getProvince()
                         .getTransit(supDest, supUnitType, state.getPhase(),
-                                this.getClass()).orElse(null);
-                if (border != null) {
+                                getClass()).orElse(null);
+                if (border0 != null) {
                     throw new OrderException(
                             Utils.getLocalString(ORD_VAL_BORDER,
                                     src.getProvince(),
-                                    border.getDescription()));
+                                    border0.getDescription()));
                 }
             }
 
@@ -383,8 +399,9 @@ public class Support extends Order {
      * <p>
      * At this time, we do not check for narrowing conventions in a support order.
      */
+    @Override
     public void verify(final Adjudicator adjudicator) {
-        String failureText = null;
+        String failureText;
         boolean isMatched = false;
 
         final OrderState matchingOS = adjudicator
@@ -410,8 +427,7 @@ public class Support extends Order {
                         .isProvinceEqual(getSupportedDest())) {
                     // NOTE: if a coast is specified in the destination, it MUST match the move order.
                     // (see 2001 DATC 2.E)
-                    if (!getSupportedDest().getCoast()
-                            .equals(Coast.UNDEFINED)) {
+                    if (getSupportedDest().getCoast() != Coast.UNDEFINED) {
                         if (matchingMove.getDest().equals(getSupportedDest())) {
                             isMatched = true;
                         } else {
@@ -442,6 +458,7 @@ public class Support extends Order {
      * <li>Support to this space (only considered if attacked, to prevent dislodgement)
      * </ol>
      */
+    @Override
     public void determineDependencies(final Adjudicator adjudicator) {
         addSupportsOfAndMovesToSource(adjudicator);
     }// determineDependencies()
@@ -501,6 +518,7 @@ public class Support extends Order {
      * only 2.c.3.b.3, 2.b.1.b result in UNCERTAIN success results.
      * </pre>
      */
+    @Override
     public void evaluate(final Adjudicator adjudicator) {
         Log.println("--- evaluate() dip.order.Support ---");
 
@@ -546,7 +564,8 @@ public class Support extends Order {
             Tristate evalResult = Tristate.SUCCESS;
             Move cuttingMove = null;
 
-            final List<OrderState> depMovesToSrc = thisOS.getDependentMovesToSource();
+            final List<OrderState> depMovesToSrc = thisOS
+                    .getDependentMovesToSource();
 
             for (final OrderState depMoveOS : depMovesToSrc) {
                 final Move depMove = (Move) depMoveOS.getOrder();
@@ -667,7 +686,7 @@ public class Support extends Order {
                                 // 2000 rules, comment out the above and just leave this order
                                 // uncertain.
                                 /*
-								Log.println("** no 2000 rule used: leaving uncertain");
+                                Log.println("** no 2000 rule used: leaving uncertain");
 								evalResult = pickState(evalResult, Tristate.UNCERTAIN);
 								*/
                             } else {
@@ -760,7 +779,8 @@ public class Support extends Order {
      * FAILURE >> UNCERTAIN >> SUCCESS
      * </pre>
      */
-    private Tristate pickState(final Tristate oldState, final Tristate newState) {
+    private Tristate pickState(final Tristate oldState,
+                               final Tristate newState) {
         // any failure == failure
         if (newState == Tristate.FAILURE || oldState == Tristate.FAILURE) {
             return Tristate.FAILURE;

@@ -33,6 +33,7 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.DocumentFilter;
+import javax.swing.text.DocumentFilter.FilterBypass;
 import javax.swing.text.html.HTMLDocument;
 import java.awt.*;
 import java.awt.image.AreaAveragingScaleFilter;
@@ -117,9 +118,9 @@ public class Utils {
         classLoader = singleton.getClass().getClassLoader();
         toolkit = Toolkit.getDefaultToolkit();
 
-        isOSX = (System.getProperty("mrj.version", null) != null);
-        isWindows = (System.getProperty("os.name", "").toLowerCase()
-                .indexOf("windows") >= 0);
+        isOSX = System.getProperty("mrj.version", null) != null;
+        isWindows = System.getProperty("os.name", "").toLowerCase()
+                .indexOf("windows") >= 0;
 
         // if a locale cannot be found, automatically defaults
         // to the closest locale, or (at worst) BASE_RESOURCE_FILE.
@@ -203,7 +204,7 @@ public class Utils {
 
         final Dimension size = toolkit.getScreenSize();
 
-        final float f = (size.width <= 800 || size.height <= 600) ? smallScreenFraction : fraction;
+        final float f = size.width <= 800 || size.height <= 600 ? smallScreenFraction : fraction;
 
         size.width = (int) (size.width * f);
         size.height = (int) (size.height * f);
@@ -220,8 +221,8 @@ public class Utils {
         final Dimension screenSize = toolkit.getScreenSize();
         final Dimension componentSize = c.getSize();
 
-        componentSize.width = (componentSize.width > screenSize.width) ? screenSize.width : componentSize.width;
-        componentSize.height = (componentSize.height > screenSize.height) ? screenSize.height : componentSize.height;
+        componentSize.width = componentSize.width > screenSize.width ? screenSize.width : componentSize.width;
+        componentSize.height = componentSize.height > screenSize.height ? screenSize.height : componentSize.height;
 
         c.setLocation((screenSize.width - componentSize.width) / 2,
                 (screenSize.height - componentSize.height) / 2);
@@ -398,7 +399,7 @@ public class Utils {
      ********************************************************************/
     public static String getText(final String name) {
         BufferedReader br = null;
-        StringBuffer sb = null;
+        StringBuffer sb;
 
         try {
             br = new BufferedReader(getInputStreamReader(name));
@@ -562,7 +563,7 @@ public class Utils {
      * <p>.
      ********************************************************************/
     public static String[] getLocalStringArray(final String key) {
-        String str = null;
+        String str;
 
         try {
             str = resourceBundle.getString(key);
@@ -676,7 +677,7 @@ public class Utils {
         String title = getLocalStringNoEx(UTILS_RES_ERR_DLG_TITLE);
         String text = getLocalStringNoEx(UTILS_RES_ERR_DLG_TEXT);
 
-        title = (title == null) ? "Resource Error" : title;
+        title = title == null ? "Resource Error" : title;
         if (text == null) {
             text = "Could not find a needed resource \"" + resourceKey + "\"; error:\n" + e
                     .getMessage();
@@ -736,7 +737,7 @@ public class Utils {
                     // if length == 9, we have an alpha value included.
                     //
                     final int colorBits = (int) Long.parseLong(lcColor, 16);
-                    return new Color(colorBits, (length == 9));
+                    return new Color(colorBits, length == 9);
                 } catch (final Exception e) {
                 }
             }
@@ -858,11 +859,12 @@ public class Utils {
     public static JEditorPane createTextLabel(final String text, final boolean blend,
                                               final boolean isFocusable) {
         // use antialiasing only if non-blended
-        JEditorPane jep = null;
+        JEditorPane jep;
         if (blend) {
             jep = new JEditorPane() {
                 final boolean mayFocus = isFocusable;
 
+                @Override
                 public boolean isFocusable() {
                     return mayFocus;
                 }
@@ -871,6 +873,7 @@ public class Utils {
             jep = new XJEditorPane() {
                 final boolean mayFocus = isFocusable;
 
+                @Override
                 public boolean isFocusable() {
                     return mayFocus;
                 }
@@ -942,8 +945,8 @@ public class Utils {
     public static ImageIcon scaleDown(final ImageIcon src, final int maxW,
                                       final int maxH) {
         if (src.getIconWidth() >= maxW || src.getIconHeight() >= maxH) {
-            int w = maxW;
-            int h = maxH;
+            int w;
+            int h;
             final float aspect = (float) src.getIconWidth() / (float) src
                     .getIconHeight();
 
@@ -1061,13 +1064,15 @@ public class Utils {
         final JTextField jtf = new JTextField(cols);
         final AbstractDocument doc = (AbstractDocument) jtf.getDocument();
         doc.setDocumentFilter(new DocumentFilter() {
-            public void insertString(final DocumentFilter.FilterBypass fb, final int offset,
+            @Override
+            public void insertString(final FilterBypass fb, final int offset,
                                      final String text,
                                      final AttributeSet attr) throws BadLocationException {
-                this.replace(fb, offset, 0, text, attr);
+                replace(fb, offset, 0, text, attr);
             }// insertString()
 
-            public void replace(final DocumentFilter.FilterBypass fb, final int offset,
+            @Override
+            public void replace(final FilterBypass fb, final int offset,
                                 final int length, final String text,
                                 final AttributeSet attr) throws BadLocationException {
                 fb.replace(offset, length, getValidWordString(text), attr);
@@ -1088,7 +1093,7 @@ public class Utils {
 
             private boolean isValidWord(final char c) {
                 // check letters (A-Z, a-z)
-                if ((c >= 0x0041 && c <= 0x005A) || (c >= 0x0061 && c <= 0x007A)) {
+                if (c >= 0x0041 && c <= 0x005A || c >= 0x0061 && c <= 0x007A) {
                     return true;
                 }
 
@@ -1120,13 +1125,15 @@ public class Utils {
         final JTextField jtf = new JTextField(cols);
         final AbstractDocument doc = (AbstractDocument) jtf.getDocument();
         doc.setDocumentFilter(new DocumentFilter() {
-            public void insertString(final DocumentFilter.FilterBypass fb, final int offset,
+            @Override
+            public void insertString(final FilterBypass fb, final int offset,
                                      final String text,
                                      final AttributeSet attr) throws BadLocationException {
-                this.replace(fb, offset, 0, text, attr);
+                replace(fb, offset, 0, text, attr);
             }// insertString()
 
-            public void replace(final DocumentFilter.FilterBypass fb, final int offset,
+            @Override
+            public void replace(final FilterBypass fb, final int offset,
                                 final int length, final String text,
                                 final AttributeSet attr) throws BadLocationException {
                 fb.replace(offset, length, getValidEmailString(text), attr);
@@ -1147,7 +1154,7 @@ public class Utils {
 
             private boolean isValidEmail(final char c) {
                 // check letters (A-Z, a-z)
-                if ((c >= 0x0041 && c <= 0x005A) || (c >= 0x0061 && c <= 0x007A)) {
+                if (c >= 0x0041 && c <= 0x005A || c >= 0x0061 && c <= 0x007A) {
                     return true;
                 }
 
@@ -1179,13 +1186,15 @@ public class Utils {
         final JTextField jtf = new JTextField(cols);
         final AbstractDocument doc = (AbstractDocument) jtf.getDocument();
         doc.setDocumentFilter(new DocumentFilter() {
-            public void insertString(final DocumentFilter.FilterBypass fb, final int offset,
+            @Override
+            public void insertString(final FilterBypass fb, final int offset,
                                      final String text,
                                      final AttributeSet attr) throws BadLocationException {
                 replace(fb, offset, 0, text, attr);
             }// insertString()
 
-            public void replace(final DocumentFilter.FilterBypass fb, final int offset,
+            @Override
+            public void replace(final FilterBypass fb, final int offset,
                                 final int length, final String text,
                                 final AttributeSet attr) throws BadLocationException {
                 fb.replace(offset, length, getValidURLString(text), attr);
@@ -1207,7 +1216,7 @@ public class Utils {
 
             private boolean isValidURL(final char c) {
                 // check letters (A-Z, a-z)
-                if ((c >= 0x0041 && c <= 0x005A) || (c >= 0x0061 && c <= 0x007A)) {
+                if (c >= 0x0041 && c <= 0x005A || c >= 0x0061 && c <= 0x007A) {
                     return true;
                 }
 
@@ -1270,7 +1279,7 @@ public class Utils {
 
         // cleanup
         for (int i = 0; i < matches.length; i++) {
-            if (matches[i].length() > 0) {
+            if (!matches[i].isEmpty()) {
                 final StringBuffer sb = new StringBuffer(matches[i]);
                 // step 1: remove (if present) start/end quotes
                 if (sb.charAt(0) == '\"') {
@@ -1374,7 +1383,7 @@ public class Utils {
 
         int idx = 0;
         int start = sb.indexOf(toFind, idx);
-        final boolean isModified = (start != -1);
+        final boolean isModified = start != -1;
 
         while (start != -1) {
             final int end = start + toFindLen;
@@ -1385,7 +1394,7 @@ public class Utils {
             start = sb.indexOf(toFind, idx);
         }
 
-        return (isModified) ? sb.toString() : input;
+        return isModified ? sb.toString() : input;
     }// replaceAll()
 
     /**
@@ -1418,7 +1427,7 @@ public class Utils {
 
             int idx = 0;
             int start = sb.indexOf(toFind[i], idx);
-            isModified = (isModified) || (start != -1);
+            isModified = isModified || start != -1;
 
             while (start != -1) {
                 final int end = start + toFindLen;
@@ -1430,7 +1439,7 @@ public class Utils {
             }
         }
 
-        return (isModified) ? sb.toString() : input;
+        return isModified ? sb.toString() : input;
     }// replaceAll()
 
     /**
@@ -1470,7 +1479,7 @@ public class Utils {
      * Null-safe object comparison.
      */
     public static boolean areEqual(final Object obj1, final Object obj2) {
-        return (obj1 == null) ? (obj2 == null) : obj1.equals(obj2);
+        return obj1 == null ? obj2 == null : obj1.equals(obj2);
     }// areEqual()
 
 

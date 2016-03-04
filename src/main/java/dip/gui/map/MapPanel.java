@@ -30,6 +30,7 @@ import dip.misc.Log;
 import dip.misc.Utils;
 import dip.order.ValidationOptions;
 import dip.world.*;
+import dip.world.World.VariantInfo;
 import dip.world.variant.VariantManager;
 import dip.world.variant.data.MapGraphic;
 import dip.world.variant.data.SymbolPack;
@@ -165,7 +166,7 @@ public class MapPanel extends JPanel {
         final int colors = tk.getMaximumCursorColors();
 
         // determine if the platform supports custom cursors.
-        if (!d.equals(new Dimension(0, 0)) && (colors != 0)) {
+        if (!d.equals(new Dimension(0, 0)) && colors != 0) {
             ImageIcon ii = Utils
                     .getImageIcon("common/cursors/nodrop.gif");
             if (ii == null) {
@@ -260,13 +261,13 @@ public class MapPanel extends JPanel {
         Log.printTimed(startTime, "MapPanel() constructor start.");
 
         this.clientFrame = clientFrame;
-        this.statusBar = clientFrame.getStatusBar();
+        statusBar = clientFrame.getStatusBar();
 
-        this.setMinimumSize(new Dimension(10, 10));
+        setMinimumSize(new Dimension(10, 10));
 
         // bottomPanel: holds control bar / any other components
         bottomPanel = new JPanel(new BorderLayout());
-        this.add(bottomPanel, BorderLayout.SOUTH);
+        add(bottomPanel, BorderLayout.SOUTH);
 
         // add components to frame that do not depend upon GVT
         statusBarUtils = new StatusBarUtils(this, clientFrame.getStatusBar());
@@ -470,7 +471,7 @@ public class MapPanel extends JPanel {
      */
     private void setControlBar() {
         Log.println("MP::setControlBar())");
-        ControlBar cb = null;
+        ControlBar cb;
 
         if (turnState == null) {
             cb = new ViewControlBar(this);
@@ -674,8 +675,8 @@ public class MapPanel extends JPanel {
             maxZoom = tmp;
         }
 
-        svgCanvas.setMinimumScale(((double) minZoom / 100.0));
-        svgCanvas.setMaximumScale(((double) maxZoom / 100.0));
+        svgCanvas.setMinimumScale((double) minZoom / 100.0);
+        svgCanvas.setMaximumScale((double) maxZoom / 100.0);
     }// setScalingParameters()
 
 
@@ -686,6 +687,7 @@ public class MapPanel extends JPanel {
     private class MP_GVTRenderListener extends GVTTreeRendererAdapter {
         private boolean loaded = false;
 
+        @Override
         public void gvtRenderingStarted(final GVTTreeRendererEvent e) {
             Log.printTimed(startTime, "MapPanel() GVTRender start.");
             if (!loaded) {
@@ -694,6 +696,7 @@ public class MapPanel extends JPanel {
             }
         }// gvtRenderingStarted()
 
+        @Override
         public void gvtRenderingCompleted(final GVTTreeRendererEvent e) {
             Log.printTimed(startTime, "MapPanel() GVTRender completing...");
             if (!loaded) {
@@ -793,6 +796,7 @@ public class MapPanel extends JPanel {
      * NOTE: we use setDocument(), and thus this really isn't used.
      */
     private class MP_DocumentListener extends SVGDocumentLoaderAdapter {
+        @Override
         public void documentLoadingStarted(final SVGDocumentLoaderEvent e) {
             Log.printTimed(startTime, "MapPanel() DocumentLoad started.");
             clientFrame.getClientMenu().setViewRenderItemsEnabled(false);
@@ -800,11 +804,13 @@ public class MapPanel extends JPanel {
             //statusBar.setText(Utils.getLocalString(DOC_LOAD_STARTED));
         }// documentLoadingStarted()
 
+        @Override
         public void documentLoadingFailed(final SVGDocumentLoaderEvent e) {
             statusBar.setText(Utils.getLocalString(DOC_LOAD_FAILED));
             statusBar.hidePB();
         }// documentLoadingFailed()
 
+        @Override
         public void documentLoadingCompleted(final SVGDocumentLoaderEvent e) {
             Log.printTimed(startTime, "MapPanel() DocumentLoad completed.");
             statusBar.incPBValue();
@@ -818,17 +824,20 @@ public class MapPanel extends JPanel {
      * Statusbar messages
      */
     private class MP_GVTTreeBuilderListener extends GVTTreeBuilderAdapter {
+        @Override
         public void gvtBuildStarted(final GVTTreeBuilderEvent e) {
             Log.printTimed(startTime, "MapPanel() GVTTreeBuild completed.");
             statusBar.incPBValue();
             statusBar.setText(Utils.getLocalString(GVT_BUILD_STARTED));
         }// documentLoadingStarted()
 
+        @Override
         public void gvtBuildFailed(final GVTTreeBuilderEvent e) {
             statusBar.setText(Utils.getLocalString(GVT_BUILD_FAILED));
             statusBar.hidePB();
         }// documentLoadingFailed()
 
+        @Override
         public void gvtBuildCompleted(final GVTTreeBuilderEvent e) {
             Log.printTimed(startTime, "MapPanel() GVTTreeBuild completed.");
             statusBar.incPBValue();
@@ -843,6 +852,7 @@ public class MapPanel extends JPanel {
      */
     private class MP_PropertyListener extends AbstractCFPListener {
 
+        @Override
         public void actionWorldCreated(final World w) {
             if (mapRenderer != null) {
                 throw new IllegalStateException();
@@ -851,12 +861,14 @@ public class MapPanel extends JPanel {
             }
         }// actionWorldCreated()
 
+        @Override
         public void actionWorldDestroyed(final World w) {
             if (mapRenderer != null) {
                 close();
             }
         }// actionWorldDestroyed()
 
+        @Override
         public void actionValOptsChanged(final ValidationOptions options) {
             if (mapRenderer != null) {
                 // if we have an OrderControl bar or derivitive
@@ -868,6 +880,7 @@ public class MapPanel extends JPanel {
             }
         }// actionValOptsChanged()
 
+        @Override
         public void actionModeChanged(final String mode) {
             if (mapRenderer != null) {
                 setControlBar();
@@ -875,6 +888,7 @@ public class MapPanel extends JPanel {
             }
         }// actionModeChanged()
 
+        @Override
         public synchronized void actionTurnstateChanged(final TurnState ts) {
             if (mapRenderer != null) {
                 turnState = ts;
@@ -888,7 +902,7 @@ public class MapPanel extends JPanel {
                     position = turnState.getPosition();
 
                     // load URL and resolve
-                    final World.VariantInfo vi = world.getVariantInfo();
+                    final VariantInfo vi = world.getVariantInfo();
                     final Variant variant = new VariantManager()
                             .getVariant(vi.getVariantName(),
                                     vi.getVariantVersion()).orElse(null);
@@ -965,31 +979,38 @@ public class MapPanel extends JPanel {
     private class MP_UpdateManagerListener implements UpdateManagerListener {
         private String lastModeText = null;
 
+        @Override
         public void managerResumed(
                 final org.apache.batik.bridge.UpdateManagerEvent e) {
         }
 
+        @Override
         public void managerStarted(
                 final org.apache.batik.bridge.UpdateManagerEvent e) {
         }
 
+        @Override
         public void managerStopped(
                 final org.apache.batik.bridge.UpdateManagerEvent e) {
         }
 
+        @Override
         public void managerSuspended(
                 final org.apache.batik.bridge.UpdateManagerEvent e) {
         }
 
+        @Override
         public void updateCompleted(
                 final org.apache.batik.bridge.UpdateManagerEvent e) {
             resetText();
         }// updateCompleted()
 
+        @Override
         public void updateFailed(final org.apache.batik.bridge.UpdateManagerEvent e) {
             resetText();
         }// updateFailed()
 
+        @Override
         public void updateStarted(
                 final org.apache.batik.bridge.UpdateManagerEvent e) {
             lastModeText = statusBar.getModeText();
@@ -1045,7 +1066,7 @@ public class MapPanel extends JPanel {
         }
 
         // reload the map
-        assert (turnState != null);
+        assert turnState != null;
         svgCanvas.resumeProcessing();
         isLoaded = false;
         isReloading = true;    // this activates some additional code

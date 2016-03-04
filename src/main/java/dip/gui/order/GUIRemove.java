@@ -24,12 +24,15 @@ package dip.gui.order;
 
 import dip.gui.map.DefaultMapRenderer2;
 import dip.gui.map.MapMetadata;
+import dip.gui.map.MapMetadata.SymbolSize;
 import dip.gui.map.SVGUtils;
 import dip.misc.Utils;
 import dip.order.Orderable;
 import dip.order.Remove;
 import dip.process.Adjustment;
+import dip.process.Adjustment.AdjustmentInfo;
 import dip.world.*;
+import dip.world.Unit.Type;
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.util.SVGConstants;
 import org.w3c.dom.svg.SVGElement;
@@ -62,7 +65,7 @@ public class GUIRemove extends Remove implements GUIOrder {
      * Creates a GUIRemove
      */
     protected GUIRemove(final Power power, final Location source,
-                        final Unit.Type sourceUnitType) {
+                        final Type sourceUnitType) {
         super(power, source, sourceUnitType);
     }// GUIRemove()
 
@@ -70,6 +73,7 @@ public class GUIRemove extends Remove implements GUIOrder {
     /**
      * This only accepts Remove orders. All others will throw an IllegalArgumentException.
      */
+    @Override
     public void deriveFrom(final Orderable order) {
         if (!(order instanceof Remove)) {
             throw new IllegalArgumentException();
@@ -85,6 +89,7 @@ public class GUIRemove extends Remove implements GUIOrder {
     }// deriveFrom()
 
 
+    @Override
     public boolean testLocation(final StateInfo stateInfo, final Location location,
                                 final StringBuffer sb) {
         sb.setLength(0);
@@ -106,7 +111,7 @@ public class GUIRemove extends Remove implements GUIOrder {
             }
 
             // check that we actually have units to remove
-            final Adjustment.AdjustmentInfo adjInfo = stateInfo.getAdjustmenInfoMap()
+            final AdjustmentInfo adjInfo = stateInfo.getAdjustmenInfoMap()
                     .get(unit.getPower());
             if (adjInfo.getAdjustmentAmount() < 0) {
                 sb.append(Utils.getLocalString(GUIOrder.CLICK_TO_ISSUE,
@@ -126,6 +131,7 @@ public class GUIRemove extends Remove implements GUIOrder {
     }// testLocation()
 
 
+    @Override
     public boolean clearLocations() {
         if (isComplete()) {
             return false;
@@ -140,6 +146,7 @@ public class GUIRemove extends Remove implements GUIOrder {
     }// clearLocations()
 
 
+    @Override
     public boolean setLocation(final StateInfo stateInfo, final Location location,
                                final StringBuffer sb) {
         if (testLocation(stateInfo, location, sb)) {
@@ -159,15 +166,18 @@ public class GUIRemove extends Remove implements GUIOrder {
     }// setLocation()
 
 
+    @Override
     public boolean isComplete() {
-        assert (currentLocNum <= getNumRequiredLocations());
-        return (currentLocNum == getNumRequiredLocations());
+        assert currentLocNum <= getNumRequiredLocations();
+        return currentLocNum == getNumRequiredLocations();
     }// isComplete()
 
+    @Override
     public int getNumRequiredLocations() {
         return REQ_LOC;
     }
 
+    @Override
     public int getCurrentLocationNum() {
         return currentLocNum;
     }
@@ -176,6 +186,7 @@ public class GUIRemove extends Remove implements GUIOrder {
     /**
      * Always throws an IllegalArgumentException
      */
+    @Override
     public void setParam(final Parameter param, final Object value) {
         throw new IllegalArgumentException();
     }
@@ -183,11 +194,13 @@ public class GUIRemove extends Remove implements GUIOrder {
     /**
      * Always throws an IllegalArgumentException
      */
+    @Override
     public Object getParam(final Parameter param) {
         throw new IllegalArgumentException();
     }
 
 
+    @Override
     public void removeFromDOM(final MapInfo mapInfo) {
         if (group != null) {
             final SVGGElement powerGroup = mapInfo
@@ -201,6 +214,7 @@ public class GUIRemove extends Remove implements GUIOrder {
     /**
      * Draws a circle with an X in it
      */
+    @Override
     public void updateDOM(final MapInfo mapInfo) {
         // if we are not displayable, we exit, after remove the order (if
         // it was created)
@@ -263,7 +277,7 @@ public class GUIRemove extends Remove implements GUIOrder {
         failPt = new Point2D.Float(srcPt.x + radius, srcPt.y);
 
         // get symbolsize
-        final MapMetadata.SymbolSize symbolSize = mmd
+        final SymbolSize symbolSize = mmd
                 .getSymbolSize(DefaultMapRenderer2.SYMBOL_REMOVEUNIT);
 
         // create RemoveUnit symbol via a USE element
@@ -276,6 +290,7 @@ public class GUIRemove extends Remove implements GUIOrder {
         return useElement;
     }// drawOrder()
 
+    @Override
     public boolean isDependent() {
         return false;
     }

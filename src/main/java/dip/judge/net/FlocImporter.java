@@ -27,6 +27,7 @@ import dip.order.OrderFactory;
 import dip.world.World;
 
 import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.HTMLEditorKit.ParserCallback;
 import javax.swing.text.html.parser.ParserDelegator;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -143,6 +144,7 @@ public class FlocImporter implements Runnable {
     /**
      * Do the work (import text)
      */
+    @Override
     public void run() {
         isInProgress = true;
 
@@ -154,7 +156,7 @@ public class FlocImporter implements Runnable {
             }
 
             // see if game is registered
-            if (text.length() == 0 || text.indexOf(NOT_REGISTERED) >= 0) {
+            if (text.isEmpty() || text.indexOf(NOT_REGISTERED) >= 0) {
                 fic.flocImportUnregistered();
                 return;
             }
@@ -189,7 +191,7 @@ public class FlocImporter implements Runnable {
     private String getGameInfo() throws IOException {
         final StringBuffer gameInformation = new StringBuffer(16384);
 
-        URL u = null;
+        URL u;
         BufferedReader reader = null;
         try {
             u = new URL(
@@ -207,7 +209,8 @@ public class FlocImporter implements Runnable {
             }
 
             final ParserDelegator parser = new ParserDelegator();
-            parser.parse(reader, new HTMLEditorKit.ParserCallback() {
+            parser.parse(reader, new ParserCallback() {
+                @Override
                 public void handleText(final char[] text, final int pos) {
                     if (!isInProgress) {
                         gameInformation.setLength(0);    // abort!

@@ -163,8 +163,7 @@ public class Phase implements Serializable, Comparable<Phase> {
     @Override
     public boolean equals(final Object obj) {
         final Phase phase = (Phase) obj;
-        return yearType.equals(phase.yearType) && seasonType
-                .equals(phase.seasonType) && phaseType.equals(phase.phaseType);
+        return yearType.equals(phase.yearType) && seasonType == phase.seasonType && phaseType == phase.phaseType;
     }// equals()
 
     /**
@@ -175,7 +174,7 @@ public class Phase implements Serializable, Comparable<Phase> {
     @Override
     public int compareTo(final Phase obj) {
         final Phase phase = obj;
-        int result = 0;
+        int result;
 
         // year is dominant
         result = yearType.compareTo(phase.yearType);

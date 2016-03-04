@@ -45,6 +45,7 @@ public class StatusBar extends JPanel {
         add(new javax.swing.JSeparator(), BorderLayout.NORTH);
 
         text = new JTextField(INITIAL_MESSAGE) {
+            @Override
             public boolean isFocusable() {
                 return false;
             }
@@ -57,6 +58,7 @@ public class StatusBar extends JPanel {
         add(text, BorderLayout.CENTER);
 
         mode = new JTextField("", 8) {
+            @Override
             public boolean isFocusable() {
                 return false;
             }

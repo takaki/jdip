@@ -31,11 +31,10 @@ import dip.order.result.Result;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * A TurnState represents a snapshot of the game for the given Phase.
@@ -58,10 +57,10 @@ import java.util.Objects;
  * check that the list contains only orders for that power. (e.g., are
  * non-power orders 'snuck in' for a given power)
  */
-public class TurnState implements Serializable {
+public final class TurnState implements Serializable {
     // instance variables (we serialize all of this)
     private Phase phase;
-    private ArrayList<Result> resultList;                // order results, post-adjudication
+    private List<Result> resultList;                // order results, post-adjudication
     private Map<Power, List<Order>> orderMap;                // Map of power=>orders
     private boolean isSCOwnerChanged;        // 'true' if any supply centers changed ownership
     private Position position;                // Position data (majority of game state)
@@ -180,18 +179,9 @@ public class TurnState implements Serializable {
      * Manipulations to this list will not be reflected in the TurnState object.
      */
     public List<Order> getAllOrders() {
-        final List<Order> list = new ArrayList<>(75);
-
-        for (final Entry<Power, List<Order>> mapEntry : orderMap
-                .entrySet()) {
-            final List<Order> orders = mapEntry.getValue();
-
-            for (final Order order : orders) {
-                list.add(order);
-            }
-        }
-
-        return list;
+        return orderMap.entrySet().stream()
+                .flatMap(mapEntry -> mapEntry.getValue().stream())
+                .collect(Collectors.toList());
     }// getOrderList()
 
 
@@ -254,7 +244,10 @@ public class TurnState implements Serializable {
 
     /**
      * Returns if an order has failed, based on results. Note that
-     * this only applies once the turnstate has been resolved. If
+     * this  == null) {
+                throw new IllegalArgumentException(
+                        "CDATA in <style> node is null.");
+            }only applies once the turnstate has been resolved. If
      * the TurnState is not resolved, this will always return true.
      */
     public boolean isOrderSuccessful(final Orderable o) {
@@ -263,22 +256,15 @@ public class TurnState implements Serializable {
         }
 
         if (resultMap == null) {
-            resultMap = new HashMap<>(53);
-            final Iterator<Result> iter = getResultList().iterator();
-            while (iter.hasNext()) {
-                final Object obj = iter.next();
-                if (obj instanceof OrderResult) {
-                    final OrderResult ordRes = (OrderResult) obj;
-
-                    // we only map SUCCESSFULL orders.
-                    if (ordRes.getResultType() == ResultType.SUCCESS) {
-                        resultMap.put(ordRes.getOrder(), Boolean.TRUE);
-                    }
-                }
-            }
+            resultMap = resultList.stream()
+                    .filter(obj -> obj instanceof OrderResult)
+                    .map(obj -> (OrderResult) obj).filter(ordRes -> ordRes
+                            .getResultType() == ResultType.SUCCESS).collect(
+                            Collectors.toMap(OrderResult::getOrder,
+                                    ordRes -> Boolean.TRUE));
         }
 
-        return resultMap.get(o) == Boolean.TRUE;
+        return Objects.equals(resultMap.get(o), Boolean.TRUE);
 
     }// isFailedOrder()
 

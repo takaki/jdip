@@ -25,6 +25,7 @@ package dip.misc;
 import dip.order.*;
 import dip.order.result.ConvoyPathResult;
 import dip.order.result.OrderResult;
+import dip.order.result.OrderResult.ResultType;
 import dip.order.result.Result;
 import dip.process.StdAdjudicator;
 import dip.world.*;
@@ -520,7 +521,7 @@ public final class TestSuite {
         println("=====================");
         iter = unRezParadoxes.iterator();
         while (iter.hasNext()) {
-            println("   " + (iter.next()));
+            println("   " + iter.next());
         }
         println("   [total: ", unRezParadoxes.size(), "]");
 
@@ -807,9 +808,9 @@ public final class TestSuite {
          * Create a UnitPos
          */
         public UnitPos(final DefineState ds, final boolean isDislodged) {
-            this.unit = new Unit(ds.getPower(), ds.getSourceUnitType());
+            unit = new Unit(ds.getPower(), ds.getSourceUnitType());
             unit.setCoast(ds.getSource().getCoast());
-            this.province = ds.getSource().getProvince();
+            province = ds.getSource().getProvince();
             this.isDislodged = isDislodged;
         }// UnitPos()
 
@@ -817,11 +818,11 @@ public final class TestSuite {
          * Create a UnitPos
          */
         public UnitPos(final Position pos, final Province prov, final boolean isDislodged) {
-            this.province = prov;
+            province = prov;
             this.isDislodged = isDislodged;
-            this.unit = (isDislodged) ? pos.getDislodgedUnit(prov).orElse(null) : pos
+            unit = isDislodged ? pos.getDislodgedUnit(prov).orElse(null) : pos
                     .getUnit(prov).orElse(null);
-            if (this.unit == null) {
+            if (unit == null) {
                 throw new IllegalArgumentException();
             }
         }// UnitPos()
@@ -893,7 +894,7 @@ public final class TestSuite {
                     final List<String> postDislodgedList, final List<String> orderResultList) {
             this.name = name;
             final List temp = new ArrayList<>(50);
-            Iterator<String> iter = null;
+            Iterator<String> iter;
             of = OrderParser.getInstance();
 
 
@@ -909,7 +910,7 @@ public final class TestSuite {
             }
 
             // set phase to template phase, if no phase was assigned.
-            phase = (phaseName == null) ? templateTurnState.getPhase() : phase;
+            phase = phaseName == null ? templateTurnState.getPhase() : phase;
 
             // setup current turnstate from template
             // use phase, if appropriate.
@@ -967,7 +968,7 @@ public final class TestSuite {
                     final Order order = parseOrder(line, currentTS, true);
                     temp.add(order);
                 }
-                this.preDislodged = (DefineState[]) temp
+                preDislodged = (DefineState[]) temp
                         .toArray(new DefineState[temp.size()]);
             }
 
@@ -980,7 +981,7 @@ public final class TestSuite {
                     final Order order = parseOrder(line, currentTS, true);
                     temp.add(order);
                 }
-                this.postDislodged = (DefineState[]) temp
+                postDislodged = (DefineState[]) temp
                         .toArray(new DefineState[temp.size()]);
             }
 
@@ -993,7 +994,7 @@ public final class TestSuite {
                     final Order order = parseOrder(line, currentTS, true);
                     temp.add(order);
                 }
-                this.supplySCOwners = (DefineState[]) temp
+                supplySCOwners = (DefineState[]) temp
                         .toArray(new DefineState[temp.size()]);
             }
 
@@ -1010,13 +1011,13 @@ public final class TestSuite {
                 iter = orderResultList.iterator();
                 while (iter.hasNext()) {
                     String line = iter.next();
-                    OrderResult.ResultType ordResultType = null;
+                    ResultType ordResultType = null;
 
                     // success or failure??
                     if (line.startsWith("success")) {
-                        ordResultType = OrderResult.ResultType.SUCCESS;
+                        ordResultType = ResultType.SUCCESS;
                     } else if (line.startsWith("failure")) {
-                        ordResultType = OrderResult.ResultType.FAILURE;
+                        ordResultType = ResultType.FAILURE;
                     } else {
                         System.out.println("ERROR");
                         System.out.println("case: " + name);
@@ -1050,7 +1051,7 @@ public final class TestSuite {
                     temp.add(new OrderResult(order, ordResultType,
                             " (prestate)"));
                 }
-                this.results = (OrderResult[]) temp
+                results = (OrderResult[]) temp
                         .toArray(new OrderResult[temp.size()]);
 
                 // add results to previous turnstate
@@ -1268,7 +1269,6 @@ public final class TestSuite {
                         // clear data
                         inCase = true;
                         clearAndSetupKeyMap();
-                        caseName = null;
                         phaseName = null;
                         currentKey = null;
 
@@ -1383,12 +1383,12 @@ public final class TestSuite {
             return null;
         }
 
-        int idx = 0;
+        int idx;
 
         if (idxSpace == -1 || idxTab == -1) {
-            idx = (idxSpace > idxTab) ? idxSpace : idxTab;        // return greater
+            idx = idxSpace > idxTab ? idxSpace : idxTab;        // return greater
         } else {
-            idx = (idxSpace < idxTab) ? idxSpace : idxTab;        // return lesser
+            idx = idxSpace < idxTab ? idxSpace : idxTab;        // return lesser
         }
 
         return in.substring(idx + 1);

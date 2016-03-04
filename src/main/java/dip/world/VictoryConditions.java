@@ -35,6 +35,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Establishes the conditions required to determine who wins a game, and contains
@@ -47,6 +49,9 @@ public class VictoryConditions implements Serializable {
     private static final String VC_DRAW = "VC_DRAW";
     private static final String VC_WIN_SINGLE = "VC_WIN_SINGLE";
     private static final String VC_MAX_NO_SC_CHANGE = "VC_MAX_NO_SC_CHANGE";
+
+    private static final String WF_BAD_VC = "WF_BAD_VC";
+
 
     // class variables
     protected final int numSCForVictory;        // SCs required for victory; 0 if ignored
@@ -68,11 +73,15 @@ public class VictoryConditions implements Serializable {
             throw new IllegalArgumentException("arg: < 0; use 0 to disable");
         }
 
-        Objects.requireNonNull(initialPhase);
-
-        if (maxGameTimeYears == 0 && numSCForVictory == 0 && maxYearsNoSCChange == 0) {
-            throw new IllegalArgumentException("no conditions set!");
+        // make sure we have at least one victory condition!
+        if (numSCForVictory <= 0 &&
+                maxYearsNoSCChange <= 0 &&
+                maxGameTimeYears <= 0) {
+            throw new IllegalArgumentException(Utils.getLocalString(WF_BAD_VC));
         }
+
+
+        Objects.requireNonNull(initialPhase);
 
         this.numSCForVictory = numSCForVictory;
         this.maxYearsNoSCChange = maxYearsNoSCChange;
@@ -129,11 +138,8 @@ public class VictoryConditions implements Serializable {
         // create an array of AdjustmentInfo, indexed the same as the array of Powers,
         // from the passed HashMap
         final List<Power> powers = turnState.getWorld().getMap().getPowers();
-        final List<AdjustmentInfo> adjInfo = new ArrayList<>();
-        for (Power power : powers) {
-            adjInfo.add(adjMap.get(power));
-        }
-
+        final List<AdjustmentInfo> adjInfo = powers.stream().map(adjMap::get)
+                .collect(Collectors.toList());
 
         // check to see if we have exceeded the allocated time
         if (maxGameTimeYears > 0) {
@@ -223,26 +229,14 @@ public class VictoryConditions implements Serializable {
     private String getRemainingPowers(final TurnState turnState,
                                       final List<Power> powers,
                                       final List<AdjustmentInfo> adjInfo) {
-        final StringBuffer sb = new StringBuffer(128);
         final Position pos = turnState.getPosition();
-
-        for (int i = 0; i < powers.size(); i++) {
-            // check for power elimination [note: check might be redundant...]
-            // we need to check adjInfo because we check for victory BEFORE powers may
-            // be eliminated in the adjustment phase.
-            if (adjInfo.get(i).getSupplyCenterCount() > 0 && !pos
-                    .isEliminated(powers.get(i))) {
-                sb.append(powers.get(i));
-                sb.append(", ");
-            }
-        }
-
-        // delete last comma
-        if (sb.length() > 2) {
-            sb.delete(sb.length() - 2, sb.length());
-        }
-
-        return sb.toString();
+        // check for power elimination [note: check might be redundant...]
+        // we need to check adjInfo because we check for victory BEFORE powers may
+        // be eliminated in the adjustment phase.
+        return IntStream.range(0, powers.size())
+                .filter(i -> adjInfo.get(i).getSupplyCenterCount() > 0 && !pos
+                        .isEliminated(powers.get(i))).mapToObj(powers::get)
+                .map(Power::toString).collect(Collectors.joining(", "));
     }// getRemainingPowers()
 
 

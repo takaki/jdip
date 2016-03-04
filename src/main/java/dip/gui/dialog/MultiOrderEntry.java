@@ -24,6 +24,8 @@ package dip.gui.dialog;
 
 import dip.gui.ClientFrame;
 import dip.gui.OrderDisplayPanel;
+import dip.gui.dialog.TextViewer.AcceptListener;
+import dip.misc.Help.HelpID;
 import dip.misc.Log;
 import dip.misc.Utils;
 import dip.order.OrderException;
@@ -97,7 +99,7 @@ public class MultiOrderEntry {
     private MultiOrderEntry(final ClientFrame parent, final World world) {
         this.parent = parent;
         this.world = world;
-        this.orderDisplayPanel = parent.getOrderDisplayPanel();
+        orderDisplayPanel = parent.getOrderDisplayPanel();
 
         tv = new TextViewer(parent, true);
         tv.setEditable(true);
@@ -110,11 +112,12 @@ public class MultiOrderEntry {
         tv.setAcceptListener(new Acceptor());
         tv.setText("");
 
-        tv.setHelpID(dip.misc.Help.HelpID.Dialog_MultiOrder);
+        tv.setHelpID(HelpID.Dialog_MultiOrder);
     }// MultiOrderEntry()
 
 
-    private class Acceptor implements TextViewer.AcceptListener {
+    private class Acceptor implements AcceptListener {
+        @Override
         public boolean isAcceptable(final TextViewer t) {
             String text = t.getText();
             text = text.trim();
@@ -124,6 +127,7 @@ public class MultiOrderEntry {
             return true;
         }// isAcceptable()
 
+        @Override
         public boolean getCloseDialogAfterUnacceptable() {
             return true;
         }// getCloseDialogAfterUnacceptable()
@@ -148,7 +152,7 @@ public class MultiOrderEntry {
 
                     // now check length, after trimming
                     // (otherwise, lines with just whitespace will be interpreted as an order)
-                    if (line.length() > 0) {
+                    if (!line.isEmpty()) {
                         nOrders++;
 
                         // trim anything after (and including) a "(*" for cut-and-pastes
@@ -268,7 +272,7 @@ public class MultiOrderEntry {
      */
     private void recursiveParse(final String input) throws OrderException {
         Log.println("MOE::recursiveParse(): ", input);
-        OrderException firstException = null;
+        OrderException firstException;
 
         // first pass
         try {

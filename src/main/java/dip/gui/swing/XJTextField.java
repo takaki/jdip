@@ -27,6 +27,7 @@ import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
+import javax.swing.text.DocumentFilter.FilterBypass;
 import java.awt.*;
 
 /**
@@ -55,16 +56,18 @@ public class XJTextField extends JTextField {
 
         final AbstractDocument doc = (AbstractDocument) getDocument();
         doc.setDocumentFilter(new DocumentFilter() {
-            public void insertString(final DocumentFilter.FilterBypass fb, final int offset,
+            @Override
+            public void insertString(final FilterBypass fb, final int offset,
                                      final String text,
                                      final AttributeSet attr) throws BadLocationException {
                 replace(fb, offset, 0, text, attr);
             }// insertString()
 
-            public void replace(final DocumentFilter.FilterBypass fb, final int offset,
+            @Override
+            public void replace(final FilterBypass fb, final int offset,
                                 final int length, final String text,
                                 final AttributeSet attr) throws BadLocationException {
-                if (!XJTextField.this.isUnicodeAware()) {
+                if (!isUnicodeAware()) {
                     fb.replace(offset, length, getFixedString(text), attr);
                 } else {
                     super.replace(fb, offset, length, text, attr);
@@ -72,7 +75,7 @@ public class XJTextField extends JTextField {
             }// replace()
 
             private String getFixedString(final String in) {
-                final StringBuffer buffer = new StringBuffer((in == null) ? "" : in);
+                final StringBuffer buffer = new StringBuffer(in == null ? "" : in);
 
                 for (int i = buffer.length() - 1; i >= 0; i--) {
                     final char c = buffer.charAt(i);
@@ -96,6 +99,7 @@ public class XJTextField extends JTextField {
         }
     }
 
+    @Override
     public void setFont(final Font f) {
         super.setFont(f);
         detectUnicode();

@@ -33,6 +33,7 @@ import dip.world.Position;
 import dip.world.Power;
 import dip.world.Province;
 import dip.world.Unit;
+import dip.world.Unit.Type;
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.util.SVGConstants;
 import org.w3c.dom.svg.SVGElement;
@@ -69,7 +70,7 @@ public class GUIRetreat extends Retreat implements GUIOrder {
     /**
      * Creates a GUIRetreat
      */
-    protected GUIRetreat(final Power power, final Location source, final Unit.Type sourceUnitType,
+    protected GUIRetreat(final Power power, final Location source, final Type sourceUnitType,
                          final Location dest) {
         super(power, source, sourceUnitType, dest);
     }// GUIRetreat()
@@ -77,6 +78,7 @@ public class GUIRetreat extends Retreat implements GUIOrder {
     /**
      * This only accepts Retreat orders. All others will throw an IllegalArgumentException.
      */
+    @Override
     public void deriveFrom(final Orderable order) {
         if (!(order instanceof Retreat)) {
             throw new IllegalArgumentException();
@@ -92,6 +94,7 @@ public class GUIRetreat extends Retreat implements GUIOrder {
         currentLocNum = REQ_LOC;
     }// deriveFrom()
 
+    @Override
     public boolean testLocation(final StateInfo stateInfo, final Location location,
                                 final StringBuffer sb) {
         sb.setLength(0);
@@ -123,7 +126,7 @@ public class GUIRetreat extends Retreat implements GUIOrder {
                         new Location(province, unit.getCoast()));
 
                 // if we have no valid retreat locations, inform that we must disband
-                if (retreatLocs.size() == 0) {
+                if (retreatLocs.isEmpty()) {
                     sb.append(Utils.getLocalString(UNIT_MUST_DISBAND));
                     return false;
                 }
@@ -192,6 +195,7 @@ public class GUIRetreat extends Retreat implements GUIOrder {
     }// testLocation()
 
 
+    @Override
     public boolean clearLocations() {
         if (isComplete()) {
             return false;
@@ -207,6 +211,7 @@ public class GUIRetreat extends Retreat implements GUIOrder {
     }// clearLocations()
 
 
+    @Override
     public boolean setLocation(final StateInfo stateInfo, final Location location,
                                final StringBuffer sb) {
         if (isComplete()) {
@@ -237,15 +242,18 @@ public class GUIRetreat extends Retreat implements GUIOrder {
         return false;
     }// setLocation()
 
+    @Override
     public boolean isComplete() {
-        assert (currentLocNum <= getNumRequiredLocations());
-        return (currentLocNum == getNumRequiredLocations());
+        assert currentLocNum <= getNumRequiredLocations();
+        return currentLocNum == getNumRequiredLocations();
     }// isComplete()
 
+    @Override
     public int getNumRequiredLocations() {
         return REQ_LOC;
     }
 
+    @Override
     public int getCurrentLocationNum() {
         return currentLocNum;
     }
@@ -254,6 +262,7 @@ public class GUIRetreat extends Retreat implements GUIOrder {
     /**
      * Always throws an IllegalArgumentException
      */
+    @Override
     public void setParam(final Parameter param, final Object value) {
         throw new IllegalArgumentException();
     }
@@ -261,11 +270,13 @@ public class GUIRetreat extends Retreat implements GUIOrder {
     /**
      * Always throws an IllegalArgumentException
      */
+    @Override
     public Object getParam(final Parameter param) {
         throw new IllegalArgumentException();
     }
 
 
+    @Override
     public void removeFromDOM(final MapInfo mapInfo) {
         if (group != null) {
             final SVGGElement powerGroup = mapInfo
@@ -279,6 +290,7 @@ public class GUIRetreat extends Retreat implements GUIOrder {
     /**
      * Draws a line with an arrow. Unlife a Move, we are not dependent.
      */
+    @Override
     public void updateDOM(final MapInfo mapInfo) {
         // if we are not displayable, we exit, after remove the order (if
         // it was created)
@@ -317,7 +329,7 @@ public class GUIRetreat extends Retreat implements GUIOrder {
 
         // now, render the order
         //
-        SVGElement element = null;
+        SVGElement element;
 
         // create hilight line
         final String cssStyle = mapInfo.getMapMetadata()
@@ -359,7 +371,7 @@ public class GUIRetreat extends Retreat implements GUIOrder {
         Point2D.Float newPtTo = ptTo;
         final Position position = mapInfo.getTurnState().getPosition();
         if (position.hasUnit(dest.getProvince())) {
-            final Unit.Type destUnitType = position.getUnit(dest.getProvince())
+            final Type destUnitType = position.getUnit(dest.getProvince())
                     .orElse(null).getType();
             final float r = mmd.getOrderRadius(MapMetadata.EL_RETREAT,
                     mapInfo.getSymbolName(destUnitType));
@@ -400,6 +412,7 @@ public class GUIRetreat extends Retreat implements GUIOrder {
     }// drawOrder()
 
 
+    @Override
     public boolean isDependent() {
         return false;
     }
@@ -409,7 +422,7 @@ public class GUIRetreat extends Retreat implements GUIOrder {
      * Generate text message containing valid retreat locations (if any). Assumes non-zero retreatLocs length.
      */
     private String getRetLocText(final List<Location> retreatLocs) {
-        if (retreatLocs.size() == 0) {
+        if (retreatLocs.isEmpty()) {
             throw new IllegalStateException();
         } else {
             final StringBuffer tmp = new StringBuffer(64);

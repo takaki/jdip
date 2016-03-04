@@ -72,7 +72,6 @@ public class SVGColorParser {
         if (cm == null) {
             XColorManager xcm = new XColorManager();
             cm = xcm.getXColorStringMap();
-            xcm = null;
         }
     }// init()
 
@@ -113,12 +112,13 @@ public class SVGColorParser {
         /**
          * Uses String.equals() instead of referential equality
          */
+        @Override
         public Object get(final String key) {
             final int hash = key.hashCode() & 0x7FFFFFFF;
             final int index = hash % table.length;
 
             for (Entry e = table[index]; e != null; e = e.next) {
-                if ((e.hash == hash) && e.key.equals(key)) {
+                if (e.hash == hash && e.key.equals(key)) {
                     return e.value;
                 }
             }

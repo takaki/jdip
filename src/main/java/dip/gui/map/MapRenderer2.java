@@ -24,6 +24,7 @@ package dip.gui.map;
 
 import dip.gui.AbstractCFPListener;
 import dip.gui.ClientFrame;
+import dip.gui.map.RenderCommandFactory.RCSetTurnstate;
 import dip.gui.map.RenderCommandFactory.RenderCommand;
 import dip.gui.order.GUIOrder;
 import dip.misc.Log;
@@ -32,6 +33,7 @@ import dip.world.Location;
 import dip.world.Power;
 import dip.world.TurnState;
 import dip.world.Unit;
+import dip.world.Unit.Type;
 import org.apache.batik.swing.JSVGCanvas;
 import org.apache.batik.util.RunnableQueue;
 import org.w3c.dom.svg.SVGDocument;
@@ -160,7 +162,7 @@ public abstract class MapRenderer2 {
      * has been set.
      */
     public synchronized void execRenderCommand(final RenderCommand rc) {
-        if (rc instanceof RenderCommandFactory.RCSetTurnstate) {
+        if (rc instanceof RCSetTurnstate) {
             // focus
             mapPanel.requestFocusInWindow();
 
@@ -179,7 +181,7 @@ public abstract class MapRenderer2 {
                 if (rq != null) {
                     final Iterator iter = tempQueue.iterator();
                     while (iter.hasNext()) {
-                        rq.invokeLater(((RenderCommand) iter.next()));
+                        rq.invokeLater((RenderCommand) iter.next());
                     }
 
                     tempQueue.clear();
@@ -225,7 +227,7 @@ public abstract class MapRenderer2 {
     /**
      * Get the Symbol Name for the given unit type
      */
-    public abstract String getSymbolName(Unit.Type unitType);
+    public abstract String getSymbolName(Type unitType);
 
     /**
      * Get a location that corresponds to an ID
@@ -297,14 +299,17 @@ public abstract class MapRenderer2 {
      * Listener class for order updates and TurnState changes
      */
     private class CFPropertyListener extends AbstractCFPListener {
+        @Override
         public void actionOrderCreated(final Orderable order) {
             orderCreated((GUIOrder) order);
         }
 
+        @Override
         public void actionOrderDeleted(final Orderable order) {
             orderDeleted((GUIOrder) order);
         }
 
+        @Override
         public void actionOrdersCreated(final Orderable[] orders) {
             final GUIOrder[] guiOrders = new GUIOrder[orders.length];
             for (int i = 0; i < guiOrders.length; i++) {
@@ -314,6 +319,7 @@ public abstract class MapRenderer2 {
             multipleOrdersCreated(guiOrders);
         }
 
+        @Override
         public void actionOrdersDeleted(final Orderable[] orders) {
             final GUIOrder[] guiOrders = new GUIOrder[orders.length];
             for (int i = 0; i < guiOrders.length; i++) {
@@ -323,11 +329,13 @@ public abstract class MapRenderer2 {
             multipleOrdersDeleted(guiOrders);
         }
 
+        @Override
         public void actionDisplayablePowersChanged(final Power[] oldPowers,
                                                    final Power[] newPowers) {
             displayablePowersChanged(newPowers);
         }
 
+        @Override
         public void actionTurnstateChanged(final TurnState ts) {
             // OPTIMIZATION:
             // any pending queued events may be deleted, because

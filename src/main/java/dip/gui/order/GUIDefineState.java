@@ -29,6 +29,7 @@ import dip.order.Orderable;
 import dip.world.Location;
 import dip.world.Power;
 import dip.world.Unit;
+import dip.world.Unit.Type;
 
 /**
  * GUIOrder subclass of DefineState order.
@@ -52,7 +53,7 @@ public class GUIDefineState extends DefineState implements GUIOrder {
      * Creates a GUIDefineState
      */
     protected GUIDefineState(final Power power, final Location source,
-                             final Unit.Type sourceUnitType) throws OrderException {
+                             final Type sourceUnitType) throws OrderException {
         super(power, source, sourceUnitType);
     }// GUIDefineState()
 
@@ -60,6 +61,7 @@ public class GUIDefineState extends DefineState implements GUIOrder {
     /**
      * This only accepts DefineState orders. All others will throw an IllegalArgumentException.
      */
+    @Override
     public void deriveFrom(final Orderable order) {
         if (!(order instanceof DefineState)) {
             throw new IllegalArgumentException();
@@ -74,6 +76,7 @@ public class GUIDefineState extends DefineState implements GUIOrder {
     /**
      * Always returns false.
      */
+    @Override
     public boolean testLocation(final StateInfo stateInfo, final Location location,
                                 final StringBuffer sb) {
         sb.setLength(0);
@@ -84,6 +87,7 @@ public class GUIDefineState extends DefineState implements GUIOrder {
     /**
      * Always returns false.
      */
+    @Override
     public boolean clearLocations() {
         return false;
     }// clearLocations()
@@ -91,6 +95,7 @@ public class GUIDefineState extends DefineState implements GUIOrder {
     /**
      * Always returns false.
      */
+    @Override
     public boolean setLocation(final StateInfo stateInfo, final Location location,
                                final StringBuffer sb) {
         sb.setLength(0);
@@ -101,6 +106,7 @@ public class GUIDefineState extends DefineState implements GUIOrder {
     /**
      * Always returns true.
      */
+    @Override
     public boolean isComplete() {
         return true;
     }// isComplete()
@@ -108,6 +114,7 @@ public class GUIDefineState extends DefineState implements GUIOrder {
     /**
      * Always returns 0.
      */
+    @Override
     public int getNumRequiredLocations() {
         return 0;
     }
@@ -115,6 +122,7 @@ public class GUIDefineState extends DefineState implements GUIOrder {
     /**
      * Always returns 0.
      */
+    @Override
     public int getCurrentLocationNum() {
         return 0;
     }
@@ -123,6 +131,7 @@ public class GUIDefineState extends DefineState implements GUIOrder {
     /**
      * Always throws an IllegalArgumentException
      */
+    @Override
     public void setParam(final Parameter param, final Object value) {
         throw new IllegalArgumentException();
     }
@@ -130,18 +139,22 @@ public class GUIDefineState extends DefineState implements GUIOrder {
     /**
      * Always throws an IllegalArgumentException
      */
+    @Override
     public Object getParam(final Parameter param) {
         throw new IllegalArgumentException();
     }
 
 
+    @Override
     public void removeFromDOM(final MapInfo mapInfo) {
     }// removeFromDOM()
 
 
+    @Override
     public void updateDOM(final MapInfo mapInfo) {
     }// updateDOM()
 
+    @Override
     public boolean isDependent() {
         return false;
     }

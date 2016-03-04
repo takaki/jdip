@@ -40,6 +40,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -493,8 +494,7 @@ public final class NJudgeOrderParser {
     /**
      * Parse the rest of the order
      */
-    private Order parsePredicate(final ParseContext pc,
-                                 final OrderPrefix op,
+    private Order parsePredicate(final ParseContext pc, final OrderPrefix op,
                                  final String[] tokens) throws OrderException {
         final String type = op.orderName;
 
@@ -647,10 +647,11 @@ public final class NJudgeOrderParser {
                                           final String text) throws OrderException {
         final String replaceFrom[] = {".", ","};
         final String replaceTo[] = {"", ""};
-        final String locationText = Coast
+        final Optional<String> locationText = Coast
                 .normalize(Utils.replaceAll(text, replaceFrom, replaceTo));
 
-        final Location loc = pc.map.parseLocation(locationText).orElse(null);
+        final Location loc = locationText.flatMap(pc.map::parseLocation)
+                .orElse(null);
 
         if (loc == null) {
             throw new OrderException(
@@ -694,8 +695,7 @@ public final class NJudgeOrderParser {
      */
     private Order parseHoldOrDisband(final ParseContext pc,
                                      final OrderPrefix op,
-                                     final String[] tokens,
-                                     final String type) {
+                                     final String[] tokens, final String type) {
         // NO additional parsing
         //
         if (Objects.equals(type, ORDER_HOLD)) {
@@ -1115,42 +1115,49 @@ public final class NJudgeOrderParser {
         final List<Result> results = new ArrayList<>(stringResults.size());
 
         for (final String stringResult : stringResults) {
-            final String textResult = stringResult.trim();
-            if (textResult.equalsIgnoreCase("bounce")) {
-                results.add(
-                        new OrderResult(order, ResultType.FAILURE, "Bounce"));
-            } else if (textResult.equalsIgnoreCase("cut")) {
-                results.add(new OrderResult(order, ResultType.FAILURE, "Cut"));
-            } else if (textResult.equalsIgnoreCase("no convoy")) {
-                results.add(new OrderResult(order, ResultType.FAILURE,
-                        "No Convoy"));
-            } else if (textResult.equalsIgnoreCase("dislodged")) {
-                // create a failure result (if we were only dislodged)
-                if (stringResults.size() == 1) {
+            final String textResult = stringResult.trim().toLowerCase();
+            switch (textResult) {
+                case "bounce":
+                    results.add(new OrderResult(order, ResultType.FAILURE,
+                            "Bounce"));
+                    break;
+                case "cut":
                     results.add(
-                            new OrderResult(order, ResultType.FAILURE, null));
-                }
+                            new OrderResult(order, ResultType.FAILURE, "Cut"));
+                    break;
+                case "no convoy":
+                    results.add(new OrderResult(order, ResultType.FAILURE,
+                            "No Convoy"));
+                    break;
+                case "dislodged":
+                    // create a failure result (if we were only dislodged)
+                    if (stringResults.size() == 1) {
+                        results.add(new OrderResult(order, ResultType.FAILURE,
+                                null));
+                    }
 
-                // create a TEMPORARY dislodged result here
-                results.add(new OrderResult(order, ResultType.DISLODGED,
-                        "**TEMP**"));
-            } else if (textResult.equalsIgnoreCase("destroyed")) {
-                // create a failure result (if we were only dislodged)
-                if (stringResults.size() == 1) {
-                    results.add(
-                            new OrderResult(order, ResultType.FAILURE, null));
-                }
+                    // create a TEMPORARY dislodged result here
+                    results.add(new OrderResult(order, ResultType.DISLODGED,
+                            "**TEMP**"));
+                    break;
+                case "destroyed":
+                    // create a failure result (if we were only dislodged)
+                    if (stringResults.size() == 1) {
+                        results.add(new OrderResult(order, ResultType.FAILURE,
+                                null));
+                    }
 
-                // destroyed result
-                results.add(new DislodgedResult(order, null));
-            } else if (textResult.equalsIgnoreCase("void")) {
-                results.add(
-                        new OrderResult(order, ResultType.VALIDATION_FAILURE,
-                                "Void"));
-            } else {
-                // unknown result type! Assume failure.
-                throw new OrderException(
-                        "Unknown result \"" + textResult + "\" for order: " + pc.orderText);
+                    // destroyed result
+                    results.add(new DislodgedResult(order, null));
+                    break;
+                case "void":
+                    results.add(new OrderResult(order,
+                            ResultType.VALIDATION_FAILURE, "Void"));
+                    break;
+                default:
+                    // unknown result type! Assume failure.
+                    throw new OrderException(
+                            "Unknown result \"" + textResult + "\" for order: " + pc.orderText);
             }
         }
 

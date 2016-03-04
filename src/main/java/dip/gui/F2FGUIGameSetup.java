@@ -22,6 +22,7 @@
 //
 package dip.gui;
 
+import dip.gui.F2FOrderDisplayPanel.F2FState;
 import dip.gui.map.MapPanel;
 import dip.gui.undo.UndoRedoManager;
 import dip.world.Power;
@@ -38,11 +39,12 @@ import java.awt.*;
  */
 public class F2FGUIGameSetup implements GUIGameSetup {
     // serialized data
-    private F2FOrderDisplayPanel.F2FState state = null;    // only null if never saved
+    private F2FState state = null;    // only null if never saved
 
     /**
      * Setup the game.
      */
+    @Override
     public void setup(final ClientFrame cf, final World world) {
         // create right-panel components
         final F2FOrderDisplayPanel odp = new F2FOrderDisplayPanel(cf);
@@ -97,6 +99,7 @@ public class F2FGUIGameSetup implements GUIGameSetup {
     /**
      * Save the Current Power
      */
+    @Override
     public void save(final ClientFrame cf) {
         final F2FOrderDisplayPanel fodp = (F2FOrderDisplayPanel) cf
                 .getOrderDisplayPanel();

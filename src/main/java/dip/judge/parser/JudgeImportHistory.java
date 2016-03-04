@@ -522,8 +522,8 @@ public final class JudgeImportHistory {
                 for (final Object o : njo.getResults()) {
                     final Result r = (Result) o;
                     if (r instanceof OrderResult) {
-                        if (((OrderResult) r).getResultType()
-                                .equals(ResultType.DISLODGED)) {
+                        if (((OrderResult) r)
+                                .getResultType() == ResultType.DISLODGED) {
                             isUnitDislodged = true;
                             break;
                         }
@@ -1108,7 +1108,7 @@ public final class JudgeImportHistory {
 
         // get position info
         final Position newPos = current.getPosition();
-        Position oldPos = null;
+        Position oldPos;
         if (previousTS == null) {
             oldPos = oldPosition;
         } else {
@@ -1282,7 +1282,7 @@ public final class JudgeImportHistory {
             final Result result = iter.next();
             if (result instanceof OrderResult) {
                 final OrderResult orderResult = (OrderResult) result;
-                if (ResultType.DISLODGED.equals(orderResult.getResultType())) {
+                if (ResultType.DISLODGED == orderResult.getResultType()) {
                     Log.println("  failed order: ", orderResult.getOrder());
 
                     String[] retreatLocNames = null;
@@ -1484,10 +1484,10 @@ public final class JudgeImportHistory {
      * enabled; if it already is, do nothing.
      */
     private void checkAndEnableWings(final Type unitType) {
-        if (Type.WING.equals(unitType)) {
+        if (Type.WING == unitType) {
             final RuleOptions ruleOpts = world.getRuleOptions();
-            if (OptionValue.VALUE_WINGS_DISABLED
-                    .equals(ruleOpts.getOptionValue(Option.OPTION_WINGS))) {
+            if (OptionValue.VALUE_WINGS_DISABLED == ruleOpts
+                    .getOptionValue(Option.OPTION_WINGS)) {
                 ruleOpts.setOption(Option.OPTION_WINGS,
                         OptionValue.VALUE_WINGS_ENABLED);
                 world.setRuleOptions(ruleOpts);

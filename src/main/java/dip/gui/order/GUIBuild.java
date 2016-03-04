@@ -24,12 +24,17 @@ package dip.gui.order;
 
 import dip.gui.map.DefaultMapRenderer2;
 import dip.gui.map.MapMetadata;
+import dip.gui.map.MapMetadata.SymbolSize;
 import dip.gui.map.SVGUtils;
 import dip.misc.Utils;
 import dip.order.Build;
 import dip.order.Orderable;
 import dip.process.Adjustment;
+import dip.process.Adjustment.AdjustmentInfo;
 import dip.world.*;
+import dip.world.RuleOptions.Option;
+import dip.world.RuleOptions.OptionValue;
+import dip.world.Unit.Type;
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.util.SVGConstants;
 import org.w3c.dom.svg.SVGElement;
@@ -79,7 +84,7 @@ public class GUIBuild extends Build implements GUIOrder {
     /**
      * Creates a GUIBuild
      */
-    protected GUIBuild(final Power power, final Location source, final Unit.Type sourceUnitType) {
+    protected GUIBuild(final Power power, final Location source, final Type sourceUnitType) {
         super(power, source, sourceUnitType);
     }// GUIBuild()
 
@@ -87,6 +92,7 @@ public class GUIBuild extends Build implements GUIOrder {
     /**
      * This only accepts Build orders. All others will throw an IllegalArgumentException.
      */
+    @Override
     public void deriveFrom(final Orderable order) {
         if (!(order instanceof Build)) {
             throw new IllegalArgumentException();
@@ -102,6 +108,7 @@ public class GUIBuild extends Build implements GUIOrder {
     }// deriveFrom()
 
 
+    @Override
     public boolean testLocation(final StateInfo stateInfo, final Location location,
                                 final StringBuffer sb) {
         sb.setLength(0);
@@ -137,7 +144,7 @@ public class GUIBuild extends Build implements GUIOrder {
 
             // indicate if we have no builds available
             //
-            final Adjustment.AdjustmentInfo adjInfo = stateInfo.getAdjustmenInfoMap()
+            final AdjustmentInfo adjInfo = stateInfo.getAdjustmenInfoMap()
                     .get(SCOwner);
             if (adjInfo.getAdjustmentAmount() <= 0) {
                 sb.append(Utils.getLocalString(NOBUILD_NO_BUILDS_AVAILABLE,
@@ -150,10 +157,10 @@ public class GUIBuild extends Build implements GUIOrder {
             //
             final RuleOptions ruleOpts = stateInfo.getRuleOptions();
             if (ruleOpts.getOptionValue(
-                    RuleOptions.Option.OPTION_BUILDS) == RuleOptions.OptionValue.VALUE_BUILDS_ANY_OWNED) {
+                    Option.OPTION_BUILDS) == OptionValue.VALUE_BUILDS_ANY_OWNED) {
                 return checkBuildUnit(stateInfo, province, location, sb);
             } else if (ruleOpts.getOptionValue(
-                    RuleOptions.Option.OPTION_BUILDS) == RuleOptions.OptionValue.VALUE_BUILDS_ANY_IF_HOME_OWNED) {
+                    Option.OPTION_BUILDS) == OptionValue.VALUE_BUILDS_ANY_IF_HOME_OWNED) {
                 // check if we have ONE owned home supply center before buidling
                 // in a non-home supply center.
                 //
@@ -187,6 +194,7 @@ public class GUIBuild extends Build implements GUIOrder {
     }// testLocation()
 
 
+    @Override
     public boolean clearLocations() {
         if (isComplete()) {
             return false;
@@ -201,6 +209,7 @@ public class GUIBuild extends Build implements GUIOrder {
     }// clearLocations()
 
 
+    @Override
     public boolean setLocation(final StateInfo stateInfo, final Location location,
                                final StringBuffer sb) {
         if (testLocation(stateInfo, location, sb)) {
@@ -211,7 +220,7 @@ public class GUIBuild extends Build implements GUIOrder {
                     .getSupplyCenterOwner(location.getProvince()).orElse(null);
 
             // srcUnitType: already defined
-            assert (srcUnitType != null);
+            assert srcUnitType != null;
 
             sb.setLength(0);
             sb.append(Utils.getLocalString(GUIOrder.COMPLETE, getFullName()));
@@ -222,15 +231,18 @@ public class GUIBuild extends Build implements GUIOrder {
     }// setLocation()
 
 
+    @Override
     public boolean isComplete() {
-        assert (currentLocNum <= getNumRequiredLocations());
-        return (currentLocNum == getNumRequiredLocations());
+        assert currentLocNum <= getNumRequiredLocations();
+        return currentLocNum == getNumRequiredLocations();
     }// isComplete()
 
+    @Override
     public int getNumRequiredLocations() {
         return REQ_LOC;
     }
 
+    @Override
     public int getCurrentLocationNum() {
         return currentLocNum;
     }
@@ -238,18 +250,20 @@ public class GUIBuild extends Build implements GUIOrder {
     /**
      * Used to set what type of Unit we are building. Value must be a Unit.Type
      */
+    @Override
     public void setParam(final Parameter param, final Object value) {
-        if (param != BUILD_UNIT || !(value instanceof Unit.Type)) {
+        if (param != BUILD_UNIT || !(value instanceof Type)) {
             throw new IllegalArgumentException();
         }
 
-        srcUnitType = (Unit.Type) value;
+        srcUnitType = (Type) value;
     }// setParam()
 
 
     /**
      * Used to set what type of Unit we are building.
      */
+    @Override
     public Object getParam(final Parameter param) {
         if (param != BUILD_UNIT) {
             throw new IllegalArgumentException();
@@ -259,6 +273,7 @@ public class GUIBuild extends Build implements GUIOrder {
     }// getParam()
 
 
+    @Override
     public void removeFromDOM(final MapInfo mapInfo) {
         if (group != null) {
             final SVGGElement powerGroup = mapInfo
@@ -272,6 +287,7 @@ public class GUIBuild extends Build implements GUIOrder {
     /**
      * Places a unit in the desired area.
      */
+    @Override
     public void updateDOM(final MapInfo mapInfo) {
         // if we are not displayable, we exit, after remove the order (if
         // it was created)
@@ -345,7 +361,7 @@ public class GUIBuild extends Build implements GUIOrder {
         final SVGElement[] elements = new SVGElement[2];
 
         // BuildUnit symbol
-        MapMetadata.SymbolSize symbolSize = mmd
+        SymbolSize symbolSize = mmd
                 .getSymbolSize(DefaultMapRenderer2.SYMBOL_BUILDUNIT);
 
         elements[0] = SVGUtils.createUseElement(mapInfo.getDocument(),
@@ -367,6 +383,7 @@ public class GUIBuild extends Build implements GUIOrder {
     }// drawOrder()
 
 
+    @Override
     public boolean isDependent() {
         return false;
     }
@@ -387,7 +404,7 @@ public class GUIBuild extends Build implements GUIOrder {
             return false;
         }
 
-        if (srcUnitType.equals(Unit.Type.ARMY)) {
+        if (srcUnitType == Type.ARMY) {
             if (province.isSea()) {
                 sb.append(Utils.getLocalString(NOBUILD_NO_ARMY_IN_SEA));
                 return false;
@@ -401,7 +418,7 @@ public class GUIBuild extends Build implements GUIOrder {
                 sb.append(Utils.getLocalString(BUILD_ARMY_OK));
                 return true;
             }
-        } else if (srcUnitType.equals(Unit.Type.FLEET)) {
+        } else if (srcUnitType == Type.FLEET) {
             if (province.isLandLocked()) {
                 sb.append(Utils.getLocalString(NOBUILD_FLEET_LANDLOCKED));
                 return false;
@@ -415,7 +432,7 @@ public class GUIBuild extends Build implements GUIOrder {
                 sb.append(Utils.getLocalString(BUILD_FLEET_OK));
                 return true;
             }
-        } else if (srcUnitType.equals(Unit.Type.WING)) {
+        } else if (srcUnitType == Type.WING) {
             // check borders
             if (!GUIOrderUtils
                     .checkBorder(this, loc, srcUnitType, stateInfo.getPhase(),

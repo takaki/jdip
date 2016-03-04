@@ -96,6 +96,7 @@ public abstract class RenderCommandFactory {
          * returns immediately. Subclasses should subclass
          * execute instead of this method..
          */
+        @Override
         public final void run() {
             if (alive) {
                 // before executing, lock on turnstate, since
@@ -121,7 +122,7 @@ public abstract class RenderCommandFactory {
         public String toString() {
             final StringBuffer sb = new StringBuffer();
             sb.append("[");
-            sb.append(this.getClass().getName());
+            sb.append(getClass().getName());
             return sb.toString();
         }
     }// abstract nested class RenderCommand

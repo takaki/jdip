@@ -25,6 +25,7 @@ package dip.gui.dialog.newgame;
 import cz.autel.dmi.HIGConstraints;
 import cz.autel.dmi.HIGLayout;
 import dip.gui.dialog.ErrorDialog;
+import dip.gui.dialog.newgame.NewGameDialog.NGDTabPane;
 import dip.gui.swing.XJScrollPane;
 import dip.misc.Utils;
 import dip.world.InvalidWorldException;
@@ -50,7 +51,7 @@ import java.util.*;
  * <p>
  * Reset button allows reversion to defaults.
  */
-public class NGDRuleOptions extends JPanel implements NewGameDialog.NGDTabPane {
+public class NGDRuleOptions extends JPanel implements NGDTabPane {
     // constants
     private static final String TAB_NAME = "NGDRuleOpts.tab.name";
     private static final String BUTTON_RESET = "NGDRuleOpts.button_reset";
@@ -80,6 +81,7 @@ public class NGDRuleOptions extends JPanel implements NewGameDialog.NGDTabPane {
         optionList.setFixedCellWidth(100);
         optionList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         optionList.addListSelectionListener(new ListSelectionListener() {
+            @Override
             public void valueChanged(final ListSelectionEvent e) {
                 updateChoices();
             }
@@ -88,6 +90,7 @@ public class NGDRuleOptions extends JPanel implements NewGameDialog.NGDTabPane {
         // reset button
         reset = new JButton(Utils.getLocalString(BUTTON_RESET));
         reset.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(final ActionEvent e) {
                 resetData();
             }
@@ -129,6 +132,7 @@ public class NGDRuleOptions extends JPanel implements NewGameDialog.NGDTabPane {
     /**
      * Enables & Disables controls on this panel
      */
+    @Override
     public void setEnabled(final boolean value) {
         optionList.setEnabled(value);
         reset.setEnabled(value);
@@ -215,7 +219,7 @@ public class NGDRuleOptions extends JPanel implements NewGameDialog.NGDTabPane {
 
                 // select, if we are selected
                 radioButtons[i].setSelected(
-                        ((current == allowedOptVals.get(i)) ? true : false));
+                        current == allowedOptVals.get(i) ? true : false);
             } else {
                 radioButtons[i].setText("");
                 radioButtons[i].setSelected(false);
@@ -251,7 +255,7 @@ public class NGDRuleOptions extends JPanel implements NewGameDialog.NGDTabPane {
         subPanel.add(new JSeparator(), c.rcwh(16, 1, 2, 1, "lr"));
         subPanel.add(new JPanel(), c.rcwh(14, 1, 2, 1));
         for (int i = 0; i < radioButtons.length; i++) {
-            subPanel.add(radioButtons[i], c.rc((2 * (i + 1)), 2, "l"));
+            subPanel.add(radioButtons[i], c.rc(2 * (i + 1), 2, "l"));
         }
 
         final JPanel rightPanel = new JPanel();
@@ -259,9 +263,9 @@ public class NGDRuleOptions extends JPanel implements NewGameDialog.NGDTabPane {
         rightPanel.add(description, BorderLayout.NORTH);
         rightPanel.add(subPanel, BorderLayout.CENTER);
 
-        this.setLayout(new BorderLayout());
-        this.add(ruleListPanel, BorderLayout.WEST);
-        this.add(rightPanel, BorderLayout.CENTER);
+        setLayout(new BorderLayout());
+        add(ruleListPanel, BorderLayout.WEST);
+        add(rightPanel, BorderLayout.CENTER);
     }// makeLayout()
 
 
@@ -280,6 +284,7 @@ public class NGDRuleOptions extends JPanel implements NewGameDialog.NGDTabPane {
     /**
      * Get the tab name.
      */
+    @Override
     public String getTabName() {
         return Utils.getLocalString(TAB_NAME);
     }// getTabName()
@@ -287,6 +292,7 @@ public class NGDRuleOptions extends JPanel implements NewGameDialog.NGDTabPane {
     /**
      * The Variant has Changed.
      */
+    @Override
     public void variantChanged(final Variant variant) {
         this.variant = variant;
         resetData();
@@ -296,6 +302,7 @@ public class NGDRuleOptions extends JPanel implements NewGameDialog.NGDTabPane {
     /**
      * The Enabled status has Changed.
      */
+    @Override
     public void enablingChanged(final boolean enabled) {
         setEnabled(enabled);
     }// enablingChanged()
@@ -325,6 +332,7 @@ public class NGDRuleOptions extends JPanel implements NewGameDialog.NGDTabPane {
      * RB listener
      */
     private class RBListener implements ActionListener {
+        @Override
         public void actionPerformed(final ActionEvent e) {
             // set options according to what we found from the button group.
             // if possible. The action command corresponds to the button index,

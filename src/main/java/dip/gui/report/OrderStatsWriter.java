@@ -24,6 +24,7 @@ package dip.gui.report;
 
 import dip.gui.ClientFrame;
 import dip.gui.dialog.TextViewer;
+import dip.gui.dialog.TextViewer.TVRunnable;
 import dip.misc.Utils;
 import dip.order.Convoy;
 import dip.order.Hold;
@@ -32,7 +33,9 @@ import dip.order.OrderFormatOptions;
 import dip.order.Orderable;
 import dip.order.Support;
 import dip.order.result.OrderResult;
+import dip.order.result.OrderResult.ResultType;
 import dip.world.Phase;
+import dip.world.Phase.PhaseType;
 import dip.world.Power;
 import dip.world.TurnState;
 import dip.world.Unit;
@@ -89,7 +92,8 @@ public class OrderStatsWriter {
         tv.setHorizontalScrollBarPolicy(
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-        tv.lazyLoadDisplayDialog(new TextViewer.TVRunnable() {
+        tv.lazyLoadDisplayDialog(new TVRunnable() {
+            @Override
             public void run() {
                 setText(getOrderStatsAsHTML(w, orderFormat));
             }
@@ -167,7 +171,7 @@ public class OrderStatsWriter {
             final Phase phase = mptd.getPhase();
             final Stats[] stats = mptd.getStats();
 
-            sb.append((((row & 1) == 0) ? TR_HIGHLIGHT : "<tr>"));
+            sb.append((row & 1) == 0 ? TR_HIGHLIGHT : "<tr>");
 
             sb.append("<td><b>");
             sb.append(phase.getSeasonType());
@@ -177,7 +181,7 @@ public class OrderStatsWriter {
 
             float sum = 0.0f;
             int nPowers = 0;            // for computing average....
-            float value = 0.0f;
+            float value;
             for (int i = 0; i < allPowers.length; i++) {
                 switch (type)    // it's just so easy...
                 {
@@ -246,8 +250,8 @@ public class OrderStatsWriter {
         final Iterator<TurnState> iter = turns.iterator();
         while (iter.hasNext()) {
             final TurnState ts = iter.next();
-            if (ts.isResolved() && Phase.PhaseType.MOVEMENT
-                    .equals(ts.getPhase().getPhaseType())) {
+            if (ts.isResolved() && PhaseType.MOVEMENT == ts.getPhase()
+                    .getPhaseType()) {
                 data.add(new MovePhaseTurnData(ts));
             }
         }
@@ -265,8 +269,7 @@ public class OrderStatsWriter {
         private final Stats[] stats;
 
         public MovePhaseTurnData(final TurnState ts) {
-            if (!ts.getPhase().getPhaseType()
-                    .equals(Phase.PhaseType.MOVEMENT)) {
+            if (ts.getPhase().getPhaseType() != PhaseType.MOVEMENT) {
                 throw new IllegalArgumentException();
             }
 
@@ -274,8 +277,8 @@ public class OrderStatsWriter {
                 throw new IllegalArgumentException();
             }
 
-            this.phase = ts.getPhase();
-            this.stats = new Stats[allPowers.length];
+            phase = ts.getPhase();
+            stats = new Stats[allPowers.length];
             collectStats(ts);
         }// MovePhaseTurnData()
 
@@ -313,7 +316,7 @@ public class OrderStatsWriter {
 
                     // we only map SUCCESSFULL orders.
                     if (ordRes
-                            .getResultType() == OrderResult.ResultType.SUCCESS) {
+                            .getResultType() == ResultType.SUCCESS) {
                         resultMap.put(ordRes.getOrder(), Boolean.TRUE);
                     }
                 }
@@ -330,8 +333,8 @@ public class OrderStatsWriter {
                     s.nOrders++;
 
                     final Orderable order = (Orderable) iter.next();
-                    final boolean success = (resultMap
-                            .get(order) == Boolean.TRUE);
+                    final boolean success = resultMap
+                            .get(order) == Boolean.TRUE;
 
                     if (order instanceof Move) {
                         s.nMoves++;
@@ -401,7 +404,7 @@ public class OrderStatsWriter {
                 throw new IllegalArgumentException();
             }
 
-            this.power = p;
+            power = p;
         }// Stats()
 
         /**
@@ -419,8 +422,8 @@ public class OrderStatsWriter {
                 return 0.0f;
             }
 
-            final int success = (nMovesOK + nConvoysOK + nHoldsOK + nSupportsOK);
-            return ((float) success / (float) getTotal());
+            final int success = nMovesOK + nConvoysOK + nHoldsOK + nSupportsOK;
+            return (float) success / (float) getTotal();
         }
 
         /**
@@ -432,7 +435,7 @@ public class OrderStatsWriter {
                 return 0.0f;
             }
 
-            return ((float) nSupports / (float) getTotal());
+            return (float) nSupports / (float) getTotal();
         }
 
         /**
@@ -444,7 +447,7 @@ public class OrderStatsWriter {
                 return 0.0f;
             }
 
-            return ((float) nSupportsSelf / (float) getTotal());
+            return (float) nSupportsSelf / (float) getTotal();
         }
 
         /**
@@ -452,12 +455,12 @@ public class OrderStatsWriter {
          * of all total orders.
          */
         public float getPercentNonSelfSupport() {
-            assert (nSupports >= nSupportsSelf);
+            assert nSupports >= nSupportsSelf;
             if (getTotal() == 0) {
                 return 0.0f;
             }
 
-            return ((float) (nSupports - nSupportsSelf) / (float) getTotal());
+            return (float) (nSupports - nSupportsSelf) / (float) getTotal();
         }
 
         /**
@@ -469,7 +472,7 @@ public class OrderStatsWriter {
                 return -1.0f;
             }
 
-            return ((float) nMovesOK / (float) nMoves);
+            return (float) nMovesOK / (float) nMoves;
         }// getPercentMoveSuccess()
 
 
@@ -477,7 +480,7 @@ public class OrderStatsWriter {
          * Get total orders
          */
         private int getTotal() {
-            return (nMoves + nConvoys + nHolds + nSupports);
+            return nMoves + nConvoys + nHolds + nSupports;
         }// getTotal()
 
     }// inner class Stats

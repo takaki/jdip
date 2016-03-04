@@ -29,7 +29,10 @@ import dip.gui.map.SVGColorParser;
 import dip.gui.swing.ColorRectIcon;
 import dip.misc.Utils;
 import dip.process.Adjustment;
+import dip.process.Adjustment.AdjustmentInfo;
+import dip.process.Adjustment.AdjustmentInfoMap;
 import dip.world.Phase;
+import dip.world.Phase.PhaseType;
 import dip.world.Position;
 import dip.world.Power;
 import dip.world.TurnState;
@@ -42,6 +45,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.List;
+import java.util.Map.Entry;
 
 
 /**
@@ -95,6 +99,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
     /**
      * Cleanup
      */
+    @Override
     public void close() {
         super.close();
     }// close()
@@ -104,6 +109,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
      * Handle the Submit button events
      */
     private class SubmissionListener implements ActionListener {
+        @Override
         public void actionPerformed(final ActionEvent e) {
             // confirm submission
             final int result = JOptionPane.showConfirmDialog(clientFrame,
@@ -157,6 +163,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
      * Handle the "Enter Orders" button event
      */
     private class EnterOrdersListener implements ActionListener {
+        @Override
         public void actionPerformed(final ActionEvent e) {
             isReviewingResolvedTS = false;
             resolvedTS = null;
@@ -186,6 +193,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
             }
         }// forceUpdate()
 
+        @Override
         public synchronized void stateChanged(final ChangeEvent e) {
             if (isEnabled) {
                 update();
@@ -214,15 +222,17 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
      * Extended F2FPropertyListener
      */
     protected class F2FPropertyListener extends ODPPropertyListener {
+        @Override
         public void actionTurnstateChanged(final TurnState ts) {
             if (resolvedTS != null && !isReviewingResolvedTS) {
                 isReviewingResolvedTS = true;
                 changeButton(enterOrders);
-                enterOrders.setEnabled((nextTS != null));
+                enterOrders.setEnabled(nextTS != null);
 
                 // we're in the fireTurnstateChanged() thread/event loop;
                 // fire this event outside, so that everyone can receive it.
                 SwingUtilities.invokeLater(new Runnable() {
+                    @Override
                     public void run() {
                         clientFrame.fireTurnstateChanged(resolvedTS);
                     }
@@ -253,22 +263,26 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
             }
         }// actionTurnstateChanged()
 
+        @Override
         public void actionTurnstateResolved(final TurnState ts) {
             super.actionTurnstateResolved(ts);
             resolvedTS = ts;
         }// actionTurnstateResolved()
 
+        @Override
         public void actionTurnstateAdded(final TurnState ts) {
             super.actionTurnstateAdded(ts);
             nextTS = ts;
         }// actionTurnstateAdded()
 
+        @Override
         public void actionMMDReady(final MapMetadata mmd) {
             super.actionMMDReady(mmd);
             F2FOrderDisplayPanel.this.mmd = mmd;
             setTabIcons();
         }// actionMMDReady()
 
+        @Override
         public void actionModeChanged(final String mode) {
             super.actionModeChanged(mode);
             if (mode == ClientFrame.MODE_ORDER) {
@@ -306,7 +320,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
      * turn.
      */
     private void setSubmitEnabled() {
-        assert (turnState != null);
+        assert turnState != null;
 
         submit.setEnabled(false);
 
@@ -364,8 +378,8 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
      * Power that has not been eliminated or are inactive.
      */
     private void createTabs() {
-        assert (world != null);
-        assert (turnState != null);
+        assert world != null;
+        assert turnState != null;
 
         // disable tab events
         tabListener.setEnabled(false);
@@ -390,7 +404,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
         final Position pos = turnState.getPosition();
         final List<Power> powers = world.getMap().getPowers();
 
-        final Adjustment.AdjustmentInfoMap f2fAdjMap = Adjustment
+        final AdjustmentInfoMap f2fAdjMap = Adjustment
                 .getAdjustmentInfo(turnState, world.getRuleOptions(), powers);
 
         for (final Power power : powers) {
@@ -408,14 +422,14 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
                         "");
 
                 // disable tabs if appropriate
-                final Adjustment.AdjustmentInfo adjInfo = f2fAdjMap.get(power);
+                final AdjustmentInfo adjInfo = f2fAdjMap.get(power);
                 if (turnState.getPhase()
-                        .getPhaseType() == Phase.PhaseType.ADJUSTMENT) {
+                        .getPhaseType() == PhaseType.ADJUSTMENT) {
                     if (adjInfo.getAdjustmentAmount() == 0) {
                         setTabEnabled(power, false);
                     }
                 } else if (turnState.getPhase()
-                        .getPhaseType() == Phase.PhaseType.RETREAT) {
+                        .getPhaseType() == PhaseType.RETREAT) {
                     if (adjInfo.getDislodgedUnitCount() == 0) {
                         setTabEnabled(power, false);
                     }
@@ -482,6 +496,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
     /**
      * Create an extended property listener.
      */
+    @Override
     protected AbstractCFPListener createPropertyListener() {
         return new F2FPropertyListener();
     }// createPropertyListener()
@@ -536,6 +551,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
     /**
      * Do nothing. We have our own layout method.
      */
+    @Override
     protected void makeLayout() {
         // do nothing.
     }// makeLayout()
@@ -590,7 +606,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
             final Power[] powers = world.getMap().getPowers().toArray(new Power[0]);
             for (final Power power : powers) {
                 final boolean value = state.getSubmitted(power);
-                aSubmit = (value) ? true : aSubmit;
+                aSubmit = value ? true : aSubmit;
                 setTabEnabled(power, !value);
             }
 
@@ -620,7 +636,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
      * Saves the current state, if appropriate.
      */
     private void saveEntryState() {
-        assert (turnState != null);
+        assert turnState != null;
         if (turnState.isResolved()) {
             entryState.clearSubmitted();
             entryState.setCurrentPower(null);
@@ -740,7 +756,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
          * Get an iterator. Note that this <b>always</b> returns an iterator
          * on a <b>copy</b> of the F2FState.
          */
-        public synchronized Iterator<Map.Entry<Power, Boolean>> iterator() {
+        public synchronized Iterator<Entry<Power, Boolean>> iterator() {
             final F2FState copy = new F2FState(this);
             return copy.submittedMap.entrySet().iterator();
         }// iterator()

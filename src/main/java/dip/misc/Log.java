@@ -123,7 +123,7 @@ public final class Log {
             if (file == null) {
                 // log to stdout (no file specified)
                 System.out.println("*********** logging started ***********");
-                System.out.println((new Date()).toString());
+                System.out.println(new Date().toString());
                 System.out.println("***************************************");
             } else {
                 // log to file
@@ -132,7 +132,7 @@ public final class Log {
                     bw.newLine();
                     bw.write("*********** logging started ***********");
                     bw.newLine();
-                    bw.write((new Date()).toString());
+                    bw.write(new Date().toString());
                     bw.newLine();
                     bw.write("***************************************");
                     bw.newLine();
@@ -144,7 +144,7 @@ public final class Log {
         }
 
         logLevel = value;
-        isLogging = (logLevel != LOG_NONE);
+        isLogging = logLevel != LOG_NONE;
     }// setLogging()
 
 
@@ -292,7 +292,7 @@ public final class Log {
             final StringBuffer sb = new StringBuffer(256);
             sb.append(s0);
             sb.append(' ');
-            sb.append((now - lastTime));
+            sb.append(now - lastTime);
             sb.append(" ms [delta]; current: ");
             sb.append(now);
             println(sb);
@@ -308,7 +308,7 @@ public final class Log {
             final StringBuffer sb = new StringBuffer(128);
             sb.append(s0);
             sb.append(' ');
-            sb.append((now - lastTime));
+            sb.append(now - lastTime);
             sb.append(" ms [delta]");
             sb.append(now);
             println(sb);
@@ -366,7 +366,7 @@ public final class Log {
     private static void memLog(final String s) {
         buffer[bufferNext] = s;
         bufferNext++;
-        bufferNext = (bufferNext >= buffer.length) ? 0 : bufferNext;
+        bufferNext = bufferNext >= buffer.length ? 0 : bufferNext;
     }// memLog()
 
 

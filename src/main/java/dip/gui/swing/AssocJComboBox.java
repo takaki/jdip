@@ -68,6 +68,7 @@ public class AssocJComboBox extends JComboBox {
     /**
      * Remove an item, by comparing its AssociatedObj <b>value</b>.
      */
+    @Override
     public void removeItem(final Object obj) {
         super.removeItem(getAOForValue(obj));
     }// removeItem()
@@ -83,6 +84,7 @@ public class AssocJComboBox extends JComboBox {
      * Add an AssociatedObj. Other objects are not allowed to be
      * added, and will throw an exception.
      */
+    @Override
     public void addItem(final Object obj) {
         if (obj instanceof AssociatedObj) {
             super.addItem(obj);
@@ -108,6 +110,7 @@ public class AssocJComboBox extends JComboBox {
     /**
      * Get the selected AssociatedObj; null if none selected.
      */
+    @Override
     public Object getSelectedItem() {
         return (AssociatedObj) super.getSelectedItem();
     }// getSelectedItem
@@ -123,7 +126,7 @@ public class AssocJComboBox extends JComboBox {
         if (ao == null) {
             ao = getDefaultAO();
             if (ao == null) {
-                assert (getItemAt(0) != null);
+                assert getItemAt(0) != null;
                 ao = (AssociatedObj) getItemAt(0);
             }
         }
@@ -134,6 +137,7 @@ public class AssocJComboBox extends JComboBox {
     /**
      * Sets the selected item by its AssociatedObj <b>Value</b>;
      */
+    @Override
     public void setSelectedItem(final Object obj) {
         super.setSelectedItem(getAOForValue(obj));
     }// setSelectedItem()
@@ -256,6 +260,7 @@ public class AssocJComboBox extends JComboBox {
                 this.c = c;
             }// AssocObjComparator()
 
+            @Override
             public int compare(final Object o1, final Object o2) {
                 final String display1 = ((AssociatedObj) o1).getDisplay();
                 final String display2 = ((AssociatedObj) o2).getDisplay();

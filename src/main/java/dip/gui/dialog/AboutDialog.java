@@ -87,6 +87,7 @@ public class AboutDialog extends HeaderDialog {
         if (dialogInstance == null) {
             if (loader == null) {
                 loader = new SwingWorker() {
+                    @Override
                     public Object construct() {
                         final long time = System.currentTimeMillis();
                         final AboutDialog ad = new AboutDialog(parent);
@@ -189,6 +190,7 @@ public class AboutDialog extends HeaderDialog {
         // create table model
         final DefaultTableModel tableModel = new DefaultTableModel(getSystemInfo(),
                 TABLE_HEADERS) {
+            @Override
             public boolean isCellEditable(final int r, final int c) {
                 return false;
             }
@@ -196,6 +198,7 @@ public class AboutDialog extends HeaderDialog {
 
         // create the table
         final JTable sysTable = new JTable(tableModel) {
+            @Override
             public boolean isFocusable() {
                 return false;
             }
@@ -228,7 +231,7 @@ public class AboutDialog extends HeaderDialog {
      */
     private String[][] getSystemInfo() {
         final Properties p = System.getProperties();
-        SortProp[] sortProps = null;
+        SortProp[] sortProps;
 
         synchronized (p) {
             // create 2 arrays, so that one can be sorted. We will combine these
@@ -283,6 +286,7 @@ public class AboutDialog extends HeaderDialog {
             return value;
         }
 
+        @Override
         public int compareTo(final SortProp obj) {
             return name.compareTo(((SortProp) obj).name);
         }// compareTo()

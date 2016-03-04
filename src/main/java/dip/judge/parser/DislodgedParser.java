@@ -143,7 +143,7 @@ public class DislodgedParser {
      */
     public DislodgedParser(final Phase phase, final String input) throws IOException {
         this.phase = phase;
-        this.inputText = input;
+        inputText = input;
         parseInput(input);
     }// DislodgedParser()
 
@@ -176,7 +176,7 @@ public class DislodgedParser {
             this.power = power;
             this.unit = unit;
             this.src = src;
-            this.retreatLocs = (retreatLocs == null) ? EMPTY : retreatLocs;
+            this.retreatLocs = retreatLocs == null ? EMPTY : retreatLocs;
         }// DislodgedInfo()
 
         /**
@@ -211,7 +211,7 @@ public class DislodgedParser {
          * Indicates if unit was destroyed
          */
         public boolean isDestroyed() {
-            return (retreatLocs.length == 0);
+            return retreatLocs.length == 0;
         }
 
 
@@ -258,7 +258,7 @@ public class DislodgedParser {
                 line = br.readLine();
                 while (line != null) {
                     line = line.trim().toLowerCase();
-                    if (line.length() > 0) {
+                    if (!line.isEmpty()) {
                         // if we are 'end header regex', we end
                         // though typically having a zero-length trimmed line will do that too
                         //
@@ -280,7 +280,6 @@ public class DislodgedParser {
                         accum.append(line);
                     } else {
                         if (inBlock) {
-                            inBlock = false;
                             break;    // escape inner while
                         } else {
                             inBlock = true;
@@ -300,8 +299,6 @@ public class DislodgedParser {
 
         // cleanup
         br.close();
-        line = null;
-        header = null;
 		
 		/*
 		System.out.println("(DislodgedParser) text:");

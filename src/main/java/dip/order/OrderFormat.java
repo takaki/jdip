@@ -26,9 +26,10 @@ import dip.world.Coast;
 import dip.world.Location;
 import dip.world.Power;
 import dip.world.Province;
-import dip.world.Unit;
+import dip.world.Unit.Type;
 
 import java.util.Collections;
+import java.util.Objects;
 import java.util.StringTokenizer;
 
 /**
@@ -108,27 +109,27 @@ public class OrderFormat {
 
 
     // keywords
-    private final static String ARROW = "_arrow_";
-    private final static String ORDERNAME = "_orderName_";
+    private static final String ARROW = "_arrow_";
+    private static final String ORDERNAME = "_orderName_";
 
 
     // variable-modifying keywords
-    private final static String SHOW_POWER = "showPossesivePower";
-    private final static String POWER_ADJECTIVE = "adjective";
-    private final static String LOC_COAST = "coast";
-    private final static String LOC_PROVINCE = "province";
-    private final static String PATH = "path";
+    private static final String SHOW_POWER = "showPossesivePower";
+    private static final String POWER_ADJECTIVE = "adjective";
+    private static final String LOC_COAST = "coast";
+    private static final String LOC_PROVINCE = "province";
+    private static final String PATH = "path";
 
     // all non-modifying keywords
-    private final static String[] ALL_NONMOD_KEYWORDS = {ARROW, ORDERNAME};
+    private static final String[] ALL_NONMOD_KEYWORDS = {ARROW, ORDERNAME};
 
     // all modifying keywords
-    private final static String[] ALL_MOD_KEYWORDS = {SHOW_POWER, POWER_ADJECTIVE, LOC_COAST, LOC_PROVINCE, PATH};
+    private static final String[] ALL_MOD_KEYWORDS = {SHOW_POWER, POWER_ADJECTIVE, LOC_COAST, LOC_PROVINCE, PATH};
 
 
     // misc. constants
-    private final static String EMPTY = "";
-    private final static String KEYWORD_ERROR = "!keyword_error!";
+    private static final String EMPTY = "";
+    private static final String KEYWORD_ERROR = "!keyword_error!";
 
 
     /**
@@ -136,7 +137,7 @@ public class OrderFormat {
      * followed by the type (indicated by cls).
      */
     private static String handleNull(final Class<?> cls) {
-        assert (cls != null);
+        assert cls != null;
         final StringBuffer sb = new StringBuffer(64);
         sb.append("null(");
         sb.append(cls.getName());
@@ -157,12 +158,12 @@ public class OrderFormat {
 
         // style MUST be a valid OrderFormat STYLE_ constant
         //
-        final boolean isPlural = ((originalStyle - 10) >= 0);
-        final int style = (isPlural ? (originalStyle - 10) : originalStyle);
+        final boolean isPlural = originalStyle - 10 >= 0;
+        final int style = isPlural ? originalStyle - 10 : originalStyle;
         String text = input;
 
         // pluralize, but not if input is empty
-        if (isPlural && input.length() > 0) {
+        if (isPlural && !input.isEmpty()) {
             text = text + "s";
         }
 
@@ -193,10 +194,11 @@ public class OrderFormat {
      * words are converted to Title case, instead of just the first
      * word.
      */
-    private static String toTitleCase(final String input, final boolean allWords) {
+    private static String toTitleCase(final String input,
+                                      final boolean allWords) {
         final StringBuffer sb = new StringBuffer(input.length());
 
-        boolean isInWord = false;
+        boolean isInWord;
         boolean lastState = false;
         for (int i = 0; i < input.length(); i++) {
             char c = input.charAt(i);
@@ -223,15 +225,14 @@ public class OrderFormat {
     /**
      * Format a Coast given the order formatting parameters.
      */
-    public static String format(final OrderFormatOptions ofo, final Coast coast) {
-        if (ofo == null) {
-            throw new IllegalArgumentException();
-        }
+    public static String format(final OrderFormatOptions ofo,
+                                final Coast coast) {
+        Objects.requireNonNull(ofo);
 
-        String text = null;
+        String text;
 
         if (coast == null) {
-            text = (ofo.isDebug() ? handleNull(Coast.class) : EMPTY);
+            text = ofo.isDebug() ? handleNull(Coast.class) : EMPTY;
         } else {
             if (Coast.isDisplayable(coast)) {
                 switch (ofo.getCoastFormat()) {
@@ -249,14 +250,13 @@ public class OrderFormat {
                         text = sb.toString();
                     }
                     break;
-                    case OrderFormatOptions.FORMAT_COAST_PAREN_FULL: {
+                    case OrderFormatOptions.FORMAT_COAST_PAREN_FULL:
                         final StringBuffer sb = new StringBuffer(16);
                         sb.append('(');
                         sb.append(coast.getName());
                         sb.append(')');
                         text = sb.toString();
-                    }
-                    break;
+                        break;
                     default:
                         throw new IllegalStateException();
                 }
@@ -269,7 +269,7 @@ public class OrderFormat {
 
         text = applyStyle(ofo.getCoastStyle(), text);
 
-        assert (text != null);
+        assert text != null;
         return text;
     }// format()
 
@@ -277,15 +277,14 @@ public class OrderFormat {
     /**
      * Format a Province given the order formatting parameters.
      */
-    public static String format(final OrderFormatOptions ofo, final Province province) {
-        if (ofo == null) {
-            throw new IllegalArgumentException();
-        }
+    public static String format(final OrderFormatOptions ofo,
+                                final Province province) {
+        Objects.requireNonNull(ofo);
 
-        String text = null;
+        String text;
 
         if (province == null) {
-            text = (ofo.isDebug() ? handleNull(Province.class) : EMPTY);
+            text = ofo.isDebug() ? handleNull(Province.class) : EMPTY;
         } else {
             switch (ofo.getProvinceFormat()) {
                 case OrderFormatOptions.FORMAT_BRIEF:
@@ -301,7 +300,7 @@ public class OrderFormat {
 
         text = applyStyle(ofo.getProvinceStyle(), text);
 
-        assert (text != null);
+        assert text != null;
         return text;
     }// format()
 
@@ -309,15 +308,16 @@ public class OrderFormat {
     /**
      * Format a Unit Type given the order formatting parameters.
      */
-    public static String format(final OrderFormatOptions ofo, final Unit.Type unitType) {
+    public static String format(final OrderFormatOptions ofo,
+                                final Type unitType) {
         if (ofo == null) {
             throw new IllegalArgumentException();
         }
 
-        String text = null;
+        String text;
 
         if (unitType == null) {
-            text = (ofo.isDebug() ? handleNull(Unit.Type.class) : EMPTY);
+            text = ofo.isDebug() ? handleNull(Type.class) : EMPTY;
         } else {
             switch (ofo.getUnitFormat()) {
                 case OrderFormatOptions.FORMAT_BRIEF:
@@ -333,7 +333,7 @@ public class OrderFormat {
 
         text = applyStyle(ofo.getUnitStyle(), text);
 
-        assert (text != null);
+        assert text != null;
         return text;
     }// format()
 
@@ -342,15 +342,16 @@ public class OrderFormat {
      * <p>
      * <b>Note:</b> FORMAT_BRIEF is not yet supported for Power names.
      */
-    public static String format(final OrderFormatOptions ofo, final Power power) {
+    public static String format(final OrderFormatOptions ofo,
+                                final Power power) {
         if (ofo == null) {
             throw new IllegalArgumentException();
         }
 
-        String text = null;
+        String text;
 
         if (power == null) {
-            text = (ofo.isDebug() ? handleNull(Unit.Type.class) : EMPTY);
+            text = ofo.isDebug() ? handleNull(Type.class) : EMPTY;
         } else {
             switch (ofo.getPowerFormat()) {
                 case OrderFormatOptions.FORMAT_BRIEF:
@@ -366,7 +367,7 @@ public class OrderFormat {
 
         text = applyStyle(ofo.getPowerStyle(), text);
 
-        assert (text != null);
+        assert text != null;
         return text;
     }// format()
 
@@ -374,13 +375,14 @@ public class OrderFormat {
     /**
      * Format a Location given the order formatting parameters.
      */
-    public static String format(final OrderFormatOptions ofo, final Location loc) {
+    public static String format(final OrderFormatOptions ofo,
+                                final Location loc) {
         if (ofo == null) {
             throw new IllegalArgumentException();
         }
 
         if (loc == null) {
-            return (ofo.isDebug() ? handleNull(Location.class) : EMPTY);
+            return ofo.isDebug() ? handleNull(Location.class) : EMPTY;
         } else {
             final StringBuffer sb = new StringBuffer(64);
 
@@ -408,10 +410,10 @@ public class OrderFormat {
             throw new IllegalArgumentException();
         }
 
-        String text = null;
+        String text;
 
         if (order == null) {
-            text = (ofo.isDebug() ? handleNull(Orderable.class) : EMPTY);
+            text = ofo.isDebug() ? handleNull(Orderable.class) : EMPTY;
         } else {
             switch (ofo.getOrderNameFormat()) {
                 case OrderFormatOptions.FORMAT_BRIEF:
@@ -427,7 +429,7 @@ public class OrderFormat {
 
         text = applyStyle(ofo.getOrderNameStyle(), text);
 
-        assert (text != null);
+        assert text != null;
         return text;
     }// formatOrderName()
 
@@ -445,7 +447,7 @@ public class OrderFormat {
             throw new IllegalArgumentException();
         }
 
-        Object out = null;
+        Object out;
 
         out = procStaticKeyword(ofo, order, text);
         if (out == null) {
@@ -463,27 +465,27 @@ public class OrderFormat {
             if (tokens.length > 1) {
                 // evaluate boolean expression
                 if (tokens[1].startsWith("?")) {
-                    boolean isTrue = false;
+                    boolean isTrue;
                     if (out instanceof Boolean) {
                         isTrue = ((Boolean) out).booleanValue();
                     } else {
-                        isTrue = (out != null);
+                        isTrue = out != null;
                     }
 
                     if (isTrue) {
-                        assert (tokens[1].length() > 0);
+                        assert !tokens[1].isEmpty();
                         final String tok = tokens[1].substring(1);
                         final Object obj = procStaticKeyword(ofo, order, tok);
-                        return (obj == null) ? tok : obj.toString();
+                        return obj == null ? tok : obj.toString();
                     } else {
                         if (tokens.length == 2) {
                             // {xxx:?true:} [empty 'false' clause]
                             return EMPTY;
                         } else {
-                            assert (tokens.length == 3);
+                            assert tokens.length == 3;
                             final Object obj = procStaticKeyword(ofo, order,
                                     tokens[2]);
-                            return (obj == null) ? tokens[2] : obj.toString();
+                            return obj == null ? tokens[2] : obj.toString();
                         }
                     }
                 } else {
@@ -504,8 +506,8 @@ public class OrderFormat {
             return format(ofo, (Province) out);
         } else if (out instanceof Location) {
             return format(ofo, (Location) out);
-        } else if (out instanceof Unit.Type) {
-            return format(ofo, (Unit.Type) out);
+        } else if (out instanceof Type) {
+            return format(ofo, (Type) out);
         } else {
             // convert object to a String
             return out.toString();
@@ -519,16 +521,16 @@ public class OrderFormat {
      */
     private static Object getViaReflection(final Orderable order,
                                            final String name) {
-        assert (order != null);
-        assert (name != null);
+        assert order != null;
+        assert name != null;
 
         final Class<? extends Orderable> cls = order.getClass();
-        final boolean isMethod = (name.endsWith("()"));
+        final boolean isMethod = name.endsWith("()");
 
         if (isMethod) {
             try {
-                return cls.getMethod(name.substring(0, name.length() - 2), null)
-                        .invoke(order, null);
+                return cls.getMethod(name.substring(0, name.length() - 2), (Class<?>)null)
+                        .invoke(order, (Object)null);
             } catch (final Exception e) {
                 Log.println(
                         "OrderFormat::getViaReflection() cannot reflect method \"",
@@ -584,7 +586,7 @@ public class OrderFormat {
                 // only show possessive power if it is not the same as the
                 // source power AND we are set to show posessive powers.
                 if (ofo.getShowPossessivePower() && !order.getPower()
-                        .equals((Power) input)) {
+                        .equals(input)) {
                     return input;
                 } else {
                     return EMPTY;
@@ -613,7 +615,7 @@ public class OrderFormat {
                 final Location[] locs = (Location[]) input;
                 for (int i = 0; i < locs.length; i++) {
                     sb.append(format(ofo, locs[i].getProvince()));
-                    if (i < (locs.length - 1)) {
+                    if (i < locs.length - 1) {
                         sb.append(' ');
                         sb.append(ofo.getArrow());
                         sb.append(' ');
@@ -625,7 +627,7 @@ public class OrderFormat {
                 final Province[] provs = (Province[]) input;
                 for (int i = 0; i < provs.length; i++) {
                     sb.append(format(ofo, provs[i]));
-                    if (i < (provs.length - 1)) {
+                    if (i < provs.length - 1) {
                         sb.append(' ');
                         sb.append(ofo.getArrow());
                         sb.append(' ');
@@ -719,18 +721,18 @@ public class OrderFormat {
         final Province prov3 = new Province("Golf of Bothnia",
                 Collections.singletonList("gob"), 0, false);
 
-        final Power power1 = new Power(Collections.singletonList("Russia"), "Russian",
-                true);
-        final Power power2 = new Power(Collections.singletonList("German"), "German",
-                true);
+        final Power power1 = new Power(Collections.singletonList("Russia"),
+                "Russian", true);
+        final Power power2 = new Power(Collections.singletonList("German"),
+                "German", true);
 
         final Location src = new Location(prov1, Coast.SEA);
         final Location supSrc = new Location(prov2, Coast.SOUTH);
         final Location supDest = new Location(prov3, Coast.SEA);
 
         final Support support = of
-                .createSupport(power1, src, Unit.Type.FLEET, supSrc, power2,
-                        Unit.Type.FLEET, supDest);
+                .createSupport(power1, src, Type.FLEET, supSrc, power2,
+                        Type.FLEET, supDest);
 
         return format(ofo, support);
     }// getFormatExample()

@@ -56,17 +56,19 @@ public class UndoResolve extends XAbstractUndoableEdit {
             throw new IllegalArgumentException();
         }
 
-        this.resolvedTS = resolved;
-        this.nextTS = next;        // this may be null (e.g., if game has been won)
-        this.resolvedTSResults = resolvedTS.getResultList();
+        resolvedTS = resolved;
+        nextTS = next;        // this may be null (e.g., if game has been won)
+        resolvedTSResults = resolvedTS.getResultList();
     }// UndoResolve
 
 
+    @Override
     public String getPresentationName() {
         return Utils.getLocalString(PRESENTATION_NAME_PREFIX);
     }// getPresentationName()
 
 
+    @Override
     public void redo() throws CannotRedoException {
         super.redo();
 
@@ -96,6 +98,7 @@ public class UndoResolve extends XAbstractUndoableEdit {
     }// redo()
 
 
+    @Override
     public void undo() throws CannotUndoException {
         super.undo();
 

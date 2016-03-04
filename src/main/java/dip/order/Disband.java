@@ -27,6 +27,7 @@ import dip.process.Adjudicator;
 import dip.process.OrderState;
 import dip.process.Tristate;
 import dip.world.*;
+import dip.world.Unit.Type;
 
 /**
  * Implementation of the Disband order.
@@ -45,7 +46,7 @@ public class Disband extends Order {
     /**
      * Creates a Disband order
      */
-    protected Disband(final Power power, final Location src, final Unit.Type srcUnit) {
+    protected Disband(final Power power, final Location src, final Type srcUnit) {
         super(power, src, srcUnit);
     }// Disband()
 
@@ -56,21 +57,25 @@ public class Disband extends Order {
         super();
     }// Disband()
 
+    @Override
     public String getFullName() {
         return orderNameFull;
     }// getName()
 
+    @Override
     public String getBriefName() {
         return orderNameBrief;
     }// getBriefName()
 
 
     // order formatting
+    @Override
     public String getDefaultFormat() {
         return orderFormatString;
     }// getFormatBrief()
 
 
+    @Override
     public String toBriefString() {
         final StringBuffer sb = new StringBuffer(64);
 
@@ -82,6 +87,7 @@ public class Disband extends Order {
     }// toBriefString()
 
 
+    @Override
     public String toFullString() {
         final StringBuffer sb = new StringBuffer(128);
 
@@ -103,6 +109,7 @@ public class Disband extends Order {
     }// equals()
 
 
+    @Override
     public void validate(final TurnState state, final ValidationOptions valOpts,
                          final RuleOptions ruleOpts) throws OrderException {
         // step 0
@@ -119,6 +126,7 @@ public class Disband extends Order {
     /**
      * Disband orders do not require verification.
      */
+    @Override
     public void verify(final Adjudicator adjudicator) {
         final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
         thisOS.setVerified(true);
@@ -127,6 +135,7 @@ public class Disband extends Order {
     /**
      * Empty method: Disband orders do not require dependency determination.
      */
+    @Override
     public void determineDependencies(final Adjudicator adjudicator) {
     }
 
@@ -134,6 +143,7 @@ public class Disband extends Order {
     /**
      * Disband orders are always successful.
      */
+    @Override
     public void evaluate(final Adjudicator adjudicator) {
         final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
 

@@ -24,10 +24,13 @@ package dip.gui.report;
 
 import dip.gui.ClientFrame;
 import dip.gui.dialog.TextViewer;
+import dip.gui.dialog.TextViewer.TVRunnable;
 import dip.gui.map.MapMetadata;
 import dip.gui.map.SVGColorParser;
 import dip.misc.Utils;
 import dip.world.*;
+import dip.world.Phase.PhaseType;
+import dip.world.Phase.SeasonType;
 
 import javax.swing.*;
 import java.awt.*;
@@ -86,7 +89,8 @@ public class SCHistoryWriter {
         tv.setHorizontalScrollBarPolicy(
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-        tv.lazyLoadDisplayDialog(new TextViewer.TVRunnable() {
+        tv.lazyLoadDisplayDialog(new TVRunnable() {
+            @Override
             public void run() {
                 setText(SCHistoryToHTML(clientFrame, w, true));
             }
@@ -98,13 +102,13 @@ public class SCHistoryWriter {
      * StateWriter constructor
      */
     private SCHistoryWriter(final ClientFrame cf, final World w, final boolean inColor) {
-        this.world = w;
-        this.allPowers = w.getMap().getPowers().toArray(new Power[0]);
+        world = w;
+        allPowers = w.getMap().getPowers().toArray(new Power[0]);
 
         if (inColor && cf.getMapPanel() != null) {
-            this.mmd = cf.getMapPanel().getMapMetadata();
+            mmd = cf.getMapPanel().getMapMetadata();
         } else {
-            this.mmd = null;
+            mmd = null;
         }
 
         // find all provinces w/supply centers
@@ -118,6 +122,7 @@ public class SCHistoryWriter {
 
         // sort list by alphabetical order of the short name (abbreviation)
         Collections.sort(scList, new Comparator() {
+            @Override
             public int compare(final Object o1, final Object o2) {
                 final Province p1 = (Province) o1;
                 final Province p2 = (Province) o2;
@@ -129,7 +134,7 @@ public class SCHistoryWriter {
             }
         });
 
-        this.scProvs = (Province[]) scList.toArray(new Province[scList.size()]);
+        scProvs = (Province[]) scList.toArray(new Province[scList.size()]);
     }// SCHistoryWriter()
 
 
@@ -181,7 +186,7 @@ public class SCHistoryWriter {
         //
         for (int r = 1; r < rows; r++) {
             // on even rows, put a background on rows (easier to read)
-            final String trType = ((r & 1) == 0) ? TR_HIGHLIGHT : "<tr>";
+            final String trType = (r & 1) == 0 ? TR_HIGHLIGHT : "<tr>";
             sb.append(trType);
 
             // col 0: special handling (province abbreviation)
@@ -235,12 +240,12 @@ public class SCHistoryWriter {
             //
             TurnState ts = iter.next();
             final Phase phase = ts.getPhase();
-            if (phase.getSeasonType() == Phase.SeasonType.FALL) {
-                if (phase.getPhaseType() == Phase.PhaseType.MOVEMENT) {
+            if (phase.getSeasonType() == SeasonType.FALL) {
+                if (phase.getPhaseType() == PhaseType.MOVEMENT) {
                     if (iter.hasNext()) {
                         final TurnState nextTS = iter.next();
                         if (nextTS.getPhase()
-                                .getPhaseType() == Phase.PhaseType.RETREAT) {
+                                .getPhaseType() == PhaseType.RETREAT) {
                             ts = nextTS;
                         }
                     }
@@ -267,7 +272,7 @@ public class SCHistoryWriter {
         // row 0: yeartypes; HOWEVER, first 'yeartype' is really "Initial" ("Start")
         array[0][1] = Utils.getLocalString(LABEL_INITIAL);
         for (int i = 2; i < cols; i++) {
-            array[0][i] = (turnList.get(i - 1)).getPhase()
+            array[0][i] = turnList.get(i - 1).getPhase()
                     .getYearType();
         }
 
@@ -327,12 +332,12 @@ public class SCHistoryWriter {
             //
             TurnState ts = iter.next();
             final Phase phase = ts.getPhase();
-            if (phase.getSeasonType() == Phase.SeasonType.FALL) {
-                if (phase.getPhaseType() == Phase.PhaseType.MOVEMENT) {
+            if (phase.getSeasonType() == SeasonType.FALL) {
+                if (phase.getPhaseType() == PhaseType.MOVEMENT) {
                     if (iter.hasNext()) {
                         final TurnState nextTS = iter.next();
                         if (nextTS.getPhase()
-                                .getPhaseType() == Phase.PhaseType.RETREAT) {
+                                .getPhaseType() == PhaseType.RETREAT) {
                             ts = nextTS;
                         }
                     }
@@ -372,7 +377,7 @@ public class SCHistoryWriter {
                     .getOwnedSupplyCenters(allPower).toArray(new Province[0]);
             final int count = ownedSC.length;
 
-            sumOfSquares += (count * count);
+            sumOfSquares += count * count;
             sb.append("<td>");
 
             if (count > 0) {

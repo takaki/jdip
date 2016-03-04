@@ -266,7 +266,7 @@ public class PositionParser {
      */
     private Phase makePhase(String phaseType, final String seasonType,
                             final String year) throws IOException {
-        phaseType = (phaseType == null) ? "Movement" : phaseType;
+        phaseType = phaseType == null ? "Movement" : phaseType;
 
         final StringBuffer sb = new StringBuffer();
         sb.append(phaseType);

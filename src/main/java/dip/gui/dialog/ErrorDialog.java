@@ -26,6 +26,7 @@ import dip.gui.ClientFrame;
 import dip.misc.Log;
 import dip.misc.Utils;
 import dip.world.World;
+import dip.world.World.VariantInfo;
 import dip.world.variant.data.VersionNumber;
 
 import javax.swing.*;
@@ -204,14 +205,14 @@ public class ErrorDialog extends TextViewer {
         args[0] = getCleanName(e.getClass().getName());
         args[1] = getMsg(e);
         args[2] = getStackTrace(e);
-        args[3] = (fileName == null) ? UNKNOWN : fileName;
+        args[3] = fileName == null ? UNKNOWN : fileName;
 
         Log.println("FileIOError: ", args[0]);
         Log.println("  message: ", args[1]);
         Log.println("  file: ", args[3]);
         Log.println("  stack trace:\n", args[2]);
 
-        String text = null;
+        String text;
         if (e instanceof FileNotFoundException) {
             text = Utils.getText(Utils.getLocalString(FNF_TEMPLATE));
         } else {
@@ -253,14 +254,14 @@ public class ErrorDialog extends TextViewer {
         args[0] = getCleanName(e.getClass().getName());
         args[1] = getMsg(e);
         args[2] = getStackTrace(e);
-        args[3] = (connection == null) ? UNKNOWN : connection;
+        args[3] = connection == null ? UNKNOWN : connection;
 
         Log.println("NetworkIOError: ", args[0]);
         Log.println("  message: ", args[1]);
         Log.println("  connection: ", args[3]);
         Log.println("  stack trace:\n", args[2]);
 
-        String text = null;
+        String text;
         boolean submittable = false;
         if (e instanceof UnknownHostException) {
             text = Utils
@@ -318,7 +319,7 @@ public class ErrorDialog extends TextViewer {
      * This should be used whenever there is a Variant version mismatch.
      */
     public static void displayVariantVersionMismatch(final JFrame parent,
-                                                     final World.VariantInfo vi,
+                                                     final VariantInfo vi,
                                                      final VersionNumber availableVersion) {
         final Object[] args = new Object[3];
 
@@ -342,7 +343,7 @@ public class ErrorDialog extends TextViewer {
      * This should be used whenever a Variant is not available.
      */
     public static void displayVariantNotAvailable(final JFrame parent,
-                                                  final World.VariantInfo vi) {
+                                                  final VariantInfo vi) {
         final Object[] args = new Object[3];
 
         args[0] = vi.getVariantName();
@@ -404,7 +405,7 @@ public class ErrorDialog extends TextViewer {
         appendBatikInfo(sb, t);
 
         final int len = ste.length;
-        for (int i = (len - 1); i >= 0; i--) {
+        for (int i = len - 1; i >= 0; i--) {
             sb.append(ste[i].toString());
             sb.append('\n');
         }
@@ -454,6 +455,7 @@ public class ErrorDialog extends TextViewer {
                                                   final boolean submittable,
                                                   final BugReportInfo bri) {
         final ErrorDialog ed = new ErrorDialog(parent, title) {
+            @Override
             protected void close(final String actionCommand) {
                 if (ACTION_SUBMIT.equals(actionCommand)) {
                     setButtonEnabled(ACTION_SUBMIT, false);
@@ -507,6 +509,7 @@ public class ErrorDialog extends TextViewer {
                                                    final boolean submittable,
                                                    final BugReportInfo bri) {
         final ErrorDialog ed = new ErrorDialog(parent, title) {
+            @Override
             protected void close(final String actionCommand) {
                 if (ACTION_SUBMIT.equals(actionCommand)) {
                     if (submitBug(parent, bri)) {
@@ -750,7 +753,7 @@ public class ErrorDialog extends TextViewer {
 
             list = new LinkedList();
             this.t = t;
-            this.memoryLogData = Log.getMemoryBuffer();
+            memoryLogData = Log.getMemoryBuffer();
         }// BugInfo()
 
 
@@ -775,7 +778,7 @@ public class ErrorDialog extends TextViewer {
          */
         public void add(final String name, final String value) {
             final StringBuffer sb = new StringBuffer();
-            sb.append(((name == null) ? "" : name));
+            sb.append(name == null ? "" : name);
             sb.append(": ");
             sb.append(value);
             list.add(sb.toString());
@@ -829,7 +832,7 @@ public class ErrorDialog extends TextViewer {
             sb.append("\n------ Stack Trace------------------------");
 
             final StackTraceElement[] ste = t.getStackTrace();
-            for (int i = (ste.length - 1); i >= 0; i--) {
+            for (int i = ste.length - 1; i >= 0; i--) {
                 sb.append("\n  ");
                 sb.append(ste[i].toString());
             }

@@ -28,6 +28,7 @@ import dip.misc.Utils;
 import dip.order.Hold;
 import dip.order.Orderable;
 import dip.world.*;
+import dip.world.Unit.Type;
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.util.SVGConstants;
 import org.w3c.dom.svg.SVGElement;
@@ -60,7 +61,7 @@ public class GUIHold extends Hold implements GUIOrder {
     /**
      * Creates a GUIHold
      */
-    protected GUIHold(final Power power, final Location source, final Unit.Type sourceUnitType) {
+    protected GUIHold(final Power power, final Location source, final Type sourceUnitType) {
         super(power, source, sourceUnitType);
     }// GUIHold()
 
@@ -68,6 +69,7 @@ public class GUIHold extends Hold implements GUIOrder {
     /**
      * This only accepts Hold orders. All others will throw an IllegalArgumentException.
      */
+    @Override
     public void deriveFrom(final Orderable order) {
         if (!(order instanceof Hold)) {
             throw new IllegalArgumentException();
@@ -82,6 +84,7 @@ public class GUIHold extends Hold implements GUIOrder {
         currentLocNum = REQ_LOC;
     }// deriveFrom()
 
+    @Override
     public boolean testLocation(final StateInfo stateInfo, final Location location,
                                 final StringBuffer sb) {
         sb.setLength(0);
@@ -120,6 +123,7 @@ public class GUIHold extends Hold implements GUIOrder {
     }// testLocation()
 
 
+    @Override
     public boolean clearLocations() {
         if (isComplete()) {
             return false;
@@ -133,6 +137,7 @@ public class GUIHold extends Hold implements GUIOrder {
         return true;
     }// clearLocations()
 
+    @Override
     public boolean setLocation(final StateInfo stateInfo, final Location location,
                                final StringBuffer sb) {
         if (testLocation(stateInfo, location, sb)) {
@@ -150,15 +155,18 @@ public class GUIHold extends Hold implements GUIOrder {
         return false;
     }// setLocation()
 
+    @Override
     public boolean isComplete() {
-        assert (currentLocNum <= getNumRequiredLocations());
-        return (currentLocNum == getNumRequiredLocations());
+        assert currentLocNum <= getNumRequiredLocations();
+        return currentLocNum == getNumRequiredLocations();
     }// isComplete()
 
+    @Override
     public int getNumRequiredLocations() {
         return REQ_LOC;
     }
 
+    @Override
     public int getCurrentLocationNum() {
         return currentLocNum;
     }
@@ -166,6 +174,7 @@ public class GUIHold extends Hold implements GUIOrder {
     /**
      * Always throws an IllegalArgumentException
      */
+    @Override
     public void setParam(final Parameter param, final Object value) {
         throw new IllegalArgumentException();
     }
@@ -173,11 +182,13 @@ public class GUIHold extends Hold implements GUIOrder {
     /**
      * Always throws an IllegalArgumentException
      */
+    @Override
     public Object getParam(final Parameter param) {
         throw new IllegalArgumentException();
     }
 
 
+    @Override
     public void removeFromDOM(final MapInfo mapInfo) {
         if (group != null) {
             Log.println("GUIHold: removeFromDOM(): group=", group);
@@ -190,6 +201,7 @@ public class GUIHold extends Hold implements GUIOrder {
     }// removeFromDOM()
 
 
+    @Override
     public void updateDOM(final MapInfo mapInfo) {
         Log.println("GUIHold::updateDOM(): group,support: ", group,
                 String.valueOf(numSupports));
@@ -241,7 +253,7 @@ public class GUIHold extends Hold implements GUIOrder {
         // now, render the order
         //
         Log.println("GUIHold::updateDOM(): rendering order.");
-        SVGElement element = null;
+        SVGElement element;
 
         // create hilight line
         final String cssStyle = mapInfo.getMapMetadata()
@@ -330,6 +342,7 @@ public class GUIHold extends Hold implements GUIOrder {
     /**
      * We are dependent upon Support orders for proper rendering
      */
+    @Override
     public boolean isDependent() {
         return true;
     }

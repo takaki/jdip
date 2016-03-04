@@ -24,12 +24,16 @@ package dip.gui.order;
 
 import dip.gui.map.DefaultMapRenderer2;
 import dip.gui.map.MapMetadata;
+import dip.gui.map.MapMetadata.SymbolSize;
 import dip.gui.map.SVGUtils;
 import dip.misc.Utils;
 import dip.order.Orderable;
 import dip.order.Waive;
 import dip.process.Adjustment;
+import dip.process.Adjustment.AdjustmentInfo;
 import dip.world.*;
+import dip.world.RuleOptions.Option;
+import dip.world.RuleOptions.OptionValue;
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.util.SVGConstants;
 import org.w3c.dom.svg.SVGElement;
@@ -75,6 +79,7 @@ public class GUIWaive extends Waive implements GUIOrder {
     /**
      * This only accepts Waive orders. All others will throw an IllegalArgumentException.
      */
+    @Override
     public void deriveFrom(final Orderable order) {
         if (!(order instanceof Waive)) {
             throw new IllegalArgumentException();
@@ -90,6 +95,7 @@ public class GUIWaive extends Waive implements GUIOrder {
     }// deriveFrom()
 
 
+    @Override
     public boolean testLocation(final StateInfo stateInfo, final Location location,
                                 final StringBuffer sb) {
         sb.setLength(0);
@@ -125,7 +131,7 @@ public class GUIWaive extends Waive implements GUIOrder {
 
             // indicate if we have no builds available
             //
-            final Adjustment.AdjustmentInfo adjInfo = stateInfo.getAdjustmenInfoMap()
+            final AdjustmentInfo adjInfo = stateInfo.getAdjustmenInfoMap()
                     .get(SCOwner);
             if (adjInfo.getAdjustmentAmount() <= 0) {
                 sb.append(Utils.getLocalString(NOWAIVE_NO_BUILDS_AVAILABLE,
@@ -138,12 +144,12 @@ public class GUIWaive extends Waive implements GUIOrder {
             //
             final RuleOptions ruleOpts = stateInfo.getRuleOptions();
             if (ruleOpts.getOptionValue(
-                    RuleOptions.Option.OPTION_BUILDS) == RuleOptions.OptionValue.VALUE_BUILDS_ANY_OWNED) {
+                    Option.OPTION_BUILDS) == OptionValue.VALUE_BUILDS_ANY_OWNED) {
                 sb.append(
                         Utils.getLocalString(GUIOrder.COMPLETE, getFullName()));
                 return true;
             } else if (ruleOpts.getOptionValue(
-                    RuleOptions.Option.OPTION_BUILDS) == RuleOptions.OptionValue.VALUE_BUILDS_ANY_IF_HOME_OWNED) {
+                    Option.OPTION_BUILDS) == OptionValue.VALUE_BUILDS_ANY_IF_HOME_OWNED) {
                 // check if we have ONE owned home supply center before buidling
                 // in a non-home supply center.
                 //
@@ -179,6 +185,7 @@ public class GUIWaive extends Waive implements GUIOrder {
     }// testLocation()
 
 
+    @Override
     public boolean clearLocations() {
         if (isComplete()) {
             return false;
@@ -193,6 +200,7 @@ public class GUIWaive extends Waive implements GUIOrder {
     }// clearLocations()
 
 
+    @Override
     public boolean setLocation(final StateInfo stateInfo, final Location location,
                                final StringBuffer sb) {
         if (testLocation(stateInfo, location, sb)) {
@@ -203,7 +211,7 @@ public class GUIWaive extends Waive implements GUIOrder {
                     .getSupplyCenterOwner(location.getProvince()).orElse(null);
 
             // srcUnitType: already defined
-            assert (srcUnitType != null);
+            assert srcUnitType != null;
 
             sb.setLength(0);
             sb.append(Utils.getLocalString(GUIOrder.COMPLETE, getFullName()));
@@ -214,15 +222,18 @@ public class GUIWaive extends Waive implements GUIOrder {
     }// setLocation()
 
 
+    @Override
     public boolean isComplete() {
-        assert (currentLocNum <= getNumRequiredLocations());
-        return (currentLocNum == getNumRequiredLocations());
+        assert currentLocNum <= getNumRequiredLocations();
+        return currentLocNum == getNumRequiredLocations();
     }// isComplete()
 
+    @Override
     public int getNumRequiredLocations() {
         return REQ_LOC;
     }
 
+    @Override
     public int getCurrentLocationNum() {
         return currentLocNum;
     }
@@ -230,6 +241,7 @@ public class GUIWaive extends Waive implements GUIOrder {
     /**
      * Always throws an IllegalArgumentException
      */
+    @Override
     public void setParam(final Parameter param, final Object value) {
         throw new IllegalArgumentException();
     }
@@ -237,10 +249,12 @@ public class GUIWaive extends Waive implements GUIOrder {
     /**
      * Always throws an IllegalArgumentException
      */
+    @Override
     public Object getParam(final Parameter param) {
         throw new IllegalArgumentException();
     }
 
+    @Override
     public void removeFromDOM(final MapInfo mapInfo) {
         if (group != null) {
             final SVGGElement powerGroup = mapInfo
@@ -254,6 +268,7 @@ public class GUIWaive extends Waive implements GUIOrder {
     /**
      * Places a unit in the desired area.
      */
+    @Override
     public void updateDOM(final MapInfo mapInfo) {
         // if we are not displayable, we exit, after remove the order (if
         // it was created)
@@ -321,7 +336,7 @@ public class GUIWaive extends Waive implements GUIOrder {
 
         // A Waive consists of a WaivedBuidl symbol
         //
-        final MapMetadata.SymbolSize symbolSize = mmd
+        final SymbolSize symbolSize = mmd
                 .getSymbolSize(DefaultMapRenderer2.SYMBOL_WAIVEDBUILD);
 
         final SVGElement element = SVGUtils.createUseElement(mapInfo.getDocument(),
@@ -333,6 +348,7 @@ public class GUIWaive extends Waive implements GUIOrder {
     }// drawOrder()
 
 
+    @Override
     public boolean isDependent() {
         return false;
     }

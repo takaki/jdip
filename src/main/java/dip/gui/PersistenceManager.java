@@ -29,12 +29,14 @@ import dip.gui.report.ResultWriter;
 import dip.gui.swing.XJFileChooser;
 import dip.judge.gui.FlocImportDialog;
 import dip.judge.parser.JudgeImport;
+import dip.misc.Help.HelpID;
 import dip.misc.Log;
 import dip.misc.SimpleFileFilter;
 import dip.misc.Utils;
 import dip.world.Phase;
 import dip.world.TurnState;
 import dip.world.World;
+import dip.world.World.VariantInfo;
 import dip.world.variant.VariantManager;
 import dip.world.variant.data.Variant;
 
@@ -104,6 +106,7 @@ public class PersistenceManager {
 
         // enable modification event listener
         modListener = new PropertyChangeListener() {
+            @Override
             public void propertyChange(final PropertyChangeEvent evt) {
                 if (!isChanged()) {
                     setChanged(true);
@@ -320,7 +323,7 @@ public class PersistenceManager {
         if (confirmDialog()) {
             final World world = NewGameDialog.displayDialog(clientFrame,
                     Utils.getLocalString(NewGameDialog.TITLE_F2F),
-                    dip.misc.Help.HelpID.Dialog_NewF2f);
+                    HelpID.Dialog_NewF2f);
 
             if (world != null) {
                 fileName = null;
@@ -466,8 +469,8 @@ public class PersistenceManager {
 
             // Check if the results (if any) matched the current game,
             // otherwise diplay dialog and try again
-            while ((ji.getResult() == JudgeImport.JI_RESULT_TRYREWIND) || (ji
-                    .getResult() == JudgeImport.JI_RESULT_LOADOTHER)) {
+            while (ji.getResult() == JudgeImport.JI_RESULT_TRYREWIND || ji
+                    .getResult() == JudgeImport.JI_RESULT_LOADOTHER) {
                 final String gameInfo = ji.getGameInfo();
                 final Phase phase = Phase.parse(gameInfo).orElse(null);
 
@@ -588,7 +591,7 @@ public class PersistenceManager {
         final World w = World.open(file);
 
         // check if variant is available; if not, inform user.
-        final World.VariantInfo vi = w.getVariantInfo();
+        final VariantInfo vi = w.getVariantInfo();
 
         if (new VariantManager().getVariant(vi.getVariantName(),
                 vi.getVariantVersion()) == null) {
@@ -655,13 +658,13 @@ public class PersistenceManager {
         // if no file is open, we shouldn't display a gamename/filename
         if (localWorld != null || clientFrame.getWorld() != null) {
             // use local world, if not, use clientFrame world
-            final World world = (localWorld != null) ? localWorld : clientFrame
+            final World world = localWorld != null ? localWorld : clientFrame
                     .getWorld();
 
             // get game name
             // game name is optional; doesn't have to be the same as the file name
             String gameName = world.getGameMetadata().getGameName();
-            gameName = (EMPTY.equals(gameName)) ? null : gameName;
+            gameName = EMPTY.equals(gameName) ? null : gameName;
             title.append(" - ");
 
             if (gameName != null) {
@@ -760,7 +763,7 @@ public class PersistenceManager {
         // the result returned corresponds to 0-2, as specified in dlgOptions.
         // of course, option 1 (a spacer) cannot be returned.
 
-        return (result == 0);
+        return result == 0;
     }
 
     private boolean loadDialog(final String gameInfo) {
@@ -781,7 +784,7 @@ public class PersistenceManager {
         // the result returned corresponds to 0-2, as specified in dlgOptions.
         // of course, option 1 (a spacer) cannot be returned.
 
-        return (result == 0);
+        return result == 0;
     }
 
     private void setChanged(final boolean value) {

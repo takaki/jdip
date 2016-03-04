@@ -67,7 +67,7 @@ public class DOMUIEventListener implements EventListener {
      * Set the MapRenderer
      */
     public void setMapRenderer(final MapRenderer2 mr) {
-        this.mapRenderer = mr;
+        mapRenderer = mr;
     }// setMapRenderer()
 
     /**
@@ -82,6 +82,7 @@ public class DOMUIEventListener implements EventListener {
      * Handle Events; this method dispatches events to the appropriate
      * DOMUIEventHandler methods.
      */
+    @Override
     public void handleEvent(final Event evt) {
         if (handler == null || mapRenderer == null) {
             return;
@@ -135,8 +136,8 @@ public class DOMUIEventListener implements EventListener {
      */
     public static boolean isRMBorMetaLMB(final MouseEvent me) {
         final short button = me.getButton();
-        return ((button == BUTTON_RIGHT) || (button == BUTTON_LEFT && me
-                .getMetaKey()));
+        return button == BUTTON_RIGHT || button == BUTTON_LEFT && me
+                .getMetaKey();
     }// isRMBorMetaLMB()
 
 
@@ -146,8 +147,8 @@ public class DOMUIEventListener implements EventListener {
      */
     public static boolean isMMBorControlLMB(final MouseEvent me) {
         final short button = me.getButton();
-        return ((button == BUTTON_MIDDLE) || (button == BUTTON_LEFT && me
-                .getShiftKey()));
+        return button == BUTTON_MIDDLE || button == BUTTON_LEFT && me
+                .getShiftKey();
     }// isMMBorControlLMB()
 
 

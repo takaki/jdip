@@ -26,7 +26,7 @@ package dip.world;
 /**
  * An exception typically thrown if there is a problem during World creation.
  */
-public class InvalidWorldException extends Exception {
+public class InvalidWorldException extends RuntimeException {
 
     /**
      * Create an InvalidWorldException
@@ -36,7 +36,11 @@ public class InvalidWorldException extends Exception {
     }
 
 
-    public InvalidWorldException(final String message, final Exception e) {
+    public InvalidWorldException(final String message, final Throwable e) {
         super(message, e);
+    }
+
+    public InvalidWorldException(final Throwable ibe) {
+        super(ibe);
     }
 }// InvalidWorldException

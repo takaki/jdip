@@ -170,7 +170,7 @@ public class AdjustmentParser {
          */
         public OwnerInfo(final String power, final String[] locations) {
             this.power = power;
-            this.locations = (locations == null) ? EMPTY : locations;
+            this.locations = locations == null ? EMPTY : locations;
         }// OwnerInfo()
 
         /**

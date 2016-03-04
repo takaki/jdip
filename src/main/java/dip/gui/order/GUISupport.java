@@ -28,6 +28,7 @@ import dip.order.Orderable;
 import dip.order.Support;
 import dip.order.ValidationOptions;
 import dip.world.*;
+import dip.world.Unit.Type;
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.util.SVGConstants;
 import org.w3c.dom.svg.*;
@@ -74,9 +75,9 @@ public class GUISupport extends Support implements GUIOrder {
     /**
      * Creates a GUISupport
      */
-    protected GUISupport(final Power power, final Location src, final Unit.Type srcUnitType,
+    protected GUISupport(final Power power, final Location src, final Type srcUnitType,
                          final Location supSrc, final Power supPower,
-                         final Unit.Type supUnitType) {
+                         final Type supUnitType) {
         super(power, src, srcUnitType, supSrc, supPower, supUnitType);
     }// GUISupport()
 
@@ -84,8 +85,8 @@ public class GUISupport extends Support implements GUIOrder {
     /**
      * Creates a GUISupport
      */
-    protected GUISupport(final Power power, final Location src, final Unit.Type srcUnitType,
-                         final Location supSrc, final Power supPower, final Unit.Type supUnitType,
+    protected GUISupport(final Power power, final Location src, final Type srcUnitType,
+                         final Location supSrc, final Power supPower, final Type supUnitType,
                          final Location supDest) {
         super(power, src, srcUnitType, supSrc, supPower, supUnitType, supDest);
     }// GUISupport()
@@ -95,6 +96,7 @@ public class GUISupport extends Support implements GUIOrder {
      * This only accepts Support orders.
      * All others will throw an IllegalArgumentException.
      */
+    @Override
     public void deriveFrom(final Orderable order) {
         if (!(order instanceof Support)) {
             throw new IllegalArgumentException();
@@ -116,6 +118,7 @@ public class GUISupport extends Support implements GUIOrder {
     }// deriveFrom()
 
 
+    @Override
     public boolean testLocation(final StateInfo stateInfo, final Location location,
                                 final StringBuffer sb) {
         sb.setLength(0);
@@ -252,6 +255,7 @@ public class GUISupport extends Support implements GUIOrder {
     }// testLocation()
 
 
+    @Override
     public boolean clearLocations() {
         if (isComplete()) {
             return false;
@@ -270,6 +274,7 @@ public class GUISupport extends Support implements GUIOrder {
     }// clearLocations()
 
 
+    @Override
     public boolean setLocation(final StateInfo stateInfo, final Location location,
                                final StringBuffer sb) {
         if (isComplete()) {
@@ -315,15 +320,18 @@ public class GUISupport extends Support implements GUIOrder {
         return false;
     }// setLocation()
 
+    @Override
     public boolean isComplete() {
-        assert (currentLocNum <= getNumRequiredLocations());
-        return (currentLocNum == getNumRequiredLocations());
+        assert currentLocNum <= getNumRequiredLocations();
+        return currentLocNum == getNumRequiredLocations();
     }// isComplete()
 
+    @Override
     public int getNumRequiredLocations() {
         return REQ_LOC;
     }
 
+    @Override
     public int getCurrentLocationNum() {
         return currentLocNum;
     }
@@ -332,6 +340,7 @@ public class GUISupport extends Support implements GUIOrder {
     /**
      * Always throws an IllegalArgumentException
      */
+    @Override
     public void setParam(final Parameter param, final Object value) {
         throw new IllegalArgumentException();
     }
@@ -339,11 +348,13 @@ public class GUISupport extends Support implements GUIOrder {
     /**
      * Always throws an IllegalArgumentException
      */
+    @Override
     public Object getParam(final Parameter param) {
         throw new IllegalArgumentException();
     }
 
 
+    @Override
     public void removeFromDOM(final MapInfo mapInfo) {
         if (group != null) {
             final SVGGElement powerGroup = mapInfo
@@ -361,6 +372,7 @@ public class GUISupport extends Support implements GUIOrder {
      * then draws a dashed circle around the unit, then
      * draws a dashed line with arrow representing the move.
      */
+    @Override
     public void updateDOM(final MapInfo mapInfo) {
         // if we are not displayable, we exit, after remove the order (if
         // it was created)
@@ -373,16 +385,16 @@ public class GUISupport extends Support implements GUIOrder {
         // we will not change the DOM.
         //
         // check dependent order status.
-        boolean found = false;
+        boolean found;
         if (isSupportingHold()) {
             // Support a hold
-            found = (GUIOrderUtils
-                    .findMatchingHold(mapInfo, supSrc.getProvince()) != null);
+            found = GUIOrderUtils
+                    .findMatchingHold(mapInfo, supSrc.getProvince()) != null;
         } else {
             // Support a move
-            found = (GUIOrderUtils
+            found = GUIOrderUtils
                     .findMatchingMove(mapInfo, supSrc.getProvince(),
-                            supDest.getProvince()) != null);
+                            supDest.getProvince()) != null;
         }
 
         if (group != null && dependentFound == found) {
@@ -431,7 +443,7 @@ public class GUISupport extends Support implements GUIOrder {
      * Draw Supported Hold order
      */
     private void updateDOMHold(final MapInfo mapInfo) {
-        SVGElement[] elements = null;
+        SVGElement[] elements;
 
         // create hilight line
         final String cssStyle = mapInfo.getMapMetadata()
@@ -463,7 +475,7 @@ public class GUISupport extends Support implements GUIOrder {
      * Draw Supported Move order
      */
     private void updateDOMMove(final MapInfo mapInfo) {
-        SVGElement[] elements = null;
+        SVGElement[] elements;
 
         // create hilight line
         final String cssStyle = mapInfo.getMapMetadata()
@@ -521,10 +533,10 @@ public class GUISupport extends Support implements GUIOrder {
         // destination. If no unit, use the size of an army unit radius divided
         // by 2 (as we do in GUIMove)
         //
-        Point2D.Float newSupDest = null;
+        Point2D.Float newSupDest;
         if (position.hasUnit(supDest.getProvince())) {
             // since we're supporting a Move, we should use the Move radius
-            final Unit.Type destUnitType = position.getUnit(supDest.getProvince()).orElse(null)
+            final Type destUnitType = position.getUnit(supDest.getProvince()).orElse(null)
                     .getType();
             final float moveRadius = mmd.getOrderRadius(MapMetadata.EL_MOVE,
                     mapInfo.getSymbolName(destUnitType));
@@ -533,8 +545,8 @@ public class GUISupport extends Support implements GUIOrder {
                             ptSupDest.x, ptSupDest.y, ptSupDest.x, ptSupDest.y,
                             moveRadius);
         } else {
-            final float moveRadius = (mmd.getOrderRadius(MapMetadata.EL_MOVE,
-                    mapInfo.getSymbolName(Unit.Type.ARMY)) / 2);
+            final float moveRadius = mmd.getOrderRadius(MapMetadata.EL_MOVE,
+                    mapInfo.getSymbolName(Type.ARMY)) / 2;
             newSupDest = GUIOrderUtils
                     .getLineCircleIntersection(ptSupSrc.x, ptSupSrc.y,
                             ptSupDest.x, ptSupDest.y, ptSupDest.x, ptSupDest.y,
@@ -595,7 +607,7 @@ public class GUISupport extends Support implements GUIOrder {
 
     private SVGElement[] drawSupportedHold(final MapInfo mapInfo, final float offset) {
         // setup
-        final SVGElement[] elements = new SVGElement[((dependentFound) ? 1 : 2)];
+        final SVGElement[] elements = new SVGElement[(dependentFound ? 1 : 2)];
 
         final MapMetadata mmd = mapInfo.getMapMetadata();
         final Point2D.Float ptSrc = mmd.getUnitPt(src.getProvince(), src.getCoast());
@@ -667,6 +679,7 @@ public class GUISupport extends Support implements GUIOrder {
     /**
      * We are dependent upon other orders to determine how we render this order.
      */
+    @Override
     public boolean isDependent() {
         return true;
     }
@@ -681,7 +694,7 @@ public class GUISupport extends Support implements GUIOrder {
             sb.append(Utils.getLocalString(CLICK_TO_SUPPORT_MOVE));
             return true;
         } else if (from.getProvince()
-                .isCoastal() && supUnitType == Unit.Type.ARMY) {
+                .isCoastal() && supUnitType == Type.ARMY) {
             // NOTE: assume destination coast is Coast.NONE
             final Path path = new Path(position);
             if (path.isPossibleConvoyRoute(from,

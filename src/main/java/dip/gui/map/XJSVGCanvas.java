@@ -95,6 +95,7 @@ public class XJSVGCanvas extends JSVGCanvas {
 
         // fix for incorrect setting of initial SVG size by JSVGScrollPane
         addGVTTreeRendererListener(new GVTTreeRendererListener() {
+            @Override
             public void gvtRenderingCompleted(final GVTTreeRendererEvent e) {
                 final AffineTransform iat = getInitialTransform();
                 final SVGSVGElement elt = getSVGDocument().getRootElement();
@@ -113,20 +114,25 @@ public class XJSVGCanvas extends JSVGCanvas {
                     cgn.setViewingTransform(vt);
 
                     // set rendering transform to 'unscaled'
-                    final AffineTransform t = AffineTransform.getScaleInstance(1, 1);
+                    final AffineTransform t = AffineTransform
+                            .getScaleInstance(1, 1);
                     XJSVGCanvas.super.setRenderingTransform(t);
                 }
             }// gvtRenderingCompleted()
 
+            @Override
             public void gvtRenderingCancelled(final GVTTreeRendererEvent e) {
             }
 
+            @Override
             public void gvtRenderingFailed(final GVTTreeRendererEvent e) {
             }
 
+            @Override
             public void gvtRenderingPrepare(final GVTTreeRendererEvent e) {
             }
 
+            @Override
             public void gvtRenderingStarted(final GVTTreeRendererEvent e) {
             }
         });
@@ -146,6 +152,7 @@ public class XJSVGCanvas extends JSVGCanvas {
      * Overrides createListener() to return our own Listener, with
      * several new features we need.
      */
+    @Override
     protected Listener createListener() {
         return new XJSVGCanvasListener();
     }// createListener()
@@ -155,6 +162,7 @@ public class XJSVGCanvas extends JSVGCanvas {
      * Overrides createUserAgent() to return our own UserAgent, which
      * allows selectable validation control of the parser.
      */
+    @Override
     protected UserAgent createUserAgent() {
         return new XJSVGUserAgent();
     }// createUserAgent()
@@ -177,7 +185,7 @@ public class XJSVGCanvas extends JSVGCanvas {
      * <li>Key events can be passed to the parent (as defined by setParent())
      * </ul>
      */
-    protected class XJSVGCanvasListener extends JSVGCanvas.CanvasSVGListener {
+    protected class XJSVGCanvasListener extends CanvasSVGListener {
         private int dragX;                    // start drag X coord
         private int dragY;                    // start drag Y coord
         private boolean inDrag = false;        // 'true' if we are in a drag (versus a click)
@@ -188,12 +196,14 @@ public class XJSVGCanvas extends JSVGCanvas {
         }// XJSVGCanvasListener()
 
 
+        @Override
         public void mouseDragged(final MouseEvent e) {
             inDrag = true;
             super.mouseDragged(e);
         }// mouseDragged()
 
 
+        @Override
         public void mousePressed(final java.awt.event.MouseEvent e) {
             // set drag start coordinates
             dragX = e.getX();
@@ -202,6 +212,7 @@ public class XJSVGCanvas extends JSVGCanvas {
         }// mousePressed()
 
 
+        @Override
         public void mouseReleased(final java.awt.event.MouseEvent e) {
             if (inDrag) {
                 final int dx = Math.abs(e.getX() - dragX);
@@ -228,6 +239,7 @@ public class XJSVGCanvas extends JSVGCanvas {
         }// mouseReleased()
 
 
+        @Override
         public void keyPressed(final java.awt.event.KeyEvent e) {
             if (parent != null) {
                 parent.dispatchEvent(e);
@@ -237,6 +249,7 @@ public class XJSVGCanvas extends JSVGCanvas {
         }// keyPressed()
 
 
+        @Override
         public void keyReleased(final java.awt.event.KeyEvent e) {
             if (parent != null) {
                 parent.dispatchEvent(e);
@@ -246,6 +259,7 @@ public class XJSVGCanvas extends JSVGCanvas {
         }// keyReleased()
 
 
+        @Override
         public void keyTyped(final java.awt.event.KeyEvent e) {
             if (parent != null) {
                 parent.dispatchEvent(e);
@@ -269,19 +283,21 @@ public class XJSVGCanvas extends JSVGCanvas {
      * Specialized UserAgent that checks outer class for validation parameter
      * and subclasses error and message dialogs.
      */
-    protected class XJSVGUserAgent extends JSVGCanvas.CanvasUserAgent {
+    protected class XJSVGUserAgent extends CanvasUserAgent {
         public XJSVGUserAgent() {
             super();
         }// XJSVGUserAgent()
 
+        @Override
         public boolean isXMLParserValidating() {
-            return XJSVGCanvas.this.isValidating;
+            return isValidating;
         }// isXMLParserValidating()
 
         /**
          * Do nothing. We don't want the Batik
          * CursorManager updating our cursor.
          */
+        @Override
         public void setSVGCursor(final Cursor c) {
             // do nothing.
         }// setSVGCursor()
@@ -290,6 +306,7 @@ public class XJSVGCanvas extends JSVGCanvas {
         /**
          * Displays an SVG error Exception using an ErrorDialog
          */
+        @Override
         public void displayError(final Exception ex) {
             ErrorDialog.displaySerious(findParent(), ex);
         }// displayError()
@@ -298,6 +315,7 @@ public class XJSVGCanvas extends JSVGCanvas {
         /**
          * Displays an SVG error String using an ErrorDialog
          */
+        @Override
         public void displayError(final String message) {
             ErrorDialog.displaySerious(findParent(), new Exception(message));
         }// message()
@@ -308,7 +326,7 @@ public class XJSVGCanvas extends JSVGCanvas {
          */
         private JFrame findParent() {
             // find parent frame, if possible
-            Component comp = XJSVGCanvas.this.getParent();
+            Component comp = getParent();
             while (comp != null) {
                 if (comp instanceof JFrame) {
                     return (JFrame) comp;
@@ -329,6 +347,7 @@ public class XJSVGCanvas extends JSVGCanvas {
      *
      * @param at an AffineTransform.
      */
+    @Override
     public void setRenderingTransform(final AffineTransform at) {
         // check to see that we are not zooming too little
         if (minScale > 0.0 && (at.getScaleX() < minScale || at
@@ -389,7 +408,7 @@ public class XJSVGCanvas extends JSVGCanvas {
      * Test for floating-point "equivalence"
      */
     private boolean isEquivalent(final double a, final double b) {
-        return (Math.abs(a - b) <= 0.0001);
+        return Math.abs(a - b) <= 0.0001;
     }// isEquivalent()
 
 

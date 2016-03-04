@@ -25,6 +25,7 @@ package dip.gui.dialog;
 
 import dip.gui.ClientFrame;
 import dip.gui.swing.XJScrollPane;
+import dip.misc.Help.HelpID;
 import dip.misc.Utils;
 import dip.world.Phase;
 
@@ -82,7 +83,7 @@ public class SelectPhaseDialog extends HeaderDialog {
         setContentPane(contentPanel);
 
         addTwoButtons(makeCancelButton(), makeOKButton(), false, true);
-        setHelpID(dip.misc.Help.HelpID.Dialog_PhaseSelect);
+        setHelpID(HelpID.Dialog_PhaseSelect);
     }// SelectPhaseDialog()
 
 
@@ -122,7 +123,7 @@ public class SelectPhaseDialog extends HeaderDialog {
 
         public ListRow(final Phase phase, final int n) {
             this.phase = phase;
-            this.num = n;
+            num = n;
         }// ListRow()
 
         public Phase getPhase() {

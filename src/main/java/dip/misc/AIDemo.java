@@ -12,6 +12,7 @@ package dip.misc;
 
 import dip.order.OrderFactory;
 import dip.world.*;
+import dip.world.Unit.Type;
 import dip.world.variant.VariantManager;
 import dip.world.variant.data.Variant;
 
@@ -95,7 +96,7 @@ public class AIDemo {
         // Get default variant directory, where the jDip variants are stored.
         // This assumes the standard jdip package layout.
         //
-        File defaultVariantSearchDir = null;
+        File defaultVariantSearchDir;
         if (System.getProperty("user.dir") == null) {
             defaultVariantSearchDir = new File(".", VARIANT_DIR);
         } else {
@@ -221,7 +222,7 @@ public class AIDemo {
         // set extra German units
         //
         final Power germany = map.getPower("germany");
-        Unit u = new Unit(germany, Unit.Type.ARMY);
+        Unit u = new Unit(germany, Type.ARMY);
         u.setCoast(
                 Coast.LAND);        // Army units always must be in Coast.LAND (== Coast.NONE)
         pos.setUnit(map.getProvince("pru"), u);
@@ -230,18 +231,18 @@ public class AIDemo {
         // insert it in another province. Why? Because when a one province has a unit
         // moved or destroyed, the other province would have the same. So don't do that.
         //
-        u = new Unit(germany, Unit.Type.ARMY);
+        u = new Unit(germany, Type.ARMY);
         u.setCoast(Coast.LAND);
         pos.setUnit(map.getProvince("sil"), u);
 
-        u = new Unit(germany, Unit.Type.ARMY);
+        u = new Unit(germany, Type.ARMY);
         u.setCoast(Coast.LAND);
         pos.setUnit(map.getProvince("gal"), u);
 
         // set extra Russian units
         //
         final Power russia = map.getPower("russia");
-        u = new Unit(russia, Unit.Type.ARMY);
+        u = new Unit(russia, Type.ARMY);
         u.setCoast(Coast.LAND);
         pos.setUnit(map.getProvince("lvn"), u);
 
@@ -277,16 +278,16 @@ public class AIDemo {
         //	A mos-lvn
         final List<dip.order.Order> russianOrders = new ArrayList<>();
         russianOrders.add(orderFactory.createSupport(russia,
-                makeLocation(pos, map.getProvince("war")), Unit.Type.ARMY,
+                makeLocation(pos, map.getProvince("war")), Type.ARMY,
                 makeLocation(pos, map.getProvince("lvn")), russia,
-                Unit.Type.ARMY, makeLocation(pos, map.getProvince("pru"))));
+                Type.ARMY, makeLocation(pos, map.getProvince("pru"))));
         russianOrders.add(orderFactory
                 .createMove(russia, makeLocation(pos, map.getProvince("lvn")),
-                        Unit.Type.ARMY,
+                        Type.ARMY,
                         makeLocation(pos, map.getProvince("pru"))));
         russianOrders.add(orderFactory
                 .createMove(russia, makeLocation(pos, map.getProvince("mos")),
-                        Unit.Type.ARMY,
+                        Type.ARMY,
                         makeLocation(pos, map.getProvince("lvn"))));
 
 
@@ -302,16 +303,16 @@ public class AIDemo {
         germanOrders[0] = new ArrayList();
         germanOrders[0].add(orderFactory
                 .createMove(germany, makeLocation(pos, map.getProvince("pru")),
-                        Unit.Type.ARMY,
+                        Type.ARMY,
                         makeLocation(pos, map.getProvince("war"))));
         germanOrders[0].add(orderFactory.createSupport(germany,
-                makeLocation(pos, map.getProvince("sil")), Unit.Type.ARMY,
+                makeLocation(pos, map.getProvince("sil")), Type.ARMY,
                 makeLocation(pos, map.getProvince("pru")), germany,
-                Unit.Type.ARMY, makeLocation(pos, map.getProvince("war"))));
+                Type.ARMY, makeLocation(pos, map.getProvince("war"))));
         germanOrders[0].add(orderFactory.createSupport(germany,
-                makeLocation(pos, map.getProvince("gal")), Unit.Type.ARMY,
+                makeLocation(pos, map.getProvince("gal")), Type.ARMY,
                 makeLocation(pos, map.getProvince("pru")), germany,
-                Unit.Type.ARMY, makeLocation(pos, map.getProvince("war"))));
+                Type.ARMY, makeLocation(pos, map.getProvince("war"))));
 
 
         // German Orders: 2
@@ -321,17 +322,17 @@ public class AIDemo {
         //	A gal S A sil-war
         germanOrders[1] = new ArrayList();
         germanOrders[1].add(orderFactory.createSupport(germany,
-                makeLocation(pos, map.getProvince("pru")), Unit.Type.ARMY,
+                makeLocation(pos, map.getProvince("pru")), Type.ARMY,
                 makeLocation(pos, map.getProvince("sil")), germany,
-                Unit.Type.ARMY, makeLocation(pos, map.getProvince("war"))));
+                Type.ARMY, makeLocation(pos, map.getProvince("war"))));
         germanOrders[1].add(orderFactory
                 .createMove(germany, makeLocation(pos, map.getProvince("sil")),
-                        Unit.Type.ARMY,
+                        Type.ARMY,
                         makeLocation(pos, map.getProvince("war"))));
         germanOrders[1].add(orderFactory.createSupport(germany,
-                makeLocation(pos, map.getProvince("gal")), Unit.Type.ARMY,
+                makeLocation(pos, map.getProvince("gal")), Type.ARMY,
                 makeLocation(pos, map.getProvince("sil")), germany,
-                Unit.Type.ARMY, makeLocation(pos, map.getProvince("war"))));
+                Type.ARMY, makeLocation(pos, map.getProvince("war"))));
 
 
         // create combined orders sets for all powers

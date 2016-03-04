@@ -27,10 +27,12 @@ import cz.autel.dmi.HIGConstraints;
 import cz.autel.dmi.HIGLayout;
 import dip.gui.ClientFrame;
 import dip.gui.dialog.ErrorDialog;
+import dip.gui.dialog.ErrorDialog.BugReportInfo;
 import dip.gui.dialog.HeaderDialog;
 import dip.judge.net.FlocImporter;
 import dip.judge.net.FlocImporter.FlocImportCallback;
 import dip.misc.Help;
+import dip.misc.Help.HelpID;
 import dip.misc.SharedPrefs;
 import dip.misc.Utils;
 import dip.world.World;
@@ -91,7 +93,7 @@ public class FlocImportDialog extends HeaderDialog implements FlocImportCallback
      */
     private FlocImportDialog(final ClientFrame parent) {
         super(parent, Utils.getLocalString(TITLE), true);
-        this.clientFrame = parent;
+        clientFrame = parent;
 
         // get last judge used (unless empty; if so, ignore)
         final Preferences prefs = SharedPrefs.getUserNode();
@@ -117,7 +119,7 @@ public class FlocImportDialog extends HeaderDialog implements FlocImportCallback
         addToButtonPanel(progressBar);    // add first (leftmost)
         addTwoButtons(makeCancelButton(), makeOKButton(), false, true);
         setSeparatorVisible(true, BTN_BAR_EDGE, 0);
-        setHelpID(Help.HelpID.Dialog_ImportFloc);
+        setHelpID(HelpID.Dialog_ImportFloc);
     }// FlocImportDialog()
 
     /**
@@ -158,6 +160,7 @@ public class FlocImportDialog extends HeaderDialog implements FlocImportCallback
     /**
      * Handle OK and CANCEL selections
      */
+    @Override
     public void close(final String actionCommand) {
         if (isOKorAccept(actionCommand)) {
             // check game name text
@@ -165,8 +168,8 @@ public class FlocImportDialog extends HeaderDialog implements FlocImportCallback
                     .trim().toUpperCase();
             final String gameName = tfGameName.getText().trim();
 
-            boolean invalidJudgeName = (judgeName == null || judgeName
-                    .length() != 4);
+            boolean invalidJudgeName = judgeName == null || judgeName
+                    .length() != 4;
             if (!invalidJudgeName) {
                 for (int i = 0; i < judgeName.length(); i++) {
                     if (!Character.isLetterOrDigit(judgeName.charAt(i))) {
@@ -182,7 +185,7 @@ public class FlocImportDialog extends HeaderDialog implements FlocImportCallback
                 return;
             }
 
-            if (gameName.length() == 0) {
+            if (gameName.isEmpty()) {
                 Utils.popupError(clientFrame,
                         Utils.getLocalString(NOT_REGISTERED_TITLE),
                         Utils.getLocalString(INVALID_INPUT_TEXT));
@@ -190,8 +193,8 @@ public class FlocImportDialog extends HeaderDialog implements FlocImportCallback
             }
 
             for (int i = 0; i < gameName.length(); i++) {
-                if (!Character.isLetterOrDigit(gameName.charAt(i)) && (gameName
-                        .charAt(i) != '_')) {
+                if (!Character.isLetterOrDigit(gameName.charAt(i)) && gameName
+                        .charAt(i) != '_') {
                     Utils.popupError(clientFrame,
                             Utils.getLocalString(NOT_REGISTERED_TITLE),
                             Utils.getLocalString(INVALID_INPUT_TEXT));
@@ -230,14 +233,15 @@ public class FlocImportDialog extends HeaderDialog implements FlocImportCallback
     /**
      * FlocImportCallback implementation
      */
+    @Override
     public void flocImportException(final IOException e) {
         // enhance our error report
-        final ErrorDialog.BugReportInfo bri = new ErrorDialog.BugReportInfo(e);
+        final BugReportInfo bri = new BugReportInfo(e);
         bri.add("contact_site", "http://www.floc.net/");
         bri.add("judge_name", (String) cbJudges.getSelectedItem());
         bri.add("game_name", tfGameName.getText());
         bri.add("world_open?",
-                String.valueOf((clientFrame.getWorld() != null)));
+                String.valueOf(clientFrame.getWorld() != null));
 
         ErrorDialog.displayNetIO(clientFrame, "www.floc.net", bri);
         enableProgressBar(false);
@@ -248,6 +252,7 @@ public class FlocImportDialog extends HeaderDialog implements FlocImportCallback
     /**
      * FlocImportCallback implementation
      */
+    @Override
     public boolean flocTextImportComplete(final String text) {
         // we don't do anything with the raw text.
         // and don't close the dialog, either
@@ -257,8 +262,9 @@ public class FlocImportDialog extends HeaderDialog implements FlocImportCallback
     /**
      * FlocImportCallback implementation
      */
+    @Override
     public void flocWorldImportComplete(final World w) {
-        this.world = w;
+        world = w;
         enableProgressBar(false);
         close(ACTION_CANCEL);
     }// flocImportComplete()
@@ -266,6 +272,7 @@ public class FlocImportDialog extends HeaderDialog implements FlocImportCallback
     /**
      * FlocImportCallback implementation
      */
+    @Override
     public void flocImportMessage(final String message) {
         clientFrame.getStatusBar().setText(message);
     }// flocImportMessage()
@@ -273,6 +280,7 @@ public class FlocImportDialog extends HeaderDialog implements FlocImportCallback
     /**
      * FlocImportCallback implementation
      */
+    @Override
     public void flocImportUnregistered() {
         enableProgressBar(false);
 

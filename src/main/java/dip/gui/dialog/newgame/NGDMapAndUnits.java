@@ -24,6 +24,7 @@ package dip.gui.dialog.newgame;
 
 import cz.autel.dmi.HIGConstraints;
 import cz.autel.dmi.HIGLayout;
+import dip.gui.dialog.newgame.NewGameDialog.NGDTabPane;
 import dip.gui.swing.GradientJLabel;
 import dip.gui.swing.XJScrollPane;
 import dip.misc.Utils;
@@ -45,7 +46,7 @@ import java.net.URL;
  * and Unit options.
  * <p>
  */
-public class NGDMapAndUnits extends JPanel implements NewGameDialog.NGDTabPane {
+public class NGDMapAndUnits extends JPanel implements NGDTabPane {
     private static final String TAB_NAME = "NGDMAU.tab.name";
     private static final String MAP_LABEL = "NGDMAU.label.map";
     private static final String SYMBOL_LABEL = "NGDMAU.label.symbol";
@@ -80,6 +81,7 @@ public class NGDMapAndUnits extends JPanel implements NewGameDialog.NGDTabPane {
 			then no SymbolPack change is made.
 		*/
         mapSelector.addListSelectionListener(new ListSelectionListener() {
+            @Override
             public void valueChanged(final ListSelectionEvent e) {
                 if (!e.getValueIsAdjusting()) {
                     final ListItem item = mapSelector.getSelectedItem();
@@ -120,16 +122,17 @@ public class NGDMapAndUnits extends JPanel implements NewGameDialog.NGDTabPane {
 
         // main panel layout
         //
-        this.setLayout(new GridLayout(2, 1, 0, 15));
-        this.setBorder(new EmptyBorder(10, 10, 10, 10));
-        this.add(mapSelector);
-        this.add(symbolSelector);
+        setLayout(new GridLayout(2, 1, 0, 15));
+        setBorder(new EmptyBorder(10, 10, 10, 10));
+        add(mapSelector);
+        add(symbolSelector);
     }// makeLayout()
 
 
     /**
      * Get the tab name.
      */
+    @Override
     public String getTabName() {
         return Utils.getLocalString(TAB_NAME);
     }// getTabName()
@@ -137,6 +140,7 @@ public class NGDMapAndUnits extends JPanel implements NewGameDialog.NGDTabPane {
     /**
      * The Variant has Changed.
      */
+    @Override
     public void variantChanged(final Variant variant) {
         if (variant != null) {
             // create the list of map graphics
@@ -149,6 +153,7 @@ public class NGDMapAndUnits extends JPanel implements NewGameDialog.NGDTabPane {
     /**
      * The Enabled status has Changed.
      */
+    @Override
     public void enablingChanged(final boolean enabled) {
     }// enablingChanged()
 
@@ -341,7 +346,7 @@ public class NGDMapAndUnits extends JPanel implements NewGameDialog.NGDTabPane {
             final ListItem[] items = new ListItem[mgs.length];
             for (int i = 0; i < items.length; i++) {
                 items[i] = new ListItem(variant, mgs[i]);
-                defaultItem = (mgs[i].isDefault()) ? i : defaultItem;
+                defaultItem = mgs[i].isDefault() ? i : defaultItem;
             }
 
             setItems(items);
@@ -396,6 +401,7 @@ public class NGDMapAndUnits extends JPanel implements NewGameDialog.NGDTabPane {
         /**
          * Receive selection events.
          */
+        @Override
         public void valueChanged(final ListSelectionEvent e) {
             // change the description if not adjusting.
             if (!e.getValueIsAdjusting()) {
@@ -450,7 +456,7 @@ public class NGDMapAndUnits extends JPanel implements NewGameDialog.NGDTabPane {
             this.icon = icon;
             this.label = label;
             this.description = description;
-            this.reference = ref;
+            reference = ref;
         }// ListItem()
 
         /**
@@ -472,10 +478,10 @@ public class NGDMapAndUnits extends JPanel implements NewGameDialog.NGDTabPane {
                 }
             }
 
-            this.icon = ii;
-            this.label = sp.getName();
-            this.description = sp.getDescription();
-            this.reference = sp;
+            icon = ii;
+            label = sp.getName();
+            description = sp.getDescription();
+            reference = sp;
         }// ListItem()
 
         /**
@@ -497,10 +503,10 @@ public class NGDMapAndUnits extends JPanel implements NewGameDialog.NGDTabPane {
                 }
             }
 
-            this.icon = ii;
-            this.label = mg.getName();
-            this.description = mg.getDescription();
-            this.reference = mg;
+            icon = ii;
+            label = mg.getName();
+            description = mg.getDescription();
+            reference = mg;
         }// ListItem()
 
         /**
@@ -550,15 +556,16 @@ public class NGDMapAndUnits extends JPanel implements NewGameDialog.NGDTabPane {
 
         public GraphicJListCellRenderer() {
             super();
-            this.setIconTextGap(3);
-            this.setVerticalTextPosition(SwingConstants.BOTTOM);
-            this.setHorizontalTextPosition(SwingConstants.CENTER);
-            this.setHorizontalAlignment(SwingConstants.CENTER);
-            this.setVerticalAlignment(SwingConstants.CENTER);
-            this.setOpaque(true);
+            setIconTextGap(3);
+            setVerticalTextPosition(SwingConstants.BOTTOM);
+            setHorizontalTextPosition(SwingConstants.CENTER);
+            setHorizontalAlignment(SwingConstants.CENTER);
+            setVerticalAlignment(SwingConstants.CENTER);
+            setOpaque(true);
         }// GraphicJListCellRenderer()
 
 
+        @Override
         public Component getListCellRendererComponent(final JList list, final Object value,
                                                       final int index,
                                                       final boolean isSelected,

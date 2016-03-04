@@ -57,7 +57,7 @@ public class OrderStatusPanel extends XJPanel {
      * Creates an OrderStatusPanel object.
      */
     public OrderStatusPanel(final ClientFrame clientFrame) {
-        this.cf = clientFrame;
+        cf = clientFrame;
 
         // setup labels
         phase = new JLabel(EMPTY);
@@ -67,6 +67,7 @@ public class OrderStatusPanel extends XJPanel {
         // setup text field
         orderField = new dip.gui.swing.XJTextField();
         orderField.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(final ActionEvent e) {
                 final String text = orderField.getText();
 
@@ -125,22 +126,27 @@ public class OrderStatusPanel extends XJPanel {
      * Property change event listener
      */
     private class OSPPropertyListener extends AbstractCFPListener {
+        @Override
         public void actionOrderCreated(final Orderable order) {
             clearOrderText();
         }
 
+        @Override
         public void actionOrderDeleted(final Orderable order) {
             clearOrderText();
         }
 
+        @Override
         public void actionOrdersCreated(final Orderable[] orders) {
             clearOrderText();
         }
 
+        @Override
         public void actionOrdersDeleted(final Orderable[] orders) {
             clearOrderText();
         }
 
+        @Override
         public void actionModeChanged(final String mode) {
             if (mode == ClientFrame.MODE_ORDER) {
                 orderField.setVisible(true);
@@ -151,6 +157,7 @@ public class OrderStatusPanel extends XJPanel {
             }
         }// actionModeChanged()
 
+        @Override
         public void actionTurnstateChanged(final TurnState turnState) {
             final Phase tsPhase = turnState.getPhase();
 
@@ -163,10 +170,12 @@ public class OrderStatusPanel extends XJPanel {
         }// actionTurnstateChanged()
 
 
+        @Override
         public void actionWorldCreated(final World w) {
             phase.setText(EMPTY);
         }
 
+        @Override
         public void actionWorldDestroyed(final World w) {
             phase.setText(EMPTY);
         }

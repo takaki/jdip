@@ -31,6 +31,7 @@ import dip.gui.map.MapMetadata;
 import dip.gui.map.SVGColorParser;
 import dip.gui.swing.ColorRectIcon;
 import dip.gui.swing.XJScrollPane;
+import dip.misc.Help.HelpID;
 import dip.misc.Utils;
 import dip.world.Power;
 import dip.world.World;
@@ -109,7 +110,7 @@ public class MetadataDialog extends HeaderDialog {
      */
     private MetadataDialog(final ClientFrame parent) {
         super(parent, Utils.getLocalString(TITLE), true);
-        this.clientFrame = parent;
+        clientFrame = parent;
 
         mmd = clientFrame.getMapMetadata();
         if (mmd == null) {
@@ -124,13 +125,14 @@ public class MetadataDialog extends HeaderDialog {
         createDefaultContentBorder(tabPane);
         setContentPane(tabPane);
         addTwoButtons(makeCancelButton(), makeOKButton(), false, true);
-        setHelpID(dip.misc.Help.HelpID.Dialog_Metadata);
+        setHelpID(HelpID.Dialog_Metadata);
     }// MetadataDialog()
 
 
     /**
      * Handle OK/Cancel selections
      */
+    @Override
     public void close(final String actionCommand) {
         super.close(actionCommand);
 
@@ -237,47 +239,47 @@ public class MetadataDialog extends HeaderDialog {
 
             final HIGLayout layout = new HIGLayout(w1, h1);
             layout.setColumnWeight(8, 1);
-            this.setLayout(layout);
+            setLayout(layout);
 
             final HIGConstraints c = new HIGConstraints();
 
-            this.add(new JLabel(Utils.getLocalString(GDF_GAME_NAME)),
+            add(new JLabel(Utils.getLocalString(GDF_GAME_NAME)),
                     c.rcwh(2, 3, 1, 1, "r"));
-            this.add(gameName, c.rcwh(2, 5, 1, 1, "lr"));
+            add(gameName, c.rcwh(2, 5, 1, 1, "lr"));
 
 
-            this.add(new JLabel(Utils.getLocalString(GDF_NOTES)),
+            add(new JLabel(Utils.getLocalString(GDF_NOTES)),
                     c.rcwh(4, 8, 1, 1, "l"));
-            this.add(makeScrollPane(notes), c.rcwh(6, 8, 1, 14, "lrtb"));
+            add(makeScrollPane(notes), c.rcwh(6, 8, 1, 14, "lrtb"));
 
-            this.add(new JLabel(Utils.getLocalString(GDF_COMMENT)),
+            add(new JLabel(Utils.getLocalString(GDF_COMMENT)),
                     c.rcwh(6, 3, 1, 1, "r"));
-            this.add(comment, c.rcwh(6, 5, 1, 1, "lr"));
+            add(comment, c.rcwh(6, 5, 1, 1, "lr"));
 
-            this.add(new JLabel(Utils.getLocalString(GDF_GAME_URI)),
+            add(new JLabel(Utils.getLocalString(GDF_GAME_URI)),
                     c.rcwh(8, 3, 1, 1, "r"));
-            this.add(gameURI, c.rcwh(8, 5, 1, 1, "lr"));
+            add(gameURI, c.rcwh(8, 5, 1, 1, "lr"));
 
-            this.add(new JLabel(Utils.getLocalString(GDF_GAME_ID)),
+            add(new JLabel(Utils.getLocalString(GDF_GAME_ID)),
                     c.rcwh(10, 3, 1, 1, "r"));
-            this.add(gameID, c.rcwh(10, 5, 1, 1, "lr"));
+            add(gameID, c.rcwh(10, 5, 1, 1, "lr"));
 
-            this.add(new JLabel(Utils.getLocalString(GDF_JUDGE_NAME)),
+            add(new JLabel(Utils.getLocalString(GDF_JUDGE_NAME)),
                     c.rcwh(12, 3, 1, 1, "r"));
-            this.add(judgeName, c.rcwh(12, 5, 1, 1, "lr"));
+            add(judgeName, c.rcwh(12, 5, 1, 1, "lr"));
 
 
-            this.add(new JLabel(Utils.getLocalString(GDF_MOD_NAME)),
+            add(new JLabel(Utils.getLocalString(GDF_MOD_NAME)),
                     c.rcwh(14, 3, 1, 1, "r"));
-            this.add(modName, c.rcwh(14, 5, 1, 1, "lr"));
+            add(modName, c.rcwh(14, 5, 1, 1, "lr"));
 
-            this.add(new JLabel(Utils.getLocalString(GDF_MOD_EMAIL)),
+            add(new JLabel(Utils.getLocalString(GDF_MOD_EMAIL)),
                     c.rcwh(16, 3, 1, 1, "r"));
-            this.add(modEmail, c.rcwh(16, 5, 1, 1, "lr"));
+            add(modEmail, c.rcwh(16, 5, 1, 1, "lr"));
 
-            this.add(new JLabel(Utils.getLocalString(GDF_MOD_URI)),
+            add(new JLabel(Utils.getLocalString(GDF_MOD_URI)),
                     c.rcwh(18, 3, 1, 1, "r"));
-            this.add(modURI, c.rcwh(18, 5, 1, 1, "lr"));
+            add(modURI, c.rcwh(18, 5, 1, 1, "lr"));
         }// GamePanel()
 
         /**
@@ -307,14 +309,14 @@ public class MetadataDialog extends HeaderDialog {
             gmd.setGameURI(convertURI(gameURI.getText()));
 
             gmd.setJudgeName(
-                    (judgeName.getText().length() == 0) ? null : judgeName
+                    judgeName.getText().isEmpty() ? null : judgeName
                             .getText());
 
             gmd.setModeratorName(
-                    (modName.getText().length() == 0) ? null : modName
+                    modName.getText().isEmpty() ? null : modName
                             .getText());
             gmd.setModeratorEmail(
-                    (modEmail.getText().length() == 0) ? null : modEmail
+                    modEmail.getText().isEmpty() ? null : modEmail
                             .getText());
             gmd.setModeratorURI(convertURI(modURI.getText()));
         }// write()
@@ -344,28 +346,28 @@ public class MetadataDialog extends HeaderDialog {
             final HIGLayout layout = new HIGLayout(w1, h1);
             layout.setColumnWeight(5, 1);
             layout.setRowWeight(12, 1);
-            this.setLayout(layout);
+            setLayout(layout);
 
             final HIGConstraints c = new HIGConstraints();
 
-            this.add(new JLabel(Utils.getLocalString(PDF_NAME)),
+            add(new JLabel(Utils.getLocalString(PDF_NAME)),
                     c.rcwh(2, 2, 1, 1, "r"));
-            this.add(name, c.rcwh(2, 4, 1, 1, "l"));
+            add(name, c.rcwh(2, 4, 1, 1, "l"));
 
-            this.add(new JLabel(Utils.getLocalString(PDF_URI)),
+            add(new JLabel(Utils.getLocalString(PDF_URI)),
                     c.rcwh(4, 2, 1, 1, "r"));
-            this.add(uri, c.rcwh(4, 4, 1, 1, "l"));
+            add(uri, c.rcwh(4, 4, 1, 1, "l"));
 
-            this.add(new JLabel(Utils.getLocalString(PDF_NOTES)),
+            add(new JLabel(Utils.getLocalString(PDF_NOTES)),
                     c.rcwh(10, 2, 1, 1, "l"));
-            this.add(makeScrollPane(notes), c.rcwh(12, 2, 7, 1, "lrtb"));
+            add(makeScrollPane(notes), c.rcwh(12, 2, 7, 1, "lrtb"));
 
             for (int i = 0; i < email.length; i++) {
-                final int row = 2 + (i * 2);
-                this.add(new JLabel(
+                final int row = 2 + i * 2;
+                add(new JLabel(
                         Utils.getLocalString(PDF_EMAIL) + " " + String
                                 .valueOf(i + 1)), c.rcwh(row, 6, 1, 1, "r"));
-                this.add(email[i], c.rcwh(row, 8, 1, 1, "l"));
+                add(email[i], c.rcwh(row, 8, 1, 1, "l"));
             }
         }// PlayerPanel()
 
@@ -441,6 +443,7 @@ public class MetadataDialog extends HeaderDialog {
      * Listener to get Tab Icon colors
      */
     private class IconColorListener extends AbstractCFPListener {
+        @Override
         public void actionMMDReady(final MapMetadata mmd) {
             MetadataDialog.this.mmd = mmd;
             setTabIcons();
@@ -458,7 +461,7 @@ public class MetadataDialog extends HeaderDialog {
             for (int i = 1; i < tabCount; i++)    // no icon for 'game' info
             {
                 final Power power = world.getMap().getPower(tabPane.getTitleAt(i));
-                assert (power != null);
+                assert power != null;
                 final String colorName = mmd.getPowerColor(power);
                 final Color color = SVGColorParser.parseColor(colorName);
                 tabPane.setIconAt(i, new ColorRectIcon(12, 12, color));

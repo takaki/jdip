@@ -1626,7 +1626,7 @@ public final class StdAdjudicator implements Adjudicator {
                 while (tieIter.hasNext() && !foundFleet) {
                     final Province province = tieIter.next();
                     final Unit unit = position.getUnit(province).orElse(null);
-                    if (unit.getType().equals(Type.FLEET)) {
+                    if (unit.getType() == Type.FLEET) {
                         foundFleet = true;
                         createDisbandOrder(osList, province);
                     }

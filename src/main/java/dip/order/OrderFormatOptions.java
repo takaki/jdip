@@ -616,7 +616,7 @@ public class OrderFormatOptions implements Cloneable {
      * Check style constant value
      */
     private void checkStyle(int value) {
-        value = (value >= 10) ? (value - 10) : value;
+        value = value >= 10 ? value - 10 : value;
         if (value < 0 || value > 4) {
             throw new IllegalArgumentException(String.valueOf(value));
         }
@@ -643,6 +643,7 @@ public class OrderFormatOptions implements Cloneable {
     /**
      * Clone
      */
+    @Override
     public Object clone() {
         try {
             return (OrderFormatOptions) super.clone();

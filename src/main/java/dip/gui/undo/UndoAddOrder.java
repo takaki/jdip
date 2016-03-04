@@ -41,15 +41,18 @@ public class UndoAddOrder extends XAbstractUndoableEdit implements java.io.Seria
         this.order = order;
     }// UndoAddOrder
 
+    @Override
     public String getPresentationName() {
         return order.getFullName();
     }// getPresentationName()
 
+    @Override
     public void redo() throws CannotRedoException {
         super.redo();
         undoRedoManager.getOrderDisplayPanel().addOrder(order, false);
     }// redo()
 
+    @Override
     public void undo() throws CannotUndoException {
         super.undo();
         undoRedoManager.getOrderDisplayPanel().removeOrder(order, false);

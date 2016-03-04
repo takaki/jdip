@@ -24,6 +24,7 @@ package dip.order.result;
 import dip.misc.Utils;
 import dip.order.OrderFormatOptions;
 import dip.order.Orderable;
+import dip.order.result.OrderResult.ResultType;
 
 
 /**
@@ -41,7 +42,7 @@ public class DependentMoveFailedResult extends OrderResult {
 
     public DependentMoveFailedResult(final Orderable order,
                                      final Orderable dependentOrder) {
-        super(order, OrderResult.ResultType.FAILURE, null);
+        super(order, ResultType.FAILURE, null);
         if (dependentOrder == null) {
             throw new IllegalArgumentException();
         }
@@ -61,6 +62,7 @@ public class DependentMoveFailedResult extends OrderResult {
      * Creates an appropriate internationalized text
      * message given the set and unset parameters.
      */
+    @Override
     public String getMessage(final OrderFormatOptions ofo) {
         /*
         {0} : the dependent order, formatted with OrderFormat

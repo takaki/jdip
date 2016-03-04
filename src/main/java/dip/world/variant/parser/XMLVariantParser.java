@@ -38,6 +38,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -64,9 +65,7 @@ public class XMLVariantParser implements VariantParser {
      * cleared.
      */
     public XMLVariantParser(final URL variantsXMLURL) {
-        if (variantsXMLURL == null) {
-            throw new IllegalArgumentException("URL is null");
-        }
+        Objects.requireNonNull(variantsXMLURL);
 
         Log.println("XMLVariantParser: Parsing: ", variantsXMLURL);
         final long time = System.currentTimeMillis();

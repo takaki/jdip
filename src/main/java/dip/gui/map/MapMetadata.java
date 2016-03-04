@@ -393,7 +393,7 @@ public class MapMetadata {
             }
 
             final Point2D.Float pt = unitCoasts.get(coast);
-            return (pt == null) ? makePt(unit) : makePt(pt);
+            return pt == null ? makePt(unit) : makePt(pt);
         }// getUnitPt()
 
         /**
@@ -405,7 +405,7 @@ public class MapMetadata {
             }
 
             final Point2D.Float pt = dislodgedUnitCoasts.get(coast);
-            return (pt == null) ? makePt(dislodgedUnit) : makePt(pt);
+            return pt == null ? makePt(dislodgedUnit) : makePt(pt);
         }// getDislodgedUnitPt()
 
         /**
@@ -527,7 +527,7 @@ public class MapMetadata {
      */
     public float[] getOrderParamFloatArray(final String orderElement,
                                            final String attribute) {
-        return ((float[]) getOrderParam(orderElement, attribute));
+        return (float[]) getOrderParam(orderElement, attribute);
     }// getOrderParamFloat()
 
     /**
@@ -1019,9 +1019,9 @@ public class MapMetadata {
 
             this.w = (String) tmp[0];
             this.h = (String) tmp[1];
-            this.r = (String) tmp[2];
-            this.rFloat = ((Float) tmp[3]).floatValue();
-            this.units = (String) tmp[4];
+            r = (String) tmp[2];
+            rFloat = ((Float) tmp[3]).floatValue();
+            units = (String) tmp[4];
         }// SymbolSize()
 
         /**
@@ -1059,14 +1059,14 @@ public class MapMetadata {
          * assumed to have the	same units.
          */
         public float getRadius(final float delta) {
-            return (rFloat + delta);
+            return rFloat + delta;
         }// getRadius()
 
         /**
          * Returns the Radius as a String (formatted float + units)
          */
         public String getRadiusString(final float delta) {
-            return (SVGUtils.floatToString(rFloat + delta) + getUnits());
+            return SVGUtils.floatToString(rFloat + delta) + getUnits();
         }// getRadiusString()
 
 
@@ -1097,13 +1097,13 @@ public class MapMetadata {
 
             // get radius (1/2 of diagonal)
             final float radius = (float) (Math
-                    .sqrt((width * width) + (height * height)) / 2.0);
+                    .sqrt(width * width + height * height) / 2.0);
 
             // return strings
             final Object[] values = new Object[5];
-            values[0] = (SVGUtils.floatToString(width) + widthUnits);
-            values[1] = (SVGUtils.floatToString(height) + widthUnits);
-            values[2] = (SVGUtils.floatToString(radius) + widthUnits);
+            values[0] = SVGUtils.floatToString(width) + widthUnits;
+            values[1] = SVGUtils.floatToString(height) + widthUnits;
+            values[2] = SVGUtils.floatToString(radius) + widthUnits;
             values[3] = new Float(radius);
             values[4] = widthUnits;
             return values;
@@ -1116,7 +1116,7 @@ public class MapMetadata {
          */
         private Object[] parseDim(final String in, final Element el,
                                   final String attributeName) throws MapException {
-            if (in.length() == 0 || in.indexOf('%') >= 0 || in
+            if (in.isEmpty() || in.indexOf('%') >= 0 || in
                     .indexOf('-') >= 0) {
                 throw new MapException("Element " + el
                         .getTagName() + " attribute " + attributeName + " cannot have a % (relative size) in width or height attributes, or be zero or negative.");
@@ -1167,13 +1167,13 @@ public class MapMetadata {
             final Point2D.Float val = new Point2D.Float();
             final StringTokenizer st = new StringTokenizer(in, ", )(;");
             if (st.hasMoreTokens()) {
-                val.x = (Float.parseFloat(st.nextToken().trim()));
+                val.x = Float.parseFloat(st.nextToken().trim());
             } else {
                 throw new NumberFormatException();
             }
 
             if (st.hasMoreTokens()) {
-                val.y = (Float.parseFloat(st.nextToken().trim()));
+                val.y = Float.parseFloat(st.nextToken().trim());
             } else {
                 throw new NumberFormatException();
             }

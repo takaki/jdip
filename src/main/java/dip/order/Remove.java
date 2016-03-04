@@ -27,6 +27,7 @@ import dip.process.Adjudicator;
 import dip.process.OrderState;
 import dip.process.Tristate;
 import dip.world.*;
+import dip.world.Unit.Type;
 
 
 /**
@@ -46,7 +47,7 @@ public class Remove extends Order {
     /**
      * Creates a Remove order
      */
-    protected Remove(final Power power, final Location src, final Unit.Type srcUnit) {
+    protected Remove(final Power power, final Location src, final Type srcUnit) {
         super(power, src, srcUnit);
     }// Remove()
 
@@ -57,21 +58,25 @@ public class Remove extends Order {
         super();
     }// Remove()
 
+    @Override
     public String getFullName() {
         return orderNameFull;
     }// getName()
 
+    @Override
     public String getBriefName() {
         return orderNameBrief;
     }// getBriefName()
 
 
     // order formatting
+    @Override
     public String getDefaultFormat() {
         return orderFormatString;
     }// getFormatBrief()
 
 
+    @Override
     public String toBriefString() {
         final StringBuffer sb = new StringBuffer(64);
 
@@ -87,6 +92,7 @@ public class Remove extends Order {
     }// toBriefString()
 
 
+    @Override
     public String toFullString() {
         final StringBuffer sb = new StringBuffer(128);
 
@@ -112,6 +118,7 @@ public class Remove extends Order {
     }// equals()
 
 
+    @Override
     public void validate(final TurnState state, final ValidationOptions valOpts,
                          final RuleOptions ruleOpts) throws OrderException {
         checkSeasonAdjustment(state, orderNameFull);
@@ -125,6 +132,7 @@ public class Remove extends Order {
     /**
      * Empty method: Remove orders do not require verification.
      */
+    @Override
     public void verify(final Adjudicator adjudicator) {
         final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
         thisOS.setVerified(true);
@@ -133,6 +141,7 @@ public class Remove extends Order {
     /**
      * Empty method: Remove orders do not require dependency determination.
      */
+    @Override
     public void determineDependencies(final Adjudicator adjudicator) {
     }
 
@@ -143,6 +152,7 @@ public class Remove extends Order {
      * Note that too many (or two few) remove orders may be given; this
      * must be handled by the adjustment adjudicator.
      */
+    @Override
     public void evaluate(final Adjudicator adjudicator) {
         Log.println("--- evaluate() dip.order.Disband ---");
         Log.println("   order: ", this);

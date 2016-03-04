@@ -23,6 +23,7 @@
 package dip.gui.map;
 
 import com.dautelle.util.TypeFormat;
+import dip.gui.map.MapMetadata.SymbolSize;
 import dip.world.Province;
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.dom.util.XLinkSupport;
@@ -144,7 +145,7 @@ public class SVGUtils {
                                                  String symbolName, final String id,
                                                  final String attClass, final float x,
                                                  final float y,
-                                                 final MapMetadata.SymbolSize symbolSize) {
+                                                 final SymbolSize symbolSize) {
         // prepend '#' to name, if required
         if (symbolName.charAt(0) != '#') {
             final StringBuffer sb = new StringBuffer(symbolName.length() + 1);
@@ -261,7 +262,7 @@ public class SVGUtils {
     public static Map tagFinderSVG(final List<String> lookList, final Node root,
                                    final boolean anySVGElement) {
         final List<String> list = new ArrayList<>(lookList);
-        final Map map = new HashMap((4 * lookList.size()) / 3);
+        final Map map = new HashMap(4 * lookList.size() / 3);
 
         // recursively walk tree from root
         nodeWalker(root, list, map, anySVGElement);
@@ -318,9 +319,9 @@ public class SVGUtils {
      */
     private static void nodeWalker(final Node node, final List<String> list, final Map map,
                                    final boolean anySVGElement) {
-        if (node.getNodeType() == Node.ELEMENT_NODE && ((anySVGElement && node instanceof org.w3c.dom.svg.SVGElement) || (node
+        if (node.getNodeType() == Node.ELEMENT_NODE && (anySVGElement && node instanceof SVGElement || node
                 .getNodeName() == SVGConstants.SVG_G_TAG || node
-                .getNodeName() == SVGConstants.SVG_SYMBOL_TAG))) {
+                .getNodeName() == SVGConstants.SVG_SYMBOL_TAG)) {
             // check if the element has an ID attribute
             if (node.hasAttributes()) {
                 final NamedNodeMap attributes = node.getAttributes();
@@ -454,7 +455,7 @@ public class SVGUtils {
             //System.out.println("viewport extents: (getBestFit()): "+dim);
 
             // find out if width or height is larger; we use that to scale.
-            double scaleFactor = 0.0;
+            double scaleFactor;
             if (docSize.getWidth() >= docSize.getHeight()) {
                 scaleFactor = dim.getWidth() / docSize.getWidth();
             } else {

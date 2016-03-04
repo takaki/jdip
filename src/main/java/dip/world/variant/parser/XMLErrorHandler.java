@@ -27,6 +27,8 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
+import java.util.Objects;
+
 /**
  * A simple error handler for the XML parsers.
  * <p>
@@ -43,6 +45,7 @@ public final class XMLErrorHandler implements ErrorHandler {
     /**
      * Handle a (recoverable) error
      */
+    @Override
     public void error(final SAXParseException exception) {
         showError(exception, "Error");
     }// error()
@@ -50,6 +53,7 @@ public final class XMLErrorHandler implements ErrorHandler {
     /**
      * Handle a non-recoverable error
      */
+    @Override
     public void fatalError(final SAXParseException exception) {
         showError(exception, "Fatal Error");
     }// fatalError()
@@ -57,6 +61,7 @@ public final class XMLErrorHandler implements ErrorHandler {
     /**
      * Handle a warning
      */
+    @Override
     public void warning(final SAXParseException exception) {
         showError(exception, "Warning");
     }// warning()
@@ -81,7 +86,7 @@ public final class XMLErrorHandler implements ErrorHandler {
         final StringBuffer sb = new StringBuffer(256);
         String systemId = e.getSystemId();
 
-        if (systemId != null) {
+        if (Objects.nonNull(systemId)) {
             final int index = systemId.lastIndexOf('/');
 
             if (index != -1) {

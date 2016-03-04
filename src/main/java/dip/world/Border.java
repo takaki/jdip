@@ -102,7 +102,7 @@ import java.util.stream.Collectors;
  * the specified locations. Optional. </li>
  * </ul>
  */
-public class Border implements Serializable {
+public final class Border implements Serializable {
     /**
      * Constant indicating year was omitted
      */
@@ -157,8 +157,7 @@ public class Border implements Serializable {
     public Border(final String id, final String description, final String units,
                   final List<Location> from, final String orders,
                   final String baseMoveModifier, final String season,
-                  final String phase,
-                  final String year) throws InvalidBorderException {
+                  final String phase, final String year) {
         Objects.requireNonNull(id);
         Objects.requireNonNull(description);
         Objects.requireNonNull(units);
@@ -197,29 +196,22 @@ public class Border implements Serializable {
     /**
      * Parses the prohibited SeasonTypes (uses Phase.SeasonTypes.parse())
      */
-    private List<SeasonType> parseProhibitedSeasons(
-            final String in) throws InvalidBorderException {
+    private List<SeasonType> parseProhibitedSeasons(final String in) {
 
-        final List<SeasonType> list = new ArrayList<>();
-        for (final String st : in.split("[, ]+")) {
-            final String tok = st.trim();
+        return Arrays.stream(in.split("[, ]+")).map(String::trim).map(tok -> {
             final SeasonType season = SeasonType.parse(tok).orElseThrow(
                     () -> new InvalidBorderException(String.format(
                             "Border %s: season \"%s\" is not recognized.", id,
                             tok)));
-            list.add(season);
-        }
-        return list;
+            return season;
+        }).collect(Collectors.toList());
     }// parseProhibitedSeasons()
 
     /**
      * Parses the prohibited PhaseTypes (uses Phase.PhaseType.parse())
      */
-    private List<PhaseType> parseProhibitedPhases(
-            final String in) throws InvalidBorderException {
-        final List<PhaseType> list = new ArrayList<>();
-        for (final String st : in.split("[, ]+")) {
-            final String tok = st.trim();
+    private List<PhaseType> parseProhibitedPhases(final String in) {
+        return Arrays.stream(in.split("[, ]+")).map(String::trim).map(tok -> {
             final PhaseType phase = PhaseType.parse(tok).orElseThrow(
                     () -> new InvalidBorderException(String.format(
                             "Border %s: phase \"%s\" is not allowed or recognized.",
@@ -229,11 +221,8 @@ public class Border implements Serializable {
                         "Border %s: phase \"%s\" is not allowed or recognized.",
                         id, tok));
             }
-
-            list.add(phase);
-        }
-
-        return list;
+            return phase;
+        }).collect(Collectors.toList());
     }// parseProhibitedPhases()
 
 
@@ -245,7 +234,7 @@ public class Border implements Serializable {
      * even
      */
 
-    private void parseYear(final String in) throws InvalidBorderException {
+    private void parseYear(final String in) {
         Objects.requireNonNull(in);
 
         yearMin = Integer.MIN_VALUE;
@@ -325,8 +314,7 @@ public class Border implements Serializable {
     /**
      * Parses the order types
      */
-    private List<Class<? extends Order>> parseOrders(
-            final String in) throws InvalidBorderException {
+    private List<Class<? extends Order>> parseOrders(final String in) {
         return parseClasses2Objs(in, "dip.order.Order");
     }// parseOrders()
 
@@ -335,37 +323,32 @@ public class Border implements Serializable {
      * Internal parser helper method
      */
     private List<Class<? extends Order>> parseClasses2Objs(final String in,
-                                                           final String superClassName) throws InvalidBorderException {
+                                                           final String superClassName) {
         final Class<? extends Order> superClass;
         try {
             superClass = Class.forName(superClassName).asSubclass(Order.class);
         } catch (final ClassNotFoundException e) {
             throw new InvalidBorderException(
                     Utils.getLocalString("Border.error.internal",
-                            "parseClasses2Objs()", e.getMessage()));
+                            "parseClasses2Objs()", e.getMessage()), e);
         }
 
-        final List<Class<? extends Order>> list = new ArrayList<>(10);
-        for (final String st : in.split("[, ]+")) {
+        return Arrays.stream(in.split("[, ]+")).map(st -> {
             final Class<? extends Order> cls;
-
             try {
                 cls = Class.forName(st).asSubclass(Order.class);
-            } catch (final ClassNotFoundException ignored) {
+            } catch (final ClassNotFoundException e) {
                 throw new InvalidBorderException(
-                        Utils.getLocalString("Border.error.badclass", id, st));
+                        Utils.getLocalString("Border.error.badclass", id, st),
+                        e);
             }
-
             if (!superClass.isAssignableFrom(cls)) {
                 throw new InvalidBorderException(
                         Utils.getLocalString("Border.error.badderivation", id,
                                 cls.getName(), superClass.getName()));
             }
-
-            list.add(cls);
-        }
-
-        return list;
+            return cls;
+        }).collect(Collectors.toList());
     }// parseClasses2Objs()
 
 
@@ -373,8 +356,7 @@ public class Border implements Serializable {
      * Parses the base move modifier. If string is empty, defaults to 0.
      * The format is just a positive or negative (or 0) integer.
      */
-    private int parseBaseMoveModifier(
-            final String in) throws InvalidBorderException {
+    private int parseBaseMoveModifier(final String in) {
         final String in1 = in.trim();
         try {
             return in1.isEmpty() ? 0 : Integer.parseInt(in1);

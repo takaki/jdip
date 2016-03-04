@@ -30,6 +30,7 @@ import dip.order.ValidationOptions;
 import dip.process.Adjustment.AdjustmentInfoMap;
 import dip.process.RetreatChecker;
 import dip.world.*;
+import dip.world.Unit.Type;
 import org.w3c.dom.svg.SVGDocument;
 import org.w3c.dom.svg.SVGGElement;
 
@@ -362,7 +363,7 @@ public interface GUIOrder extends Orderable {
         /**
          * Gets the Symbol Name for a given unit type
          */
-        public abstract String getSymbolName(Unit.Type unitType);
+        public abstract String getSymbolName(Type unitType);
 
         /**
          * Gets the SVG Document

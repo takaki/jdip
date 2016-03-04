@@ -174,11 +174,13 @@ public class DisplayPreferencePanel extends PreferencePanel {
     }// DisplayPreferencePanel()
 
 
+    @Override
     public String getName() {
         return Utils.getLocalString(I18N_TAB_NAME);
     }// getName()
 
 
+    @Override
     public void apply() {
         final Preferences prefs = SharedPrefs.getUserNode();
 
@@ -201,11 +203,13 @@ public class DisplayPreferencePanel extends PreferencePanel {
     }// apply()
 
 
+    @Override
     public void setDefault() {
         orderFormat = OrderFormatOptions.createDefault();
     }// setDefault()
 
 
+    @Override
     public void cancel() {
         // do nothing
     }// cancel()
@@ -298,7 +302,7 @@ public class DisplayPreferencePanel extends PreferencePanel {
      * Updates the Example text order.
      */
     private void updateExampleAndFormatOptions() {
-        assert (orderFormat != null);
+        assert orderFormat != null;
 
         orderFormat.setPowerFormat(csPower.getFormat());
         orderFormat.setPowerStyle(csPower.getStyle());
@@ -345,7 +349,7 @@ public class DisplayPreferencePanel extends PreferencePanel {
         private boolean allowPlural = false;
         private boolean allowParens = false;
 
-        private static final int PLURAL_DELTA = (OrderFormatOptions.STYLE_PLURAL_NONE - OrderFormatOptions.STYLE_NONE);
+        private static final int PLURAL_DELTA = OrderFormatOptions.STYLE_PLURAL_NONE - OrderFormatOptions.STYLE_NONE;
 
         /**
          * Create a ChoiceSelection with the given category label "label", and
@@ -363,7 +367,7 @@ public class DisplayPreferencePanel extends PreferencePanel {
             }
 
             this.allowPlural = allowPlural;
-            this.allowParens = allowParentheses;
+            allowParens = allowParentheses;
 
             // create and add components
             bg = new ButtonGroup();
@@ -474,7 +478,7 @@ public class DisplayPreferencePanel extends PreferencePanel {
          * Returns the OrderFormat FORMAT specifier
          */
         public int getFormat() {
-            final int mod = (allowParens && checkBox.isSelected()) ? 10 : 0;
+            final int mod = allowParens && checkBox.isSelected() ? 10 : 0;
 
             if (bg.isSelected(brief.getModel())) {
                 return OrderFormatOptions.FORMAT_BRIEF + mod;
@@ -489,8 +493,8 @@ public class DisplayPreferencePanel extends PreferencePanel {
          * Returns the OrderFormat STYLE specifier
          */
         public int getStyle() {
-            final int mod = (allowPlural && checkBox
-                    .isSelected()) ? PLURAL_DELTA : 0;
+            final int mod = allowPlural && checkBox
+                    .isSelected() ? PLURAL_DELTA : 0;
             return styleBox.getSelectedIndex() + mod;
         }// getStyle()
     }// inner class ChoiceSelection
@@ -500,12 +504,14 @@ public class DisplayPreferencePanel extends PreferencePanel {
      * Listens for radiobutton changes, and updates the Example text.
      */
     private class ExampleChangeListener implements ChangeListener, ActionListener {
+        @Override
         public void stateChanged(final ChangeEvent e) {
             if (example != null) {
                 updateExampleAndFormatOptions();
             }
         }// stateChanged()
 
+        @Override
         public void actionPerformed(final ActionEvent e) {
             if (example != null) {
                 updateExampleAndFormatOptions();

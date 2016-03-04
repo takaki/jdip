@@ -59,6 +59,7 @@ public class FastEntityResolver implements EntityResolver {
     /**
      * Resolve the Entity
      */
+    @Override
     public InputSource resolveEntity(final String publicID, final String systemID) {
         if (!isValidating) {
             // log the request

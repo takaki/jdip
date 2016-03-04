@@ -114,8 +114,8 @@ public class SymbolInjector {
     public void inject() throws IOException {
         // find <defs> element
         final Element root = doc.getDocumentElement();
-        Element defs = null;
-        Element style = null;
+        Element defs;
+        Element style;
 
         defs = XMLUtils.findChildElementMatching(root, DEFS_ELEMENT_NAME);
 
@@ -156,8 +156,8 @@ public class SymbolInjector {
         final HashMap<String, Element> defsElementMap = elementMapper(defs, ID_ATTRIBUTE);
 
         final List<Symbol> symbols = sp.getSymbols();
-        assert (symbols != null);
-        assert (symbols.size() > 0);
+        assert symbols != null;
+        assert !symbols.isEmpty();
 
         for (final Symbol symbol : symbols) {
             final Element element = defsElementMap.get(symbol.getName());
@@ -249,7 +249,7 @@ public class SymbolInjector {
      * Throw an error if a duplicate CSS style is encountered.
      */
     private void mergeCSS(final CDATASection cdsNode,
-                          final SymbolPack.CSSStyle[] cssStyles) throws IOException {
+                          final CSSStyle[] cssStyles) throws IOException {
         final String oldCSS = cdsNode.getData();
 
         // collision check

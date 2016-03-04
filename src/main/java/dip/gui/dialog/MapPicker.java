@@ -26,6 +26,7 @@ import dip.gui.ClientFrame;
 import dip.gui.dialog.newgame.NGDMapAndUnits;
 import dip.misc.Utils;
 import dip.world.World;
+import dip.world.World.VariantInfo;
 import dip.world.variant.VariantManager;
 import dip.world.variant.data.MapGraphic;
 import dip.world.variant.data.SymbolPack;
@@ -78,7 +79,7 @@ public class MapPicker extends HeaderDialog {
         this.clientFrame = clientFrame;
         this.world = world;
 
-        final World.VariantInfo vi = world.getVariantInfo();
+        final VariantInfo vi = world.getVariantInfo();
         final Variant variant = new VariantManager()
                 .getVariant(vi.getVariantName(), vi.getVariantVersion()).orElse(null);
         mauSelector = new NGDMapAndUnits();
@@ -111,7 +112,7 @@ public class MapPicker extends HeaderDialog {
             if (!mg.getName().equalsIgnoreCase(originalMapName) || !sp.getName()
                     .equalsIgnoreCase(originalSymbolPackName)) {
                 // set the new URI in World object.
-                final World.VariantInfo vi = world.getVariantInfo();
+                final VariantInfo vi = world.getVariantInfo();
                 vi.setMapName(mg.getName());
 
                 vi.setSymbolPackName(sp.getName());

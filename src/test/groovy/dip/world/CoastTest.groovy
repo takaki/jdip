@@ -1,6 +1,5 @@
 package dip.world
 
-import dip.order.OrderException
 import spock.lang.Specification
 
 class CoastTest extends Specification {
@@ -28,7 +27,7 @@ class CoastTest extends Specification {
 
     def "test normalize"() {
         expect:
-        Coast.normalize(arg) == result
+        Coast.normalize(arg).get() == result
         where:
         arg           || result
         "stp-sc"      || "stp/sc"
@@ -40,10 +39,8 @@ class CoastTest extends Specification {
     }
 
     def "empty parentheses throw exception"() {
-        when:
-        Coast.normalize("stp()")
-        then:
-        thrown(OrderException)
+        expect:
+        Coast.normalize("stp()") == Optional.empty()
     }
 
 //    def "normalize illegal name throw exception"() {

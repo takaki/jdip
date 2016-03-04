@@ -24,11 +24,13 @@ package dip.gui.order;
 
 import dip.gui.map.DefaultMapRenderer2;
 import dip.gui.map.MapMetadata;
+import dip.gui.map.MapMetadata.SymbolSize;
 import dip.gui.map.SVGUtils;
 import dip.misc.Utils;
 import dip.order.Disband;
 import dip.order.Orderable;
 import dip.world.*;
+import dip.world.Unit.Type;
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.util.SVGConstants;
 import org.w3c.dom.svg.SVGElement;
@@ -58,13 +60,14 @@ public class GUIDisband extends Disband implements GUIOrder {
      * Creates a GUIDisband
      */
     protected GUIDisband(final Power power, final Location source,
-                         final Unit.Type sourceUnitType) {
+                         final Type sourceUnitType) {
         super(power, source, sourceUnitType);
     }// GUIDisband()
 
     /**
      * This only accepts Disband orders. All others will throw an IllegalArgumentException.
      */
+    @Override
     public void deriveFrom(final Orderable order) {
         if (!(order instanceof Disband)) {
             throw new IllegalArgumentException();
@@ -80,6 +83,7 @@ public class GUIDisband extends Disband implements GUIOrder {
     }// deriveFrom()
 
 
+    @Override
     public boolean testLocation(final StateInfo stateInfo, final Location location,
                                 final StringBuffer sb) {
         sb.setLength(0);
@@ -114,6 +118,7 @@ public class GUIDisband extends Disband implements GUIOrder {
     }// testLocation()
 
 
+    @Override
     public boolean clearLocations() {
         if (isComplete()) {
             return false;
@@ -128,6 +133,7 @@ public class GUIDisband extends Disband implements GUIOrder {
     }// clearLocations()
 
 
+    @Override
     public boolean setLocation(final StateInfo stateInfo, final Location location,
                                final StringBuffer sb) {
         if (testLocation(stateInfo, location, sb)) {
@@ -148,15 +154,18 @@ public class GUIDisband extends Disband implements GUIOrder {
     }// setLocation()
 
 
+    @Override
     public boolean isComplete() {
-        assert (currentLocNum <= getNumRequiredLocations());
-        return (currentLocNum == getNumRequiredLocations());
+        assert currentLocNum <= getNumRequiredLocations();
+        return currentLocNum == getNumRequiredLocations();
     }// isComplete()
 
+    @Override
     public int getNumRequiredLocations() {
         return REQ_LOC;
     }
 
+    @Override
     public int getCurrentLocationNum() {
         return currentLocNum;
     }
@@ -164,6 +173,7 @@ public class GUIDisband extends Disband implements GUIOrder {
     /**
      * Always throws an IllegalArgumentException
      */
+    @Override
     public void setParam(final Parameter param, final Object value) {
         throw new IllegalArgumentException();
     }
@@ -171,11 +181,13 @@ public class GUIDisband extends Disband implements GUIOrder {
     /**
      * Always throws an IllegalArgumentException
      */
+    @Override
     public Object getParam(final Parameter param) {
         throw new IllegalArgumentException();
     }
 
 
+    @Override
     public void removeFromDOM(final MapInfo mapInfo) {
         if (group != null) {
             final SVGGElement powerGroup = mapInfo
@@ -189,6 +201,7 @@ public class GUIDisband extends Disband implements GUIOrder {
     /**
      * Draws a circle with an X in it
      */
+    @Override
     public void updateDOM(final MapInfo mapInfo) {
         // if we are not displayable, we exit, after remove the order (if
         // it was created)
@@ -250,7 +263,7 @@ public class GUIDisband extends Disband implements GUIOrder {
         failPt = new Point2D.Float(srcPt.x + radius, srcPt.y);
 
         // get symbolsize
-        final MapMetadata.SymbolSize symbolSize = mmd
+        final SymbolSize symbolSize = mmd
                 .getSymbolSize(DefaultMapRenderer2.SYMBOL_REMOVEUNIT);
 
         // create RemoveUnit symbol via a USE element
@@ -263,6 +276,7 @@ public class GUIDisband extends Disband implements GUIOrder {
     }// drawOrder()
 
 
+    @Override
     public boolean isDependent() {
         return false;
     }

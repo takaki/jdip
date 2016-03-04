@@ -39,10 +39,16 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringReader;
+import java.io.UncheckedIOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -106,10 +112,7 @@ public class XMLSymbolParser implements SymbolParser {
                     svgDoc, XPathConstants.STRING);
 
             // get style CDATA
-            if (style == null) {
-                throw new IllegalArgumentException(
-                        "CDATA in <style> node is null.");
-            }
+            Objects.requireNonNull(style);
             // break input into lines
             try (final BufferedReader br = new BufferedReader(
                     new StringReader(style))) {

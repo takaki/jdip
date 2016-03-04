@@ -25,8 +25,10 @@ package dip.gui.dialog;
 import cz.autel.dmi.HIGConstraints;
 import cz.autel.dmi.HIGLayout;
 import dip.gui.ClientFrame;
+import dip.misc.Help.HelpID;
 import dip.misc.Utils;
 import dip.order.ValidationOptions;
+import dip.order.ValidationOptions.DescriptiveOption;
 
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
@@ -56,7 +58,7 @@ public class ValidationOptionsDialog extends HeaderDialog {
     private ValidationOptions valOpts = null;
     private ValidationOptions returnedOpts = null;
     private ClientFrame parent = null;
-    private ValidationOptions.DescriptiveOption[] dopts = null;
+    private DescriptiveOption[] dopts = null;
 
     // GUI components
     private JList<String> optionList = null;
@@ -106,7 +108,7 @@ public class ValidationOptionsDialog extends HeaderDialog {
                                     final ValidationOptions oldOptions) {
         super(parent, Utils.getLocalString(DIALOG_TITLE), true);
         this.parent = parent;
-        this.oldOpts = (oldOptions == null) ? (new ValidationOptions()) : oldOptions;
+        oldOpts = oldOptions == null ? new ValidationOptions() : oldOptions;
 
         // clone old options into new validation options.
         try {
@@ -132,7 +134,7 @@ public class ValidationOptionsDialog extends HeaderDialog {
         // HeaderDialog setup
         setHeaderText(Utils.getText(Utils.getLocalString(HEADER_LOCATION)));
         addTwoButtons(makeCancelButton(), makeOKButton(), false, true);
-        setHelpID(dip.misc.Help.HelpID.Dialog_OrderChecking);
+        setHelpID(HelpID.Dialog_OrderChecking);
 
         // listbox setup
         setupList();
@@ -144,8 +146,9 @@ public class ValidationOptionsDialog extends HeaderDialog {
     }// ValidationOptionsDialog()
 
 
+    @Override
     public void close(final String actionCommand) {
-        returnedOpts = (isOKorAccept(actionCommand)) ? valOpts : oldOpts;
+        returnedOpts = isOKorAccept(actionCommand) ? valOpts : oldOpts;
         dispose();
     }// close()
 
@@ -191,7 +194,7 @@ public class ValidationOptionsDialog extends HeaderDialog {
             if (i < nButtons) {
                 radioButtons[i].setText(bText[i]);
                 radioButtons[i]
-                        .setSelected(((oVals[i].equals(value)) ? true : false));
+                        .setSelected(oVals[i].equals(value) ? true : false);
                 radioButtons[i].setToolTipText(bTips[i]);
                 radioButtons[i].setActionCommand(String.valueOf(i));
                 radioButtons[i].setVisible(true);
@@ -207,6 +210,7 @@ public class ValidationOptionsDialog extends HeaderDialog {
 
 
     private class RBListener implements ActionListener {
+        @Override
         public void actionPerformed(final ActionEvent e) {
             // set options according to what we found from the button group.
             // if possible. The action command corresponds to the button index,
@@ -236,6 +240,7 @@ public class ValidationOptionsDialog extends HeaderDialog {
         optionList.setBorder(new EtchedBorder());
         optionList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         optionList.addListSelectionListener(new ListSelectionListener() {
+            @Override
             public void valueChanged(final ListSelectionEvent e) {
                 updatePanel();
             }
@@ -258,7 +263,7 @@ public class ValidationOptionsDialog extends HeaderDialog {
 
         subPanel.add(new JPanel(), c.rcwh(14, 1, 2, 1));
         for (int i = 0; i < radioButtons.length; i++) {
-            subPanel.add(radioButtons[i], c.rc((2 * (i + 1)), 2, "l"));
+            subPanel.add(radioButtons[i], c.rc(2 * (i + 1), 2, "l"));
         }
 
         final JPanel rightPanel = new JPanel();

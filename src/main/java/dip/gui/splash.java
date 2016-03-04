@@ -118,6 +118,7 @@ public final class splash {
             frame = null;
         }
 
+        @Override
         public void run() {
             //long time = System.currentTimeMillis();
             //System.out.println("splash.run() START: "+time);
@@ -138,7 +139,7 @@ public final class splash {
             win = new Window(frame);
 
             // get image
-            final ClassLoader classLoader = this.getClass().getClassLoader();
+            final ClassLoader classLoader = getClass().getClassLoader();
             img = win.getToolkit()
                     .createImage(classLoader.getResource(SPLASH_GRAPHIC));
 
@@ -154,9 +155,8 @@ public final class splash {
                 }
             }
 
-            tracker = null;
-
             final Canvas canvas = new Canvas() {
+                @Override
                 public void paint(final Graphics g) {
                     super.paint(g);
                     if (img != null) {
@@ -230,6 +230,7 @@ public final class splash {
                 final Dialog dlg = new Dialog(dlgFrame, "jDip Error", true);
 
                 dlg.addWindowListener(new WindowAdapter() {
+                    @Override
                     public void windowClosing(final WindowEvent e) {
                         dlg.hide();
                         dlg.dispose();
@@ -240,6 +241,7 @@ public final class splash {
 
                 final Button button = new Button("  OK  ");
                 button.addActionListener(new ActionListener() {
+                    @Override
                     public void actionPerformed(final ActionEvent e) {
                         dlg.hide();
                         dlg.dispose();

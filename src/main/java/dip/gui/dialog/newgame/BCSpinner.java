@@ -25,6 +25,7 @@ package dip.gui.dialog.newgame;
 import dip.world.Phase.YearType;
 
 import javax.swing.*;
+import javax.swing.JSpinner.DefaultEditor;
 
 /**
  * Creates a Year spinner that (if enabled) correctly handles
@@ -80,7 +81,7 @@ public class BCSpinner extends JSpinner {
     }// getYearTypeValue()
 
 
-    private static class YearTypeEditor extends JSpinner.DefaultEditor {
+    private static class YearTypeEditor extends DefaultEditor {
 
         YearTypeEditor(final JSpinner spinner) {
             super(spinner);
@@ -112,7 +113,7 @@ public class BCSpinner extends JSpinner {
                         "Bad min/max values; cannot be 0");
             }
 
-            this.value = initialYear;
+            value = initialYear;
             this.minimum = minimum;
             this.maximum = maximum;
         }// SpinnerYearTypeModel()
@@ -126,7 +127,7 @@ public class BCSpinner extends JSpinner {
                 throw new IllegalArgumentException("invalid min value");
             }
 
-            this.minimum = min;
+            minimum = min;
             fireStateChanged();
         }// setMinimum()
 
@@ -138,7 +139,7 @@ public class BCSpinner extends JSpinner {
                 throw new IllegalArgumentException("invalid max value");
             }
 
-            this.maximum = max;
+            maximum = max;
             fireStateChanged();
         }// setMaximum()
 
@@ -160,6 +161,7 @@ public class BCSpinner extends JSpinner {
         /**
          * Returns the next number in the sequence. Bounds-checks.
          */
+        @Override
         public Object getNextValue() {
             final YearType incremented = value.getNext();
             if (incremented.getYear() > maximum) {
@@ -173,6 +175,7 @@ public class BCSpinner extends JSpinner {
         /**
          * Returns the previous number in the sequence. Bounds-checks.
          */
+        @Override
         public Object getPreviousValue() {
             final YearType decremented = value.getPrevious();
             if (decremented.getYear() < minimum) {
@@ -185,6 +188,7 @@ public class BCSpinner extends JSpinner {
         /**
          * Returns the current value.
          */
+        @Override
         public Object getValue() {
             return value;
         }// getValue().
@@ -195,6 +199,7 @@ public class BCSpinner extends JSpinner {
          * is converted to a String and parsing is attempted.
          * If the value is not valid, the current value is used.
          */
+        @Override
         public void setValue(final Object newValue) {
             // separate by type
             YearType yt = null;
@@ -209,7 +214,7 @@ public class BCSpinner extends JSpinner {
             // if legal, use it
             if (yt != null && yt.getYear() >= minimum && yt
                     .getYear() <= maximum) {
-                this.value = yt;
+                value = yt;
             }
 
             // update

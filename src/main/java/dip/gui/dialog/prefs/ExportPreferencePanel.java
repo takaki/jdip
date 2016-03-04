@@ -27,6 +27,7 @@ import cz.autel.dmi.HIGConstraints;
 import cz.autel.dmi.HIGLayout;
 import dip.gui.ClientFrame;
 import dip.gui.swing.AssocJComboBox;
+import dip.gui.swing.AssocJComboBox.AssociatedObj;
 import dip.gui.swing.GradientJLabel;
 import dip.misc.SharedPrefs;
 import dip.misc.Utils;
@@ -110,7 +111,7 @@ public class ExportPreferencePanel extends PreferencePanel {
 
 
         // layout
-        final int[] h1 = {BORDER, 0, 5, 0, 1, 0, 1, 0, 1, 0, (BORDER * 2), 0, 5, 0, 1, 0, 1, 0, BORDER};
+        final int[] h1 = {BORDER, 0, 5, 0, 1, 0, 1, 0, 1, 0, BORDER * 2, 0, 5, 0, 1, 0, 1, 0, BORDER};
         final int[] w1 = {BORDER, INDENT, 0, 0, BORDER};
 
         final HIGLayout l1 = new HIGLayout(w1, h1);
@@ -191,9 +192,9 @@ public class ExportPreferencePanel extends PreferencePanel {
         final int bpp = prefs.getInt(NODE_PNG_BPP, 0);
 
         // check hints
-        w = (w < 0 || w > MAX_IMG_SIZE) ? 0 : w;
-        h = (h < 0 || h > MAX_IMG_SIZE) ? 0 : h;
-        q = (q < 0.0f || q > 1.0f) ? DEFAULT_JPG_QUALITY : q;
+        w = w < 0 || w > MAX_IMG_SIZE ? 0 : w;
+        h = h < 0 || h > MAX_IMG_SIZE ? 0 : h;
+        q = q < 0.0f || q > 1.0f ? DEFAULT_JPG_QUALITY : q;
 
         // jpg quality slider (0-100 int)
         jpgQuality = new JSlider(JSlider.HORIZONTAL, 0, 100, 100);
@@ -215,7 +216,7 @@ public class ExportPreferencePanel extends PreferencePanel {
             bppText[i] = bppVals[i].toString();
         }
 
-        final AssocJComboBox.AssociatedObj[] assocObjs = AssocJComboBox.AssociatedObj
+        final AssociatedObj[] assocObjs = AssociatedObj
                 .createAssociatedObjects(bppVals, bppText, bppVals[0], true);
         pngBPP = new AssocJComboBox(assocObjs);
         pngBPP.reset();
@@ -258,11 +259,13 @@ public class ExportPreferencePanel extends PreferencePanel {
     }// makeAndSetGUIItems()
 
 
+    @Override
     public String getName() {
         return Utils.getLocalString(I18N_TAB_NAME);
     }// getName()
 
 
+    @Override
     public void apply() {
         final Preferences prefs = SharedPrefs.getUserNode();
 
@@ -270,7 +273,7 @@ public class ExportPreferencePanel extends PreferencePanel {
         prefs.putInt(NODE_PNG_BPP,
                 ((Integer) pngBPP.getSelectedValue()).intValue());
         prefs.putFloat(NODE_EXPORT_JPG_QUALITY,
-                ((float) jpgQuality.getValue() / 100.0f));
+                (float) jpgQuality.getValue() / 100.0f);
 
         int w = 0;
         int h = 0;
@@ -293,11 +296,13 @@ public class ExportPreferencePanel extends PreferencePanel {
     }// apply()
 
 
+    @Override
     public void cancel() {
         // do nothing
     }// cancel()
 
 
+    @Override
     public void setDefault() {
         jrb[JRB_FULLSIZE].setSelected(true);
         pngBPP.setSelectedIndex(0);
@@ -328,9 +333,9 @@ public class ExportPreferencePanel extends PreferencePanel {
         final int bpp = prefs.getInt(NODE_PNG_BPP, 0);
 
         // check hints
-        w = (w < 0 || w > MAX_IMG_SIZE) ? 0 : w;
-        h = (h < 0 || h > MAX_IMG_SIZE) ? 0 : h;
-        q = (q < 0.0f || q > 1.0f) ? DEFAULT_JPG_QUALITY : q;
+        w = w < 0 || w > MAX_IMG_SIZE ? 0 : w;
+        h = h < 0 || h > MAX_IMG_SIZE ? 0 : h;
+        q = q < 0.0f || q > 1.0f ? DEFAULT_JPG_QUALITY : q;
 
         // add hints
         if (w != 0) {

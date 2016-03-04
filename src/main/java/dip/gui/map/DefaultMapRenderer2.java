@@ -23,6 +23,7 @@
 package dip.gui.map;
 
 import dip.gui.ClientMenu;
+import dip.gui.map.MapMetadata.SymbolSize;
 import dip.gui.map.RenderCommandFactory.RenderCommand;
 import dip.gui.order.GUIOrder;
 import dip.gui.order.GUIOrder.MapInfo;
@@ -31,11 +32,13 @@ import dip.order.Orderable;
 import dip.world.Coast;
 import dip.world.Location;
 import dip.world.Phase;
+import dip.world.Phase.PhaseType;
 import dip.world.Position;
 import dip.world.Power;
 import dip.world.Province;
 import dip.world.TurnState;
 import dip.world.Unit;
+import dip.world.Unit.Type;
 import dip.world.WorldMap;
 import dip.world.variant.data.SymbolPack;
 import org.apache.batik.dom.svg.SVGDOMImplementation;
@@ -55,6 +58,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 
 /**
@@ -205,7 +209,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      */
     public DefaultMapRenderer2(final MapPanel mp, final SymbolPack sp) throws MapException {
         super(mp);
-        this.symbolPack = sp;
+        symbolPack = sp;
         Log.printTimed(mapPanel.startTime, "DMR2 constructor start");
 
         // init variables
@@ -291,6 +295,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
         final RunnableQueue rq = getRunnableQueue();
         if (rq != null) {
             rq.invokeLater(new Runnable() {
+                @Override
                 public void run() {
                     synchronized (trackerMap) {
                         for (Province province : provinces) {
@@ -322,6 +327,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
     /**
      * Returns a DMR2RenderCommandFactory
      */
+    @Override
     public RenderCommandFactory getRenderCommandFactory() {
         return rcf;
     }// getRenderCommandFactory()
@@ -333,6 +339,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      * WARNING: render events must not be processed after or
      * during a call to this method.
      */
+    @Override
     public void close() {
         // super cleanup
         super.close();
@@ -375,6 +382,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
     /**
      * Gets the MapMetadata object
      */
+    @Override
     public MapMetadata getMapMetadata() {
         return mapMeta;
     }// getMapMetadata()
@@ -389,8 +397,10 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
     /**
      * Called when an order has been added to the order list
      */
+    @Override
     protected void orderCreated(final GUIOrder order) {
         execRenderCommand(new RenderCommand(this) {
+            @Override
             public void execute() {
                 Log.println("DMR2: orderCreated(): ", order);
 
@@ -407,8 +417,10 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
     /**
      * Called when an order has been deleted from the order list
      */
+    @Override
     protected void orderDeleted(final GUIOrder order) {
         execRenderCommand(new RenderCommand(this) {
+            @Override
             public void execute() {
                 Log.println("DMR2: orderDeleted(): ", order);
 
@@ -424,8 +436,10 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
     /**
      * Called when multiple orders have been added from the order list
      */
+    @Override
     protected void multipleOrdersCreated(final GUIOrder[] orders) {
         execRenderCommand(new RenderCommand(this) {
+            @Override
             public void execute() {
                 Log.println("DMR2: multipleOrdersCreated(): ", orders);
                 final MapInfo mapInfo = new DMRMapInfo(turnState);
@@ -445,8 +459,10 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
     /**
      * Called when multiple orders have been deleted from the order list
      */
+    @Override
     protected void multipleOrdersDeleted(final GUIOrder[] orders) {
         execRenderCommand(new RenderCommand(this) {
+            @Override
             public void execute() {
                 Log.println("DMR2: multipleOrdersDeleted(): ", orders);
                 final MapInfo mapInfo = new DMRMapInfo(turnState);
@@ -467,8 +483,10 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
     /**
      * Called when the displayable powers have changed
      */
+    @Override
     protected void displayablePowersChanged(final Power[] diplayPowers) {
         execRenderCommand(new RenderCommand(this) {
+            @Override
             public void execute() {
                 Log.println("DMR2: displayablePowersChanged()");
 
@@ -498,14 +516,15 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
         // change turnstate.
         turnState = ts;
         position = ts.getPosition();
-        isDislodgedPhase = (ts.getPhase()
-                .getPhaseType() == Phase.PhaseType.RETREAT);
+        isDislodgedPhase = ts.getPhase()
+                .getPhaseType() == PhaseType.RETREAT;
     }// setTurnState()
 
 
     /**
      * Get a map rendering setting
      */
+    @Override
     public Object getRenderSetting(final Object key) {
         synchronized (renderSettings) {
             return renderSettings.get(key);
@@ -526,12 +545,13 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
     /**
      * Get the Symbol Name for the given unit type
      */
-    public String getSymbolName(final Unit.Type unitType) {
-        if (unitType == Unit.Type.ARMY) {
+    @Override
+    public String getSymbolName(final Type unitType) {
+        if (unitType == Type.ARMY) {
             return DefaultMapRenderer2.SYMBOL_ARMY;
-        } else if (unitType == Unit.Type.FLEET) {
+        } else if (unitType == Type.FLEET) {
             return DefaultMapRenderer2.SYMBOL_FLEET;
-        } else if (unitType == Unit.Type.WING) {
+        } else if (unitType == Type.WING) {
             return DefaultMapRenderer2.SYMBOL_WING;
         } else {
             throw new IllegalStateException(
@@ -543,6 +563,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
     /**
      * Gets the location that corresponds to a given string id<br>Assumes ID is lowercase!
      */
+    @Override
     public Location getLocation(final String id) {
         final Province province = worldMap.getProvince(id);
         if (province != null) {
@@ -562,11 +583,12 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
         final RunnableQueue rq = getRunnableQueue();
         if (rq != null) {
             rq.invokeLater(new Runnable() {
+                @Override
                 public void run() {
                     SVGGElement orderLayer = layerMap
                             .get(LAYER_ORDERS);
 
-                    for (int z = (powerOrderMap.length - 1); z >= 0; z--) {
+                    for (int z = powerOrderMap.length - 1; z >= 0; z--) {
                         // determine which order layer we should use.
                         if (z == 0) {
                             // special case: this has its own explicit group in the SVG file
@@ -786,7 +808,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
             synchronized (renderSettings) {
                 final Iterator iter = oldRenderSettings.entrySet().iterator();
                 while (iter.hasNext()) {
-                    final Map.Entry me = (Map.Entry) iter.next();
+                    final Entry me = (Entry) iter.next();
                     renderSettings.put(me.getKey(), me.getValue());
                 }
 
@@ -975,8 +997,8 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
                 // we are NOT in influence mode
                 //
                 if (renderSettings
-                        .get(MapRenderer2.KEY_SHOW_UNORDERED) == Boolean.TRUE && (getPhaseApropriateUnit(
-                        province) != null) && !isOrdered(province)) {
+                        .get(MapRenderer2.KEY_SHOW_UNORDERED) == Boolean.TRUE && getPhaseApropriateUnit(
+                        province) != null && !isOrdered(province)) {
                     // we are unordered!
                     // unordered CSS style takes precedence over any existing style.
                     setCSSIfChanged(provinceGroupElement, UNORDERED);
@@ -1041,7 +1063,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
         SVGElement newElement = null;
 
         // get old element (dislodged or normal)
-        final SVGElement oldElement = (isDislodged) ? tracker
+        final SVGElement oldElement = isDislodged ? tracker
                 .getDislodgedUnitElement() : tracker.getUnitElement();
 
         // remove, add, or replace as appropriate
@@ -1054,8 +1076,8 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
         } else if (oldElement == null && posUnit != null) {
             // case 2: new unit not null, old unit null: create new element, then add
             newElement = makeUnitUse(posUnit, province, isDislodged);
-            final SVGElement layer = ((isDislodged) ? layerMap
-                    .get(LAYER_DISLODGED_UNITS) : layerMap.get(LAYER_UNITS));
+            final SVGElement layer = isDislodged ? layerMap
+                    .get(LAYER_DISLODGED_UNITS) : layerMap.get(LAYER_UNITS);
             layer.appendChild(newElement);
         } else {
             // case 3: neither unit null, but different; create new element, then replace
@@ -1078,25 +1100,25 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
     private SVGElement makeUnitUse(final Unit u, final Province province,
                                    final boolean isDislodged) {
         // determine symbol ID
-        String symbolID = null;
-        if (u.getType().equals(Unit.Type.FLEET)) {
-            symbolID = (isDislodged) ? SYMBOL_DISLODGED_FLEET : SYMBOL_FLEET;
-        } else if (u.getType().equals(Unit.Type.ARMY)) {
-            symbolID = (isDislodged) ? SYMBOL_DISLODGED_ARMY : SYMBOL_ARMY;
-        } else if (u.getType().equals(Unit.Type.WING)) {
-            symbolID = (isDislodged) ? SYMBOL_DISLODGED_WING : SYMBOL_WING;
+        String symbolID;
+        if (u.getType() == Type.FLEET) {
+            symbolID = isDislodged ? SYMBOL_DISLODGED_FLEET : SYMBOL_FLEET;
+        } else if (u.getType() == Type.ARMY) {
+            symbolID = isDislodged ? SYMBOL_DISLODGED_ARMY : SYMBOL_ARMY;
+        } else if (u.getType() == Type.WING) {
+            symbolID = isDislodged ? SYMBOL_DISLODGED_WING : SYMBOL_WING;
         } else {
             throw new IllegalArgumentException(
                     "undefined or unknown unit type");
         }
 
         // get symbol size data
-        final MapMetadata.SymbolSize symbolSize = mapMeta.getSymbolSize(symbolID);
-        assert (symbolSize != null);
+        final SymbolSize symbolSize = mapMeta.getSymbolSize(symbolID);
+        assert symbolSize != null;
 
         // get the rectangle coordinates
         final Coast coast = u.getCoast();
-        final Point2D.Float pos = (isDislodged) ? mapMeta
+        final Point2D.Float pos = isDislodged ? mapMeta
                 .getDislodgedUnitPt(province, coast) : mapMeta
                 .getUnitPt(province, coast);
         final float x = pos.x;
@@ -1158,7 +1180,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      */
     private SVGElement makeSCUse(final Province province, final Power power) {
         final Point2D.Float pos = mapMeta.getSCPt(province);
-        final MapMetadata.SymbolSize symbolSize = mapMeta.getSymbolSize(SYMBOL_SC);
+        final SymbolSize symbolSize = mapMeta.getSymbolSize(SYMBOL_SC);
         return SVGUtils
                 .createUseElement(doc, SYMBOL_SC, null, getSCCSSClass(power),
                         pos.x, pos.y, symbolSize);
@@ -1299,7 +1321,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
                 .tagFinderSVG(uscoreProvList, doc.getRootElement(), true);
 
         // safety check
-        assert (uscoreProvList.size() == lookupProvList.size());
+        assert uscoreProvList.size() == lookupProvList.size();
 
         // go through the map and add non-null objects to the tracker.
         for (int i = 0; i < lookupProvList.size(); i++) {
@@ -1319,7 +1341,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      * Retreat phase.
      */
     private Unit getPhaseApropriateUnit(final Province p) {
-        return (isDislodgedPhase) ? position.getDislodgedUnit(p)
+        return isDislodgedPhase ? position.getDislodgedUnit(p)
                 .orElse(null) : position.getUnit(p).orElse(null);
     }// getPhaseAppropriateUnit()
 
@@ -1496,31 +1518,37 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
     /**
      * Implicit class for MapInfo interface
      */
-    protected class DMRMapInfo extends GUIOrder.MapInfo {
+    protected class DMRMapInfo extends MapInfo {
         public DMRMapInfo(final TurnState ts) {
             super(ts);
         }// DMRMapInfo()
 
+        @Override
         public MapMetadata getMapMetadata() {
             return mapMeta;
         }
 
+        @Override
         public String getPowerCSS(final Power power) {
-            return DefaultMapRenderer2.this.getPowerName(power);
+            return getPowerName(power);
         }
 
+        @Override
         public String getUnitCSS(final Power power) {
-            return DefaultMapRenderer2.this.getUnitCSSClass(power);
+            return getUnitCSSClass(power);
         }
 
-        public String getSymbolName(final Unit.Type unitType) {
+        @Override
+        public String getSymbolName(final Type unitType) {
             return DefaultMapRenderer2.this.getSymbolName(unitType);
         }
 
+        @Override
         public SVGDocument getDocument() {
             return doc;
         }
 
+        @Override
         public Power[] getDisplayablePowers() {
             final Power[] powers = super.getDisplayablePowers();
             if (powers == null) {
@@ -1530,6 +1558,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
             return powers;
         }// getDisplayablePowers()
 
+        @Override
         public SVGGElement getPowerSVGGElement(final Power p, final int z) {
             return DefaultMapRenderer2.this.getPowerSVGGElement(p, z);
         }

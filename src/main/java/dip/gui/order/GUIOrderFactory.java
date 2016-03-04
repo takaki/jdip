@@ -27,6 +27,7 @@ import dip.world.Location;
 import dip.world.Power;
 import dip.world.Province;
 import dip.world.Unit;
+import dip.world.Unit.Type;
 
 import java.util.List;
 
@@ -134,8 +135,9 @@ public class GUIOrderFactory extends OrderFactory {
     /**
      * Creates a GUIHold order
      */
+    @Override
     public Hold createHold(final Power power, final Location source,
-                           final Unit.Type sourceUnitType) {
+                           final Type sourceUnitType) {
         return new GUIHold(power, source, sourceUnitType);
     }// createHold()
 
@@ -143,7 +145,8 @@ public class GUIOrderFactory extends OrderFactory {
     /**
      * Creates a GUIMove order
      */
-    public Move createMove(final Power power, final Location source, final Unit.Type srcUnitType,
+    @Override
+    public Move createMove(final Power power, final Location source, final Type srcUnitType,
                            final Location dest) {
         return new GUIMove(power, source, srcUnitType, dest, false);
     }// createMove()
@@ -151,7 +154,8 @@ public class GUIOrderFactory extends OrderFactory {
     /**
      * Creates a GUIMove order
      */
-    public Move createMove(final Power power, final Location source, final Unit.Type srcUnitType,
+    @Override
+    public Move createMove(final Power power, final Location source, final Type srcUnitType,
                            final Location dest, final boolean isConvoying) {
         return new GUIMove(power, source, srcUnitType, dest, isConvoying);
     }// createMove()
@@ -159,7 +163,8 @@ public class GUIOrderFactory extends OrderFactory {
     /**
      * Creates a GUIMove order
      */
-    public Move createMove(final Power power, final Location src, final Unit.Type srcUnitType,
+    @Override
+    public Move createMove(final Power power, final Location src, final Type srcUnitType,
                            final Location dest, final Province[] convoyRoute) {
         return new GUIMove(power, src, srcUnitType, dest, convoyRoute);
     }// createMove()
@@ -167,7 +172,8 @@ public class GUIOrderFactory extends OrderFactory {
     /**
      * Creates a GUIMove order
      */
-    public Move createMove(final Power power, final Location src, final Unit.Type srcUnitType,
+    @Override
+    public Move createMove(final Power power, final Location src, final Type srcUnitType,
                            final Location dest, final List<Province> routes) {
         return new GUIMove(power, src, srcUnitType, dest, routes);
     }// createMove()
@@ -176,9 +182,10 @@ public class GUIOrderFactory extends OrderFactory {
     /**
      * Creates a GUISupport order, to Support a unit staying in place.
      */
+    @Override
     public Support createSupport(final Power power, final Location src,
-                                 final Unit.Type srcUnitType, final Location supSrc,
-                                 final Power supPower, final Unit.Type supUnitType) {
+                                 final Type srcUnitType, final Location supSrc,
+                                 final Power supPower, final Type supUnitType) {
         return new GUISupport(power, src, srcUnitType, supSrc, supPower,
                 supUnitType);
     }// createSupport()
@@ -188,9 +195,10 @@ public class GUIOrderFactory extends OrderFactory {
      * Creates a GUISupport order, to Support a unit moving
      * (or staying in place, if supDest == null)
      */
+    @Override
     public Support createSupport(final Power power, final Location src,
-                                 final Unit.Type srcUnitType, final Location supSrc,
-                                 final Power supPower, final Unit.Type supUnitType,
+                                 final Type srcUnitType, final Location supSrc,
+                                 final Power supPower, final Type supUnitType,
                                  final Location supDest) {
         return new GUISupport(power, src, srcUnitType, supSrc, supPower,
                 supUnitType, supDest);
@@ -200,9 +208,10 @@ public class GUIOrderFactory extends OrderFactory {
     /**
      * Creates a GUIConvoy order
      */
-    public Convoy createConvoy(final Power power, final Location src, final Unit.Type srcUnitType,
+    @Override
+    public Convoy createConvoy(final Power power, final Location src, final Type srcUnitType,
                                final Location convoySrc, final Power convoyPower,
-                               final Unit.Type convoySrcUnitType,
+                               final Type convoySrcUnitType,
                                final Location convoyDest) {
         return new GUIConvoy(power, src, srcUnitType, convoySrc, convoyPower,
                 convoySrcUnitType, convoyDest);
@@ -212,8 +221,9 @@ public class GUIOrderFactory extends OrderFactory {
     /**
      * Creates a GUIRetreat order
      */
+    @Override
     public Retreat createRetreat(final Power power, final Location source,
-                                 final Unit.Type srcUnitType, final Location dest) {
+                                 final Type srcUnitType, final Location dest) {
         return new GUIRetreat(power, source, srcUnitType, dest);
     }// createRetreat()
 
@@ -221,8 +231,9 @@ public class GUIOrderFactory extends OrderFactory {
     /**
      * Creates a GUIDisband order
      */
+    @Override
     public Disband createDisband(final Power power, final Location source,
-                                 final Unit.Type sourceUnitType) {
+                                 final Type sourceUnitType) {
         return new GUIDisband(power, source, sourceUnitType);
     }// createDisband()
 
@@ -230,8 +241,9 @@ public class GUIOrderFactory extends OrderFactory {
     /**
      * Creates a GUIBuild order
      */
+    @Override
     public Build createBuild(final Power power, final Location source,
-                             final Unit.Type sourceUnitType) {
+                             final Type sourceUnitType) {
         return new GUIBuild(power, source, sourceUnitType);
     }// createBuild()
 
@@ -239,14 +251,16 @@ public class GUIOrderFactory extends OrderFactory {
     /**
      * Creates a GUIRemove order
      */
+    @Override
     public Remove createRemove(final Power power, final Location source,
-                               final Unit.Type sourceUnitType) {
+                               final Type sourceUnitType) {
         return new GUIRemove(power, source, sourceUnitType);
     }// createRemove()
 
     /**
      * Creates a GUIWaive order
      */
+    @Override
     public Waive createWaive(final Power power, final Location source) {
         return new GUIWaive(power, source);
     }// createGUIWaive()
@@ -254,8 +268,9 @@ public class GUIOrderFactory extends OrderFactory {
     /**
      * Creates a GUIDefineState order
      */
+    @Override
     public DefineState createDefineState(final Power power, final Location source,
-                                         final Unit.Type sourceUnitType) throws OrderException {
+                                         final Type sourceUnitType) throws OrderException {
         return new GUIDefineState(power, source, sourceUnitType);
     }// createDefineState()
 

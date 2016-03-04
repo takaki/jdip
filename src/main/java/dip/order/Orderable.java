@@ -25,6 +25,7 @@ package dip.order;
 
 import dip.process.Adjudicator;
 import dip.world.*;
+import dip.world.Unit.Type;
 
 /**
  * All Order objects must implement this interface.
@@ -49,7 +50,7 @@ public interface Orderable {
     /**
      * Gets the Type of the ordered unit
      */
-    public Unit.Type getSourceUnitType();
+    public Type getSourceUnitType();
 
     /**
      * Gets the Power ordering the ordered Source unit

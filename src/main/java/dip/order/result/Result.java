@@ -137,7 +137,7 @@ public class Result implements Serializable, Comparable<Result> {
         final Result result = (Result) o;
 
         // first: compare powers
-        int compareResult = 0;
+        int compareResult;
         if (result.power == null && power == null) {
             compareResult = 0;
         } else if (power == null && result.power != null) {

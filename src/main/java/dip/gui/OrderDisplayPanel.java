@@ -30,7 +30,10 @@ import dip.gui.undo.*;
 import dip.misc.Utils;
 import dip.order.*;
 import dip.process.Adjustment;
+import dip.process.Adjustment.AdjustmentInfo;
+import dip.process.Adjustment.AdjustmentInfoMap;
 import dip.world.*;
+import dip.world.Phase.PhaseType;
 
 import javax.swing.*;
 import javax.swing.undo.CompoundEdit;
@@ -120,7 +123,7 @@ public class OrderDisplayPanel extends JPanel {
     private Power[] orderablePowers = null;
     private OrderListModel orderListModel = null;
     private boolean isEditable = false;
-    private Adjustment.AdjustmentInfoMap adjMap = null;    // non-null only in Adjustment phase
+    private AdjustmentInfoMap adjMap = null;    // non-null only in Adjustment phase
     private UndoRedoManager undoManager = null;
 
     // GUI component instance variables
@@ -427,7 +430,7 @@ public class OrderDisplayPanel extends JPanel {
         if (!ordersAdded.isEmpty())    // make sure we added at least one order
         {
             Orderable[] tmpDel = null;
-            if (ordersDeleted.size() > 0) {
+            if (!ordersDeleted.isEmpty()) {
                 tmpDel = (Orderable[]) ordersDeleted
                         .toArray(new Orderable[ordersAdded.size()]);
                 clientFrame.fireMultipleOrdersDeleted(tmpDel);
@@ -455,7 +458,7 @@ public class OrderDisplayPanel extends JPanel {
             clientFrame.fireStateModified();
         }
 
-        return ((map.size() > 0) ? map : null);
+        return !map.isEmpty() ? map : null;
     }// addOrdersRaw()
 
 
@@ -473,7 +476,7 @@ public class OrderDisplayPanel extends JPanel {
         }
 
         final boolean found = removeOrderFromTS(order);
-        assert (found);
+        assert found;
 
         if (undoable && found) {
             undoManager.addEdit(new UndoDeleteOrder(undoManager, order));
@@ -505,7 +508,7 @@ public class OrderDisplayPanel extends JPanel {
 
         for (final Orderable order : orders) {
             if (isOrderable(order)) {
-                assert (removeOrderFromTS(order));
+                assert removeOrderFromTS(order);
                 deletedOrderList.add(order);
                 count++;
             }
@@ -531,7 +534,7 @@ public class OrderDisplayPanel extends JPanel {
             orderList.clearSelection();
         }
 
-        return (count == orders.length);
+        return count == orders.length;
     }// removeOrders()
 
     /**
@@ -541,7 +544,7 @@ public class OrderDisplayPanel extends JPanel {
      * @param undoable - <b>true</b> if this is an undoable action
      */
     public synchronized void removeAllOrders(final boolean undoable) {
-        Orderable[] deletedOrderArray = null;
+        Orderable[] deletedOrderArray;
 
         //synchronized(clientFrame.getLock())
         {
@@ -551,7 +554,7 @@ public class OrderDisplayPanel extends JPanel {
             for (Power orderablePower : orderablePowers) {
                 final List<Order> orders = turnState
                         .getOrders(orderablePower);
-                if (orders.size() > 0) {
+                if (!orders.isEmpty()) {
                     deletedOrders.addAll(orders);
                     orders.clear();
                 }
@@ -604,7 +607,7 @@ public class OrderDisplayPanel extends JPanel {
         // they should all be DisplayOrder objects.
         for (int i = 0; i < selected.length; i++) {
             selectedOrders[i] = ((DisplayOrder) selected[i]).getOrder();
-            assert (removeOrderFromTS(selectedOrders[i]));
+            assert removeOrderFromTS(selectedOrders[i]);
         }
 
         if (selectedOrders.length == 1) {
@@ -657,7 +660,7 @@ public class OrderDisplayPanel extends JPanel {
      */
     public void setSorting(final String sortType, final boolean reversed) {
         if (sortType != null) {
-            DOComparator sortComparator = null;
+            DOComparator sortComparator;
 
             if (SORT_POWER.equals(sortType)) {
                 sortComparator = new DOSortPower();
@@ -709,6 +712,7 @@ public class OrderDisplayPanel extends JPanel {
      * Overriden to return the preferred size. This ensures that
      * we resize properly in a JSplitPane.
      */
+    @Override
     public Dimension getMinimumSize() {
         return new Dimension(getPreferredSize());
     }// getMinimumSize()
@@ -807,7 +811,7 @@ public class OrderDisplayPanel extends JPanel {
      */
     private void checkAdjustments(final Power power) throws OrderException {
         if (adjMap != null) {
-            final Adjustment.AdjustmentInfo adjInfo = adjMap.get(power);
+            final AdjustmentInfo adjInfo = adjMap.get(power);
             final int numOrders = turnState.getOrders(power).size();
             final int max = Math.abs(adjInfo.getAdjustmentAmount());
 
@@ -827,27 +831,33 @@ public class OrderDisplayPanel extends JPanel {
      */
     protected class ODPPropertyListener extends AbstractCFPListener {
 
+        @Override
         public void actionOrderCreated(final Orderable order) {
             orderListModel.addOrder(order);
         }// actionOrderCreated()
 
+        @Override
         public void actionOrderDeleted(final Orderable order) {
             orderListModel.removeOrder(order);
         }// actionOrderDeleted()
 
+        @Override
         public void actionOrdersCreated(final Orderable[] orders) {
             orderListModel.addOrders(orders);
         }// actionOrdersCreated()
 
+        @Override
         public void actionOrdersDeleted(final Orderable[] orders) {
             orderListModel.removeOrders(orders);
         }// actionOrdersDeleted()
 
+        @Override
         public void actionOrderablePowersChanged(final Power[] oldPowers,
                                                  final Power[] newPowers) {
             orderablePowers = newPowers;
         }// actionOrderablePowersChanged()
 
+        @Override
         public void actionDisplayablePowersChanged(final Power[] oldPowers,
                                                    final Power[] newPowers) {
             displayablePowers = newPowers;
@@ -856,6 +866,7 @@ public class OrderDisplayPanel extends JPanel {
             }
         }// actionDisplayablePowersChanged()
 
+        @Override
         public void actionValOptsChanged(final ValidationOptions options) {
             valOpts = options;
             if (turnState != null) {
@@ -863,12 +874,14 @@ public class OrderDisplayPanel extends JPanel {
             }
         }// actionValOptsChanged()
 
+        @Override
         public synchronized void actionWorldCreated(final World w) {
             world = w;
             undoManager = clientFrame.getUndoRedoManager();
             valOpts = clientFrame.getValidationOptions();
         }// actionWorldCreated()
 
+        @Override
         public void actionWorldDestroyed(final World w) {
             orderListModel.removeAllOrders();
             orderListModel.setSortComparator(new DOSortProvince());
@@ -880,10 +893,11 @@ public class OrderDisplayPanel extends JPanel {
             orderablePowers = null;
         }// actionWorldDestroyed()
 
+        @Override
         public void actionTurnstateChanged(final TurnState ts) {
             turnState = ts;
             if (turnState.getPhase()
-                    .getPhaseType() == Phase.PhaseType.ADJUSTMENT) {
+                    .getPhaseType() == PhaseType.ADJUSTMENT) {
                 adjMap = Adjustment
                         .getAdjustmentInfo(turnState, world.getRuleOptions(),
                                 world.getMap().getPowers());
@@ -895,6 +909,7 @@ public class OrderDisplayPanel extends JPanel {
             orderList.clearSelection();
         }// actionTurnstateChanged()
 
+        @Override
         public synchronized void actionModeChanged(final String newMode) {
             if (newMode == ClientFrame.MODE_ORDER) {
                 isEditable = true;
@@ -948,6 +963,7 @@ public class OrderDisplayPanel extends JPanel {
         /**
          * Return the Size of the list.
          */
+        @Override
         public int getSize() {
             return list.size();
         }// getSize()
@@ -955,6 +971,7 @@ public class OrderDisplayPanel extends JPanel {
         /**
          * Returns the object (DisplayOrder) at the given index.
          */
+        @Override
         public Object getElementAt(final int index) {
             return list.get(index);
         }// getElementAt()
@@ -968,7 +985,7 @@ public class OrderDisplayPanel extends JPanel {
             }
 
             synchronized (this) {
-                this.comparator = comp;
+                comparator = comp;
             }
         }// setSortComparator()
 
@@ -989,7 +1006,7 @@ public class OrderDisplayPanel extends JPanel {
                 if (comparator.equals(comp)) {
                     comparator.setAscending(!comparator.isAscending());
                 } else {
-                    this.comparator = comp;
+                    comparator = comp;
                 }
             }
 
@@ -1109,7 +1126,7 @@ public class OrderDisplayPanel extends JPanel {
             // recreate the displayed power list from the turnstate, adding
             // only the 'allowed' powers.
             //
-            assert (turnState != null);
+            assert turnState != null;
 
             synchronized (list) {
                 list.clear();
@@ -1155,7 +1172,7 @@ public class OrderDisplayPanel extends JPanel {
          */
         public void activateMenu() {
             clientFrame.getClientMenu()
-                    .setEditItemsEnabled(((getSize() > 0) && isEditable));
+                    .setEditItemsEnabled(getSize() > 0 && isEditable);
         }// activateMenu()
 
 
@@ -1202,6 +1219,7 @@ public class OrderDisplayPanel extends JPanel {
      */
     private class OrderListRenderer extends DefaultListCellRenderer {
 
+        @Override
         public Component getListCellRendererComponent(final JList list, final Object value,
                                                       final int index,
                                                       final boolean isSelected,
@@ -1250,12 +1268,14 @@ public class OrderDisplayPanel extends JPanel {
         /**
          * Overridden for performance
          */
+        @Override
         public void invalidate() {
         }
 
         /**
          * Overriden for performance
          */
+        @Override
         public void repaint() {
         }
 
@@ -1374,10 +1394,11 @@ public class OrderDisplayPanel extends JPanel {
          * The compare method. This essentially returns the result of
          * compareDisplayOrders() unless the sort is reversed.
          */
+        @Override
         public final int compare(final Object o1, final Object o2) {
             final int result = compareDisplayOrders((DisplayOrder) o1,
                     (DisplayOrder) o2);
-            return ((isAscending) ? result : -result);
+            return isAscending ? result : -result;
         }// compare()
 
         /**
@@ -1431,13 +1452,14 @@ public class OrderDisplayPanel extends JPanel {
          * Determine if we are the same Comparator type
          */
         public boolean equals(final Object obj) {
-            return (obj instanceof DOSortPower);
+            return obj instanceof DOSortPower;
         }// equals()
 
         /**
          * DOComparator Implementation. Passed parameters are
          * assumed to be DisplayOrder objects.
          */
+        @Override
         protected int compareDisplayOrders(final DisplayOrder do1, final DisplayOrder do2) {
             final Power p1 = do1.getOrder().getPower();
             final Power p2 = do2.getOrder().getPower();
@@ -1445,6 +1467,7 @@ public class OrderDisplayPanel extends JPanel {
             return p1.compareTo(p2);
         }// compare()
 
+        @Override
         protected Object getComparisonObject(final DisplayOrder displayedOrder) {
             return displayedOrder.getOrder().getPower();
         }// getComparisonObject()
@@ -1459,12 +1482,13 @@ public class OrderDisplayPanel extends JPanel {
          * Determine if we are the same Comparator type
          */
         public boolean equals(final Object obj) {
-            return (obj instanceof DOSortProvince);
+            return obj instanceof DOSortProvince;
         }// equals()
 
         /**
          * DOComparator Implementation.
          */
+        @Override
         protected int compareDisplayOrders(final DisplayOrder do1, final DisplayOrder do2) {
             final Province pr1 = do1.getOrder().getSource().getProvince();
             final Province pr2 = do2.getOrder().getSource().getProvince();
@@ -1475,6 +1499,7 @@ public class OrderDisplayPanel extends JPanel {
         /**
          * DOComparator Implementation.
          */
+        @Override
         protected Object getComparisonObject(final DisplayOrder displayedOrder) {
             return displayedOrder.getOrder().getSource().getProvince();
         }// getComparisonObject()
@@ -1489,12 +1514,13 @@ public class OrderDisplayPanel extends JPanel {
          * Determine if we are the same Comparator type
          */
         public boolean equals(final Object obj) {
-            return (obj instanceof DOSortUnit);
+            return obj instanceof DOSortUnit;
         }// equals()
 
         /**
          * DOComparator Implementation.
          */
+        @Override
         protected int compareDisplayOrders(final DisplayOrder do1, final DisplayOrder do2) {
             final String name1 = do1.getOrder().getSourceUnitType().getFullName();
             final String name2 = do2.getOrder().getSourceUnitType().getFullName();
@@ -1505,6 +1531,7 @@ public class OrderDisplayPanel extends JPanel {
         /**
          * DOComparator Implementation.
          */
+        @Override
         protected Object getComparisonObject(final DisplayOrder displayedOrder) {
             return displayedOrder.getOrder().getSourceUnitType();
         }// getComparisonObject()
@@ -1519,12 +1546,13 @@ public class OrderDisplayPanel extends JPanel {
          * Determine if we are the same Comparator type
          */
         public boolean equals(final Object obj) {
-            return (obj instanceof DOSortOrder);
+            return obj instanceof DOSortOrder;
         }// equals()
 
         /**
          * DOComparator Implementation.
          */
+        @Override
         protected int compareDisplayOrders(final DisplayOrder do1, final DisplayOrder do2) {
             final String ordName1 = do1.getOrder().getFullName();
             final String ordName2 = do2.getOrder().getFullName();
@@ -1535,6 +1563,7 @@ public class OrderDisplayPanel extends JPanel {
         /**
          * DOComparator Implementation.
          */
+        @Override
         protected Object getComparisonObject(final DisplayOrder displayedOrder) {
             return displayedOrder.getOrder().getBriefName();
         }// getComparisonObject()
@@ -1581,6 +1610,7 @@ public class OrderDisplayPanel extends JPanel {
         sortCombo.addItem(Utils.getLocalString(LABEL_SORT_ORDER));
         sortCombo.setSelectedItem(Utils.getLocalString(LABEL_SORT_PROVINCE));
         sortCombo.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(final ActionEvent e) {
                 final String item = (String) ((JComboBox) e.getSource())
                         .getSelectedItem();

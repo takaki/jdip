@@ -109,7 +109,7 @@ public class JudgeOrderParser {
                             final OrderFactory orderFactory,
                             final String input) throws IOException, PatternSyntaxException {
         this.map = map;
-        this.parser = new NJudgeOrderParser();
+        parser = new NJudgeOrderParser();
         this.orderFactory = orderFactory;
         parseInput(input);
     }// JudgeOrderParser

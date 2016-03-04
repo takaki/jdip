@@ -43,6 +43,7 @@ public class UndoClearSelected extends CompoundEdit implements java.io.Serializa
         super();
     }// UndoClearSelected
 
+    @Override
     public String getPresentationName() {
         if (edits.size() == 1) {
             return super.getPresentationName();
@@ -51,6 +52,7 @@ public class UndoClearSelected extends CompoundEdit implements java.io.Serializa
         }
     }// getPresentationName()
 
+    @Override
     public String getRedoPresentationName() {
         if (edits.size() == 1) {
             return super.getRedoPresentationName();
@@ -61,6 +63,7 @@ public class UndoClearSelected extends CompoundEdit implements java.io.Serializa
         }
     }// getRedoPresentationName()
 
+    @Override
     public String getUndoPresentationName() {
         if (edits.size() == 1) {
             return super.getUndoPresentationName();

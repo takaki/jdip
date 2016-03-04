@@ -25,6 +25,7 @@ import dip.misc.Utils;
 import dip.order.OrderFormat;
 import dip.order.OrderFormatOptions;
 import dip.order.Orderable;
+import dip.order.result.OrderResult.ResultType;
 import dip.world.Province;
 
 import java.util.List;
@@ -58,10 +59,10 @@ public class ConvoyPathResult extends OrderResult {
             throw new IllegalArgumentException("bad path (null or length < 3)");
         }
 
-        this.power = order.getPower();
-        this.message = null;
+        power = order.getPower();
+        message = null;
         this.order = order;
-        this.resultType = OrderResult.ResultType.CONVOY_PATH_TAKEN;
+        resultType = ResultType.CONVOY_PATH_TAKEN;
         this.convoyPath = convoyPath;
     }// ConvoyPathResult()
 
@@ -78,6 +79,7 @@ public class ConvoyPathResult extends OrderResult {
      * Creates an appropriate internationalized text message given the
      * convoy path.
      */
+    @Override
     public String getMessage(final OrderFormatOptions ofo) {
         /*
         arguments:

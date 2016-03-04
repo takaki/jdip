@@ -372,6 +372,7 @@ public class XJFileChooser {
         public AWTFileChooser() {
         }// AWTFileChooser()
 
+        @Override
         public void reset() {
             awtFilter = null;
             selectedDir = null;
@@ -379,23 +380,28 @@ public class XJFileChooser {
         }// reset()
 
         // LIMITATION: we can have only 1 file filter
+        @Override
         public void addFileFilter(final SimpleFileFilter filter) {
             awtFilter = filter;
         }// addFileFilter()
 
+        @Override
         public void setFileFilter(final SimpleFileFilter filter) {
             awtFilter = filter;
         }// setFileFilter()
 
+        @Override
         public void setCurrentDirectory(final File file) {
-            selectedDir = (file.isDirectory()) ? file.toString() : file
+            selectedDir = file.isDirectory() ? file.toString() : file
                     .getPath().toString();
         }// setCurrentDirectory()
 
+        @Override
         public void setSelectedFile(final File file) {
-            selectedFile = (file == null) ? null : file.getName();
+            selectedFile = file == null ? null : file.getName();
         }// setSelectedFile()
 
+        @Override
         public File display(final Frame parent, final String title, final String acceptButtonText,
                             final int type, final int mode) {
             final FileDialog fd = new FileDialog(parent);
@@ -433,8 +439,8 @@ public class XJFileChooser {
                 final File file = new File(fd.getDirectory(), fd.getFile());
 
                 // wfix filename if we can/should (adds appropriate extension if it is missing)
-                if (type == JFileChooser.SAVE_DIALOG && (fd
-                        .getFilenameFilter() instanceof SimpleFileFilter)) {
+                if (type == JFileChooser.SAVE_DIALOG && fd
+                        .getFilenameFilter() instanceof SimpleFileFilter) {
                     return fixFileExtension(
                             (SimpleFileFilter) fd.getFilenameFilter(), file);
                 } else {
@@ -458,10 +464,11 @@ public class XJFileChooser {
         }
 
         // Override to check for overwrite confirmation
+        @Override
         public void approveSelection() {
             if (getDialogType() != JFileChooser.OPEN_DIALOG) {
-                final File selectedFile = fixFileExtension(this.getFileFilter(),
-                        this.getSelectedFile());
+                final File selectedFile = fixFileExtension(getFileFilter(),
+                        getSelectedFile());
                 if (selectedFile != null) {
                     if (selectedFile.exists()) {
                         final String message = Utils
@@ -486,29 +493,34 @@ public class XJFileChooser {
             super.approveSelection();
         }// approveSelection()
 
+        @Override
         public void reset() {
-            this.setSelectedFile(new File(""));
-            this.resetChoosableFileFilters();
-            this.setMultiSelectionEnabled(false);
-            this.setCurrentDirectory(null);
+            setSelectedFile(new File(""));
+            resetChoosableFileFilters();
+            setMultiSelectionEnabled(false);
+            setCurrentDirectory(null);
         }// reset()
 
+        @Override
         public void addFileFilter(final SimpleFileFilter filter) {
-            this.addChoosableFileFilter(filter);
+            addChoosableFileFilter(filter);
         }// addFileFilter()
 
+        @Override
         public void setFileFilter(final SimpleFileFilter filter) {
             if (filter != null) {
                 super.setFileFilter(filter);
             } else {
-                super.setFileFilter(this.getAcceptAllFileFilter());
+                super.setFileFilter(getAcceptAllFileFilter());
             }
         }// setFileFilter()
 
+        @Override
         public void setCurrentDirectory(final File file) {
             super.setCurrentDirectory(file);
         }// setCurrentDirectory()
 
+        @Override
         public void setSelectedFile(final File file) {
             if (file == null) {
                 super.setSelectedFile(new File(""));
@@ -517,30 +529,31 @@ public class XJFileChooser {
             }
         }// setSelectedFile()
 
+        @Override
         public File display(final Frame parent, final String title, final String acceptButtonText,
                             final int type, final int mode) {
             if (type != JFileChooser.OPEN_DIALOG && type != JFileChooser.SAVE_DIALOG) {
                 throw new IllegalArgumentException("invalid type");
             }
 
-            this.setDialogType(type);
+            setDialogType(type);
 
             if (acceptButtonText != null) {
-                this.setApproveButtonText(acceptButtonText);
+                setApproveButtonText(acceptButtonText);
             }
 
             if (title != null) {
-                this.setDialogTitle(title);
+                setDialogTitle(title);
             }
 
-            this.setFileSelectionMode(mode);
+            setFileSelectionMode(mode);
 
-            if (this.showDialog(parent, null) == JFileChooser.APPROVE_OPTION) {
-                if (this.getDialogType() != JFileChooser.OPEN_DIALOG) {
-                    return fixFileExtension(this.getFileFilter(),
-                            this.getSelectedFile());
+            if (showDialog(parent, null) == JFileChooser.APPROVE_OPTION) {
+                if (getDialogType() != JFileChooser.OPEN_DIALOG) {
+                    return fixFileExtension(getFileFilter(),
+                            getSelectedFile());
                 } else {
-                    return this.getSelectedFile();
+                    return getSelectedFile();
                 }
             }
 

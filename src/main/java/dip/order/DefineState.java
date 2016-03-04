@@ -25,6 +25,7 @@ import dip.misc.Utils;
 import dip.process.Adjudicator;
 import dip.process.OrderState;
 import dip.world.*;
+import dip.world.Unit.Type;
 
 /**
  * Implementation of the Setup (DefineState) order.
@@ -47,10 +48,10 @@ public class DefineState extends Order {
 
 
     protected DefineState(final Power power, final Location src,
-                          final Unit.Type srcUnit) throws OrderException {
+                          final Type srcUnit) throws OrderException {
         super(power, src, srcUnit);
 
-        if (srcUnit.equals(Unit.Type.UNDEFINED)) {
+        if (srcUnit == Type.UNDEFINED) {
             throw new OrderException(
                     Utils.getLocalString(DEFSTATE_NO_UNIT_TYPE));
         }
@@ -61,21 +62,25 @@ public class DefineState extends Order {
         super();
     }// DefineState()
 
+    @Override
     public String getFullName() {
         return orderNameFull;
     }// getName()
 
+    @Override
     public String getBriefName() {
         return orderNameBrief;
     }// getBriefName()
 
 
     // order formatting
+    @Override
     public String getDefaultFormat() {
         return orderFormatString;
     }// getFormatBrief()
 
 
+    @Override
     public String toBriefString() {
         final StringBuffer sb = new StringBuffer(64);
         super.appendBrief(sb);
@@ -83,6 +88,7 @@ public class DefineState extends Order {
     }// toBriefString()
 
 
+    @Override
     public String toFullString() {
         final StringBuffer sb = new StringBuffer(128);
         super.appendFull(sb);
@@ -107,6 +113,7 @@ public class DefineState extends Order {
      * a game state). For example, dip.misc.TestSuite uses DefineState orders
      * to define the units and their positions for a test scenario.
      */
+    @Override
     public void validate(final TurnState state, final ValidationOptions valOpts,
                          final RuleOptions ruleOpts) throws OrderException {
         // DefineState orders always fail validation.
@@ -116,6 +123,7 @@ public class DefineState extends Order {
     /**
      * DefineState orders do not require verification.
      */
+    @Override
     public void verify(final Adjudicator adjudicator) {
         final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
         thisOS.setVerified(true);
@@ -124,12 +132,14 @@ public class DefineState extends Order {
     /**
      * Empty method: DefineState orders do not require dependency determination.
      */
+    @Override
     public void determineDependencies(final Adjudicator adjudicator) {
     }
 
     /**
      * Empty method: DefineState orders do not require evaluation logic.
      */
+    @Override
     public void evaluate(final Adjudicator adjudicator) {
         // do nothing
     }// evaluate()

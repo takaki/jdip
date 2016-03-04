@@ -37,6 +37,7 @@ import dip.gui.swing.XJFileChooser;
 import dip.gui.undo.UndoRedoManager;
 import dip.gui.undo.UndoResolve;
 import dip.misc.Help;
+import dip.misc.Help.HelpID;
 import dip.misc.Log;
 import dip.misc.Utils;
 import dip.order.OrderFormatOptions;
@@ -274,7 +275,7 @@ public class ClientFrame extends JFrame {
             // replace bad-looking (metal, motif) LAFs with better-looking
             // ones.
             String lafClassName = UIManager.getSystemLookAndFeelClassName();
-            assert (lafClassName != null);
+            assert lafClassName != null;
 
             if (Utils.isWindows()) {
                 // higher-fidelity windows LAF
@@ -318,15 +319,15 @@ public class ClientFrame extends JFrame {
         // do not change the variantDirPath if it was set
         // from the command line
         // use the preferred path, if set, and not overridden from command line
-        variantDirPath = (variantDirPath == null) ? GeneralPreferencePanel
+        variantDirPath = variantDirPath == null ? GeneralPreferencePanel
                 .getVariantDir() : variantDirPath;
-        File toolDirPath = null;
+        File toolDirPath;
         if (System.getProperty("user.dir") == null) {
-            variantDirPath = (variantDirPath == null) ? new File(".",
+            variantDirPath = variantDirPath == null ? new File(".",
                     VARIANT_DIR) : variantDirPath;
             toolDirPath = new File(".", TOOL_DIR);
         } else {
-            variantDirPath = (variantDirPath == null) ? new File(
+            variantDirPath = variantDirPath == null ? new File(
                     System.getProperty("user.dir"),
                     VARIANT_DIR) : variantDirPath;
             toolDirPath = new File(System.getProperty("user.dir"), TOOL_DIR);
@@ -380,6 +381,7 @@ public class ClientFrame extends JFrame {
         // frame listener, handles JFrame close events
         setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
+            @Override
             public void windowClosing(final WindowEvent e) {
                 persistMan.exit();
             }
@@ -911,7 +913,7 @@ public class ClientFrame extends JFrame {
             throw new IllegalArgumentException("bad mode constant");
         }
 
-        this.currentMode = newMode;
+        currentMode = newMode;
         firePropertyChange(EVT_MODE_CHANGED, null, newMode);
     }// fireChangeMode()
 
@@ -983,16 +985,17 @@ public class ClientFrame extends JFrame {
      * drag events.
      */
     private class CFDropTargetListener extends FileDropTargetListener {
+        @Override
         public void processDroppedFiles(final File[] files) {
             for (File file : files) {
                 if (files.length >= 0) {
-                    final World world = ClientFrame.this.persistMan
-                            .acceptDrag(files[0], ClientFrame.this.getWorld());
+                    final World world = persistMan
+                            .acceptDrag(files[0], getWorld());
                     if (world != null) {
                         world.setGameSetup(new DefaultGUIGameSetup());
-                        ClientFrame.this.createWorld(world);
+                        createWorld(world);
                     }
-                    ClientFrame.this.persistMan.updateTitle();
+                    persistMan.updateTitle();
                 }
             }
         }// processDroppedFiles()
@@ -1014,6 +1017,7 @@ public class ClientFrame extends JFrame {
      * Property Listener for listening to Settings Changes
      */
     private class ModeListener implements PropertyChangeListener {
+        @Override
         public void propertyChange(final PropertyChangeEvent evt) {
             final String evtName = evt.getPropertyName();
 
@@ -1026,7 +1030,7 @@ public class ClientFrame extends JFrame {
                     statusBar.setModeText(
                             Utils.getLocalString("ClientFrame.mode.review"));
 
-                    if (ClientFrame.this.getTurnState().isEnded()) {
+                    if (getTurnState().isEnded()) {
                         statusBar.setModeText(
                                 Utils.getLocalString("ClientFrame.mode.ended"));
                     }
@@ -1041,7 +1045,7 @@ public class ClientFrame extends JFrame {
                 }
             } else if (evtName == EVT_TURNSTATE_CHANGED) {
                 synchronized (ClientFrame.this) {
-                    ClientFrame.this.turnState = (TurnState) evt.getNewValue();
+                    turnState = (TurnState) evt.getNewValue();
 
                     if (turnState.isEnded() || turnState.isResolved()) {
                         fireChangeMode(MODE_REVIEW);
@@ -1051,17 +1055,17 @@ public class ClientFrame extends JFrame {
                 }
             } else if (evtName == EVT_DISPLAYABLE_POWERS_CHANGED) {
                 synchronized (ClientFrame.this) {
-                    ClientFrame.this.displayablePowers = (Power[]) evt
+                    displayablePowers = (Power[]) evt
                             .getNewValue();
                 }
             } else if (evtName == EVT_ORDERABLE_POWERS_CHANGED) {
                 synchronized (ClientFrame.this) {
-                    ClientFrame.this.orderablePowers = (Power[]) evt
+                    orderablePowers = (Power[]) evt
                             .getNewValue();
                 }
             } else if (evtName == EVT_MMD_READY) {
                 synchronized (ClientFrame.this) {
-                    ClientFrame.this.mapMetadata = (MapMetadata) evt
+                    mapMetadata = (MapMetadata) evt
                             .getNewValue();
                 }
             }
@@ -1185,8 +1189,8 @@ public class ClientFrame extends JFrame {
 
             // see if game has ended; if so, show a dialog & change mode
             if (getTurnState()
-                    .isEnded() || (newTurnState != null && newTurnState
-                    .isEnded())) {
+                    .isEnded() || newTurnState != null && newTurnState
+                    .isEnded()) {
                 Utils.popupInfo(ClientFrame.this,
                         Utils.getLocalString("ClientFrame.ended.dialog.title"),
                         Utils.getText(Utils.getLocalString(
@@ -1331,7 +1335,7 @@ public class ClientFrame extends JFrame {
                     "onHelpAbout");
             Help.enableHelpOnButton(
                     clientMenu.getMenuItem(ClientMenu.HELP_CONTENTS),
-                    Help.HelpID.Contents);
+                    HelpID.Contents);
         }// registerMenuItems()
 
         // file
