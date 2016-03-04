@@ -33,6 +33,7 @@ import dip.world.variant.data.Variant;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -362,16 +363,12 @@ public class WorldFactory {
                     Utils.getLocalString(WF_ADJ_BAD_TYPE, name));
         }
 
-        final Coast defaultCoast = theDefaultCoast == Coast.NORTH ||
-                theDefaultCoast == Coast.WEST ||
-                theDefaultCoast == Coast.SOUTH ||
-                theDefaultCoast == Coast.EAST ? Coast.SINGLE : theDefaultCoast;
+        final Coast defaultCoast = EnumSet
+                .of(Coast.NORTH, Coast.WEST, Coast.SOUTH, Coast.EAST)
+                .contains(theDefaultCoast) ? Coast.SINGLE : theDefaultCoast;
 
-        Coast coast = Coast.parse(name);
-
-        if (coast == Coast.UNDEFINED) {
-            coast = defaultCoast;
-        }
+        final Coast coast0 = Coast.parse(name);
+        final Coast coast = coast0 == Coast.UNDEFINED ? defaultCoast : coast0;
 
         // name lookup
         final String provinceName = Coast.getProvinceName(name);
