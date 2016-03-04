@@ -70,12 +70,9 @@ public final class XMLErrorHandler implements ErrorHandler {
      * Dialog method for error handling
      */
     protected void showError(final SAXParseException e, final String type) {
-        final StringBuffer sb = new StringBuffer(256);
-        sb.append("XML Validation ");
-        sb.append(type);
-        sb.append(":\n");
-        sb.append(getLocationString(e));
-        ErrorDialog.displayGeneral(null, new SAXException(sb.toString()));
+        ErrorDialog.displayGeneral(null, new SAXException(
+                String.format("XML Validation %s:\n%s", type,
+                        getLocationString(e))));
     }// showError()
 
 

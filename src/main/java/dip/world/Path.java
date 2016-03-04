@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Determines Convoy paths between points on a Map, and also minimum distances
@@ -1154,17 +1155,11 @@ public class Path {
          * Print the Tree from this node to System.out
          */
         public void print() {
-            final Province[][] px = getAllBranches();
-
-            for (final Province[] aPx : px) {
-                final StringBuffer sb = new StringBuffer(128);
-                sb.append(aPx[0].getShortName());
-                for (int j = 1; j < aPx.length; j++) {
-                    sb.append("-");
-                    sb.append(aPx[j].getShortName());
-                }
-                System.out.println(sb);
-            }
+            Arrays.stream(getAllBranches()).forEach(aPx -> {
+                System.out.println(
+                        Arrays.stream(aPx).map(Province::getShortName)
+                                .collect(Collectors.joining("-")));
+            });
         }// print()
 
     }// inner class TreeNode

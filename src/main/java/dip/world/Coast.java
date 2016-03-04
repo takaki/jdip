@@ -286,7 +286,7 @@ public enum Coast {
      * <p>
      * Bug note: the following "xxx-n.c." will be converted to "xxx-nc ." Note the extra period.
      */
-    public static Optional<String> normalize(final String input)  {
+    public static Optional<String> normalize(final String input) {
         // start matching.
         String matchInput = input;
         for (final Pattern pattern : patterns) {
@@ -326,14 +326,10 @@ public enum Coast {
                         } else if ("xc".equals(group1)) {
                             m.appendReplacement(sb, "/xc ");
                         }
-                    } else if (c2 == 'c' && (c1 == 'n' || c1 == 's' || c1 == 'w' || c1 == 'e' || c1 == 'x') || c1 == 'm' && c2 == 'v') {
-                        final StringBuffer rep = new StringBuffer(4);
-                        rep.append('/');
-                        rep.append(c1);
-                        rep.append(c2);
-                        rep.append(
-                                ' ');    // space added afterwards--essential!
-                        m.appendReplacement(sb, rep.toString());
+                    } else if ((c1 == 'n' || c1 == 's' || c1 == 'w' || c1 == 'e' || c1 == 'x') && c2 == 'c' || c1 == 'm' && c2 == 'v') {
+                        // space added afterwards--essential!
+                        m.appendReplacement(sb,
+                                String.format("/%s%s ", c1, c2));
                     } else {
                         Optional.empty();
                     }
