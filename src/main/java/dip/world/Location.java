@@ -483,13 +483,15 @@ public class Location implements Cloneable {
         }
 
         final String provinceName = province.getFullName();
-        Coast newCoast = coast;
+        final Coast newCoast;
 
-        if (unitType == Type.ARMY) {
-            if (province.isSea()) {
-                throw new OrderException(
-                        Utils.getLocalString(LOC_V_ARMY_IN_SEA, provinceName));
-            }
+        switch (unitType) {
+            case ARMY:
+                if (province.isSea()) {
+                    throw new OrderException(
+                            Utils.getLocalString(LOC_V_ARMY_IN_SEA,
+                                    provinceName));
+                }
 
 			/* FORCE coast to be Coast.LAND; do not perform this check; too strict
             if(coast.isDirectional())
@@ -498,29 +500,37 @@ public class Location implements Cloneable {
 			}
 			*/
 
-            newCoast = Coast.LAND;
-        } else if (unitType == Type.FLEET) {
-            if (province.isLandLocked()) {
-                throw new OrderException(
-                        Utils.getLocalString(LOC_V_FLEET_LANDLOCKED,
-                                provinceName));
-            } else if (province.isMultiCoastal()) {
-                if (!province.isCoastValid(coast) && coast != Coast.UNDEFINED) {
+                newCoast = Coast.LAND;
+                break;
+            case FLEET:
+                if (province.isLandLocked()) {
                     throw new OrderException(
-                            Utils.getLocalString(LOC_V_COAST_BAD, provinceName,
-                                    coast));
-                }
-            } else {
-                if (coast.isDirectional()) {
-                    throw new OrderException(
-                            Utils.getLocalString(LOC_V_COAST_SINGLE,
+                            Utils.getLocalString(LOC_V_FLEET_LANDLOCKED,
                                     provinceName));
                 }
-
-                newCoast = Coast.SINGLE;
-            }
-        } else if (unitType == Type.WING) {
-            newCoast = Coast.WING;
+                if (province.isMultiCoastal()) {
+                    if (!province
+                            .isCoastValid(coast) && coast != Coast.UNDEFINED) {
+                        throw new OrderException(
+                                Utils.getLocalString(LOC_V_COAST_BAD,
+                                        provinceName, coast));
+                    }
+                    newCoast = coast;
+                } else {
+                    if (coast.isDirectional()) {
+                        throw new OrderException(
+                                Utils.getLocalString(LOC_V_COAST_SINGLE,
+                                        provinceName));
+                    }
+                    newCoast = Coast.SINGLE;
+                }
+                break;
+            case WING:
+                newCoast = Coast.WING;
+                break;
+            default:
+                newCoast = coast;
+                break;
         }
 
         // return *this if no change
