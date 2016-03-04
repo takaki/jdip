@@ -529,8 +529,8 @@ public class OrderFormat {
 
         if (isMethod) {
             try {
-                return cls.getMethod(name.substring(0, name.length() - 2), null)
-                        .invoke(order, null);
+                return cls.getMethod(name.substring(0, name.length() - 2), (Class<?>)null)
+                        .invoke(order, (Object)null);
             } catch (final Exception e) {
                 Log.println(
                         "OrderFormat::getViaReflection() cannot reflect method \"",

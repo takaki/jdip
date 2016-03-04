@@ -848,10 +848,16 @@ public class OrderParser {
     private static boolean isCommandPrefixed(final String s) {
         // b,r,w = build, remove, waive
         // m = move
-        return s.equalsIgnoreCase("b") || s.equalsIgnoreCase("r") || s
-                .equalsIgnoreCase("d") || s.equalsIgnoreCase("m") || s
-                .equalsIgnoreCase("waive");
-
+        switch (s.toLowerCase()) {
+            case "b":
+            case "r":
+            case "d":
+            case "m":
+            case "waive":
+                return true;
+            default:
+                return false;
+        }
     }// isCommandPrefixed
 
     private TypeAndSource getTypeAndSource(

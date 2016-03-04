@@ -89,16 +89,11 @@ public class OrderResult extends Result {
     /**
      * For debugging
      */
+    @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer(180);
-        sb.append(power);
-        sb.append(": [");
-        sb.append(resultType);
-        sb.append("] [order: ");
-        sb.append(order);
-        sb.append("] ");
-        sb.append(message);
-        return sb.toString();
+        return String
+                .format("%s: [%s] [order: %s] %s", power, resultType, order,
+                        message);
     }// toString()
 
 
