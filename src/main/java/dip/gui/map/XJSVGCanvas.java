@@ -114,7 +114,8 @@ public class XJSVGCanvas extends JSVGCanvas {
                     cgn.setViewingTransform(vt);
 
                     // set rendering transform to 'unscaled'
-                    final AffineTransform t = AffineTransform.getScaleInstance(1, 1);
+                    final AffineTransform t = AffineTransform
+                            .getScaleInstance(1, 1);
                     XJSVGCanvas.super.setRenderingTransform(t);
                 }
             }// gvtRenderingCompleted()

@@ -38,6 +38,8 @@ import dip.world.TurnState;
 import dip.world.Unit;
 import dip.world.Unit.Type;
 
+import java.util.Optional;
+
 /**
  * Implementation of the Convoy order.
  */
@@ -216,13 +218,12 @@ public class Convoy extends Order {
             }
 
             // validate Borders
-            final Border border = src.getProvince()
-                    .getTransit(src, srcUnitType, state.getPhase(), getClass())
-                    .orElse(null);
-            if (border != null) {
+            final Optional<Border> border = src.getProvince()
+                    .getTransit(src, srcUnitType, state.getPhase(), getClass());
+            if (border.isPresent()) {
                 throw new OrderException(
                         Utils.getLocalString(ORD_VAL_BORDER, src.getProvince(),
-                                border.getDescription()));
+                                border.get().getDescription()));
             }
 
             // v.2: 	a) type-match unit type with current state, and unit must exist

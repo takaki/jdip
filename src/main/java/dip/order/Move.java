@@ -29,6 +29,7 @@ import dip.order.result.OrderResult.ResultType;
 import dip.process.Adjudicator;
 import dip.process.OrderState;
 import dip.process.Tristate;
+import dip.world.Border;
 import dip.world.Location;
 import dip.world.Path;
 import dip.world.Path.FAPEvaluator;
@@ -47,6 +48,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -378,28 +380,24 @@ public class Move extends Order {
             }
 
             // validate Borders
-            if (src.getProvince()
-                    .getTransit(src, srcUnitType, state.getPhase(), getClass())
-                    .isPresent()) {
+            final Optional<Border> border1 = src.getProvince()
+                    .getTransit(src, srcUnitType, state.getPhase(), getClass());
+            if (border1.isPresent()) {
                 throw new OrderException(
                         Utils.getLocalString(ORD_VAL_BORDER, src.getProvince(),
-                                src.getProvince().getTransit(src, srcUnitType,
-                                        state.getPhase(), getClass())
-                                        .orElse(null).getDescription()));
+                                border1.get().getDescription()));
             }
 
             // a.2
             dest = dest.getValidatedWithMove(srcUnitType, src);
 
             // check that we can transit into destination (check borders)
-            if (dest.getProvince()
-                    .getTransit(src, srcUnitType, state.getPhase(), getClass())
-                    .isPresent()) {
+            final Optional<Border> border = dest.getProvince()
+                    .getTransit(src, srcUnitType, state.getPhase(), getClass());
+            if (border.isPresent()) {
                 throw new OrderException(
                         Utils.getLocalString(ORD_VAL_BORDER, src.getProvince(),
-                                dest.getProvince().getTransit(src, srcUnitType,
-                                        state.getPhase(), getClass())
-                                        .orElse(null).getDescription()));
+                                border.get().getDescription()));
             }
 
             // Determine convoying intent for nonadjacent moves that are not explicitly
