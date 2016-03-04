@@ -39,20 +39,20 @@ import dip.world.Province;
  */
 public class DislodgedResult extends OrderResult {
     // instance fields
-    private Location[] retreatLocations = null;
-    private Province dislodger = null;
+    private Location[] retreatLocations;
+    private Province dislodger;
     private int atkStrength = -1;
     private int defStrength = -1;
 
 
-    public DislodgedResult(final Orderable order, final Location[] retreatLocations) {
+    public DislodgedResult(final Orderable order,
+                           final Location[] retreatLocations) {
         this(order, null, retreatLocations);
     }// DislodgedResult()
 
 
     public DislodgedResult(final Orderable order, final String message,
                            final Location[] retreatLocations) {
-        super();
         if (order == null) {
             throw new IllegalArgumentException("null order");
         }
@@ -60,7 +60,7 @@ public class DislodgedResult extends OrderResult {
         power = order.getPower();
         this.message = message;
         this.order = order;
-        resultType = OrderResult.ResultType.DISLODGED;
+        resultType = ResultType.DISLODGED;
         this.retreatLocations = retreatLocations;
     }// DislodgedResult()
 
@@ -174,15 +174,11 @@ public class DislodgedResult extends OrderResult {
         }
 
         // create messageformat arguments
-        final Object[] args = {dislodger == null ? new Integer(0) : new Integer(
-                1),    // {0}; 0 if no province specified
+        final Object[] args = {dislodger == null ? 0 : 1,    // {0}; 0 if no province specified
                 fmtDislodger,                                                // {1}
-                new Integer(
-                        atkStrength),                                    // {2}
-                new Integer(
-                        defStrength),                                    // {3}
-                retreatLocations == null ? new Integer(-1) : new Integer(
-                        retreatLocations.length),  // {4}
+                atkStrength,                                    // {2}
+                defStrength,                                    // {3}
+                retreatLocations == null ? -1 : retreatLocations.length,  // {4}
                 retreats.toString() // {5}
         };
 
@@ -205,7 +201,7 @@ public class DislodgedResult extends OrderResult {
         } else if (retreatLocations.length == 0) {
             sb.append(" none");
         } else {
-            for (Location retreatLocation : retreatLocations) {
+            for (final Location retreatLocation : retreatLocations) {
                 sb.append(' ');
                 retreatLocation.appendBrief(sb);
             }

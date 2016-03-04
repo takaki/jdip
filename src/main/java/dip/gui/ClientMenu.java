@@ -467,7 +467,8 @@ public class ClientMenu {
     /**
      * Make a JCheckBox menu item
      */
-    public JCheckBoxMenuItem makeCBMenuItem(final Item item, final boolean defaultState,
+    public JCheckBoxMenuItem makeCBMenuItem(final Item item,
+                                            final boolean defaultState,
                                             final boolean indent) {
         final JCheckBoxMenuItem menuItem = new JCheckBoxMenuItem(item.getName(),
                 defaultState);
@@ -485,11 +486,12 @@ public class ClientMenu {
     /**
      * Make a JRadioButton menu item
      */
-    private JRadioButtonMenuItem makeRBMenuItem(final Item item, final ButtonGroup bg,
+    private JRadioButtonMenuItem makeRBMenuItem(final Item item,
+                                                final ButtonGroup bg,
                                                 final boolean defaultState,
                                                 final boolean indent) {
-        final JRadioButtonMenuItem menuItem = new JRadioButtonMenuItem(item.getName(),
-                defaultState);
+        final JRadioButtonMenuItem menuItem = new JRadioButtonMenuItem(
+                item.getName(), defaultState);
         bg.add(menuItem);
         //menuItem.setFont(menuFont);
         menuItem.setMnemonic(item.getMnemonic());
@@ -564,13 +566,15 @@ public class ClientMenu {
 
     // 'checkbox' state
     public boolean getSelected(final Item item) {
-        final JCheckBoxMenuItem cbMenuItem = (JCheckBoxMenuItem) getMenuItem(item);
+        final JCheckBoxMenuItem cbMenuItem = (JCheckBoxMenuItem) getMenuItem(
+                item);
         return cbMenuItem.getState();
     }// getSelected()
 
     // for internal use only
     private boolean getSelected(final Power power) {
-        final JCheckBoxMenuItem cbMenuItem = (JCheckBoxMenuItem) getMenuItem(power);
+        final JCheckBoxMenuItem cbMenuItem = (JCheckBoxMenuItem) getMenuItem(
+                power);
         return cbMenuItem.getState();
     }// getSelected()
 
@@ -1003,8 +1007,8 @@ public class ClientMenu {
             sb.append(mnemonic);
             sb.append(' ');
             sb.append(powers[i].getName());
-            final JCheckBoxMenuItem menuItem = new JCheckBoxMenuItem(sb.toString(),
-                    true);
+            final JCheckBoxMenuItem menuItem = new JCheckBoxMenuItem(
+                    sb.toString(), true);
             //menuItem.setFont(menuFont);
 
             // mnemonics only go upto 9 (1-9)
@@ -1067,7 +1071,8 @@ public class ClientMenu {
             // change order rendering settings
             if (clientFrame.getMapPanel() != null) {
                 final Power[] visiblePowers = getOrderDrawingPowers();
-                final MapRenderer2 mr2 = clientFrame.getMapPanel().getMapRenderer();
+                final MapRenderer2 mr2 = clientFrame.getMapPanel()
+                        .getMapRenderer();
                 mr2.execRenderCommand(mr2.getRenderCommandFactory()
                         .createRCSetPowerOrdersDisplayed(mr2, visiblePowers));
             }
@@ -1081,7 +1086,8 @@ public class ClientMenu {
     private class ModeListener extends AbstractCFPListener {
         @Override
         public void actionWorldCreated(final World w) {
-            final Power[] thePowers = w.getMap().getPowers().toArray(new Power[0]);
+            final Power[] thePowers = w.getMap().getPowers()
+                    .toArray(new Power[0]);
             updatePowers(thePowers);
         }// actionWorldCreated()
 
@@ -1107,7 +1113,8 @@ public class ClientMenu {
      * <p>
      * Null arguments are not permitted.
      */
-    public void setActionMethod(final Item item, final Object target, final String methodName) {
+    public void setActionMethod(final Item item, final Object target,
+                                final String methodName) {
         // disallow null args
         if (target == null || methodName == null || item == null) {
             System.err.println("setActionMethod()");
@@ -1123,7 +1130,7 @@ public class ClientMenu {
         // get our method
         Method method;
         try {
-            method = target.getClass().getMethod(methodName, null);
+            method = target.getClass().getMethod(methodName, (Class<?>) null);
         } catch (final NoSuchMethodException e) {
             throw new IllegalArgumentException(
                     "NoSuchMethodException: " + methodName);
@@ -1152,7 +1159,8 @@ public class ClientMenu {
         /**
          * Create a ReflexiveActionListener
          */
-        public ReflexiveActionListener(final Object target, final Method targetMethod) {
+        public ReflexiveActionListener(final Object target,
+                                       final Method targetMethod) {
             this.target = target;
             this.targetMethod = targetMethod;
         }// ReflexiveActionListener
@@ -1163,7 +1171,7 @@ public class ClientMenu {
         @Override
         public void actionPerformed(final ActionEvent evt) {
             try {
-                targetMethod.invoke(target, null);
+                targetMethod.invoke(target, (Object) null);
             } catch (final InvocationTargetException e) {
                 debugOut(e);
                 if (e.getCause() != null) {
