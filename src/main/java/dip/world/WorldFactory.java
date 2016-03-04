@@ -33,10 +33,10 @@ import dip.world.variant.data.Variant;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -104,7 +104,8 @@ public class WorldFactory {
                 }).collect(Collectors.toList());
 
         // verify uniqueness of names
-        final Map<String, Province> provNameMap = new HashMap<>();    // mapping of names->provinces
+        final Map<String, Province> provNameMap = new TreeMap<>(
+                String.CASE_INSENSITIVE_ORDER);    // mapping of names->provinces
         provinces.stream().forEach(province -> {
             final String fullname = province.getFullName();
             final List<String> shortNames = province.getShortNames();
@@ -113,9 +114,9 @@ public class WorldFactory {
                         Utils.getLocalString(WF_PROV_NON_UNIQUE,
                                 province.getFullName()));
             }
-            provNameMap.put(fullname.toLowerCase(), province);
-            shortNames.stream().forEach(shortname -> provNameMap
-                    .put(shortname.toLowerCase(), province));
+            provNameMap.put(fullname, province);
+            shortNames.stream()
+                    .forEach(shortname -> provNameMap.put(shortname, province));
         });
 
         // gather all adjacency data
@@ -134,7 +135,7 @@ public class WorldFactory {
 
             // get the Province to which this adjacency data refers
             final Province province = provNameMap
-                    .get(provinceData.getFullName().toLowerCase());
+                    .get(provinceData.getFullName());
 
             // get the Adjacency data structure from the Province
             final Adjacency adjacency = province.getAdjacency();
@@ -186,7 +187,7 @@ public class WorldFactory {
         // set the Border data (if any) for each province.
         provinceDataArray.stream().forEach(aProvinceDataArray -> {
             final Province province = provNameMap
-                    .get(aProvinceDataArray.getFullName().toLowerCase());
+                    .get(aProvinceDataArray.getFullName());
 
             province.setBorders(
                     aProvinceDataArray.getBorders().stream().map(borderName -> {
@@ -322,8 +323,8 @@ public class WorldFactory {
     private static List<Location> makeBorderLocations(final String in,
                                                       final Map<String, Province> provNameMap) {
         return Arrays.stream(in.trim().split("[;, ]+")).map(tok -> new Location(
-                provNameMap.get(Coast.getProvinceName(tok).toLowerCase()),
-                Coast.parse(tok))).collect(Collectors.toList());
+                provNameMap.get(Coast.getProvinceName(tok)), Coast.parse(tok)))
+                .collect(Collectors.toList());
     }// makeBorderLocation()
 
 
@@ -373,7 +374,7 @@ public class WorldFactory {
 
         // name lookup
         final String provinceName = Coast.getProvinceName(name);
-        final Province province = provNameMap.get(provinceName.toLowerCase());
+        final Province province = provNameMap.get(provinceName);
         if (province == null) {
             throw new InvalidWorldException(
                     Utils.getLocalString(WF_ADJ_BAD_PROVINCE, name,
@@ -389,9 +390,8 @@ public class WorldFactory {
     private static boolean isUnique(final Map<String, Province> provNameMap,
                                     final String fullname,
                                     final Collection<String> shortnames) {
-        return !(provNameMap.containsKey(fullname.toLowerCase()) || shortnames
-                .stream().anyMatch(shortname -> provNameMap
-                        .containsKey(shortname.toLowerCase())));
+        return !(provNameMap.containsKey(fullname) || shortnames.stream()
+                .anyMatch(shortname -> provNameMap.containsKey(shortname)));
     }// isUnique()
 
 }// class MapFactory
