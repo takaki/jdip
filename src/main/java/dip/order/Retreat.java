@@ -28,7 +28,6 @@ import dip.process.Adjudicator;
 import dip.process.OrderState;
 import dip.process.RetreatChecker;
 import dip.process.Tristate;
-import dip.world.Border;
 import dip.world.Location;
 import dip.world.Position;
 import dip.world.Power;
@@ -121,13 +120,14 @@ public class Retreat extends Move {
             }
 
             // validate Borders
-            Border border = src.getProvince()
+            if (src.getProvince()
                     .getTransit(src, srcUnitType, state.getPhase(), getClass())
-                    .orElse(null);
-            if (border != null) {
+                    .isPresent()) {
                 throw new OrderException(
                         Utils.getLocalString(ORD_VAL_BORDER, src.getProvince(),
-                                border.getDescription()));
+                                src.getProvince().getTransit(src, srcUnitType,
+                                        state.getPhase(), getClass())
+                                        .orElse(null).getDescription()));
             }
 
             // 3: validate destination [must be a legal move] This is important, because
@@ -136,13 +136,14 @@ public class Retreat extends Move {
             dest = dest.getValidatedWithMove(srcUnitType, src);
 
             // check that we can transit into destination (check borders)
-            border = dest.getProvince()
+            if (dest.getProvince()
                     .getTransit(dest, srcUnitType, state.getPhase(), getClass())
-                    .orElse(null);
-            if (border != null) {
+                    .isPresent()) {
                 throw new OrderException(
                         Utils.getLocalString(ORD_VAL_BORDER, src.getProvince(),
-                                border.getDescription()));
+                                dest.getProvince().getTransit(dest, srcUnitType,
+                                        state.getPhase(), getClass())
+                                        .orElse(null).getDescription()));
             }
 
             // 4
@@ -243,7 +244,6 @@ public class Retreat extends Move {
                 boolean isStrongerThanAllOthers = false;
 
                 for (final OrderState depMoveOS : depMovesToDest) {
-                    final Move depMove = (Move) depMoveOS.getOrder();
 
                     if (depMoveOS.isRetreatStrengthSet()) {
                         if (thisOS.getRetreatStrength() < depMoveOS
@@ -267,8 +267,7 @@ public class Retreat extends Move {
                                             RETREAT_FAIL_MULTIPLE));
                             isStrongerThanAllOthers = false;
                             break;
-                        } else // >
-                        {
+                        } else {// >
                             // we *may* be stronger than all others
                             Log.println(
                                     "    We may be stronger than all others...");

@@ -29,7 +29,6 @@ import dip.order.result.OrderResult.ResultType;
 import dip.process.Adjudicator;
 import dip.process.OrderState;
 import dip.process.Tristate;
-import dip.world.Border;
 import dip.world.Location;
 import dip.world.Path;
 import dip.world.Path.FAPEvaluator;
@@ -379,26 +378,28 @@ public class Move extends Order {
             }
 
             // validate Borders
-            Border border = src.getProvince()
+            if (src.getProvince()
                     .getTransit(src, srcUnitType, state.getPhase(), getClass())
-                    .orElse(null);
-            if (border != null) {
+                    .isPresent()) {
                 throw new OrderException(
                         Utils.getLocalString(ORD_VAL_BORDER, src.getProvince(),
-                                border.getDescription()));
+                                src.getProvince().getTransit(src, srcUnitType,
+                                        state.getPhase(), getClass())
+                                        .orElse(null).getDescription()));
             }
 
             // a.2
             dest = dest.getValidatedWithMove(srcUnitType, src);
 
             // check that we can transit into destination (check borders)
-            border = dest.getProvince()
+            if (dest.getProvince()
                     .getTransit(src, srcUnitType, state.getPhase(), getClass())
-                    .orElse(null);
-            if (border != null) {
+                    .isPresent()) {
                 throw new OrderException(
                         Utils.getLocalString(ORD_VAL_BORDER, src.getProvince(),
-                                border.getDescription()));
+                                dest.getProvince().getTransit(src, srcUnitType,
+                                        state.getPhase(), getClass())
+                                        .orElse(null).getDescription()));
             }
 
             // Determine convoying intent for nonadjacent moves that are not explicitly
@@ -407,36 +408,7 @@ public class Move extends Order {
             // also fail. _isConvoyIntent is set if there is a theoretical convoy route
             // and we are not explicitly ordered to convoy.
             //
-            if (!src.isAdjacent(dest)) {
-                // nonadjacent moves with Fleets/Wings always fail (cannot convoy fleets)
-                if (srcUnitType != Type.ARMY) {
-                    throw new OrderException(
-                            Utils.getLocalString(MOVE_VAL_UNIT_ADJ,
-                                    srcUnitType.getFullNameWithArticle()));
-                }
-
-                // determine if explicit/implicit convoys are required
-                final OptionValue convoyRule = ruleOpts
-                        .getOptionValue(Option.OPTION_CONVOYED_MOVES);
-                if (convoyRule == OptionValue.VALUE_PATHS_EXPLICIT && convoyRoutes == null) {
-                    // no explicit route defined, and at least one should be
-                    throw new OrderException(
-                            Utils.getLocalString(CONVOY_PATH_MUST_BE_EXPLICIT));
-                } else if (convoyRule == OptionValue.VALUE_PATHS_IMPLICIT && convoyRoutes != null) {
-                    // explicit route IS defined, and shouldn't be
-                    throw new OrderException(
-                            Utils.getLocalString(CONVOY_PATH_MUST_BE_IMPLICIT));
-                }
-
-                // nonadjacent moves must have a theoretical convoy path!
-                // (this throws an exception if there is no theoretical convoy path)
-                validateTheoreticalConvoyRoute(position);
-
-                // we didn't fail; thus, we intend to convoy (because it is at least possible).
-                if (!_isViaConvoy) {
-                    _isConvoyIntent = true;
-                }
-            } else {
+            if (src.isAdjacent(dest)) {
                 // we are adjacent
                 //
                 // _isAdjWithPossibleConvoy is true iff we are both adjacent
@@ -460,6 +432,36 @@ public class Move extends Order {
 
                 // set if we can move via a land route.
                 _hasLandRoute = true;
+            } else {
+                // nonadjacent moves with Fleets/Wings always fail (cannot convoy fleets)
+                if (srcUnitType != Type.ARMY) {
+                    throw new OrderException(
+                            Utils.getLocalString(MOVE_VAL_UNIT_ADJ,
+                                    srcUnitType.getFullNameWithArticle()));
+                }
+
+                // determine if explicit/implicit convoys are required
+                final OptionValue convoyRule = ruleOpts
+                        .getOptionValue(Option.OPTION_CONVOYED_MOVES);
+                if (convoyRule == OptionValue.VALUE_PATHS_EXPLICIT && convoyRoutes == null) {
+                    // no explicit route defined, and at least one should be
+                    throw new OrderException(
+                            Utils.getLocalString(CONVOY_PATH_MUST_BE_EXPLICIT));
+                }
+                if (convoyRule == OptionValue.VALUE_PATHS_IMPLICIT && convoyRoutes != null) {
+                    // explicit route IS defined, and shouldn't be
+                    throw new OrderException(
+                            Utils.getLocalString(CONVOY_PATH_MUST_BE_IMPLICIT));
+                }
+
+                // nonadjacent moves must have a theoretical convoy path!
+                // (this throws an exception if there is no theoretical convoy path)
+                validateTheoreticalConvoyRoute(position);
+
+                // we didn't fail; thus, we intend to convoy (because it is at least possible).
+                if (!_isViaConvoy) {
+                    _isConvoyIntent = true;
+                }
             }
         }
     }// validate()
@@ -976,15 +978,15 @@ public class Move extends Order {
         final int mod = order.dest.getProvince()
                 .getBaseMoveModifier(getSource());
         // If the move isn't by convoy, perhaps there are border issues to deal with.
-        if (!_isConvoyIntent) {
-            thisOS.setAtkMax(thisOS.getSupport(false));
-            thisOS.setAtkCertain(thisOS.getSupport(true));
-        } else {
+        if (_isConvoyIntent) {
             // Bypass the modification to AtkMax, AtkCertain
             // If the mod was positive, subtracting it will take it away.
             // If the mod was negitive, subtracting it will add it back.
             thisOS.setAtkMax(thisOS.getSupport(false) - mod);
             thisOS.setAtkCertain(thisOS.getSupport(true) - mod);
+        } else {
+            thisOS.setAtkMax(thisOS.getSupport(false));
+            thisOS.setAtkCertain(thisOS.getSupport(true));
         }
         thisOS.setAtkSelfSupportMax(thisOS.getSelfSupport(false));
         thisOS.setAtkSelfSupportCertain(thisOS.getSelfSupport(true));
