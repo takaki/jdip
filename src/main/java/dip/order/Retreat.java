@@ -28,7 +28,13 @@ import dip.process.Adjudicator;
 import dip.process.OrderState;
 import dip.process.RetreatChecker;
 import dip.process.Tristate;
-import dip.world.*;
+import dip.world.Border;
+import dip.world.Location;
+import dip.world.Position;
+import dip.world.Power;
+import dip.world.RuleOptions;
+import dip.world.TurnState;
+import dip.world.Unit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,8 +63,8 @@ public class Retreat extends Move {
     /**
      * Creates a Retreat order
      */
-    protected Retreat(final Power power, final Location src, final Unit.Type srcUnitType,
-                      final Location dest) {
+    protected Retreat(final Power power, final Location src,
+                      final Unit.Type srcUnitType, final Location dest) {
         super(power, src, srcUnitType, dest, false);
     }// Move()
 
@@ -102,7 +108,8 @@ public class Retreat extends Move {
 
         // 1
         final Position position = state.getPosition();
-        final Unit unit = position.getDislodgedUnit(src.getProvince()).orElse(null);
+        final Unit unit = position.getDislodgedUnit(src.getProvince())
+                .orElse(null);
         super.validate(valOpts, unit);
 
         if (valOpts.getOption(ValidationOptions.KEY_GLOBAL_PARSING)
@@ -164,7 +171,7 @@ public class Retreat extends Move {
     public void determineDependencies(final Adjudicator adjudicator) {
         // add moves to destination space, and supports of this space
         final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
-        List<OrderState> depMTDest = null;
+        List<OrderState> depMTDest = new ArrayList<>(4);
 
         final List<OrderState> orderStates = adjudicator.getOrderStates();
         for (final OrderState dependentOS : orderStates) {
@@ -174,18 +181,13 @@ public class Retreat extends Move {
                 final Retreat retreat = (Retreat) order;
 
                 if (retreat.getDest().isProvinceEqual(this.getDest())) {
-                    if (depMTDest == null) {
-                        depMTDest = new ArrayList<>(4);
-                    }
                     depMTDest.add(dependentOS);
                 }
             }
         }
 
         // set dependent moves to destination
-        if (depMTDest != null) {
-            thisOS.setDependentMovesToDestination(depMTDest);
-        }
+        thisOS.setDependentMovesToDestination(depMTDest);
     }// determineDependencies()
 
 

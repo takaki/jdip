@@ -392,7 +392,7 @@ public class WorldFactory {
                                     final String fullname,
                                     final Collection<String> shortnames) {
         return !(provNameMap.containsKey(fullname) || shortnames.stream()
-                .anyMatch(shortname -> provNameMap.containsKey(shortname)));
+                .anyMatch(provNameMap::containsKey));
     }// isUnique()
 
 }// class MapFactory
