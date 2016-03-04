@@ -482,7 +482,7 @@ public class Move extends Order {
         if (convoyRoutes != null) {
             // if we have defined routes, check all of them to make sure
             // they are (all) theoretically valid
-            for (Province[] convoyRoute : convoyRoutes) {
+            for (final Province[] convoyRoute : convoyRoutes) {
                 final Province[] route = convoyRoute;
 
                 // check that src, dest are included in path
@@ -663,7 +663,7 @@ public class Move extends Order {
                     // now, we need to evaluate each path, to see if that province
                     // has a fleet of the same power as this order in any legal path.
                     // If so, the intent is to convoy.
-                    for (Province[] path : paths) {
+                    for (final Province[] path : paths) {
                         final Province p = evalPath(adjudicator, path);
                         if (p != null) {
                             _isConvoyIntent = true;
@@ -790,9 +790,9 @@ public class Move extends Order {
         // add moves to destination space, and supports of this space
         final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
 
-        List<OrderState> depMTDest = null;
-        List<OrderState> depSup = null;
-        List<OrderState> depSelfSup = null;
+        final List<OrderState> depMTDest = new ArrayList<>(5);
+        final List<OrderState> depSup = new ArrayList<>(5);
+        final List<OrderState> depSelfSup = new ArrayList<>(5);
 
         final List<OrderState> orderStates = adjudicator.getOrderStates();
         for (final OrderState dependentOS : orderStates) {
@@ -803,9 +803,6 @@ public class Move extends Order {
 
                 // move to *destination* space (that are not this order)
                 if (move.dest.isProvinceEqual(dest)) {
-                    if (depMTDest == null) {
-                        depMTDest = new ArrayList<>(5);
-                    }
                     depMTDest.add(dependentOS);
                 }
 
@@ -826,14 +823,8 @@ public class Move extends Order {
                         .isProvinceEqual(getSource()) && support
                         .getSupportedDest().isProvinceEqual(dest)) {
                     if (adjudicator.isSelfSupportedMove(dependentOS)) {
-                        if (depSelfSup == null) {
-                            depSelfSup = new ArrayList<>(5);
-                        }
                         depSelfSup.add(dependentOS);
                     } else {
-                        if (depSup == null) {
-                            depSup = new ArrayList<>(5);
-                        }
                         depSup.add(dependentOS);
                     }
                 }
@@ -841,17 +832,9 @@ public class Move extends Order {
         }
 
         // set supports / competing moves in OrderState
-        if (depMTDest != null) {
-            thisOS.setDependentMovesToDestination(depMTDest);
-        }
-
-        if (depSup != null) {
-            thisOS.setDependentSupports(depSup);
-        }
-
-        if (depSelfSup != null) {
-            thisOS.setDependentSelfSupports(depSelfSup);
-        }
+        thisOS.setDependentMovesToDestination(depMTDest);
+        thisOS.setDependentSupports(depSup);
+        thisOS.setDependentSelfSupports(depSelfSup);
     }// determineDependencies()
 
 
