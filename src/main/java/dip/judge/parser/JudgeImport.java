@@ -160,7 +160,7 @@ public final class JudgeImport {
             // essential! create the default rules
             world.setRuleOptions(RuleOptions.createFromVariant(variant));
 
-        } catch (final InvalidWorldException e) {
+        } catch (final InvalidWorldException e) {// FIXME: 16/03/04 catch RuntimeException
             throw new IOException(e);
         }
 

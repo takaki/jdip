@@ -321,16 +321,9 @@ public class WorldFactory {
      */
     private static List<Location> makeBorderLocations(final String in,
                                                       final Map<String, Province> provNameMap) {
-        return Arrays.stream(in.trim().split("[;, ]+")).map(tok -> {
-            final Coast coast = Coast.parse(tok);
-            final Province province = provNameMap
-                    .get(Coast.getProvinceName(tok).toLowerCase());
-            if (province == null) {
-                throw new InvalidWorldException(
-                        Utils.getLocalString(WF_BAD_BORDER_LOCATION, tok));
-            }
-            return new Location(province, coast);
-        }).collect(Collectors.toList());
+        return Arrays.stream(in.trim().split("[;, ]+")).map(tok -> new Location(
+                provNameMap.get(Coast.getProvinceName(tok).toLowerCase()),
+                Coast.parse(tok))).collect(Collectors.toList());
     }// makeBorderLocation()
 
 
