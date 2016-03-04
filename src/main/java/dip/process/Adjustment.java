@@ -107,13 +107,15 @@ public final class Adjustment {
         final List<Province> provinces = position.getProvinces();
 
         for (final Province province : provinces) {
-            boolean hasUnit = false;
+            final boolean hasUnit;
 
             // tally units
             final Unit unit = position.getUnit(province).orElse(null);
             if (unit != null) {
                 adjMap.get(unit.getPower()).numUnits++;
                 hasUnit = true;
+            } else {
+                hasUnit = false;
             }
 
             final Unit orElse = position.getDislodgedUnit(province)
