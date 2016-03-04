@@ -235,7 +235,7 @@ public class Support extends Order {
     public String toBriefString() {
         final StringBuffer sb = new StringBuffer(64);
 
-        appendBrief(sb);
+        sb.append(getBrief());
         sb.append(' ');
         sb.append(orderNameBrief);
         sb.append(' ');
@@ -255,8 +255,7 @@ public class Support extends Order {
     @Override
     public String toFullString() {
         final StringBuffer sb = new StringBuffer(128);
-
-        appendFull(sb);
+        sb.append(getFull());
         sb.append(' ');
         sb.append(orderNameFull);
         sb.append(' ');

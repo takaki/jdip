@@ -372,12 +372,9 @@ public abstract class Order extends Object implements Orderable, Serializable {
      * <br>
      * Example: France: Army Spain/sc
      */
-    protected final void appendFull(final StringBuffer sb) {
-        sb.append(power);
-        sb.append(": ");
-        sb.append(srcUnitType.getFullName());
-        sb.append(' ');
-        sb.append(src.getFull());
+    protected final String getFull() {
+        return String.format("%s: %s %s", power, srcUnitType.getFullName(),
+                src.getFull());
     }// appendFull()
 
 
@@ -386,12 +383,9 @@ public abstract class Order extends Object implements Orderable, Serializable {
      * <br>
      * Example: France: Army spa/sc
      */
-    protected final void appendBrief(final StringBuffer sb) {
-        sb.append(power);
-        sb.append(": ");
-        sb.append(srcUnitType.getShortName());
-        sb.append(' ');
-        sb.append(src.getBrief());
+    protected final String getBrief() {
+        return String.format("%s: %s %s", power, srcUnitType.getShortName(),
+                src.getBrief());
     }// appendBrief()
 
 

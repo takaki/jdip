@@ -295,7 +295,7 @@ public class Move extends Order {
                 }
             }
         } else {
-            appendBrief(sb);
+            sb.append(getBrief());
             sb.append('-');
             sb.append(dest.getBrief());
 
@@ -329,7 +329,7 @@ public class Move extends Order {
                 }
             }
         } else {
-            appendFull(sb);
+            sb.append(getFull());
             sb.append(" -> ");
             sb.append(dest.getFull());
 
