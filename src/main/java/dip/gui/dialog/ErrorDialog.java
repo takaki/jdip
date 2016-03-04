@@ -26,6 +26,7 @@ import dip.gui.ClientFrame;
 import dip.misc.Log;
 import dip.misc.Utils;
 import dip.world.World;
+import dip.world.World.VariantInfo;
 import dip.world.variant.data.VersionNumber;
 
 import javax.swing.*;
@@ -318,7 +319,7 @@ public class ErrorDialog extends TextViewer {
      * This should be used whenever there is a Variant version mismatch.
      */
     public static void displayVariantVersionMismatch(final JFrame parent,
-                                                     final World.VariantInfo vi,
+                                                     final VariantInfo vi,
                                                      final VersionNumber availableVersion) {
         final Object[] args = new Object[3];
 
@@ -342,7 +343,7 @@ public class ErrorDialog extends TextViewer {
      * This should be used whenever a Variant is not available.
      */
     public static void displayVariantNotAvailable(final JFrame parent,
-                                                  final World.VariantInfo vi) {
+                                                  final VariantInfo vi) {
         final Object[] args = new Object[3];
 
         args[0] = vi.getVariantName();

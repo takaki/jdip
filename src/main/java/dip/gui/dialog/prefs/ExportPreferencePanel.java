@@ -27,6 +27,7 @@ import cz.autel.dmi.HIGConstraints;
 import cz.autel.dmi.HIGLayout;
 import dip.gui.ClientFrame;
 import dip.gui.swing.AssocJComboBox;
+import dip.gui.swing.AssocJComboBox.AssociatedObj;
 import dip.gui.swing.GradientJLabel;
 import dip.misc.SharedPrefs;
 import dip.misc.Utils;
@@ -215,7 +216,7 @@ public class ExportPreferencePanel extends PreferencePanel {
             bppText[i] = bppVals[i].toString();
         }
 
-        final AssocJComboBox.AssociatedObj[] assocObjs = AssocJComboBox.AssociatedObj
+        final AssociatedObj[] assocObjs = AssociatedObj
                 .createAssociatedObjects(bppVals, bppText, bppVals[0], true);
         pngBPP = new AssocJComboBox(assocObjs);
         pngBPP.reset();

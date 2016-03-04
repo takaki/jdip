@@ -25,6 +25,7 @@ package dip.gui.dialog.newgame;
 import cz.autel.dmi.HIGConstraints;
 import cz.autel.dmi.HIGLayout;
 import dip.gui.dialog.ErrorDialog;
+import dip.gui.dialog.newgame.NewGameDialog.NGDTabPane;
 import dip.gui.swing.XJScrollPane;
 import dip.misc.Utils;
 import dip.world.InvalidWorldException;
@@ -50,7 +51,7 @@ import java.util.*;
  * <p>
  * Reset button allows reversion to defaults.
  */
-public class NGDRuleOptions extends JPanel implements NewGameDialog.NGDTabPane {
+public class NGDRuleOptions extends JPanel implements NGDTabPane {
     // constants
     private static final String TAB_NAME = "NGDRuleOpts.tab.name";
     private static final String BUTTON_RESET = "NGDRuleOpts.button_reset";

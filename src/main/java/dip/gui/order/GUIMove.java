@@ -28,6 +28,7 @@ import dip.order.Move;
 import dip.order.Orderable;
 import dip.order.ValidationOptions;
 import dip.world.*;
+import dip.world.Unit.Type;
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.util.SVGConstants;
 import org.w3c.dom.svg.SVGElement;
@@ -75,7 +76,7 @@ public class GUIMove extends Move implements GUIOrder {
     /**
      * Creates a GUIMove
      */
-    protected GUIMove(final Power power, final Location source, final Unit.Type srcUnitType,
+    protected GUIMove(final Power power, final Location source, final Type srcUnitType,
                       final Location dest, final boolean isConvoying) {
         super(power, source, srcUnitType, dest, isConvoying);
     }// GUIMove()
@@ -83,7 +84,7 @@ public class GUIMove extends Move implements GUIOrder {
     /**
      * Creates a GUIMove
      */
-    protected GUIMove(final Power power, final Location src, final Unit.Type srcUnitType,
+    protected GUIMove(final Power power, final Location src, final Type srcUnitType,
                       final Location dest, final Province[] convoyRoute) {
         super(power, src, srcUnitType, dest, convoyRoute);
     }// GUIMove()
@@ -92,7 +93,7 @@ public class GUIMove extends Move implements GUIOrder {
     /**
      * Creates a GUIMove
      */
-    protected GUIMove(final Power power, final Location src, final Unit.Type srcUnitType,
+    protected GUIMove(final Power power, final Location src, final Type srcUnitType,
                       final Location dest, final List<Province> routes) {
         super(power, src, srcUnitType, dest, routes);
     }// GUIMove()
@@ -181,7 +182,7 @@ public class GUIMove extends Move implements GUIOrder {
             } else if (src.isAdjacent(province)) {
                 sb.append(Utils.getLocalString(CLICK_TO_SET_DEST));
                 return true;
-            } else if (province.isCoastal() && srcUnitType == Unit.Type.ARMY) {
+            } else if (province.isCoastal() && srcUnitType == Type.ARMY) {
                 // we may have a possible convoy route; if not, say so
                 // NOTE: assume destination coast is Coast.NONE
                 final Path path = new Path(position);
@@ -446,7 +447,7 @@ public class GUIMove extends Move implements GUIOrder {
         final Position position = mapInfo.getTurnState().getPosition();
         float r;
         if (position.hasUnit(dest.getProvince())) {
-            final Unit.Type destUnitType = position.getUnit(dest.getProvince()).orElse(null)
+            final Type destUnitType = position.getUnit(dest.getProvince()).orElse(null)
                     .getType();
             r = mmd.getOrderRadius(MapMetadata.EL_MOVE,
                     mapInfo.getSymbolName(destUnitType));
@@ -464,7 +465,7 @@ public class GUIMove extends Move implements GUIOrder {
             //
         } else {
             r = mmd.getOrderRadius(MapMetadata.EL_MOVE,
-                    mapInfo.getSymbolName(Unit.Type.ARMY)) / 2;
+                    mapInfo.getSymbolName(Type.ARMY)) / 2;
         }
 
         newPtTo = GUIOrderUtils

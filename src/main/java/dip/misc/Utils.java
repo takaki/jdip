@@ -33,6 +33,7 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.DocumentFilter;
+import javax.swing.text.DocumentFilter.FilterBypass;
 import javax.swing.text.html.HTMLDocument;
 import java.awt.*;
 import java.awt.image.AreaAveragingScaleFilter;
@@ -1064,14 +1065,14 @@ public class Utils {
         final AbstractDocument doc = (AbstractDocument) jtf.getDocument();
         doc.setDocumentFilter(new DocumentFilter() {
             @Override
-            public void insertString(final DocumentFilter.FilterBypass fb, final int offset,
+            public void insertString(final FilterBypass fb, final int offset,
                                      final String text,
                                      final AttributeSet attr) throws BadLocationException {
                 replace(fb, offset, 0, text, attr);
             }// insertString()
 
             @Override
-            public void replace(final DocumentFilter.FilterBypass fb, final int offset,
+            public void replace(final FilterBypass fb, final int offset,
                                 final int length, final String text,
                                 final AttributeSet attr) throws BadLocationException {
                 fb.replace(offset, length, getValidWordString(text), attr);
@@ -1125,14 +1126,14 @@ public class Utils {
         final AbstractDocument doc = (AbstractDocument) jtf.getDocument();
         doc.setDocumentFilter(new DocumentFilter() {
             @Override
-            public void insertString(final DocumentFilter.FilterBypass fb, final int offset,
+            public void insertString(final FilterBypass fb, final int offset,
                                      final String text,
                                      final AttributeSet attr) throws BadLocationException {
                 replace(fb, offset, 0, text, attr);
             }// insertString()
 
             @Override
-            public void replace(final DocumentFilter.FilterBypass fb, final int offset,
+            public void replace(final FilterBypass fb, final int offset,
                                 final int length, final String text,
                                 final AttributeSet attr) throws BadLocationException {
                 fb.replace(offset, length, getValidEmailString(text), attr);
@@ -1186,14 +1187,14 @@ public class Utils {
         final AbstractDocument doc = (AbstractDocument) jtf.getDocument();
         doc.setDocumentFilter(new DocumentFilter() {
             @Override
-            public void insertString(final DocumentFilter.FilterBypass fb, final int offset,
+            public void insertString(final FilterBypass fb, final int offset,
                                      final String text,
                                      final AttributeSet attr) throws BadLocationException {
                 replace(fb, offset, 0, text, attr);
             }// insertString()
 
             @Override
-            public void replace(final DocumentFilter.FilterBypass fb, final int offset,
+            public void replace(final FilterBypass fb, final int offset,
                                 final int length, final String text,
                                 final AttributeSet attr) throws BadLocationException {
                 fb.replace(offset, length, getValidURLString(text), attr);

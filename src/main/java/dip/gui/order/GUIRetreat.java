@@ -33,6 +33,7 @@ import dip.world.Position;
 import dip.world.Power;
 import dip.world.Province;
 import dip.world.Unit;
+import dip.world.Unit.Type;
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.util.SVGConstants;
 import org.w3c.dom.svg.SVGElement;
@@ -69,7 +70,7 @@ public class GUIRetreat extends Retreat implements GUIOrder {
     /**
      * Creates a GUIRetreat
      */
-    protected GUIRetreat(final Power power, final Location source, final Unit.Type sourceUnitType,
+    protected GUIRetreat(final Power power, final Location source, final Type sourceUnitType,
                          final Location dest) {
         super(power, source, sourceUnitType, dest);
     }// GUIRetreat()
@@ -370,7 +371,7 @@ public class GUIRetreat extends Retreat implements GUIOrder {
         Point2D.Float newPtTo = ptTo;
         final Position position = mapInfo.getTurnState().getPosition();
         if (position.hasUnit(dest.getProvince())) {
-            final Unit.Type destUnitType = position.getUnit(dest.getProvince())
+            final Type destUnitType = position.getUnit(dest.getProvince())
                     .orElse(null).getType();
             final float r = mmd.getOrderRadius(MapMetadata.EL_RETREAT,
                     mapInfo.getSymbolName(destUnitType));

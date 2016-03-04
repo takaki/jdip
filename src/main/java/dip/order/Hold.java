@@ -26,7 +26,12 @@ import dip.misc.Utils;
 import dip.process.Adjudicator;
 import dip.process.OrderState;
 import dip.process.Tristate;
-import dip.world.*;
+import dip.world.Border;
+import dip.world.Location;
+import dip.world.Power;
+import dip.world.RuleOptions;
+import dip.world.TurnState;
+import dip.world.Unit.Type;
 
 
 /**
@@ -46,7 +51,8 @@ public class Hold extends Order {
     /**
      * Creates a Hold order
      */
-    protected Hold(final Power power, final Location src, final Unit.Type srcUnit) {
+    protected Hold(final Power power, final Location src,
+                   final Type srcUnit) {
         super(power, src, srcUnit);
     }// Hold()
 
@@ -118,7 +124,8 @@ public class Hold extends Order {
 
         // validate Borders
         final Border border = src.getProvince()
-                .getTransit(src, srcUnitType, state.getPhase(), getClass()).orElse(null);
+                .getTransit(src, srcUnitType, state.getPhase(), getClass())
+                .orElse(null);
         if (border != null) {
             throw new OrderException(
                     Utils.getLocalString(ORD_VAL_BORDER, src.getProvince(),
@@ -171,15 +178,14 @@ public class Hold extends Order {
             Log.println("  dislodged?: ", thisOS.getDislodgedState());
         }
 
-        if (thisOS.getEvalState() == Tristate.UNCERTAIN) {
-            // if no moves against this order, we must succeed.
-            // Otherwise, MOVE orders will determine if we are dislodged and thus fail.
-            if (thisOS.getDependentMovesToSource().isEmpty()) {
-                thisOS.setEvalState(Tristate.SUCCESS);
-                thisOS.setDislodgedState(Tristate.NO);
-            }
-        }
 
+        // if no moves against this order, we must succeed.
+        // Otherwise, MOVE orders will determine if we are dislodged and thus fail.
+        if (thisOS.getEvalState() == Tristate.UNCERTAIN && thisOS
+                .getDependentMovesToSource().isEmpty()) {
+            thisOS.setEvalState(Tristate.SUCCESS);
+            thisOS.setDislodgedState(Tristate.NO);
+        }
         Log.println("  final evalState: ", thisOS.getEvalState());
     }// evaluate()
 

@@ -24,6 +24,11 @@
 package dip.gui.map;
 
 import dip.gui.ClientMenu;
+import dip.gui.map.MapPanelSVGAction.ExportJPG;
+import dip.gui.map.MapPanelSVGAction.ExportPDF;
+import dip.gui.map.MapPanelSVGAction.ExportPNG;
+import dip.gui.map.MapPanelSVGAction.ExportSVG;
+import dip.gui.map.MapPanelSVGAction.Print;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
@@ -81,23 +86,23 @@ final class MenuController {
 
         JMenuItem mi = cm.getMenuItem(ClientMenu.FILE_PRINT);
         removeActionListeners(mi);
-        mi.addActionListener(new MapPanelSVGAction.Print(mapPanel));
+        mi.addActionListener(new Print(mapPanel));
 
         mi = cm.getMenuItem(ClientMenu.FILE_EXPORT_JPG);
         removeActionListeners(mi);
-        mi.addActionListener(new MapPanelSVGAction.ExportJPG(mapPanel));
+        mi.addActionListener(new ExportJPG(mapPanel));
 
         mi = cm.getMenuItem(ClientMenu.FILE_EXPORT_PNG);
         removeActionListeners(mi);
-        mi.addActionListener(new MapPanelSVGAction.ExportPNG(mapPanel));
+        mi.addActionListener(new ExportPNG(mapPanel));
 
         mi = cm.getMenuItem(ClientMenu.FILE_EXPORT_PDF);
         removeActionListeners(mi);
-        mi.addActionListener(new MapPanelSVGAction.ExportPDF(mapPanel));
+        mi.addActionListener(new ExportPDF(mapPanel));
 
         mi = cm.getMenuItem(ClientMenu.FILE_EXPORT_SVG);
         removeActionListeners(mi);
-        mi.addActionListener(new MapPanelSVGAction.ExportSVG(mapPanel));
+        mi.addActionListener(new ExportSVG(mapPanel));
     }// registerExportItems()
 
 

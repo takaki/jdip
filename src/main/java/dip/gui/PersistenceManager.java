@@ -29,12 +29,14 @@ import dip.gui.report.ResultWriter;
 import dip.gui.swing.XJFileChooser;
 import dip.judge.gui.FlocImportDialog;
 import dip.judge.parser.JudgeImport;
+import dip.misc.Help.HelpID;
 import dip.misc.Log;
 import dip.misc.SimpleFileFilter;
 import dip.misc.Utils;
 import dip.world.Phase;
 import dip.world.TurnState;
 import dip.world.World;
+import dip.world.World.VariantInfo;
 import dip.world.variant.VariantManager;
 import dip.world.variant.data.Variant;
 
@@ -321,7 +323,7 @@ public class PersistenceManager {
         if (confirmDialog()) {
             final World world = NewGameDialog.displayDialog(clientFrame,
                     Utils.getLocalString(NewGameDialog.TITLE_F2F),
-                    dip.misc.Help.HelpID.Dialog_NewF2f);
+                    HelpID.Dialog_NewF2f);
 
             if (world != null) {
                 fileName = null;
@@ -589,7 +591,7 @@ public class PersistenceManager {
         final World w = World.open(file);
 
         // check if variant is available; if not, inform user.
-        final World.VariantInfo vi = w.getVariantInfo();
+        final VariantInfo vi = w.getVariantInfo();
 
         if (new VariantManager().getVariant(vi.getVariantName(),
                 vi.getVariantVersion()) == null) {

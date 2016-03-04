@@ -27,6 +27,7 @@ import dip.process.Adjudicator;
 import dip.process.OrderState;
 import dip.process.Tristate;
 import dip.world.*;
+import dip.world.Unit.Type;
 
 
 /**
@@ -46,7 +47,7 @@ public class Remove extends Order {
     /**
      * Creates a Remove order
      */
-    protected Remove(final Power power, final Location src, final Unit.Type srcUnit) {
+    protected Remove(final Power power, final Location src, final Type srcUnit) {
         super(power, src, srcUnit);
     }// Remove()
 

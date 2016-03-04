@@ -24,12 +24,17 @@ package dip.gui.order;
 
 import dip.gui.map.DefaultMapRenderer2;
 import dip.gui.map.MapMetadata;
+import dip.gui.map.MapMetadata.SymbolSize;
 import dip.gui.map.SVGUtils;
 import dip.misc.Utils;
 import dip.order.Build;
 import dip.order.Orderable;
 import dip.process.Adjustment;
+import dip.process.Adjustment.AdjustmentInfo;
 import dip.world.*;
+import dip.world.RuleOptions.Option;
+import dip.world.RuleOptions.OptionValue;
+import dip.world.Unit.Type;
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.util.SVGConstants;
 import org.w3c.dom.svg.SVGElement;
@@ -79,7 +84,7 @@ public class GUIBuild extends Build implements GUIOrder {
     /**
      * Creates a GUIBuild
      */
-    protected GUIBuild(final Power power, final Location source, final Unit.Type sourceUnitType) {
+    protected GUIBuild(final Power power, final Location source, final Type sourceUnitType) {
         super(power, source, sourceUnitType);
     }// GUIBuild()
 
@@ -139,7 +144,7 @@ public class GUIBuild extends Build implements GUIOrder {
 
             // indicate if we have no builds available
             //
-            final Adjustment.AdjustmentInfo adjInfo = stateInfo.getAdjustmenInfoMap()
+            final AdjustmentInfo adjInfo = stateInfo.getAdjustmenInfoMap()
                     .get(SCOwner);
             if (adjInfo.getAdjustmentAmount() <= 0) {
                 sb.append(Utils.getLocalString(NOBUILD_NO_BUILDS_AVAILABLE,
@@ -152,10 +157,10 @@ public class GUIBuild extends Build implements GUIOrder {
             //
             final RuleOptions ruleOpts = stateInfo.getRuleOptions();
             if (ruleOpts.getOptionValue(
-                    RuleOptions.Option.OPTION_BUILDS) == RuleOptions.OptionValue.VALUE_BUILDS_ANY_OWNED) {
+                    Option.OPTION_BUILDS) == OptionValue.VALUE_BUILDS_ANY_OWNED) {
                 return checkBuildUnit(stateInfo, province, location, sb);
             } else if (ruleOpts.getOptionValue(
-                    RuleOptions.Option.OPTION_BUILDS) == RuleOptions.OptionValue.VALUE_BUILDS_ANY_IF_HOME_OWNED) {
+                    Option.OPTION_BUILDS) == OptionValue.VALUE_BUILDS_ANY_IF_HOME_OWNED) {
                 // check if we have ONE owned home supply center before buidling
                 // in a non-home supply center.
                 //
@@ -247,11 +252,11 @@ public class GUIBuild extends Build implements GUIOrder {
      */
     @Override
     public void setParam(final Parameter param, final Object value) {
-        if (param != BUILD_UNIT || !(value instanceof Unit.Type)) {
+        if (param != BUILD_UNIT || !(value instanceof Type)) {
             throw new IllegalArgumentException();
         }
 
-        srcUnitType = (Unit.Type) value;
+        srcUnitType = (Type) value;
     }// setParam()
 
 
@@ -356,7 +361,7 @@ public class GUIBuild extends Build implements GUIOrder {
         final SVGElement[] elements = new SVGElement[2];
 
         // BuildUnit symbol
-        MapMetadata.SymbolSize symbolSize = mmd
+        SymbolSize symbolSize = mmd
                 .getSymbolSize(DefaultMapRenderer2.SYMBOL_BUILDUNIT);
 
         elements[0] = SVGUtils.createUseElement(mapInfo.getDocument(),
@@ -399,7 +404,7 @@ public class GUIBuild extends Build implements GUIOrder {
             return false;
         }
 
-        if (srcUnitType == Unit.Type.ARMY) {
+        if (srcUnitType == Type.ARMY) {
             if (province.isSea()) {
                 sb.append(Utils.getLocalString(NOBUILD_NO_ARMY_IN_SEA));
                 return false;
@@ -413,7 +418,7 @@ public class GUIBuild extends Build implements GUIOrder {
                 sb.append(Utils.getLocalString(BUILD_ARMY_OK));
                 return true;
             }
-        } else if (srcUnitType == Unit.Type.FLEET) {
+        } else if (srcUnitType == Type.FLEET) {
             if (province.isLandLocked()) {
                 sb.append(Utils.getLocalString(NOBUILD_FLEET_LANDLOCKED));
                 return false;
@@ -427,7 +432,7 @@ public class GUIBuild extends Build implements GUIOrder {
                 sb.append(Utils.getLocalString(BUILD_FLEET_OK));
                 return true;
             }
-        } else if (srcUnitType == Unit.Type.WING) {
+        } else if (srcUnitType == Type.WING) {
             // check borders
             if (!GUIOrderUtils
                     .checkBorder(this, loc, srcUnitType, stateInfo.getPhase(),

@@ -30,6 +30,7 @@ import dip.gui.ClientFrame;
 import dip.gui.OrderDisplayPanel;
 import dip.gui.map.MapRenderer2;
 import dip.gui.swing.AssocJComboBox;
+import dip.gui.swing.AssocJComboBox.AssociatedObj;
 import dip.gui.swing.XJFileChooser;
 import dip.misc.LRUCache;
 import dip.misc.Log;
@@ -46,6 +47,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -159,7 +161,7 @@ public class GeneralPreferencePanel extends PreferencePanel {
         // setup associative arrays for comboboxes
         String[] arr = new String[]{MapRenderer2.VALUE_LABELS_NONE, MapRenderer2.VALUE_LABELS_BRIEF, MapRenderer2.VALUE_LABELS_FULL};
 
-        AssocJComboBox.AssociatedObj[] assocObjs = AssocJComboBox.AssociatedObj
+        AssociatedObj[] assocObjs = AssociatedObj
                 .createAssociatedObjects(arr, GPP_MAP_LABEL_PREFIX,
                         MapRenderer2.VALUE_LABELS_NONE, true);
         mapLabels = new AssocJComboBox(assocObjs);
@@ -174,7 +176,7 @@ public class GeneralPreferencePanel extends PreferencePanel {
                 OrderDisplayPanel.LABEL_SORT_UNIT), Utils.getLocalString(
                 OrderDisplayPanel.LABEL_SORT_ORDER)};
 
-        assocObjs = AssocJComboBox.AssociatedObj
+        assocObjs = AssociatedObj
                 .createAssociatedObjects(arr, arr2,
                         OrderDisplayPanel.SORT_POWER, true);
         orderSorting = new AssocJComboBox(assocObjs);
@@ -466,7 +468,7 @@ public class GeneralPreferencePanel extends PreferencePanel {
             final ArrayList names = new ArrayList(NUM_RECENT_FILES);
             final Iterator iter = fileCache.entrySet().iterator();
             while (iter.hasNext()) {
-                final Map.Entry mapEntry = (Map.Entry) iter.next();
+                final Entry mapEntry = (Entry) iter.next();
                 final File file = (File) mapEntry.getValue();
                 if (file.exists()) {
                     names.add(mapEntry.getKey());
@@ -538,7 +540,7 @@ public class GeneralPreferencePanel extends PreferencePanel {
             int idx = NUM_RECENT_FILES - 1;
             final Iterator iter = fileCache.entrySet().iterator();
             while (iter.hasNext()) {
-                final Map.Entry mapEntry = (Map.Entry) iter.next();
+                final Entry mapEntry = (Entry) iter.next();
                 final File file = (File) mapEntry.getValue();
 
                 prefs.put(NODE_RECENT_FILE + String.valueOf(idx),

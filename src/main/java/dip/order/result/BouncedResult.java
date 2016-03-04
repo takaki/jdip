@@ -25,6 +25,7 @@ import dip.misc.Utils;
 import dip.order.OrderFormat;
 import dip.order.OrderFormatOptions;
 import dip.order.Orderable;
+import dip.order.result.OrderResult.ResultType;
 import dip.world.Province;
 
 
@@ -42,7 +43,7 @@ public class BouncedResult extends OrderResult {
     private int defStrength = -1;
 
     public BouncedResult(final Orderable order) {
-        super(order, OrderResult.ResultType.FAILURE, null);
+        super(order, ResultType.FAILURE, null);
     }// BouncedResult()
 
 

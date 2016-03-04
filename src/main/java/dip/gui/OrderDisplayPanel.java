@@ -30,7 +30,10 @@ import dip.gui.undo.*;
 import dip.misc.Utils;
 import dip.order.*;
 import dip.process.Adjustment;
+import dip.process.Adjustment.AdjustmentInfo;
+import dip.process.Adjustment.AdjustmentInfoMap;
 import dip.world.*;
+import dip.world.Phase.PhaseType;
 
 import javax.swing.*;
 import javax.swing.undo.CompoundEdit;
@@ -120,7 +123,7 @@ public class OrderDisplayPanel extends JPanel {
     private Power[] orderablePowers = null;
     private OrderListModel orderListModel = null;
     private boolean isEditable = false;
-    private Adjustment.AdjustmentInfoMap adjMap = null;    // non-null only in Adjustment phase
+    private AdjustmentInfoMap adjMap = null;    // non-null only in Adjustment phase
     private UndoRedoManager undoManager = null;
 
     // GUI component instance variables
@@ -808,7 +811,7 @@ public class OrderDisplayPanel extends JPanel {
      */
     private void checkAdjustments(final Power power) throws OrderException {
         if (adjMap != null) {
-            final Adjustment.AdjustmentInfo adjInfo = adjMap.get(power);
+            final AdjustmentInfo adjInfo = adjMap.get(power);
             final int numOrders = turnState.getOrders(power).size();
             final int max = Math.abs(adjInfo.getAdjustmentAmount());
 
@@ -894,7 +897,7 @@ public class OrderDisplayPanel extends JPanel {
         public void actionTurnstateChanged(final TurnState ts) {
             turnState = ts;
             if (turnState.getPhase()
-                    .getPhaseType() == Phase.PhaseType.ADJUSTMENT) {
+                    .getPhaseType() == PhaseType.ADJUSTMENT) {
                 adjMap = Adjustment
                         .getAdjustmentInfo(turnState, world.getRuleOptions(),
                                 world.getMap().getPowers());

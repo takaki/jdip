@@ -30,6 +30,7 @@ import dip.misc.Log;
 import dip.misc.Utils;
 import dip.order.ValidationOptions;
 import dip.world.*;
+import dip.world.World.VariantInfo;
 import dip.world.variant.VariantManager;
 import dip.world.variant.data.MapGraphic;
 import dip.world.variant.data.SymbolPack;
@@ -901,7 +902,7 @@ public class MapPanel extends JPanel {
                     position = turnState.getPosition();
 
                     // load URL and resolve
-                    final World.VariantInfo vi = world.getVariantInfo();
+                    final VariantInfo vi = world.getVariantInfo();
                     final Variant variant = new VariantManager()
                             .getVariant(vi.getVariantName(),
                                     vi.getVariantVersion()).orElse(null);

@@ -40,7 +40,7 @@ public class DMR2RenderCommandFactory extends RenderCommandFactory {
     @Override
     public RenderCommandFactory.RCSetTurnstate createRCSetTurnstate(
             final MapRenderer2 mr, final TurnState ts) {
-        return new DMR2RenderCommandFactory.RCSetTurnstate(mr, ts);
+        return new RCSetTurnstate(mr, ts);
     }// RCSetTurnstate()
 
     /**

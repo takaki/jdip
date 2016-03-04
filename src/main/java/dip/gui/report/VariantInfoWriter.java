@@ -24,9 +24,13 @@ package dip.gui.report;
 
 import dip.gui.ClientFrame;
 import dip.gui.dialog.TextViewer;
+import dip.gui.dialog.TextViewer.TVRunnable;
 import dip.misc.Utils;
 import dip.world.RuleOptions;
+import dip.world.RuleOptions.Option;
+import dip.world.RuleOptions.OptionValue;
 import dip.world.World;
+import dip.world.World.VariantInfo;
 import dip.world.variant.VariantManager;
 import dip.world.variant.data.Variant;
 
@@ -71,7 +75,7 @@ public class VariantInfoWriter {
         tv.setHorizontalScrollBarPolicy(
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-        tv.lazyLoadDisplayDialog(new TextViewer.TVRunnable() {
+        tv.lazyLoadDisplayDialog(new TVRunnable() {
             @Override
             public void run() {
                 setText(variantInfoToHTML(w));
@@ -101,7 +105,7 @@ public class VariantInfoWriter {
         }
 
         // get selcted variant
-        final World.VariantInfo vi = world.getVariantInfo();
+        final VariantInfo vi = world.getVariantInfo();
         final Variant variant = new VariantManager()
                 .getVariant(vi.getVariantName(), vi.getVariantVersion()).orElse(null);
 
@@ -119,8 +123,8 @@ public class VariantInfoWriter {
         final Set allOpts = ro.getAllOptions();
         final Iterator iter = allOpts.iterator();
         while (iter.hasNext()) {
-            final RuleOptions.Option opt = (RuleOptions.Option) iter.next();
-            final RuleOptions.OptionValue optVal = ro.getOptionValue(opt);
+            final Option opt = (Option) iter.next();
+            final OptionValue optVal = ro.getOptionValue(opt);
 
             sb.append("<p><b>");
             sb.append(opt.getNameI18N());

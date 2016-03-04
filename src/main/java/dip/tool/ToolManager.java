@@ -31,6 +31,7 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.Attributes;
+import java.util.jar.Attributes.Name;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
@@ -82,7 +83,7 @@ public class ToolManager {
                     final Manifest manifest = jarFile.getManifest();
                     final Attributes attr = manifest.getMainAttributes();
                     mainClassNames[i] = attr
-                            .getValue(Attributes.Name.MAIN_CLASS);
+                            .getValue(Name.MAIN_CLASS);
                     jarFile.close();
                 } catch (final IOException e) {
                     mainClassNames[i] = null;

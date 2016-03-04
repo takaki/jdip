@@ -25,6 +25,7 @@ package dip.gui.dialog;
 import dip.gui.AbstractCFPListener;
 import dip.gui.ClientFrame;
 import dip.misc.Help;
+import dip.misc.Help.HelpID;
 import dip.misc.Utils;
 import dip.world.World;
 
@@ -212,7 +213,7 @@ public class XDialog extends JDialog {
      * Set the HelpID (see dip.misc.Help).  If non-null, sets the Window-Level
      * help for this dialog.
      */
-    public void setHelpID(final Help.HelpID helpID) {
+    public void setHelpID(final HelpID helpID) {
         Help.enableDialogHelp(this, helpID);
     }// setHelpID()
 

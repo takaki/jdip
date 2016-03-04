@@ -24,6 +24,7 @@ package dip.gui.dialog.newgame;
 
 import cz.autel.dmi.HIGConstraints;
 import cz.autel.dmi.HIGLayout;
+import dip.gui.dialog.newgame.NewGameDialog.NGDTabPane;
 import dip.gui.swing.GradientJLabel;
 import dip.gui.swing.XJScrollPane;
 import dip.misc.Utils;
@@ -45,7 +46,7 @@ import java.net.URL;
  * and Unit options.
  * <p>
  */
-public class NGDMapAndUnits extends JPanel implements NewGameDialog.NGDTabPane {
+public class NGDMapAndUnits extends JPanel implements NGDTabPane {
     private static final String TAB_NAME = "NGDMAU.tab.name";
     private static final String MAP_LABEL = "NGDMAU.label.map";
     private static final String SYMBOL_LABEL = "NGDMAU.label.symbol";

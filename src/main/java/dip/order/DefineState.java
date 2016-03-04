@@ -25,6 +25,7 @@ import dip.misc.Utils;
 import dip.process.Adjudicator;
 import dip.process.OrderState;
 import dip.world.*;
+import dip.world.Unit.Type;
 
 /**
  * Implementation of the Setup (DefineState) order.
@@ -47,10 +48,10 @@ public class DefineState extends Order {
 
 
     protected DefineState(final Power power, final Location src,
-                          final Unit.Type srcUnit) throws OrderException {
+                          final Type srcUnit) throws OrderException {
         super(power, src, srcUnit);
 
-        if (srcUnit == Unit.Type.UNDEFINED) {
+        if (srcUnit == Type.UNDEFINED) {
             throw new OrderException(
                     Utils.getLocalString(DEFSTATE_NO_UNIT_TYPE));
         }

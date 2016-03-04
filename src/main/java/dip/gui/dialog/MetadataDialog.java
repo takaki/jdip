@@ -31,6 +31,7 @@ import dip.gui.map.MapMetadata;
 import dip.gui.map.SVGColorParser;
 import dip.gui.swing.ColorRectIcon;
 import dip.gui.swing.XJScrollPane;
+import dip.misc.Help.HelpID;
 import dip.misc.Utils;
 import dip.world.Power;
 import dip.world.World;
@@ -124,7 +125,7 @@ public class MetadataDialog extends HeaderDialog {
         createDefaultContentBorder(tabPane);
         setContentPane(tabPane);
         addTwoButtons(makeCancelButton(), makeOKButton(), false, true);
-        setHelpID(dip.misc.Help.HelpID.Dialog_Metadata);
+        setHelpID(HelpID.Dialog_Metadata);
     }// MetadataDialog()
 
 

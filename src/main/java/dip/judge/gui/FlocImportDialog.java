@@ -27,10 +27,12 @@ import cz.autel.dmi.HIGConstraints;
 import cz.autel.dmi.HIGLayout;
 import dip.gui.ClientFrame;
 import dip.gui.dialog.ErrorDialog;
+import dip.gui.dialog.ErrorDialog.BugReportInfo;
 import dip.gui.dialog.HeaderDialog;
 import dip.judge.net.FlocImporter;
 import dip.judge.net.FlocImporter.FlocImportCallback;
 import dip.misc.Help;
+import dip.misc.Help.HelpID;
 import dip.misc.SharedPrefs;
 import dip.misc.Utils;
 import dip.world.World;
@@ -117,7 +119,7 @@ public class FlocImportDialog extends HeaderDialog implements FlocImportCallback
         addToButtonPanel(progressBar);    // add first (leftmost)
         addTwoButtons(makeCancelButton(), makeOKButton(), false, true);
         setSeparatorVisible(true, BTN_BAR_EDGE, 0);
-        setHelpID(Help.HelpID.Dialog_ImportFloc);
+        setHelpID(HelpID.Dialog_ImportFloc);
     }// FlocImportDialog()
 
     /**
@@ -234,7 +236,7 @@ public class FlocImportDialog extends HeaderDialog implements FlocImportCallback
     @Override
     public void flocImportException(final IOException e) {
         // enhance our error report
-        final ErrorDialog.BugReportInfo bri = new ErrorDialog.BugReportInfo(e);
+        final BugReportInfo bri = new BugReportInfo(e);
         bri.add("contact_site", "http://www.floc.net/");
         bri.add("judge_name", (String) cbJudges.getSelectedItem());
         bri.add("game_name", tfGameName.getText());

@@ -26,12 +26,14 @@ import cz.autel.dmi.HIGConstraints;
 import cz.autel.dmi.HIGLayout;
 import dip.gui.ClientFrame;
 import dip.gui.dialog.ErrorDialog;
+import dip.gui.dialog.newgame.NewGameDialog.NGDTabPane;
 import dip.gui.swing.GradientJLabel;
 import dip.gui.swing.XJScrollPane;
 import dip.misc.Utils;
 import dip.world.InvalidWorldException;
 import dip.world.RuleOptions;
 import dip.world.World;
+import dip.world.World.VariantInfo;
 import dip.world.WorldFactory;
 import dip.world.variant.VariantManager;
 import dip.world.variant.data.MapGraphic;
@@ -46,7 +48,7 @@ import javax.swing.event.ListSelectionListener;
  * Panel for New Game Dialog that allows selection of a map / variant / map graphic.
  * <p>
  */
-public class NGDVariantSelect extends JPanel implements NewGameDialog.NGDTabPane {
+public class NGDVariantSelect extends JPanel implements NGDTabPane {
     // i18n constants
     private static final String TAB_NAME = "NGDvariant.tab.name";
     private static final String LOADING_TEXT = "NGDvariant.text.loading";
@@ -157,7 +159,7 @@ public class NGDVariantSelect extends JPanel implements NewGameDialog.NGDTabPane
             world = WorldFactory.createWorld(variant);
 
             // set basic variant parameters
-            final World.VariantInfo variantInfo = world.getVariantInfo();
+            final VariantInfo variantInfo = world.getVariantInfo();
             variantInfo.setVariantName(variant.getName());
             variantInfo.setVariantVersion(variant.getVersion());
 

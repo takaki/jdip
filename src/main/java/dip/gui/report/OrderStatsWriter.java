@@ -24,6 +24,7 @@ package dip.gui.report;
 
 import dip.gui.ClientFrame;
 import dip.gui.dialog.TextViewer;
+import dip.gui.dialog.TextViewer.TVRunnable;
 import dip.misc.Utils;
 import dip.order.Convoy;
 import dip.order.Hold;
@@ -32,7 +33,9 @@ import dip.order.OrderFormatOptions;
 import dip.order.Orderable;
 import dip.order.Support;
 import dip.order.result.OrderResult;
+import dip.order.result.OrderResult.ResultType;
 import dip.world.Phase;
+import dip.world.Phase.PhaseType;
 import dip.world.Power;
 import dip.world.TurnState;
 import dip.world.Unit;
@@ -89,7 +92,7 @@ public class OrderStatsWriter {
         tv.setHorizontalScrollBarPolicy(
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-        tv.lazyLoadDisplayDialog(new TextViewer.TVRunnable() {
+        tv.lazyLoadDisplayDialog(new TVRunnable() {
             @Override
             public void run() {
                 setText(getOrderStatsAsHTML(w, orderFormat));
@@ -247,7 +250,7 @@ public class OrderStatsWriter {
         final Iterator<TurnState> iter = turns.iterator();
         while (iter.hasNext()) {
             final TurnState ts = iter.next();
-            if (ts.isResolved() && Phase.PhaseType.MOVEMENT == ts.getPhase()
+            if (ts.isResolved() && PhaseType.MOVEMENT == ts.getPhase()
                     .getPhaseType()) {
                 data.add(new MovePhaseTurnData(ts));
             }
@@ -266,7 +269,7 @@ public class OrderStatsWriter {
         private final Stats[] stats;
 
         public MovePhaseTurnData(final TurnState ts) {
-            if (ts.getPhase().getPhaseType() != Phase.PhaseType.MOVEMENT) {
+            if (ts.getPhase().getPhaseType() != PhaseType.MOVEMENT) {
                 throw new IllegalArgumentException();
             }
 
@@ -313,7 +316,7 @@ public class OrderStatsWriter {
 
                     // we only map SUCCESSFULL orders.
                     if (ordRes
-                            .getResultType() == OrderResult.ResultType.SUCCESS) {
+                            .getResultType() == ResultType.SUCCESS) {
                         resultMap.put(ordRes.getOrder(), Boolean.TRUE);
                     }
                 }

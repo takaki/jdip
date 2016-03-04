@@ -24,12 +24,17 @@ package dip.gui.report;
 
 import dip.gui.ClientFrame;
 import dip.gui.dialog.TextViewer;
+import dip.gui.dialog.TextViewer.TVRunnable;
 import dip.misc.Help;
+import dip.misc.Help.HelpID;
 import dip.misc.Utils;
 import dip.order.Order;
 import dip.order.OrderFormatOptions;
 import dip.process.Adjustment;
+import dip.process.Adjustment.AdjustmentInfo;
+import dip.process.Adjustment.AdjustmentInfoMap;
 import dip.world.Phase;
+import dip.world.Phase.PhaseType;
 import dip.world.Position;
 import dip.world.Power;
 import dip.world.Province;
@@ -85,7 +90,7 @@ public class StateWriter {
     private final TurnState turnState;
     private final List<Power> allPowers;
     private final Map<Power, LinkedList<String>> powerMap;
-    private final Adjustment.AdjustmentInfoMap adjMap;
+    private final AdjustmentInfoMap adjMap;
     private final OrderFormatOptions ofo;
 
 
@@ -115,12 +120,12 @@ public class StateWriter {
         tv.setEditable(false);
         tv.addSingleButton(tv.makeOKButton());
         tv.setTitle(title.toString());
-        tv.setHelpID(Help.HelpID.Dialog_StatusReport);
+        tv.setHelpID(HelpID.Dialog_StatusReport);
         tv.setHeaderVisible(false);
         tv.setHorizontalScrollBarPolicy(
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-        tv.lazyLoadDisplayDialog(new TextViewer.TVRunnable() {
+        tv.lazyLoadDisplayDialog(new TVRunnable() {
             @Override
             public void run() {
                 setText(stateToHTML(clientFrame, ts));
@@ -157,11 +162,11 @@ public class StateWriter {
         String header = "";
         String info = "";
 
-        if (turnState.getPhase().getPhaseType() == Phase.PhaseType.RETREAT) {
+        if (turnState.getPhase().getPhaseType() == PhaseType.RETREAT) {
             header = Utils.getLocalString(DISLODGED_HEADER_TEXT);
             info = getDislodgedInfo();
         } else if (turnState.getPhase()
-                .getPhaseType() == Phase.PhaseType.ADJUSTMENT) {
+                .getPhaseType() == PhaseType.ADJUSTMENT) {
             header = Utils.getLocalString(ADJUSTMENT_HEADER_TEXT);
             info = getAdjustmentInfo();
         }
@@ -282,18 +287,18 @@ public class StateWriter {
                     // but do we have orders for all units?
                     // indicate if we do not.
                     // this is phase dependent
-                    final Adjustment.AdjustmentInfo adjInfo = adjMap
+                    final AdjustmentInfo adjInfo = adjMap
                             .get(allPower);
                     int diff = 0;
                     if (turnState.getPhase()
-                            .getPhaseType() == Phase.PhaseType.RETREAT) {
+                            .getPhaseType() == PhaseType.RETREAT) {
                         diff = adjInfo.getDislodgedUnitCount() - orders.size();
                     } else if (turnState.getPhase()
-                            .getPhaseType() == Phase.PhaseType.ADJUSTMENT) {
+                            .getPhaseType() == PhaseType.ADJUSTMENT) {
                         diff = Math.abs(adjInfo.getAdjustmentAmount()) - orders
                                 .size();
                     } else if (turnState.getPhase()
-                            .getPhaseType() == Phase.PhaseType.MOVEMENT) {
+                            .getPhaseType() == PhaseType.MOVEMENT) {
                         diff = adjInfo.getUnitCount() - orders.size();
                     }
 
@@ -454,7 +459,7 @@ public class StateWriter {
         // format using format string
         // many args...
         for (Power allPower : allPowers) {
-            final Adjustment.AdjustmentInfo adjInfo = adjMap.get(allPower);
+            final AdjustmentInfo adjInfo = adjMap.get(allPower);
 
 
             // determine build/remove/nochange text, and blocked builds

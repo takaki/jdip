@@ -24,12 +24,15 @@ package dip.gui.order;
 
 import dip.gui.map.DefaultMapRenderer2;
 import dip.gui.map.MapMetadata;
+import dip.gui.map.MapMetadata.SymbolSize;
 import dip.gui.map.SVGUtils;
 import dip.misc.Utils;
 import dip.order.Orderable;
 import dip.order.Remove;
 import dip.process.Adjustment;
+import dip.process.Adjustment.AdjustmentInfo;
 import dip.world.*;
+import dip.world.Unit.Type;
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.util.SVGConstants;
 import org.w3c.dom.svg.SVGElement;
@@ -62,7 +65,7 @@ public class GUIRemove extends Remove implements GUIOrder {
      * Creates a GUIRemove
      */
     protected GUIRemove(final Power power, final Location source,
-                        final Unit.Type sourceUnitType) {
+                        final Type sourceUnitType) {
         super(power, source, sourceUnitType);
     }// GUIRemove()
 
@@ -108,7 +111,7 @@ public class GUIRemove extends Remove implements GUIOrder {
             }
 
             // check that we actually have units to remove
-            final Adjustment.AdjustmentInfo adjInfo = stateInfo.getAdjustmenInfoMap()
+            final AdjustmentInfo adjInfo = stateInfo.getAdjustmenInfoMap()
                     .get(unit.getPower());
             if (adjInfo.getAdjustmentAmount() < 0) {
                 sb.append(Utils.getLocalString(GUIOrder.CLICK_TO_ISSUE,
@@ -274,7 +277,7 @@ public class GUIRemove extends Remove implements GUIOrder {
         failPt = new Point2D.Float(srcPt.x + radius, srcPt.y);
 
         // get symbolsize
-        final MapMetadata.SymbolSize symbolSize = mmd
+        final SymbolSize symbolSize = mmd
                 .getSymbolSize(DefaultMapRenderer2.SYMBOL_REMOVEUNIT);
 
         // create RemoveUnit symbol via a USE element

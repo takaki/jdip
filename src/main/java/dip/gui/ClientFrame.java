@@ -37,6 +37,7 @@ import dip.gui.swing.XJFileChooser;
 import dip.gui.undo.UndoRedoManager;
 import dip.gui.undo.UndoResolve;
 import dip.misc.Help;
+import dip.misc.Help.HelpID;
 import dip.misc.Log;
 import dip.misc.Utils;
 import dip.order.OrderFormatOptions;
@@ -1334,7 +1335,7 @@ public class ClientFrame extends JFrame {
                     "onHelpAbout");
             Help.enableHelpOnButton(
                     clientMenu.getMenuItem(ClientMenu.HELP_CONTENTS),
-                    Help.HelpID.Contents);
+                    HelpID.Contents);
         }// registerMenuItems()
 
         // file

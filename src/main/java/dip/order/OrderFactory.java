@@ -26,6 +26,7 @@ import dip.world.Location;
 import dip.world.Power;
 import dip.world.Province;
 import dip.world.Unit;
+import dip.world.Unit.Type;
 
 import java.util.List;
 
@@ -69,85 +70,85 @@ public abstract class OrderFactory {
      * Creates a Hold order
      */
     public abstract Hold createHold(Power power, Location source,
-                                    Unit.Type sourceUnitType);
+                                    Type sourceUnitType);
 
     /**
      * Creates a Move order
      */
     public abstract Move createMove(Power power, Location source,
-                                    Unit.Type srcUnitType, Location dest);
+                                    Type srcUnitType, Location dest);
 
     /**
      * Creates a Move order
      */
     public abstract Move createMove(Power power, Location source,
-                                    Unit.Type srcUnitType, Location dest,
+                                    Type srcUnitType, Location dest,
                                     boolean isConvoying);
 
     /**
      * Creates a Move order
      */
     public abstract Move createMove(Power power, Location src,
-                                    Unit.Type srcUnitType, Location dest,
+                                    Type srcUnitType, Location dest,
                                     Province[] convoyRoute);
 
     /**
      * Creates a Move order
      */
     public abstract Move createMove(Power power, Location src,
-                                    Unit.Type srcUnitType, Location dest,
+                                    Type srcUnitType, Location dest,
                                     List<Province> routes);
 
     /**
      * Creates a Support order, to Support a unit staying in place.
      */
     public abstract Support createSupport(Power power, Location src,
-                                          Unit.Type srcUnitType,
+                                          Type srcUnitType,
                                           Location supSrc, Power supPower,
-                                          Unit.Type supUnitType);
+                                          Type supUnitType);
 
     /**
      * Creates a Support order, to Support a unit moving
      * (or staying in place, if supDest == null)
      */
     public abstract Support createSupport(Power power, Location src,
-                                          Unit.Type srcUnitType,
+                                          Type srcUnitType,
                                           Location supSrc, Power supPower,
-                                          Unit.Type supUnitType,
+                                          Type supUnitType,
                                           Location supDest);
 
     /**
      * Creates a Convoy order
      */
     public abstract Convoy createConvoy(Power power, Location src,
-                                        Unit.Type srcUnitType,
+                                        Type srcUnitType,
                                         Location convoySrc, Power convoyPower,
-                                        Unit.Type convoySrcUnitType,
+                                        Type convoySrcUnitType,
                                         Location convoyDest);
 
     /**
      * Creates a Retreat order
      */
     public abstract Retreat createRetreat(Power power, Location source,
-                                          Unit.Type srcUnitType, Location dest);
+                                          Type srcUnitType, Location dest);
 
     /**
      * Creates a Disband order
      */
     public abstract Disband createDisband(Power power, Location source,
-                                          Unit.Type sourceUnitType);
+                                          Type sourceUnitType);
 
     /**
      * Creates a Build order
      */
     public abstract Build createBuild(Power power, Location source,
-                                      Unit.Type sourceUnitType);
+                                      Type sourceUnitType);
 
     /**
      * Creates a Remove order
      */
     public abstract Remove createRemove(Power power, Location source,
-                                        Unit.Type sourceUnitType);
+                                        Type sourceUnitType);
 
     /**
      * Creates a Waive order
@@ -158,7 +159,7 @@ public abstract class OrderFactory {
      * Creates a DefineState order
      */
     public abstract DefineState createDefineState(Power power, Location source,
-                                                  Unit.Type sourceUnitType) throws OrderException;
+                                                  Type sourceUnitType) throws OrderException;
 
 
     private static final class DefaultOrderFactory extends OrderFactory {
@@ -174,7 +175,7 @@ public abstract class OrderFactory {
          */
         @Override
         public Hold createHold(final Power power, final Location source,
-                               final Unit.Type sourceUnitType) {
+                               final Type sourceUnitType) {
             return new Hold(power, source, sourceUnitType);
         }// createHold()
 
@@ -184,7 +185,7 @@ public abstract class OrderFactory {
          */
         @Override
         public Move createMove(final Power power, final Location source,
-                               final Unit.Type srcUnitType, final Location dest) {
+                               final Type srcUnitType, final Location dest) {
             return new Move(power, source, srcUnitType, dest);
         }// createMove()
 
@@ -193,7 +194,7 @@ public abstract class OrderFactory {
          */
         @Override
         public Move createMove(final Power power, final Location source,
-                               final Unit.Type srcUnitType, final Location dest,
+                               final Type srcUnitType, final Location dest,
                                final boolean isConvoying) {
             return new Move(power, source, srcUnitType, dest, isConvoying);
         }// createMove()
@@ -202,7 +203,7 @@ public abstract class OrderFactory {
          * Creates a Move order
          */
         @Override
-        public Move createMove(final Power power, final Location src, final Unit.Type srcUnitType,
+        public Move createMove(final Power power, final Location src, final Type srcUnitType,
                                final Location dest, final Province[] convoyRoute) {
             return new Move(power, src, srcUnitType, dest, convoyRoute);
         }// createMove()
@@ -211,7 +212,7 @@ public abstract class OrderFactory {
          * Creates a Move order
          */
         @Override
-        public Move createMove(final Power power, final Location src, final Unit.Type srcUnitType,
+        public Move createMove(final Power power, final Location src, final Type srcUnitType,
                                final Location dest, final List<Province> routes) {
             return new Move(power, src, srcUnitType, dest, routes);
         }// createMove()
@@ -221,8 +222,8 @@ public abstract class OrderFactory {
          */
         @Override
         public Support createSupport(final Power power, final Location src,
-                                     final Unit.Type srcUnitType, final Location supSrc,
-                                     final Power supPower, final Unit.Type supUnitType) {
+                                     final Type srcUnitType, final Location supSrc,
+                                     final Power supPower, final Type supUnitType) {
             return new Support(power, src, srcUnitType, supSrc, supPower,
                     supUnitType);
         }// createSupport()
@@ -234,8 +235,8 @@ public abstract class OrderFactory {
          */
         @Override
         public Support createSupport(final Power power, final Location src,
-                                     final Unit.Type srcUnitType, final Location supSrc,
-                                     final Power supPower, final Unit.Type supUnitType,
+                                     final Type srcUnitType, final Location supSrc,
+                                     final Power supPower, final Type supUnitType,
                                      final Location supDest) {
             return new Support(power, src, srcUnitType, supSrc, supPower,
                     supUnitType, supDest);
@@ -247,9 +248,9 @@ public abstract class OrderFactory {
          */
         @Override
         public Convoy createConvoy(final Power power, final Location src,
-                                   final Unit.Type srcUnitType, final Location convoySrc,
+                                   final Type srcUnitType, final Location convoySrc,
                                    final Power convoyPower,
-                                   final Unit.Type convoySrcUnitType,
+                                   final Type convoySrcUnitType,
                                    final Location convoyDest) {
             return new Convoy(power, src, srcUnitType, convoySrc, convoyPower,
                     convoySrcUnitType, convoyDest);
@@ -261,7 +262,7 @@ public abstract class OrderFactory {
          */
         @Override
         public Retreat createRetreat(final Power power, final Location source,
-                                     final Unit.Type srcUnitType, final Location dest) {
+                                     final Type srcUnitType, final Location dest) {
             return new Retreat(power, source, srcUnitType, dest);
         }// createRetreat()
 
@@ -271,7 +272,7 @@ public abstract class OrderFactory {
          */
         @Override
         public Disband createDisband(final Power power, final Location source,
-                                     final Unit.Type sourceUnitType) {
+                                     final Type sourceUnitType) {
             return new Disband(power, source, sourceUnitType);
         }// createDisband()
 
@@ -281,7 +282,7 @@ public abstract class OrderFactory {
          */
         @Override
         public Build createBuild(final Power power, final Location source,
-                                 final Unit.Type sourceUnitType) {
+                                 final Type sourceUnitType) {
             return new Build(power, source, sourceUnitType);
         }// createBuild()
 
@@ -291,7 +292,7 @@ public abstract class OrderFactory {
          */
         @Override
         public Remove createRemove(final Power power, final Location source,
-                                   final Unit.Type sourceUnitType) {
+                                   final Type sourceUnitType) {
             return new Remove(power, source, sourceUnitType);
         }// createRemove()
 
@@ -308,7 +309,7 @@ public abstract class OrderFactory {
          */
         @Override
         public DefineState createDefineState(final Power power, final Location source,
-                                             final Unit.Type sourceUnitType) throws OrderException {
+                                             final Type sourceUnitType) throws OrderException {
             return new DefineState(power, source, sourceUnitType);
         }// createDefineState()
 

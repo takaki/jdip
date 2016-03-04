@@ -25,6 +25,7 @@ package dip.gui.map;
 import dip.gui.StatusBar;
 import dip.misc.Utils;
 import dip.world.*;
+import dip.world.Unit.Type;
 
 /**
  * Convenience methods for displaying information on the StatusBar.
@@ -181,7 +182,7 @@ public class StatusBarUtils {
      * Get coast information, if appropriate
      */
     private void getCoast(final StringBuffer sb, final Unit unit, final Province p) {
-        if (unit.getType() == Unit.Type.FLEET && p.isMultiCoastal()) {
+        if (unit.getType() == Type.FLEET && p.isMultiCoastal()) {
             sb.append(" (");
             sb.append(unit.getCoast().getName());
             sb.append(")");

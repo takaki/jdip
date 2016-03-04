@@ -27,6 +27,7 @@ import dip.process.Adjudicator;
 import dip.process.OrderState;
 import dip.process.Tristate;
 import dip.world.*;
+import dip.world.Unit.Type;
 
 /**
  * Implementation of the Disband order.
@@ -45,7 +46,7 @@ public class Disband extends Order {
     /**
      * Creates a Disband order
      */
-    protected Disband(final Power power, final Location src, final Unit.Type srcUnit) {
+    protected Disband(final Power power, final Location src, final Type srcUnit) {
         super(power, src, srcUnit);
     }// Disband()
 

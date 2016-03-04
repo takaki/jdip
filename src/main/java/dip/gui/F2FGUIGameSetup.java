@@ -22,6 +22,7 @@
 //
 package dip.gui;
 
+import dip.gui.F2FOrderDisplayPanel.F2FState;
 import dip.gui.map.MapPanel;
 import dip.gui.undo.UndoRedoManager;
 import dip.world.Power;
@@ -38,7 +39,7 @@ import java.awt.*;
  */
 public class F2FGUIGameSetup implements GUIGameSetup {
     // serialized data
-    private F2FOrderDisplayPanel.F2FState state = null;    // only null if never saved
+    private F2FState state = null;    // only null if never saved
 
     /**
      * Setup the game.

@@ -24,12 +24,14 @@ package dip.gui.dialog.newgame;
 
 import cz.autel.dmi.HIGConstraints;
 import cz.autel.dmi.HIGLayout;
+import dip.gui.dialog.newgame.NewGameDialog.NGDTabPane;
 import dip.gui.swing.GradientJLabel;
 import dip.misc.Utils;
 import dip.world.Phase;
 import dip.world.variant.data.Variant;
 
 import javax.swing.*;
+import javax.swing.JSpinner.NumberEditor;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -43,7 +45,7 @@ import java.awt.event.ActionListener;
  * <p>
  * Reset button allows reversion to defaults.
  */
-public class NGDStartOptions extends JPanel implements NewGameDialog.NGDTabPane {
+public class NGDStartOptions extends JPanel implements NGDTabPane {
     // constants
     private static final int BORDER = 5;
     private static final String TAB_NAME = "NGDoptions.tab.name";
@@ -238,11 +240,11 @@ public class NGDStartOptions extends JPanel implements NewGameDialog.NGDTabPane 
     private JSpinner makeCustomSpinner(final boolean useSeparator) {
         final SpinnerNumberModel model = new SpinnerNumberModel(0, 0, 9999, 1);
         final JSpinner spinner = new JSpinner(model);
-        new JSpinner.NumberEditor(spinner, "0000");
+        new NumberEditor(spinner, "0000");
 
         if (!useSeparator) {
             // remove comma (grouping separator)
-            ((JSpinner.NumberEditor) spinner.getEditor()).getFormat()
+            ((NumberEditor) spinner.getEditor()).getFormat()
                     .setGroupingUsed(false);
         }
 

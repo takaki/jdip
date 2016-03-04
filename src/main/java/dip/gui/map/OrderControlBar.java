@@ -23,11 +23,17 @@
 package dip.gui.map;
 
 import dip.gui.order.*;
+import dip.gui.order.GUIOrder.StateInfo;
 import dip.misc.Log;
 import dip.misc.Utils;
 import dip.order.ValidationOptions;
 import dip.process.Adjustment;
+import dip.process.Adjustment.AdjustmentInfoMap;
 import dip.world.*;
+import dip.world.Phase.PhaseType;
+import dip.world.RuleOptions.Option;
+import dip.world.RuleOptions.OptionValue;
+import dip.world.Unit.Type;
 import org.apache.batik.dom.events.DOMKeyEvent;
 import org.w3c.dom.events.MouseEvent;
 
@@ -102,7 +108,7 @@ public class OrderControlBar extends ViewControlBar {
     private String defaultAction = null;
     private int[] charMap = null;
 
-    private GUIOrder.StateInfo stateInfo = null;
+    private StateInfo stateInfo = null;
     private GUIOrderFactory guiOrderFactory = null;
     private GUIOrder currentOrder = null;
     private StringBuffer sb = null;
@@ -132,7 +138,7 @@ public class OrderControlBar extends ViewControlBar {
         sb = new StringBuffer(80);
 
         // Create GUIOrder StateInfo object
-        stateInfo = new GUIOrder.StateInfo();
+        stateInfo = new StateInfo();
         stateInfo.setTurnState(mapPanel.getTurnState());
         stateInfo.setRuleOptions(mapPanel.getWorld().getRuleOptions());
         stateInfo.setValidationOptions(
@@ -142,10 +148,10 @@ public class OrderControlBar extends ViewControlBar {
         // set adjustment info, if appropriate phase
         // add to StateInfo object
         if (stateInfo.getTurnState().getPhase()
-                .getPhaseType() == Phase.PhaseType.ADJUSTMENT) {
+                .getPhaseType() == PhaseType.ADJUSTMENT) {
             final List<Power> powers = stateInfo.getTurnState().getWorld().getMap()
                     .getPowers();
-            final Adjustment.AdjustmentInfoMap adjMap = Adjustment
+            final AdjustmentInfoMap adjMap = Adjustment
                     .getAdjustmentInfo(stateInfo.getTurnState(),
                             stateInfo.getRuleOptions(), powers);
 
@@ -153,8 +159,8 @@ public class OrderControlBar extends ViewControlBar {
         }
 
         final RuleOptions ro = mapPanel.getWorld().getRuleOptions();
-        useExplicitGUIMove = RuleOptions.OptionValue.VALUE_PATHS_EXPLICIT == ro
-                .getOptionValue(RuleOptions.Option.OPTION_CONVOYED_MOVES);
+        useExplicitGUIMove = OptionValue.VALUE_PATHS_EXPLICIT == ro
+                .getOptionValue(Option.OPTION_CONVOYED_MOVES);
 
         makeLayout();
     }
@@ -478,13 +484,13 @@ public class OrderControlBar extends ViewControlBar {
             currentOrder = guiOrderFactory.createGUIDisband();
         } else if (currentAction == MODE_BUILD_ARMY) {
             currentOrder = guiOrderFactory.createGUIBuild();
-            currentOrder.setParam(GUIBuild.BUILD_UNIT, Unit.Type.ARMY);
+            currentOrder.setParam(GUIBuild.BUILD_UNIT, Type.ARMY);
         } else if (currentAction == MODE_BUILD_FLEET) {
             currentOrder = guiOrderFactory.createGUIBuild();
-            currentOrder.setParam(GUIBuild.BUILD_UNIT, Unit.Type.FLEET);
+            currentOrder.setParam(GUIBuild.BUILD_UNIT, Type.FLEET);
         } else if (currentAction == MODE_BUILD_WING) {
             currentOrder = guiOrderFactory.createGUIBuild();
-            currentOrder.setParam(GUIBuild.BUILD_UNIT, Unit.Type.WING);
+            currentOrder.setParam(GUIBuild.BUILD_UNIT, Type.WING);
         } else if (currentAction == MODE_REMOVE) {
             currentOrder = guiOrderFactory.createGUIRemove();
         } else if (currentAction == MODE_WAIVE_BUILD) {
@@ -504,21 +510,21 @@ public class OrderControlBar extends ViewControlBar {
     // ordering and/or show that the current status is invalid for that unit.
     private void setUnitCursor(final boolean ok) {
         if (ok) {
-            if (Unit.Type.ARMY == currentOrder.getSourceUnitType()) {
+            if (Type.ARMY == currentOrder.getSourceUnitType()) {
                 mapPanel.setMapCursor(MapPanel.CURSOR_DRAG_ARMY);
-            } else if (Unit.Type.FLEET == currentOrder.getSourceUnitType()) {
+            } else if (Type.FLEET == currentOrder.getSourceUnitType()) {
                 mapPanel.setMapCursor(MapPanel.CURSOR_DRAG_FLEET);
-            } else if (Unit.Type.WING == currentOrder.getSourceUnitType()) {
+            } else if (Type.WING == currentOrder.getSourceUnitType()) {
                 mapPanel.setMapCursor(MapPanel.CURSOR_DRAG_WING);
             } else {
                 mapPanel.setMapCursor(MapPanel.DEFAULT_CURSOR);
             }
         } else {
-            if (Unit.Type.ARMY == currentOrder.getSourceUnitType()) {
+            if (Type.ARMY == currentOrder.getSourceUnitType()) {
                 mapPanel.setMapCursor(MapPanel.CURSOR_DRAG_ARMY_NO);
-            } else if (Unit.Type.FLEET == currentOrder.getSourceUnitType()) {
+            } else if (Type.FLEET == currentOrder.getSourceUnitType()) {
                 mapPanel.setMapCursor(MapPanel.CURSOR_DRAG_FLEET_NO);
-            } else if (Unit.Type.WING == currentOrder.getSourceUnitType()) {
+            } else if (Type.WING == currentOrder.getSourceUnitType()) {
                 mapPanel.setMapCursor(MapPanel.CURSOR_DRAG_WING_NO);
             } else {
                 mapPanel.setMapCursor(MapPanel.BAD_ACTION);
@@ -578,21 +584,21 @@ public class OrderControlBar extends ViewControlBar {
         String[] cmd;
         String defaultButton;
 
-        final Phase.PhaseType phaseType = stateInfo.getTurnState().getPhase()
+        final PhaseType phaseType = stateInfo.getTurnState().getPhase()
                 .getPhaseType();
         Log.println("OCB:phase: ", stateInfo.getTurnState().getPhase());
 
-        if (phaseType == Phase.PhaseType.MOVEMENT) {
+        if (phaseType == PhaseType.MOVEMENT) {
             text = GROUP_MOVEMENT_TEXT;
             cmd = GROUP_MOVEMENT_CMD;
             charMap = GROUP_MOVEMENT_CHARCODES;
             defaultButton = GROUP_MOVEMENT_DEFAULT_BUTTON;
-        } else if (phaseType == Phase.PhaseType.RETREAT) {
+        } else if (phaseType == PhaseType.RETREAT) {
             text = GROUP_RETREAT_TEXT;
             cmd = GROUP_RETREAT_CMD;
             charMap = GROUP_RETREAT_CHARCODES;
             defaultButton = GROUP_RETREAT_DEFAULT_BUTTON;
-        } else if (phaseType == Phase.PhaseType.ADJUSTMENT) {
+        } else if (phaseType == PhaseType.ADJUSTMENT) {
             text = GROUP_ADJUSTMENT_TEXT;
             cmd = GROUP_ADJUSTMENT_CMD;
             charMap = GROUP_ADJUSTMENT_CHARCODES;
@@ -602,7 +608,7 @@ public class OrderControlBar extends ViewControlBar {
             final RuleOptions ro = mapPanel.getWorld().getRuleOptions();
 
             if (ro.getOptionValue(
-                    RuleOptions.Option.OPTION_WINGS) != RuleOptions.OptionValue.VALUE_WINGS_ENABLED) {
+                    Option.OPTION_WINGS) != OptionValue.VALUE_WINGS_ENABLED) {
                 text = new String[GROUP_ADJUSTMENT_TEXT.length - 1];
                 cmd = new String[GROUP_ADJUSTMENT_CMD.length - 1];
                 charMap = new int[GROUP_ADJUSTMENT_CHARCODES.length - 1];

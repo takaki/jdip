@@ -25,6 +25,7 @@ package dip.misc;
 import dip.order.*;
 import dip.order.result.ConvoyPathResult;
 import dip.order.result.OrderResult;
+import dip.order.result.OrderResult.ResultType;
 import dip.order.result.Result;
 import dip.process.StdAdjudicator;
 import dip.world.*;
@@ -1010,13 +1011,13 @@ public final class TestSuite {
                 iter = orderResultList.iterator();
                 while (iter.hasNext()) {
                     String line = iter.next();
-                    OrderResult.ResultType ordResultType = null;
+                    ResultType ordResultType = null;
 
                     // success or failure??
                     if (line.startsWith("success")) {
-                        ordResultType = OrderResult.ResultType.SUCCESS;
+                        ordResultType = ResultType.SUCCESS;
                     } else if (line.startsWith("failure")) {
-                        ordResultType = OrderResult.ResultType.FAILURE;
+                        ordResultType = ResultType.FAILURE;
                     } else {
                         System.out.println("ERROR");
                         System.out.println("case: " + name);

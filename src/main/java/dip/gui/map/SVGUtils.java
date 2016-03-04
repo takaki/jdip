@@ -23,6 +23,7 @@
 package dip.gui.map;
 
 import com.dautelle.util.TypeFormat;
+import dip.gui.map.MapMetadata.SymbolSize;
 import dip.world.Province;
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.dom.util.XLinkSupport;
@@ -144,7 +145,7 @@ public class SVGUtils {
                                                  String symbolName, final String id,
                                                  final String attClass, final float x,
                                                  final float y,
-                                                 final MapMetadata.SymbolSize symbolSize) {
+                                                 final SymbolSize symbolSize) {
         // prepend '#' to name, if required
         if (symbolName.charAt(0) != '#') {
             final StringBuffer sb = new StringBuffer(symbolName.length() + 1);

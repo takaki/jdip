@@ -28,6 +28,7 @@ import dip.order.Convoy;
 import dip.order.Orderable;
 import dip.order.ValidationOptions;
 import dip.world.*;
+import dip.world.Unit.Type;
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.util.SVGConstants;
 import org.w3c.dom.svg.SVGElement;
@@ -69,9 +70,9 @@ public class GUIConvoy extends Convoy implements GUIOrder {
     /**
      * Creates a GUIConvoy
      */
-    protected GUIConvoy(final Power power, final Location src, final Unit.Type srcUnitType,
+    protected GUIConvoy(final Power power, final Location src, final Type srcUnitType,
                         final Location convoySrc, final Power convoyPower,
-                        final Unit.Type convoySrcUnitType, final Location convoyDest) {
+                        final Type convoySrcUnitType, final Location convoyDest) {
         super(power, src, srcUnitType, convoySrc, convoyPower,
                 convoySrcUnitType, convoyDest);
     }// GUIConvoy()
@@ -126,7 +127,7 @@ public class GUIConvoy extends Convoy implements GUIOrder {
                 }
 
                 // we require a Fleet in a sea space or convoyable coast to be present.
-                if (unit.getType() == Unit.Type.FLEET) {
+                if (unit.getType() == Type.FLEET) {
                     if (province.isSea() || province.isConvoyableCoast()) {
                         // check borders
                         if (!GUIOrderUtils.checkBorder(this,
@@ -178,7 +179,7 @@ public class GUIConvoy extends Convoy implements GUIOrder {
             //
             final Unit unit = position.getUnit(province).orElse(null);
             if (unit != null) {
-                if (unit.getType() == Unit.Type.ARMY) {
+                if (unit.getType() == Type.ARMY) {
                     if (province.isCoastal()) {
                         // check borders
                         if (!GUIOrderUtils.checkBorder(this,
@@ -526,7 +527,7 @@ public class GUIConvoy extends Convoy implements GUIOrder {
             // we do this because the destination unit may have an order, and this
             // results in a better display.
             //
-            final Unit.Type destUnitType = position.getUnit(convoyDest.getProvince()).orElse(null)
+            final Type destUnitType = position.getUnit(convoyDest.getProvince()).orElse(null)
                     .getType();
             final float moveRadius = mmd.getOrderRadius(MapMetadata.EL_MOVE,
                     mapInfo.getSymbolName(destUnitType));

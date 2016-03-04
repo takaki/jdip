@@ -171,7 +171,7 @@ public class ValidationOptions implements Serializable, Cloneable {
         private String displayValues[];        // il8n value name
         private String valueDescriptions[]; // il8n value description (optional)
 
-        protected DescriptiveOption(final ValidationOptions.Option option) {
+        protected DescriptiveOption(final Option option) {
             super(option.key, option.values, option.defaultValue);
         }// DescriptiveOption
 

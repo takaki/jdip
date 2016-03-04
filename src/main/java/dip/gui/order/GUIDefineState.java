@@ -29,6 +29,7 @@ import dip.order.Orderable;
 import dip.world.Location;
 import dip.world.Power;
 import dip.world.Unit;
+import dip.world.Unit.Type;
 
 /**
  * GUIOrder subclass of DefineState order.
@@ -52,7 +53,7 @@ public class GUIDefineState extends DefineState implements GUIOrder {
      * Creates a GUIDefineState
      */
     protected GUIDefineState(final Power power, final Location source,
-                             final Unit.Type sourceUnitType) throws OrderException {
+                             final Type sourceUnitType) throws OrderException {
         super(power, source, sourceUnitType);
     }// GUIDefineState()
 

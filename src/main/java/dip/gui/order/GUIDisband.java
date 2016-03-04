@@ -24,11 +24,13 @@ package dip.gui.order;
 
 import dip.gui.map.DefaultMapRenderer2;
 import dip.gui.map.MapMetadata;
+import dip.gui.map.MapMetadata.SymbolSize;
 import dip.gui.map.SVGUtils;
 import dip.misc.Utils;
 import dip.order.Disband;
 import dip.order.Orderable;
 import dip.world.*;
+import dip.world.Unit.Type;
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.util.SVGConstants;
 import org.w3c.dom.svg.SVGElement;
@@ -58,7 +60,7 @@ public class GUIDisband extends Disband implements GUIOrder {
      * Creates a GUIDisband
      */
     protected GUIDisband(final Power power, final Location source,
-                         final Unit.Type sourceUnitType) {
+                         final Type sourceUnitType) {
         super(power, source, sourceUnitType);
     }// GUIDisband()
 
@@ -261,7 +263,7 @@ public class GUIDisband extends Disband implements GUIOrder {
         failPt = new Point2D.Float(srcPt.x + radius, srcPt.y);
 
         // get symbolsize
-        final MapMetadata.SymbolSize symbolSize = mmd
+        final SymbolSize symbolSize = mmd
                 .getSymbolSize(DefaultMapRenderer2.SYMBOL_REMOVEUNIT);
 
         // create RemoveUnit symbol via a USE element

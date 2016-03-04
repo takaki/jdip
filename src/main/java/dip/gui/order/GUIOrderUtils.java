@@ -24,6 +24,7 @@ package dip.gui.order;
 
 import dip.gui.map.DefaultMapRenderer2;
 import dip.gui.map.MapMetadata;
+import dip.gui.map.MapMetadata.SymbolSize;
 import dip.gui.map.SVGUtils;
 import dip.gui.order.GUIOrder.MapInfo;
 import dip.misc.Utils;
@@ -32,6 +33,7 @@ import dip.order.Move;
 import dip.order.Orderable;
 import dip.order.Support;
 import dip.world.*;
+import dip.world.Unit.Type;
 import org.apache.batik.util.CSSConstants;
 import org.apache.batik.util.SVGConstants;
 import org.w3c.dom.DOMException;
@@ -64,7 +66,7 @@ final class GUIOrderUtils {
      * GUIOrder.BORDER_INVALID is appended to the StringBuffer, if 'false' is returned.
      */
     public static boolean checkBorder(final GUIOrder guiOrder, final Location location,
-                                      final Unit.Type unitType, final Phase phase,
+                                      final Type unitType, final Phase phase,
                                       final StringBuffer sb) {
         final Class baseClass = guiOrder.getClass().getSuperclass();
         final Border border = location.getProvince()
@@ -518,7 +520,7 @@ final class GUIOrderUtils {
      */
     public static SVGUseElement createFailedOrderSymbol(final MapInfo mapInfo,
                                                         final float x, final float y) {
-        final MapMetadata.SymbolSize symbolSize = mapInfo.getMapMetadata()
+        final SymbolSize symbolSize = mapInfo.getMapMetadata()
                 .getSymbolSize(DefaultMapRenderer2.SYMBOL_FAILEDORDER);
 
         return SVGUtils.createUseElement(mapInfo.getDocument(),

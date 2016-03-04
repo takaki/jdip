@@ -24,6 +24,7 @@ package dip.gui.map;
 
 import dip.gui.AbstractCFPListener;
 import dip.gui.ClientFrame;
+import dip.gui.map.RenderCommandFactory.RCSetTurnstate;
 import dip.gui.map.RenderCommandFactory.RenderCommand;
 import dip.gui.order.GUIOrder;
 import dip.misc.Log;
@@ -32,6 +33,7 @@ import dip.world.Location;
 import dip.world.Power;
 import dip.world.TurnState;
 import dip.world.Unit;
+import dip.world.Unit.Type;
 import org.apache.batik.swing.JSVGCanvas;
 import org.apache.batik.util.RunnableQueue;
 import org.w3c.dom.svg.SVGDocument;
@@ -160,7 +162,7 @@ public abstract class MapRenderer2 {
      * has been set.
      */
     public synchronized void execRenderCommand(final RenderCommand rc) {
-        if (rc instanceof RenderCommandFactory.RCSetTurnstate) {
+        if (rc instanceof RCSetTurnstate) {
             // focus
             mapPanel.requestFocusInWindow();
 
@@ -225,7 +227,7 @@ public abstract class MapRenderer2 {
     /**
      * Get the Symbol Name for the given unit type
      */
-    public abstract String getSymbolName(Unit.Type unitType);
+    public abstract String getSymbolName(Type unitType);
 
     /**
      * Get a location that corresponds to an ID

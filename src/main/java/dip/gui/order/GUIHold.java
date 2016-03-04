@@ -28,6 +28,7 @@ import dip.misc.Utils;
 import dip.order.Hold;
 import dip.order.Orderable;
 import dip.world.*;
+import dip.world.Unit.Type;
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.util.SVGConstants;
 import org.w3c.dom.svg.SVGElement;
@@ -60,7 +61,7 @@ public class GUIHold extends Hold implements GUIOrder {
     /**
      * Creates a GUIHold
      */
-    protected GUIHold(final Power power, final Location source, final Unit.Type sourceUnitType) {
+    protected GUIHold(final Power power, final Location source, final Type sourceUnitType) {
         super(power, source, sourceUnitType);
     }// GUIHold()
 

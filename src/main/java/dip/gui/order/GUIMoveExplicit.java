@@ -28,6 +28,7 @@ import dip.order.Move;
 import dip.order.Orderable;
 import dip.order.ValidationOptions;
 import dip.world.*;
+import dip.world.Unit.Type;
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.util.SVGConstants;
 import org.w3c.dom.svg.SVGElement;
@@ -87,7 +88,7 @@ public class GUIMoveExplicit extends Move implements GUIOrder {
      * Creates a GUIMoveExplicit
      */
     protected GUIMoveExplicit(final Power power, final Location source,
-                              final Unit.Type srcUnitType, final Location dest,
+                              final Type srcUnitType, final Location dest,
                               final boolean isConvoying) {
         super(power, source, srcUnitType, dest, isConvoying);
     }// GUIMoveExplicit()
@@ -95,7 +96,7 @@ public class GUIMoveExplicit extends Move implements GUIOrder {
     /**
      * Creates a GUIMoveExplicit
      */
-    protected GUIMoveExplicit(final Power power, final Location src, final Unit.Type srcUnitType,
+    protected GUIMoveExplicit(final Power power, final Location src, final Type srcUnitType,
                               final Location dest, final Province[] convoyRoute) {
         super(power, src, srcUnitType, dest, convoyRoute);
     }// GUIMoveExplicit()
@@ -104,7 +105,7 @@ public class GUIMoveExplicit extends Move implements GUIOrder {
     /**
      * Creates a GUIMoveExplicit
      */
-    protected GUIMoveExplicit(final Power power, final Location src, final Unit.Type srcUnitType,
+    protected GUIMoveExplicit(final Power power, final Location src, final Type srcUnitType,
                               final Location dest, final List<Province> routes) {
         super(power, src, srcUnitType, dest, routes);
     }// GUIMoveExplicit()
@@ -253,7 +254,7 @@ public class GUIMoveExplicit extends Move implements GUIOrder {
                     return result;
                 } else {
                     if (province.isConvoyable() && position
-                            .hasUnit(province, Unit.Type.FLEET)) {
+                            .hasUnit(province, Type.FLEET)) {
                         sb.append(Utils.getLocalString(
                                 OK_CONVOY_LOCATION));    // OK location for convoy path
                         result.isValid = true;
@@ -371,7 +372,7 @@ public class GUIMoveExplicit extends Move implements GUIOrder {
                 // we're good to go. If this unit is a coastal army, it is
                 // considered "possibly convoyable". We may use this later.
                 isConvoyableArmy = location.getProvince()
-                        .isCoastal() && Unit.Type.ARMY == srcUnitType;
+                        .isCoastal() && Type.ARMY == srcUnitType;
                 if (isConvoyableArmy) {
                     assert tmpConvoyPath == null;
                     tmpConvoyPath = new LinkedList();
@@ -608,7 +609,7 @@ public class GUIMoveExplicit extends Move implements GUIOrder {
         Point2D.Float newPtTo = ptTo;
         final Position position = mapInfo.getTurnState().getPosition();
         if (position.hasUnit(dest.getProvince())) {
-            final Unit.Type destUnitType = position.getUnit(dest.getProvince()).orElse(null)
+            final Type destUnitType = position.getUnit(dest.getProvince()).orElse(null)
                     .getType();
             final float r = mmd.getOrderRadius(MapMetadata.EL_MOVE,
                     mapInfo.getSymbolName(destUnitType));

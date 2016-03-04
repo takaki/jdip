@@ -25,8 +25,10 @@ package dip.gui.dialog;
 import cz.autel.dmi.HIGConstraints;
 import cz.autel.dmi.HIGLayout;
 import dip.gui.ClientFrame;
+import dip.misc.Help.HelpID;
 import dip.misc.Utils;
 import dip.order.ValidationOptions;
+import dip.order.ValidationOptions.DescriptiveOption;
 
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
@@ -56,7 +58,7 @@ public class ValidationOptionsDialog extends HeaderDialog {
     private ValidationOptions valOpts = null;
     private ValidationOptions returnedOpts = null;
     private ClientFrame parent = null;
-    private ValidationOptions.DescriptiveOption[] dopts = null;
+    private DescriptiveOption[] dopts = null;
 
     // GUI components
     private JList<String> optionList = null;
@@ -132,7 +134,7 @@ public class ValidationOptionsDialog extends HeaderDialog {
         // HeaderDialog setup
         setHeaderText(Utils.getText(Utils.getLocalString(HEADER_LOCATION)));
         addTwoButtons(makeCancelButton(), makeOKButton(), false, true);
-        setHelpID(dip.misc.Help.HelpID.Dialog_OrderChecking);
+        setHelpID(HelpID.Dialog_OrderChecking);
 
         // listbox setup
         setupList();

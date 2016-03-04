@@ -27,6 +27,7 @@ import dip.order.OrderFactory;
 import dip.world.World;
 
 import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.HTMLEditorKit.ParserCallback;
 import javax.swing.text.html.parser.ParserDelegator;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -208,7 +209,7 @@ public class FlocImporter implements Runnable {
             }
 
             final ParserDelegator parser = new ParserDelegator();
-            parser.parse(reader, new HTMLEditorKit.ParserCallback() {
+            parser.parse(reader, new ParserCallback() {
                 @Override
                 public void handleText(final char[] text, final int pos) {
                     if (!isInProgress) {

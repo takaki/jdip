@@ -249,7 +249,7 @@ public class SymbolInjector {
      * Throw an error if a duplicate CSS style is encountered.
      */
     private void mergeCSS(final CDATASection cdsNode,
-                          final SymbolPack.CSSStyle[] cssStyles) throws IOException {
+                          final CSSStyle[] cssStyles) throws IOException {
         final String oldCSS = cdsNode.getData();
 
         // collision check

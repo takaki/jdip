@@ -24,12 +24,16 @@ package dip.gui.order;
 
 import dip.gui.map.DefaultMapRenderer2;
 import dip.gui.map.MapMetadata;
+import dip.gui.map.MapMetadata.SymbolSize;
 import dip.gui.map.SVGUtils;
 import dip.misc.Utils;
 import dip.order.Orderable;
 import dip.order.Waive;
 import dip.process.Adjustment;
+import dip.process.Adjustment.AdjustmentInfo;
 import dip.world.*;
+import dip.world.RuleOptions.Option;
+import dip.world.RuleOptions.OptionValue;
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.util.SVGConstants;
 import org.w3c.dom.svg.SVGElement;
@@ -127,7 +131,7 @@ public class GUIWaive extends Waive implements GUIOrder {
 
             // indicate if we have no builds available
             //
-            final Adjustment.AdjustmentInfo adjInfo = stateInfo.getAdjustmenInfoMap()
+            final AdjustmentInfo adjInfo = stateInfo.getAdjustmenInfoMap()
                     .get(SCOwner);
             if (adjInfo.getAdjustmentAmount() <= 0) {
                 sb.append(Utils.getLocalString(NOWAIVE_NO_BUILDS_AVAILABLE,
@@ -140,12 +144,12 @@ public class GUIWaive extends Waive implements GUIOrder {
             //
             final RuleOptions ruleOpts = stateInfo.getRuleOptions();
             if (ruleOpts.getOptionValue(
-                    RuleOptions.Option.OPTION_BUILDS) == RuleOptions.OptionValue.VALUE_BUILDS_ANY_OWNED) {
+                    Option.OPTION_BUILDS) == OptionValue.VALUE_BUILDS_ANY_OWNED) {
                 sb.append(
                         Utils.getLocalString(GUIOrder.COMPLETE, getFullName()));
                 return true;
             } else if (ruleOpts.getOptionValue(
-                    RuleOptions.Option.OPTION_BUILDS) == RuleOptions.OptionValue.VALUE_BUILDS_ANY_IF_HOME_OWNED) {
+                    Option.OPTION_BUILDS) == OptionValue.VALUE_BUILDS_ANY_IF_HOME_OWNED) {
                 // check if we have ONE owned home supply center before buidling
                 // in a non-home supply center.
                 //
@@ -332,7 +336,7 @@ public class GUIWaive extends Waive implements GUIOrder {
 
         // A Waive consists of a WaivedBuidl symbol
         //
-        final MapMetadata.SymbolSize symbolSize = mmd
+        final SymbolSize symbolSize = mmd
                 .getSymbolSize(DefaultMapRenderer2.SYMBOL_WAIVEDBUILD);
 
         final SVGElement element = SVGUtils.createUseElement(mapInfo.getDocument(),

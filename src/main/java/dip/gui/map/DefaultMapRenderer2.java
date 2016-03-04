@@ -23,6 +23,7 @@
 package dip.gui.map;
 
 import dip.gui.ClientMenu;
+import dip.gui.map.MapMetadata.SymbolSize;
 import dip.gui.map.RenderCommandFactory.RenderCommand;
 import dip.gui.order.GUIOrder;
 import dip.gui.order.GUIOrder.MapInfo;
@@ -31,11 +32,13 @@ import dip.order.Orderable;
 import dip.world.Coast;
 import dip.world.Location;
 import dip.world.Phase;
+import dip.world.Phase.PhaseType;
 import dip.world.Position;
 import dip.world.Power;
 import dip.world.Province;
 import dip.world.TurnState;
 import dip.world.Unit;
+import dip.world.Unit.Type;
 import dip.world.WorldMap;
 import dip.world.variant.data.SymbolPack;
 import org.apache.batik.dom.svg.SVGDOMImplementation;
@@ -55,6 +58,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 
 /**
@@ -513,7 +517,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
         turnState = ts;
         position = ts.getPosition();
         isDislodgedPhase = ts.getPhase()
-                .getPhaseType() == Phase.PhaseType.RETREAT;
+                .getPhaseType() == PhaseType.RETREAT;
     }// setTurnState()
 
 
@@ -542,12 +546,12 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      * Get the Symbol Name for the given unit type
      */
     @Override
-    public String getSymbolName(final Unit.Type unitType) {
-        if (unitType == Unit.Type.ARMY) {
+    public String getSymbolName(final Type unitType) {
+        if (unitType == Type.ARMY) {
             return DefaultMapRenderer2.SYMBOL_ARMY;
-        } else if (unitType == Unit.Type.FLEET) {
+        } else if (unitType == Type.FLEET) {
             return DefaultMapRenderer2.SYMBOL_FLEET;
-        } else if (unitType == Unit.Type.WING) {
+        } else if (unitType == Type.WING) {
             return DefaultMapRenderer2.SYMBOL_WING;
         } else {
             throw new IllegalStateException(
@@ -804,7 +808,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
             synchronized (renderSettings) {
                 final Iterator iter = oldRenderSettings.entrySet().iterator();
                 while (iter.hasNext()) {
-                    final Map.Entry me = (Map.Entry) iter.next();
+                    final Entry me = (Entry) iter.next();
                     renderSettings.put(me.getKey(), me.getValue());
                 }
 
@@ -1097,11 +1101,11 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
                                    final boolean isDislodged) {
         // determine symbol ID
         String symbolID;
-        if (u.getType() == Unit.Type.FLEET) {
+        if (u.getType() == Type.FLEET) {
             symbolID = isDislodged ? SYMBOL_DISLODGED_FLEET : SYMBOL_FLEET;
-        } else if (u.getType() == Unit.Type.ARMY) {
+        } else if (u.getType() == Type.ARMY) {
             symbolID = isDislodged ? SYMBOL_DISLODGED_ARMY : SYMBOL_ARMY;
-        } else if (u.getType() == Unit.Type.WING) {
+        } else if (u.getType() == Type.WING) {
             symbolID = isDislodged ? SYMBOL_DISLODGED_WING : SYMBOL_WING;
         } else {
             throw new IllegalArgumentException(
@@ -1109,7 +1113,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
         }
 
         // get symbol size data
-        final MapMetadata.SymbolSize symbolSize = mapMeta.getSymbolSize(symbolID);
+        final SymbolSize symbolSize = mapMeta.getSymbolSize(symbolID);
         assert symbolSize != null;
 
         // get the rectangle coordinates
@@ -1176,7 +1180,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      */
     private SVGElement makeSCUse(final Province province, final Power power) {
         final Point2D.Float pos = mapMeta.getSCPt(province);
-        final MapMetadata.SymbolSize symbolSize = mapMeta.getSymbolSize(SYMBOL_SC);
+        final SymbolSize symbolSize = mapMeta.getSymbolSize(SYMBOL_SC);
         return SVGUtils
                 .createUseElement(doc, SYMBOL_SC, null, getSCCSSClass(power),
                         pos.x, pos.y, symbolSize);
@@ -1514,7 +1518,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
     /**
      * Implicit class for MapInfo interface
      */
-    protected class DMRMapInfo extends GUIOrder.MapInfo {
+    protected class DMRMapInfo extends MapInfo {
         public DMRMapInfo(final TurnState ts) {
             super(ts);
         }// DMRMapInfo()
@@ -1535,7 +1539,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
         }
 
         @Override
-        public String getSymbolName(final Unit.Type unitType) {
+        public String getSymbolName(final Type unitType) {
             return DefaultMapRenderer2.this.getSymbolName(unitType);
         }
 

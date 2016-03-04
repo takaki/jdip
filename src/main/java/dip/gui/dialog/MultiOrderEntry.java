@@ -24,6 +24,8 @@ package dip.gui.dialog;
 
 import dip.gui.ClientFrame;
 import dip.gui.OrderDisplayPanel;
+import dip.gui.dialog.TextViewer.AcceptListener;
+import dip.misc.Help.HelpID;
 import dip.misc.Log;
 import dip.misc.Utils;
 import dip.order.OrderException;
@@ -110,11 +112,11 @@ public class MultiOrderEntry {
         tv.setAcceptListener(new Acceptor());
         tv.setText("");
 
-        tv.setHelpID(dip.misc.Help.HelpID.Dialog_MultiOrder);
+        tv.setHelpID(HelpID.Dialog_MultiOrder);
     }// MultiOrderEntry()
 
 
-    private class Acceptor implements TextViewer.AcceptListener {
+    private class Acceptor implements AcceptListener {
         @Override
         public boolean isAcceptable(final TextViewer t) {
             String text = t.getText();

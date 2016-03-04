@@ -28,6 +28,7 @@ import dip.order.Orderable;
 import dip.order.Support;
 import dip.order.ValidationOptions;
 import dip.world.*;
+import dip.world.Unit.Type;
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.util.SVGConstants;
 import org.w3c.dom.svg.*;
@@ -74,9 +75,9 @@ public class GUISupport extends Support implements GUIOrder {
     /**
      * Creates a GUISupport
      */
-    protected GUISupport(final Power power, final Location src, final Unit.Type srcUnitType,
+    protected GUISupport(final Power power, final Location src, final Type srcUnitType,
                          final Location supSrc, final Power supPower,
-                         final Unit.Type supUnitType) {
+                         final Type supUnitType) {
         super(power, src, srcUnitType, supSrc, supPower, supUnitType);
     }// GUISupport()
 
@@ -84,8 +85,8 @@ public class GUISupport extends Support implements GUIOrder {
     /**
      * Creates a GUISupport
      */
-    protected GUISupport(final Power power, final Location src, final Unit.Type srcUnitType,
-                         final Location supSrc, final Power supPower, final Unit.Type supUnitType,
+    protected GUISupport(final Power power, final Location src, final Type srcUnitType,
+                         final Location supSrc, final Power supPower, final Type supUnitType,
                          final Location supDest) {
         super(power, src, srcUnitType, supSrc, supPower, supUnitType, supDest);
     }// GUISupport()
@@ -535,7 +536,7 @@ public class GUISupport extends Support implements GUIOrder {
         Point2D.Float newSupDest;
         if (position.hasUnit(supDest.getProvince())) {
             // since we're supporting a Move, we should use the Move radius
-            final Unit.Type destUnitType = position.getUnit(supDest.getProvince()).orElse(null)
+            final Type destUnitType = position.getUnit(supDest.getProvince()).orElse(null)
                     .getType();
             final float moveRadius = mmd.getOrderRadius(MapMetadata.EL_MOVE,
                     mapInfo.getSymbolName(destUnitType));
@@ -545,7 +546,7 @@ public class GUISupport extends Support implements GUIOrder {
                             moveRadius);
         } else {
             final float moveRadius = mmd.getOrderRadius(MapMetadata.EL_MOVE,
-                    mapInfo.getSymbolName(Unit.Type.ARMY)) / 2;
+                    mapInfo.getSymbolName(Type.ARMY)) / 2;
             newSupDest = GUIOrderUtils
                     .getLineCircleIntersection(ptSupSrc.x, ptSupSrc.y,
                             ptSupDest.x, ptSupDest.y, ptSupDest.x, ptSupDest.y,
@@ -693,7 +694,7 @@ public class GUISupport extends Support implements GUIOrder {
             sb.append(Utils.getLocalString(CLICK_TO_SUPPORT_MOVE));
             return true;
         } else if (from.getProvince()
-                .isCoastal() && supUnitType == Unit.Type.ARMY) {
+                .isCoastal() && supUnitType == Type.ARMY) {
             // NOTE: assume destination coast is Coast.NONE
             final Path path = new Path(position);
             if (path.isPossibleConvoyRoute(from,

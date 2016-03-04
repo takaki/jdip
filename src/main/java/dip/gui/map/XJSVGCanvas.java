@@ -184,7 +184,7 @@ public class XJSVGCanvas extends JSVGCanvas {
      * <li>Key events can be passed to the parent (as defined by setParent())
      * </ul>
      */
-    protected class XJSVGCanvasListener extends JSVGCanvas.CanvasSVGListener {
+    protected class XJSVGCanvasListener extends CanvasSVGListener {
         private int dragX;                    // start drag X coord
         private int dragY;                    // start drag Y coord
         private boolean inDrag = false;        // 'true' if we are in a drag (versus a click)
@@ -282,7 +282,7 @@ public class XJSVGCanvas extends JSVGCanvas {
      * Specialized UserAgent that checks outer class for validation parameter
      * and subclasses error and message dialogs.
      */
-    protected class XJSVGUserAgent extends JSVGCanvas.CanvasUserAgent {
+    protected class XJSVGUserAgent extends CanvasUserAgent {
         public XJSVGUserAgent() {
             super();
         }// XJSVGUserAgent()

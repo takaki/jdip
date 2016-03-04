@@ -22,7 +22,7 @@
 //
 package dip.gui.dialog;
 
-import dip.gui.ClientMenu;
+import dip.gui.ClientMenu.Item;
 import dip.gui.dialog.prefs.GeneralPreferencePanel;
 import dip.gui.swing.XJEditorPane;
 import dip.gui.swing.XJFileChooser;
@@ -50,7 +50,13 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringWriter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -571,11 +577,11 @@ public class TextViewer extends HeaderDialog {
         JMenuItem menuItem;
 
         // FILE menu
-        ClientMenu.Item cmItem = new ClientMenu.Item(MENU_FILE);
+        Item cmItem = new Item(MENU_FILE);
         JMenu menu = new JMenu(cmItem.getName());
         menu.setMnemonic(cmItem.getMnemonic());
 
-        menuItem = new ClientMenu.Item(MENU_ITEM_SAVEAS).makeMenuItem(false);
+        menuItem = new Item(MENU_ITEM_SAVEAS).makeMenuItem(false);
         menuItem.setActionCommand(SAVEAS_ACTION_CMD);
         menuItem.addActionListener(menuListener);
         menu.add(menuItem);
@@ -584,22 +590,22 @@ public class TextViewer extends HeaderDialog {
 
         // EDIT menu
         //
-        cmItem = new ClientMenu.Item(MENU_EDIT);
+        cmItem = new Item(MENU_EDIT);
         menu = new JMenu(cmItem.getName());
         menu.setMnemonic(cmItem.getMnemonic());
 
-        final JMenuItem cutMenuItem = new ClientMenu.Item(MENU_ITEM_CUT)
+        final JMenuItem cutMenuItem = new Item(MENU_ITEM_CUT)
                 .makeMenuItem(false);
         cutMenuItem.setActionCommand(DefaultEditorKit.cutAction);
         cutMenuItem.addActionListener(menuListener);
         menu.add(cutMenuItem);
 
-        menuItem = new ClientMenu.Item(MENU_ITEM_COPY).makeMenuItem(false);
+        menuItem = new Item(MENU_ITEM_COPY).makeMenuItem(false);
         menuItem.setActionCommand(DefaultEditorKit.copyAction);
         menuItem.addActionListener(menuListener);
         menu.add(menuItem);
 
-        final JMenuItem pasteMenuItem = new ClientMenu.Item(MENU_ITEM_PASTE)
+        final JMenuItem pasteMenuItem = new Item(MENU_ITEM_PASTE)
                 .makeMenuItem(false);
         pasteMenuItem.setActionCommand(DefaultEditorKit.pasteAction);
         pasteMenuItem.addActionListener(menuListener);
@@ -607,7 +613,7 @@ public class TextViewer extends HeaderDialog {
 
         menu.add(new JSeparator());
 
-        menuItem = new ClientMenu.Item(MENU_ITEM_SELECTALL).makeMenuItem(false);
+        menuItem = new Item(MENU_ITEM_SELECTALL).makeMenuItem(false);
         menuItem.setActionCommand(DefaultEditorKit.selectAllAction);
         menuItem.addActionListener(menuListener);
         menu.add(menuItem);

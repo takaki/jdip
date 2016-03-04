@@ -25,6 +25,7 @@ package dip.gui.dialog.prefs;
 
 import dip.gui.ClientFrame;
 import dip.gui.dialog.HeaderDialog;
+import dip.misc.Help.HelpID;
 import dip.misc.Utils;
 
 import javax.swing.*;
@@ -72,7 +73,7 @@ public class PreferenceDialog extends HeaderDialog {
         setContentPane(tabPane);
         createDefaultContentBorder(tabPane);
         addTwoButtons(makeCancelButton(), makeOKButton(), false, true);
-        setHelpID(dip.misc.Help.HelpID.Preferences);
+        setHelpID(HelpID.Preferences);
     }// AboutDialog()
 
 

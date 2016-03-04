@@ -24,10 +24,13 @@ package dip.gui.report;
 
 import dip.gui.ClientFrame;
 import dip.gui.dialog.TextViewer;
+import dip.gui.dialog.TextViewer.TVRunnable;
 import dip.gui.map.MapMetadata;
 import dip.gui.map.SVGColorParser;
 import dip.misc.Utils;
 import dip.world.*;
+import dip.world.Phase.PhaseType;
+import dip.world.Phase.SeasonType;
 
 import javax.swing.*;
 import java.awt.*;
@@ -86,7 +89,7 @@ public class SCHistoryWriter {
         tv.setHorizontalScrollBarPolicy(
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-        tv.lazyLoadDisplayDialog(new TextViewer.TVRunnable() {
+        tv.lazyLoadDisplayDialog(new TVRunnable() {
             @Override
             public void run() {
                 setText(SCHistoryToHTML(clientFrame, w, true));
@@ -237,12 +240,12 @@ public class SCHistoryWriter {
             //
             TurnState ts = iter.next();
             final Phase phase = ts.getPhase();
-            if (phase.getSeasonType() == Phase.SeasonType.FALL) {
-                if (phase.getPhaseType() == Phase.PhaseType.MOVEMENT) {
+            if (phase.getSeasonType() == SeasonType.FALL) {
+                if (phase.getPhaseType() == PhaseType.MOVEMENT) {
                     if (iter.hasNext()) {
                         final TurnState nextTS = iter.next();
                         if (nextTS.getPhase()
-                                .getPhaseType() == Phase.PhaseType.RETREAT) {
+                                .getPhaseType() == PhaseType.RETREAT) {
                             ts = nextTS;
                         }
                     }
@@ -329,12 +332,12 @@ public class SCHistoryWriter {
             //
             TurnState ts = iter.next();
             final Phase phase = ts.getPhase();
-            if (phase.getSeasonType() == Phase.SeasonType.FALL) {
-                if (phase.getPhaseType() == Phase.PhaseType.MOVEMENT) {
+            if (phase.getSeasonType() == SeasonType.FALL) {
+                if (phase.getPhaseType() == PhaseType.MOVEMENT) {
                     if (iter.hasNext()) {
                         final TurnState nextTS = iter.next();
                         if (nextTS.getPhase()
-                                .getPhaseType() == Phase.PhaseType.RETREAT) {
+                                .getPhaseType() == PhaseType.RETREAT) {
                             ts = nextTS;
                         }
                     }

@@ -25,6 +25,7 @@ package dip.gui.dialog.newgame;
 import dip.world.Phase.YearType;
 
 import javax.swing.*;
+import javax.swing.JSpinner.DefaultEditor;
 
 /**
  * Creates a Year spinner that (if enabled) correctly handles
@@ -80,7 +81,7 @@ public class BCSpinner extends JSpinner {
     }// getYearTypeValue()
 
 
-    private static class YearTypeEditor extends JSpinner.DefaultEditor {
+    private static class YearTypeEditor extends DefaultEditor {
 
         YearTypeEditor(final JSpinner spinner) {
             super(spinner);

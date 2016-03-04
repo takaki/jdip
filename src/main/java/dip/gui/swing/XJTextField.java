@@ -27,6 +27,7 @@ import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
+import javax.swing.text.DocumentFilter.FilterBypass;
 import java.awt.*;
 
 /**
@@ -56,14 +57,14 @@ public class XJTextField extends JTextField {
         final AbstractDocument doc = (AbstractDocument) getDocument();
         doc.setDocumentFilter(new DocumentFilter() {
             @Override
-            public void insertString(final DocumentFilter.FilterBypass fb, final int offset,
+            public void insertString(final FilterBypass fb, final int offset,
                                      final String text,
                                      final AttributeSet attr) throws BadLocationException {
                 replace(fb, offset, 0, text, attr);
             }// insertString()
 
             @Override
-            public void replace(final DocumentFilter.FilterBypass fb, final int offset,
+            public void replace(final FilterBypass fb, final int offset,
                                 final int length, final String text,
                                 final AttributeSet attr) throws BadLocationException {
                 if (!isUnicodeAware()) {

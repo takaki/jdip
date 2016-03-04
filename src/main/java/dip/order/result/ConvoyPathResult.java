@@ -25,6 +25,7 @@ import dip.misc.Utils;
 import dip.order.OrderFormat;
 import dip.order.OrderFormatOptions;
 import dip.order.Orderable;
+import dip.order.result.OrderResult.ResultType;
 import dip.world.Province;
 
 import java.util.List;
@@ -61,7 +62,7 @@ public class ConvoyPathResult extends OrderResult {
         power = order.getPower();
         message = null;
         this.order = order;
-        resultType = OrderResult.ResultType.CONVOY_PATH_TAKEN;
+        resultType = ResultType.CONVOY_PATH_TAKEN;
         this.convoyPath = convoyPath;
     }// ConvoyPathResult()
 

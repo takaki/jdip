@@ -27,6 +27,7 @@ import dip.process.Adjudicator;
 import dip.process.OrderState;
 import dip.process.Tristate;
 import dip.world.*;
+import dip.world.Unit.Type;
 
 /**
  * A Waive order; a power may explicitly choose not to build a unit.
@@ -47,7 +48,7 @@ public class Waive extends Order {
      * Creates a Waive order
      */
     protected Waive(final Power power, final Location src) {
-        super(power, src, Unit.Type.UNDEFINED);
+        super(power, src, Type.UNDEFINED);
     }// Waive()
 
     /**
@@ -55,7 +56,7 @@ public class Waive extends Order {
      */
     protected Waive() {
         super();
-        srcUnitType = Unit.Type.UNDEFINED;
+        srcUnitType = Type.UNDEFINED;
     }// Waive()
 
     @Override

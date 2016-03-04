@@ -24,7 +24,9 @@ package dip.gui.report;
 
 import dip.gui.ClientFrame;
 import dip.gui.dialog.TextViewer;
+import dip.gui.dialog.TextViewer.TVRunnable;
 import dip.misc.Help;
+import dip.misc.Help.HelpID;
 import dip.misc.Utils;
 import dip.order.OrderFormatOptions;
 import dip.order.Orderable;
@@ -92,12 +94,12 @@ public class ResultWriter {
         tv.setEditable(false);
         tv.addSingleButton(tv.makeOKButton());
         tv.setTitle(title.toString());
-        tv.setHelpID(Help.HelpID.Dialog_ResultReport);
+        tv.setHelpID(HelpID.Dialog_ResultReport);
         tv.setHeaderVisible(false);
         tv.setHorizontalScrollBarPolicy(
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-        tv.lazyLoadDisplayDialog(new TextViewer.TVRunnable() {
+        tv.lazyLoadDisplayDialog(new TVRunnable() {
             @Override
             public void run() {
                 setText(resultsToHTML(ts, orderFormatOptions));

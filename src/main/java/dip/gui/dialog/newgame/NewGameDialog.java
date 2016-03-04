@@ -26,6 +26,7 @@ import dip.gui.ClientFrame;
 import dip.gui.dialog.HeaderDialog;
 import dip.gui.swing.SwingWorker;
 import dip.misc.Help;
+import dip.misc.Help.HelpID;
 import dip.misc.Log;
 import dip.misc.Utils;
 import dip.world.World;
@@ -71,7 +72,7 @@ public class NewGameDialog extends HeaderDialog {
      */
     public static World displayDialog(final ClientFrame parent) {
         return displayDialog(parent, Utils.getLocalString(TITLE),
-                dip.misc.Help.HelpID.NewGame);
+                HelpID.NewGame);
     }// displayDialog()
 
 
@@ -85,7 +86,7 @@ public class NewGameDialog extends HeaderDialog {
      * helpID will use the default NGD help.
      */
     public static World displayDialog(final ClientFrame parent, final String title,
-                                      final Help.HelpID helpID) {
+                                      final HelpID helpID) {
         if (title == null) {
             throw new IllegalArgumentException();
         }
@@ -94,7 +95,7 @@ public class NewGameDialog extends HeaderDialog {
         dialogInstance.setTitle(title);
 
         if (helpID == null) {
-            dialogInstance.setHelpID(dip.misc.Help.HelpID.NewGame);
+            dialogInstance.setHelpID(HelpID.NewGame);
         } else {
             dialogInstance.setHelpID(helpID);
         }

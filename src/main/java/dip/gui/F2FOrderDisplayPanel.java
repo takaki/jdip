@@ -29,7 +29,10 @@ import dip.gui.map.SVGColorParser;
 import dip.gui.swing.ColorRectIcon;
 import dip.misc.Utils;
 import dip.process.Adjustment;
+import dip.process.Adjustment.AdjustmentInfo;
+import dip.process.Adjustment.AdjustmentInfoMap;
 import dip.world.Phase;
+import dip.world.Phase.PhaseType;
 import dip.world.Position;
 import dip.world.Power;
 import dip.world.TurnState;
@@ -42,6 +45,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.List;
+import java.util.Map.Entry;
 
 
 /**
@@ -400,7 +404,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
         final Position pos = turnState.getPosition();
         final List<Power> powers = world.getMap().getPowers();
 
-        final Adjustment.AdjustmentInfoMap f2fAdjMap = Adjustment
+        final AdjustmentInfoMap f2fAdjMap = Adjustment
                 .getAdjustmentInfo(turnState, world.getRuleOptions(), powers);
 
         for (final Power power : powers) {
@@ -418,14 +422,14 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
                         "");
 
                 // disable tabs if appropriate
-                final Adjustment.AdjustmentInfo adjInfo = f2fAdjMap.get(power);
+                final AdjustmentInfo adjInfo = f2fAdjMap.get(power);
                 if (turnState.getPhase()
-                        .getPhaseType() == Phase.PhaseType.ADJUSTMENT) {
+                        .getPhaseType() == PhaseType.ADJUSTMENT) {
                     if (adjInfo.getAdjustmentAmount() == 0) {
                         setTabEnabled(power, false);
                     }
                 } else if (turnState.getPhase()
-                        .getPhaseType() == Phase.PhaseType.RETREAT) {
+                        .getPhaseType() == PhaseType.RETREAT) {
                     if (adjInfo.getDislodgedUnitCount() == 0) {
                         setTabEnabled(power, false);
                     }
@@ -752,7 +756,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
          * Get an iterator. Note that this <b>always</b> returns an iterator
          * on a <b>copy</b> of the F2FState.
          */
-        public synchronized Iterator<Map.Entry<Power, Boolean>> iterator() {
+        public synchronized Iterator<Entry<Power, Boolean>> iterator() {
             final F2FState copy = new F2FState(this);
             return copy.submittedMap.entrySet().iterator();
         }// iterator()

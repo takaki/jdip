@@ -31,6 +31,10 @@ import dip.gui.undo.UndoRedoManager;
 import dip.misc.Utils;
 import dip.order.result.TimeResult;
 import dip.world.*;
+import dip.world.Phase.PhaseType;
+import dip.world.RuleOptions.Option;
+import dip.world.RuleOptions.OptionValue;
+import dip.world.Unit.Type;
 import org.w3c.dom.events.MouseEvent;
 
 import javax.swing.*;
@@ -186,7 +190,7 @@ public class EditControlBar extends ViewControlBar {
         // if WING units enabled, add a WING unit button
         final RuleOptions ro = mapPanel.getWorld().getRuleOptions();
         if (ro.getOptionValue(
-                RuleOptions.Option.OPTION_WINGS) == RuleOptions.OptionValue.VALUE_WINGS_ENABLED) {
+                Option.OPTION_WINGS) == OptionValue.VALUE_WINGS_ENABLED) {
             bWing = new JToggleButton(Utils.getLocalString(BUTTON_TEXT_WING));
             bWing.setToolTipText(Utils.getLocalString(TOOLTIP_WING));
             bWing.addActionListener(tl);
@@ -214,7 +218,7 @@ public class EditControlBar extends ViewControlBar {
         addSeparator(new Dimension(5, 0));
 
         // do not add dislodged if we are not in a retreat phase.
-        if (turnState.getPhase().getPhaseType() == Phase.PhaseType.RETREAT) {
+        if (turnState.getPhase().getPhaseType() == PhaseType.RETREAT) {
             addSeparator();
             addSeparator(new Dimension(5, 0));
             add(cbDislodged);
@@ -336,7 +340,7 @@ public class EditControlBar extends ViewControlBar {
             }
             if (currentAction == CLICK_TO_ADD_ARMY) {
                 // add an army
-                final Unit army = new Unit(currentPower, Unit.Type.ARMY);
+                final Unit army = new Unit(currentPower, Type.ARMY);
                 army.setCoast(Coast.NONE);
                 addUnit(province, army, isDislodged());
 
@@ -346,7 +350,7 @@ public class EditControlBar extends ViewControlBar {
             }
             if (currentAction == CLICK_TO_ADD_FLEET) {
                 // add a fleet
-                final Unit fleet = new Unit(currentPower, Unit.Type.FLEET);
+                final Unit fleet = new Unit(currentPower, Type.FLEET);
                 if (province.isMultiCoastal()) {
                     final Coast coast = loc.getCoast();
                     if (coast.isDirectional()) {
@@ -365,7 +369,7 @@ public class EditControlBar extends ViewControlBar {
             }
             if (currentAction == CLICK_TO_ADD_WING) {
                 // add a Wing
-                final Unit wing = new Unit(currentPower, Unit.Type.WING);
+                final Unit wing = new Unit(currentPower, Type.WING);
                 wing.setCoast(Coast.WING);
                 addUnit(province, wing, isDislodged());
 

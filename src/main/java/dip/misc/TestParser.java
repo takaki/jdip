@@ -26,6 +26,7 @@ import dip.order.*;
 import dip.world.*;
 import dip.world.Phase.PhaseType;
 import dip.world.Phase.SeasonType;
+import dip.world.Unit.Type;
 import dip.world.variant.VariantManager;
 import dip.world.variant.data.Variant;
 import jcmdline.*;
@@ -487,11 +488,11 @@ public class TestParser {
     /**
      * Validate a Unit Type
      */
-    private boolean valUnitType(final ORPair orp, final Unit.Type theUnitType, final String tok,
+    private boolean valUnitType(final ORPair orp, final Type theUnitType, final String tok,
                                 final List failedCases) {
         // is tok a valid Power name? if not, error-exit
-        final Unit.Type ut = Unit.Type.parse(tok);
-        if (ut == null || ut == Unit.Type.UNDEFINED) {
+        final Type ut = Type.parse(tok);
+        if (ut == null || ut == Type.UNDEFINED) {
             System.out.println(
                     "ERROR: in result of order pair starting at line: " + orp
                             .getLineNumber());
