@@ -138,11 +138,10 @@ public class OrderFormat {
      */
     private static String handleNull(final Class<?> cls) {
         assert cls != null;
-        final StringBuffer sb = new StringBuffer(64);
-        sb.append("null(");
-        sb.append(cls.getName());
-        sb.append(")");
-        return sb.toString();
+        String sb = "null(" +
+                cls.getName() +
+                ")";
+        return sb;
     }// handleNull()
 
 
@@ -243,19 +242,17 @@ public class OrderFormat {
                         text = coast.getName();
                         break;
                     case OrderFormatOptions.FORMAT_COAST_PAREN_BRIEF: {
-                        final StringBuffer sb = new StringBuffer(4);
-                        sb.append('(');
-                        sb.append(coast.getAbbreviation());
-                        sb.append(')');
-                        text = sb.toString();
+                        String sb = "(" +
+                                coast.getAbbreviation() +
+                                ')';
+                        text = sb;
                     }
                     break;
                     case OrderFormatOptions.FORMAT_COAST_PAREN_FULL:
-                        final StringBuffer sb = new StringBuffer(16);
-                        sb.append('(');
-                        sb.append(coast.getName());
-                        sb.append(')');
-                        text = sb.toString();
+                        String sb = "(" +
+                                coast.getName() +
+                                ')';
+                        text = sb;
                         break;
                     default:
                         throw new IllegalStateException();

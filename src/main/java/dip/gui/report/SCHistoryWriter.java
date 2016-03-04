@@ -405,11 +405,10 @@ public class SCHistoryWriter {
         if (mmd != null) {
             final String colorName = mmd.getPowerColor(power);
             final Color color = SVGColorParser.parseColor(colorName);
-            final StringBuffer sb = new StringBuffer(32);
-            sb.append("<font color=\"");
-            sb.append(Utils.colorToHTMLHex(color));
-            sb.append("\">");
-            return sb.toString();
+            String sb = "<font color=\"" +
+                    Utils.colorToHTMLHex(color) +
+                    "\">";
+            return sb;
         }
         return "";
     }// makeFontColorOpen()

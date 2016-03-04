@@ -414,11 +414,8 @@ public class NGDMapAndUnits extends JPanel implements NGDTabPane {
                     } else if (text == null || "".equals(text)) {
                         description.setText("");
                     } else {
-                        final StringBuffer sb = new StringBuffer(text.length() + 48);
-                        sb.append(
-                                "<html><font face=\"arial,helvetica,sansserif\">");
-                        sb.append(text);
-                        description.setText(sb.toString());
+                        String sb = "<html><font face=\"arial,helvetica,sansserif\">" + text;
+                        description.setText(sb);
                     }
                 } else {
                     description.setText("");

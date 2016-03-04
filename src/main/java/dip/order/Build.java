@@ -91,23 +91,15 @@ public class Build extends Order {
 
     @Override
     public String toBriefString() {
-        final StringBuffer sb = new StringBuffer(
-                String.format("%s: %s %s ", power, orderNameBrief,
-                        srcUnitType.getShortName()));
-        sb.append(src.getBrief());
-
-        return sb.toString();
+        return String.format("%s: %s %s ", power, orderNameBrief,
+                srcUnitType.getShortName()) + src.getBrief();
     }// toBriefString()
 
 
     @Override
     public String toFullString() {
-        final StringBuffer sb = new StringBuffer(
-                String.format("%s: %s %s ", power, orderNameFull,
-                        srcUnitType.getFullName()));
-        sb.append(src.getFull());
-
-        return sb.toString();
+        return String.format("%s: %s %s ", power, orderNameFull,
+                srcUnitType.getFullName()) + src.getFull();
     }// toFullString()
 
 

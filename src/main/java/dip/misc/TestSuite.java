@@ -783,13 +783,12 @@ public final class TestSuite {
         while (iter.hasNext()) {
             final UnitPos up = iter.next();
 
-            final StringBuffer sb = new StringBuffer(64);
-            sb.append("  ");    // spacer
-            sb.append(prefix);
-            sb.append(" ");
-            sb.append(up);
+            String sb = "  " +
+                    prefix +
+                    " " +
+                    up;
 
-            println(sb.toString());
+            println(sb);
         }
     }// printSet()
 
@@ -1456,52 +1455,45 @@ public final class TestSuite {
 
     private static final void println(final String s1, final int i1) {
         if (isLogging) {
-            final StringBuffer sb = new StringBuffer(256);
-            sb.append(s1);
-            sb.append(i1);
-            System.out.println(sb.toString());
+            String sb = s1 + i1;
+            System.out.println(sb);
         }
     }
 
     private static final void println(final String s1, final int i1, final String s2) {
         if (isLogging) {
-            final StringBuffer sb = new StringBuffer(256);
-            sb.append(s1);
-            sb.append(i1);
-            sb.append(s2);
-            System.out.println(sb.toString());
+            String sb = s1 +
+                    i1 +
+                    s2;
+            System.out.println(sb);
         }
     }
 
     private static final void println(final String s1, final Object o2) {
         if (isLogging) {
-            final StringBuffer sb = new StringBuffer(256);
-            sb.append(s1);
-            sb.append(o2);
-            System.out.println(sb.toString());
+            String sb = s1 + o2;
+            System.out.println(sb);
         }
     }
 
 
     private static final void println(final String s1, final Object o2, final Object o3) {
         if (isLogging) {
-            final StringBuffer sb = new StringBuffer(256);
-            sb.append(s1);
-            sb.append(o2);
-            sb.append(o3);
-            System.out.println(sb.toString());
+            String sb = s1 +
+                    o2 +
+                    o3;
+            System.out.println(sb);
         }
     }
 
     private static final void println(final String s1, final Object o2, final Object o3,
                                       final Object o4) {
         if (isLogging) {
-            final StringBuffer sb = new StringBuffer(256);
-            sb.append(s1);
-            sb.append(o2);
-            sb.append(o3);
-            sb.append(o4);
-            System.out.println(sb.toString());
+            String sb = s1 +
+                    o2 +
+                    o3 +
+                    o4;
+            System.out.println(sb);
         }
     }
 

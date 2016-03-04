@@ -109,11 +109,10 @@ public class NGDStartOptions extends JPanel implements NGDTabPane {
      */
     public synchronized Variant getVariant() {
         // set game time
-        final StringBuffer sb = new StringBuffer();
-        sb.append(phaseBox.getSelectedItem());
-        sb.append(' ');
-        sb.append(year.getValue());
-        current.setStartingPhase(Phase.parse(sb.toString()).orElse(null));
+        String sb = String.valueOf(phaseBox.getSelectedItem()) +
+                ' ' +
+                year.getValue();
+        current.setStartingPhase(Phase.parse(sb).orElse(null));
 
         // set victory conditions
         current.setNumSCForVictory(getSpinnerValue(vcSC));

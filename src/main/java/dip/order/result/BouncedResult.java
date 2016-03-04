@@ -148,19 +148,16 @@ public class BouncedResult extends OrderResult {
      * Primarily for debugging.
      */
     public String toString() {
-        final StringBuffer sb = new StringBuffer(256);
-        sb.append(super.toString());
+        String sb = super.toString() +
+                "Bounced with: " +
+                bouncer +
+                ". Stats: " +
+                atkStrength +
+                ':' +
+                defStrength +
+                '.';
 
-        sb.append("Bounced with: ");
-        sb.append(bouncer);
-
-        sb.append(". Stats: ");
-        sb.append(atkStrength);
-        sb.append(':');
-        sb.append(defStrength);
-        sb.append('.');
-
-        return sb.toString();
+        return sb;
     }// toString()
 
 

@@ -78,33 +78,29 @@ public class Remove extends Order {
 
     @Override
     public String toBriefString() {
-        final StringBuffer sb = new StringBuffer(64);
+        String sb = String.valueOf(power) +
+                ": " +
+                orderNameBrief +
+                ' ' +
+                srcUnitType.getShortName() +
+                ' ' +
+                src.getBrief();
 
-        sb.append(power);
-        sb.append(": ");
-        sb.append(orderNameBrief);
-        sb.append(' ');
-        sb.append(srcUnitType.getShortName());
-        sb.append(' ');
-        sb.append(src.getBrief());
-
-        return sb.toString();
+        return sb;
     }// toBriefString()
 
 
     @Override
     public String toFullString() {
-        final StringBuffer sb = new StringBuffer(128);
+        String sb = String.valueOf(power) +
+                ": " +
+                orderNameFull +
+                ' ' +
+                srcUnitType.getFullName() +
+                ' ' +
+                src.getFull();
 
-        sb.append(power);
-        sb.append(": ");
-        sb.append(orderNameFull);
-        sb.append(' ');
-        sb.append(srcUnitType.getFullName());
-        sb.append(' ');
-        sb.append(src.getFull());
-
-        return sb.toString();
+        return sb;
     }// toFullString()
 
 

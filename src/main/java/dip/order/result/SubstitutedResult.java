@@ -73,17 +73,16 @@ public class SubstitutedResult extends OrderResult {
      * This is intended for debugging only.
      */
     public String toString() {
-        final StringBuffer sb = new StringBuffer(256);
-        sb.append(power);
-        sb.append(": [");
-        sb.append(resultType);
-        sb.append("] [order: ");
-        sb.append(order);
-        sb.append("] [new order: ");
-        sb.append(newOrder);
-        sb.append("] ");
-        sb.append(message);
-        return sb.toString();
+        String sb = String.valueOf(power) +
+                ": [" +
+                resultType +
+                "] [order: " +
+                order +
+                "] [new order: " +
+                newOrder +
+                "] " +
+                message;
+        return sb;
     }// toString()
 }// class SubstitutedResult
 

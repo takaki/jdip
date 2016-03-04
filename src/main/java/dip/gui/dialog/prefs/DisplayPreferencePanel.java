@@ -325,12 +325,11 @@ public class DisplayPreferencePanel extends PreferencePanel {
         orderFormat.setArrow((String) arrowBox.getSelectedItem());
 
         // update the example text
-        final StringBuffer sb = new StringBuffer(128);
-        sb.append("<html><b>");
-        sb.append(OrderFormat.getFormatExample(orderFormat,
-                clientFrame.getGUIOrderFactory()));
-        sb.append("</b></html>");
-        example.setText(sb.toString());
+        String sb = "<html><b>" +
+                OrderFormat.getFormatExample(orderFormat,
+                        clientFrame.getGUIOrderFactory()) +
+                "</b></html>";
+        example.setText(sb);
     }// updateExampleAndFormatOptions()
 
 

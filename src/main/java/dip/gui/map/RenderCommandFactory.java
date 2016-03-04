@@ -120,10 +120,8 @@ public abstract class RenderCommandFactory {
          * For debugging
          */
         public String toString() {
-            final StringBuffer sb = new StringBuffer();
-            sb.append("[");
-            sb.append(getClass().getName());
-            return sb.toString();
+            String sb = "[" + getClass().getName();
+            return sb;
         }
     }// abstract nested class RenderCommand
 

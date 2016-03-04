@@ -1385,13 +1385,12 @@ public final class JudgeImportHistory {
         final Matcher m = pattern.matcher(jp.getText());
 
         if (m.find()) {
-            final StringBuffer sb = new StringBuffer(64);
-            sb.append(m.group(1));
-            sb.append(' ');
-            sb.append(m.group(2));
-            sb.append(' ');
-            sb.append(m.group(3));
-            phase = Phase.parse(sb.toString()).orElse(null);
+            String sb = m.group(1) +
+                    ' ' +
+                    m.group(2) +
+                    ' ' +
+                    m.group(3);
+            phase = Phase.parse(sb).orElse(null);
         }
 
         if (phase == null) {
@@ -1440,13 +1439,12 @@ public final class JudgeImportHistory {
         final Matcher m = pattern.matcher(lastTurn.getText());
 
         if (m.find()) {
-            final StringBuffer sb = new StringBuffer(64);
-            sb.append(m.group(1));
-            sb.append(' ');
-            sb.append(m.group(2));
-            sb.append(' ');
-            sb.append(m.group(3));
-            phase = Phase.parse(sb.toString()).orElse(null);
+            String sb = m.group(1) +
+                    ' ' +
+                    m.group(2) +
+                    ' ' +
+                    m.group(3);
+            phase = Phase.parse(sb).orElse(null);
         }
 
         if (phase == null) {

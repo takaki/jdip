@@ -183,15 +183,14 @@ public class PositionParser {
          * For debugging only; this may change between versions.
          */
         public String toString() {
-            final StringBuffer sb = new StringBuffer();
-            sb.append("PositionInfo[power=");
-            sb.append(power);
-            sb.append(",unit=");
-            sb.append(unit);
-            sb.append(",location=");
-            sb.append(location);
-            sb.append(']');
-            return sb.toString();
+            String sb = "PositionInfo[power=" +
+                    power +
+                    ",unit=" +
+                    unit +
+                    ",location=" +
+                    location +
+                    ']';
+            return sb;
         }// toString()
     }// nested class PositionInfo
 

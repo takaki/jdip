@@ -720,14 +720,13 @@ public class Utils {
             // expand 3-digit to 6 digit
             if (length == 4) {
                 // screw math!
-                final StringBuffer sb = new StringBuffer(6);
-                sb.append(lcColor.charAt(0));
-                sb.append(lcColor.charAt(0));
-                sb.append(lcColor.charAt(1));
-                sb.append(lcColor.charAt(1));
-                sb.append(lcColor.charAt(2));
-                sb.append(lcColor.charAt(2));
-                lcColor = sb.toString();
+                String sb = String.valueOf(lcColor.charAt(0)) +
+                        lcColor.charAt(0) +
+                        lcColor.charAt(1) +
+                        lcColor.charAt(1) +
+                        lcColor.charAt(2) +
+                        lcColor.charAt(2);
+                lcColor = sb;
             }
 
             if (length == 4 || length == 7 || length == 9) {

@@ -111,15 +111,14 @@ public class StateWriter {
      */
     public static void displayDialog(final ClientFrame clientFrame,
                                      final TurnState ts) {
-        final StringBuffer title = new StringBuffer(64);
-        title.append(Utils.getLocalString(DIALOG_TITLE));
-        title.append(": ");
-        title.append(ts.getPhase());
+        String title = Utils.getLocalString(DIALOG_TITLE) +
+                ": " +
+                ts.getPhase();
 
         final TextViewer tv = new TextViewer(clientFrame);
         tv.setEditable(false);
         tv.addSingleButton(tv.makeOKButton());
-        tv.setTitle(title.toString());
+        tv.setTitle(title);
         tv.setHelpID(HelpID.Dialog_StatusReport);
         tv.setHeaderVisible(false);
         tv.setHorizontalScrollBarPolicy(
@@ -521,11 +520,10 @@ public class StateWriter {
             if (position.hasUnit(province)) {
                 final Unit unit = position.getUnit(province).orElse(null);
                 final List<String> uList = pmap.get(unit.getPower());
-                final StringBuffer sb = new StringBuffer(16);
-                sb.append(unit.getType().getShortName());
-                sb.append(' ');
-                sb.append(province.getShortName());
-                uList.add(sb.toString());
+                String sb = unit.getType().getShortName() +
+                        ' ' +
+                        province.getShortName();
+                uList.add(sb);
             }
 
             if (position.hasDislodgedUnit(province)) {
@@ -533,13 +531,12 @@ public class StateWriter {
                 final Unit unit = position.getDislodgedUnit(province)
                         .orElse(null);
                 final List<String> uList = pmap.get(unit.getPower());
-                final StringBuffer sb = new StringBuffer(16);
-                sb.append("<u>");
-                sb.append(unit.getType().getShortName());
-                sb.append("</u> <u>");
-                sb.append(province.getShortName());
-                sb.append("</u>");
-                uList.add(sb.toString());
+                String sb = "<u>" +
+                        unit.getType().getShortName() +
+                        "</u> <u>" +
+                        province.getShortName() +
+                        "</u>";
+                uList.add(sb);
             }
 
         }

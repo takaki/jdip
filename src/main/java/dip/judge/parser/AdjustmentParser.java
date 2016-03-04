@@ -262,17 +262,16 @@ public class AdjustmentParser {
          * String output for debugging; may change between versions.
          */
         public String toString() {
-            final StringBuffer sb = new StringBuffer();
-            sb.append("AdjustInfo[power=");
-            sb.append(power);
-            sb.append(", SC=");
-            sb.append(numSC);
-            sb.append(", units=");
-            sb.append(numUnits);
-            sb.append(", change=");
-            sb.append(toBuildOrRemove);
-            sb.append(']');
-            return sb.toString();
+            String sb = "AdjustInfo[power=" +
+                    power +
+                    ", SC=" +
+                    numSC +
+                    ", units=" +
+                    numUnits +
+                    ", change=" +
+                    toBuildOrRemove +
+                    ']';
+            return sb;
         }// toString()
     }// nested class AdjustInfo
 

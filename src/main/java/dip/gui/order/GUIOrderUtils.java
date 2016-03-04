@@ -322,12 +322,10 @@ final class GUIOrderUtils {
         final String filter = mmd.getOrderParamString(mmdOrderElementName,
                 MapMetadata.ATT_FILTERID);
         if (!filter.isEmpty()) {
-            final StringBuffer sb = new StringBuffer(filter.length() + 6);
-            sb.append("url(#");
-            sb.append(filter);
-            sb.append(')');
-            element.setAttributeNS(null, SVGConstants.SVG_FILTER_ATTRIBUTE,
-                    sb.toString());
+            String sb = "url(#" +
+                    filter +
+                    ')';
+            element.setAttributeNS(null, SVGConstants.SVG_FILTER_ATTRIBUTE, sb);
         }
     }// makeStyled()
 
@@ -341,11 +339,10 @@ final class GUIOrderUtils {
         String filter = mmd.getOrderParamString(mmdOrderElementName,
                 MapMetadata.ATT_FILTERID);
         if (!filter.isEmpty()) {
-            final StringBuffer sb = new StringBuffer(filter.length() + 6);
-            sb.append("url(#");
-            sb.append(filter);
-            sb.append(')');
-            filter = sb.toString();
+            String sb = "url(#" +
+                    filter +
+                    ')';
+            filter = sb;
         } else {
             filter = null;
         }

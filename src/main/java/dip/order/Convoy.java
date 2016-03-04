@@ -158,19 +158,17 @@ public class Convoy extends Order {
 
     @Override
     public String toFullString() {
-        final StringBuffer sb = new StringBuffer(128);
+        String sb = getFull() +
+                ' ' +
+                orderNameFull +
+                ' ' +
+                convoyUnitType.getFullName() +
+                ' ' +
+                convoySrc.getFull() +
+                " -> " +
+                convoyDest.getFull();
 
-        sb.append(getFull());
-        sb.append(' ');
-        sb.append(orderNameFull);
-        sb.append(' ');
-        sb.append(convoyUnitType.getFullName());
-        sb.append(' ');
-        sb.append(convoySrc.getFull());
-        sb.append(" -> ");
-        sb.append(convoyDest.getFull());
-
-        return sb.toString();
+        return sb;
     }// toFullString()
 
 

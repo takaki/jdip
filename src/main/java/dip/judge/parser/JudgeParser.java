@@ -305,15 +305,14 @@ public class JudgeParser {
                 if (pos2 >= 0 && pos2 < 10) {
                     type = JP_TYPE_HISTORY;
 
-                    final StringBuffer sb = new StringBuffer(256);
-                    sb.append(line);
-                    sb.append('\n');
-                    sb.append(line2);
+                    String sb = line +
+                            '\n' +
+                            line2;
 
                     // set the rest of the text.
                     // prepend the already-parsed Date: and Subject: lines
                     initialText = initSB.toString();
-                    makeRestOfText(sb.toString());
+                    makeRestOfText(sb);
                     return;
                 }
             } else {

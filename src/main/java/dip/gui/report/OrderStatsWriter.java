@@ -228,14 +228,12 @@ public class OrderStatsWriter {
     }// makeOrderSuccessRateTable()
 
     private String makeSupportRateTable(final MovePhaseTurnData[] mptds) {
-        final StringBuffer sb = new StringBuffer(4096);
-        return sb.toString();
+        return "";
     }// makeSupportRateTable()
 
     private String makeNonSelfSupportRateTable(
             final MovePhaseTurnData[] mptds) {
-        final StringBuffer sb = new StringBuffer(4096);
-        return sb.toString();
+        return "";
     }// makeNonSelfSupportRateTable()
 
 
