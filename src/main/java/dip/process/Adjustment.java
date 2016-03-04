@@ -60,27 +60,25 @@ public final class Adjustment {
 
         final Position position = turnState.getPosition();
         final List<Province> provinces = position.getProvinces();
+        ai.numUnits += provinces.stream()
+                .filter(province -> position.getUnit(province)
+                        .filter(u -> Objects.equals(u.getPower(), power))
+                        .isPresent()).count();
 
-        for (final Province province : provinces) {
-            // tally units
-            position.getUnit(province)
-                    .filter(u -> Objects.equals(u.getPower(), power))
-                    .ifPresent(u -> ai.numUnits++);
-
-            position.getDislodgedUnit(province)
-                    .filter(unit -> Objects.equals(unit.getPower(), power))
-                    .ifPresent(unit -> ai.numDislodgedUnits++);
-
-            // tally supply centers
-            position.getSupplyCenterOwner(province)
-                    .filter(p -> Objects.equals(p, power)).ifPresent(p0 -> {
-                ai.numSC++;
-                position.getSupplyCenterHomePower(province)
+        ai.numDislodgedUnits += provinces.stream()
+                .filter(province -> position.getDislodgedUnit(province)
+                        .filter(unit -> Objects.equals(unit.getPower(), power))
+                        .isPresent()).count();
+        ai.numSC += provinces.stream()
+                .filter(province -> position.getSupplyCenterOwner(province)
+                        .filter(p -> Objects.equals(p, power)).isPresent())
+                .count();
+        ai.numHSC += provinces.stream()
+                .filter(province -> position.getSupplyCenterOwner(province)
                         .filter(p -> Objects.equals(p, power))
-                        .ifPresent(p -> ai.numHSC++);
-            });
-        }
-
+                        .map(p0 -> position.getSupplyCenterHomePower(province)
+                                .filter(p -> Objects.equals(p, power)))
+                        .isPresent()).count();
         return ai;
     }// getAdjustmentInfo()
 
