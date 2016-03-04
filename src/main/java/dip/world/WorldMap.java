@@ -29,12 +29,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -55,15 +55,17 @@ public final class WorldMap implements Serializable {
     // the above (serialized) data.
     //
     // Province-related
-    private transient Map<String, Province> nameMap;    // map of all (short & full) names to a province; names in lower case
-    private transient List<String> names;    // list of all province names [short & full]; names in lower case
+    private final transient Map<String, Province> nameMap = new TreeMap<>(
+            String.CASE_INSENSITIVE_ORDER);    // map of all (short & full) names to a province; names in lower case
+    private final transient List<String> names = new ArrayList<>();    // list of all province names [short & full]; names in lower case
 
     // Power-related
-    private transient Map<String, Power> powerNameMap;        // created by createMappings()
+    private final transient Map<String, Power> powerNameMap = new TreeMap<>(
+            String.CASE_INSENSITIVE_ORDER);        // created by createMappings()
 
     // fields created on first-use (by a method)
-    private transient List<String> lcPowerNames;        // lower case power names & adjectives
-    private transient List<String> wsNames;            // list of all province names that contain whitespace, "-", or " "
+    private final transient List<String> lcPowerNames = new ArrayList<>();        // lower case power names & adjectives
+    private final transient List<String> wsNames = new ArrayList<>();            // list of all province names that contain whitespace, "-", or " "
 
     /**
      * Constructs a Map object.
@@ -103,27 +105,24 @@ public final class WorldMap implements Serializable {
     private void createMappings() {
         // create powerNameMap
         // also map adjectives
-        powerNameMap = new HashMap<>(powers.stream().collect(Collectors
-                .toMap(power -> power.getAdjective().toLowerCase(),
-                        Function.identity())));
-        powers.stream().forEach(power -> {
-            powerNameMap.putAll(power.getNames().stream().collect(
-                    Collectors.toMap(String::toLowerCase, aTmp -> power)));
-        });
+        powerNameMap.putAll(powers.stream().collect(
+                Collectors.toMap(Power::getAdjective, Function.identity())));
+        powers.stream().forEach(power -> powerNameMap
+                .putAll(power.getNames().stream().collect(
+                        Collectors.toMap(String::toLowerCase, aTmp -> power))));
         // create lcPowerNameList
-        lcPowerNames = createLCPowerNameList();
+        lcPowerNames.addAll(createLCPowerNameList());
 
         // province-related namemap
         //
         // map long name
-        nameMap = new HashMap<>(provinces.stream().collect(Collectors
-                .toMap(province -> province.getFullName().toLowerCase(),
-                        Function.identity())));
+        nameMap.putAll(provinces.stream().collect(
+                Collectors.toMap(Province::getFullName, Function.identity())));
         provinces.stream().forEach(province -> nameMap
                 .putAll(province.getShortNames().stream().collect(Collectors
-                        .toMap(String::toLowerCase, lcShortName -> province))));
+                        .toMap(Function.identity(), sn -> province))));
         // add to List
-        names = new ArrayList<>(provinces.stream().map(Province::getFullName)
+        names.addAll(provinces.stream().map(Province::getFullName)
                 .map(String::toLowerCase).collect(Collectors.toList()));
         names.addAll(provinces.stream()
                 .flatMap(province -> province.getShortNames().stream())
@@ -131,10 +130,11 @@ public final class WorldMap implements Serializable {
 
         // sort array from longest entries to shortest. This
         // eliminates errors in partial replacements.
-        wsNames = names.stream().filter(name -> name.indexOf(' ') >= 0 || name
-                .indexOf('-') >= 0).map(String::toLowerCase)
+        wsNames.addAll(names.stream()
+                .filter(name -> name.indexOf(' ') >= 0 || name
+                        .indexOf('-') >= 0).map(String::toLowerCase)
                 .sorted(Comparator.comparing(String::length).reversed())
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
 
 
     }// createMappings()
@@ -155,7 +155,7 @@ public final class WorldMap implements Serializable {
      * The match must be exact, but is case-insensitive.
      */
     public Power getPower(final String name) {
-        return powerNameMap.get(name.toLowerCase());
+        return powerNameMap.get(name);
     }// getPower()
 
 
@@ -285,7 +285,7 @@ public final class WorldMap implements Serializable {
      * The match must be exact, but is case-insensitive.
      */
     public Province getProvince(final String name) {
-        return nameMap.get(name.toLowerCase());
+        return nameMap.get(name);
     }// getProvince()
 
 

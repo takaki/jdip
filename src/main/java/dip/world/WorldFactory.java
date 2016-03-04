@@ -104,8 +104,9 @@ public class WorldFactory {
                 }).collect(Collectors.toList());
 
         // verify uniqueness of names
+        // mapping of names->provinces
         final Map<String, Province> provNameMap = new TreeMap<>(
-                String.CASE_INSENSITIVE_ORDER);    // mapping of names->provinces
+                String.CASE_INSENSITIVE_ORDER);
         provinces.stream().forEach(province -> {
             final String fullname = province.getFullName();
             final List<String> shortNames = province.getShortNames();
