@@ -183,7 +183,7 @@ public class SCHistoryWriter {
         //
         for (int r = 1; r < rows; r++) {
             // on even rows, put a background on rows (easier to read)
-            final String trType = ((r & 1) == 0) ? TR_HIGHLIGHT : "<tr>";
+            final String trType = (r & 1) == 0 ? TR_HIGHLIGHT : "<tr>";
             sb.append(trType);
 
             // col 0: special handling (province abbreviation)
@@ -269,7 +269,7 @@ public class SCHistoryWriter {
         // row 0: yeartypes; HOWEVER, first 'yeartype' is really "Initial" ("Start")
         array[0][1] = Utils.getLocalString(LABEL_INITIAL);
         for (int i = 2; i < cols; i++) {
-            array[0][i] = (turnList.get(i - 1)).getPhase()
+            array[0][i] = turnList.get(i - 1).getPhase()
                     .getYearType();
         }
 
@@ -374,7 +374,7 @@ public class SCHistoryWriter {
                     .getOwnedSupplyCenters(allPower).toArray(new Province[0]);
             final int count = ownedSC.length;
 
-            sumOfSquares += (count * count);
+            sumOfSquares += count * count;
             sb.append("<td>");
 
             if (count > 0) {

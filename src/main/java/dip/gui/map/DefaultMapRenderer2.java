@@ -512,8 +512,8 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
         // change turnstate.
         turnState = ts;
         position = ts.getPosition();
-        isDislodgedPhase = (ts.getPhase()
-                .getPhaseType() == Phase.PhaseType.RETREAT);
+        isDislodgedPhase = ts.getPhase()
+                .getPhaseType() == Phase.PhaseType.RETREAT;
     }// setTurnState()
 
 
@@ -584,7 +584,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
                     SVGGElement orderLayer = layerMap
                             .get(LAYER_ORDERS);
 
-                    for (int z = (powerOrderMap.length - 1); z >= 0; z--) {
+                    for (int z = powerOrderMap.length - 1; z >= 0; z--) {
                         // determine which order layer we should use.
                         if (z == 0) {
                             // special case: this has its own explicit group in the SVG file
@@ -993,8 +993,8 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
                 // we are NOT in influence mode
                 //
                 if (renderSettings
-                        .get(MapRenderer2.KEY_SHOW_UNORDERED) == Boolean.TRUE && (getPhaseApropriateUnit(
-                        province) != null) && !isOrdered(province)) {
+                        .get(MapRenderer2.KEY_SHOW_UNORDERED) == Boolean.TRUE && getPhaseApropriateUnit(
+                        province) != null && !isOrdered(province)) {
                     // we are unordered!
                     // unordered CSS style takes precedence over any existing style.
                     setCSSIfChanged(provinceGroupElement, UNORDERED);
@@ -1059,7 +1059,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
         SVGElement newElement = null;
 
         // get old element (dislodged or normal)
-        final SVGElement oldElement = (isDislodged) ? tracker
+        final SVGElement oldElement = isDislodged ? tracker
                 .getDislodgedUnitElement() : tracker.getUnitElement();
 
         // remove, add, or replace as appropriate
@@ -1072,8 +1072,8 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
         } else if (oldElement == null && posUnit != null) {
             // case 2: new unit not null, old unit null: create new element, then add
             newElement = makeUnitUse(posUnit, province, isDislodged);
-            final SVGElement layer = ((isDislodged) ? layerMap
-                    .get(LAYER_DISLODGED_UNITS) : layerMap.get(LAYER_UNITS));
+            final SVGElement layer = isDislodged ? layerMap
+                    .get(LAYER_DISLODGED_UNITS) : layerMap.get(LAYER_UNITS);
             layer.appendChild(newElement);
         } else {
             // case 3: neither unit null, but different; create new element, then replace
@@ -1098,11 +1098,11 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
         // determine symbol ID
         String symbolID;
         if (u.getType() == Unit.Type.FLEET) {
-            symbolID = (isDislodged) ? SYMBOL_DISLODGED_FLEET : SYMBOL_FLEET;
+            symbolID = isDislodged ? SYMBOL_DISLODGED_FLEET : SYMBOL_FLEET;
         } else if (u.getType() == Unit.Type.ARMY) {
-            symbolID = (isDislodged) ? SYMBOL_DISLODGED_ARMY : SYMBOL_ARMY;
+            symbolID = isDislodged ? SYMBOL_DISLODGED_ARMY : SYMBOL_ARMY;
         } else if (u.getType() == Unit.Type.WING) {
-            symbolID = (isDislodged) ? SYMBOL_DISLODGED_WING : SYMBOL_WING;
+            symbolID = isDislodged ? SYMBOL_DISLODGED_WING : SYMBOL_WING;
         } else {
             throw new IllegalArgumentException(
                     "undefined or unknown unit type");
@@ -1110,11 +1110,11 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
 
         // get symbol size data
         final MapMetadata.SymbolSize symbolSize = mapMeta.getSymbolSize(symbolID);
-        assert (symbolSize != null);
+        assert symbolSize != null;
 
         // get the rectangle coordinates
         final Coast coast = u.getCoast();
-        final Point2D.Float pos = (isDislodged) ? mapMeta
+        final Point2D.Float pos = isDislodged ? mapMeta
                 .getDislodgedUnitPt(province, coast) : mapMeta
                 .getUnitPt(province, coast);
         final float x = pos.x;
@@ -1317,7 +1317,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
                 .tagFinderSVG(uscoreProvList, doc.getRootElement(), true);
 
         // safety check
-        assert (uscoreProvList.size() == lookupProvList.size());
+        assert uscoreProvList.size() == lookupProvList.size();
 
         // go through the map and add non-null objects to the tracker.
         for (int i = 0; i < lookupProvList.size(); i++) {
@@ -1337,7 +1337,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      * Retreat phase.
      */
     private Unit getPhaseApropriateUnit(final Province p) {
-        return (isDislodgedPhase) ? position.getDislodgedUnit(p)
+        return isDislodgedPhase ? position.getDislodgedUnit(p)
                 .orElse(null) : position.getUnit(p).orElse(null);
     }// getPhaseAppropriateUnit()
 

@@ -302,7 +302,7 @@ public class DisplayPreferencePanel extends PreferencePanel {
      * Updates the Example text order.
      */
     private void updateExampleAndFormatOptions() {
-        assert (orderFormat != null);
+        assert orderFormat != null;
 
         orderFormat.setPowerFormat(csPower.getFormat());
         orderFormat.setPowerStyle(csPower.getStyle());
@@ -349,7 +349,7 @@ public class DisplayPreferencePanel extends PreferencePanel {
         private boolean allowPlural = false;
         private boolean allowParens = false;
 
-        private static final int PLURAL_DELTA = (OrderFormatOptions.STYLE_PLURAL_NONE - OrderFormatOptions.STYLE_NONE);
+        private static final int PLURAL_DELTA = OrderFormatOptions.STYLE_PLURAL_NONE - OrderFormatOptions.STYLE_NONE;
 
         /**
          * Create a ChoiceSelection with the given category label "label", and
@@ -478,7 +478,7 @@ public class DisplayPreferencePanel extends PreferencePanel {
          * Returns the OrderFormat FORMAT specifier
          */
         public int getFormat() {
-            final int mod = (allowParens && checkBox.isSelected()) ? 10 : 0;
+            final int mod = allowParens && checkBox.isSelected() ? 10 : 0;
 
             if (bg.isSelected(brief.getModel())) {
                 return OrderFormatOptions.FORMAT_BRIEF + mod;
@@ -493,8 +493,8 @@ public class DisplayPreferencePanel extends PreferencePanel {
          * Returns the OrderFormat STYLE specifier
          */
         public int getStyle() {
-            final int mod = (allowPlural && checkBox
-                    .isSelected()) ? PLURAL_DELTA : 0;
+            final int mod = allowPlural && checkBox
+                    .isSelected() ? PLURAL_DELTA : 0;
             return styleBox.getSelectedIndex() + mod;
         }// getStyle()
     }// inner class ChoiceSelection

@@ -168,7 +168,7 @@ public class OrderStatsWriter {
             final Phase phase = mptd.getPhase();
             final Stats[] stats = mptd.getStats();
 
-            sb.append((((row & 1) == 0) ? TR_HIGHLIGHT : "<tr>"));
+            sb.append((row & 1) == 0 ? TR_HIGHLIGHT : "<tr>");
 
             sb.append("<td><b>");
             sb.append(phase.getSeasonType());
@@ -330,8 +330,8 @@ public class OrderStatsWriter {
                     s.nOrders++;
 
                     final Orderable order = (Orderable) iter.next();
-                    final boolean success = (resultMap
-                            .get(order) == Boolean.TRUE);
+                    final boolean success = resultMap
+                            .get(order) == Boolean.TRUE;
 
                     if (order instanceof Move) {
                         s.nMoves++;
@@ -419,8 +419,8 @@ public class OrderStatsWriter {
                 return 0.0f;
             }
 
-            final int success = (nMovesOK + nConvoysOK + nHoldsOK + nSupportsOK);
-            return ((float) success / (float) getTotal());
+            final int success = nMovesOK + nConvoysOK + nHoldsOK + nSupportsOK;
+            return (float) success / (float) getTotal();
         }
 
         /**
@@ -432,7 +432,7 @@ public class OrderStatsWriter {
                 return 0.0f;
             }
 
-            return ((float) nSupports / (float) getTotal());
+            return (float) nSupports / (float) getTotal();
         }
 
         /**
@@ -444,7 +444,7 @@ public class OrderStatsWriter {
                 return 0.0f;
             }
 
-            return ((float) nSupportsSelf / (float) getTotal());
+            return (float) nSupportsSelf / (float) getTotal();
         }
 
         /**
@@ -452,12 +452,12 @@ public class OrderStatsWriter {
          * of all total orders.
          */
         public float getPercentNonSelfSupport() {
-            assert (nSupports >= nSupportsSelf);
+            assert nSupports >= nSupportsSelf;
             if (getTotal() == 0) {
                 return 0.0f;
             }
 
-            return ((float) (nSupports - nSupportsSelf) / (float) getTotal());
+            return (float) (nSupports - nSupportsSelf) / (float) getTotal();
         }
 
         /**
@@ -469,7 +469,7 @@ public class OrderStatsWriter {
                 return -1.0f;
             }
 
-            return ((float) nMovesOK / (float) nMoves);
+            return (float) nMovesOK / (float) nMoves;
         }// getPercentMoveSuccess()
 
 
@@ -477,7 +477,7 @@ public class OrderStatsWriter {
          * Get total orders
          */
         private int getTotal() {
-            return (nMoves + nConvoys + nHolds + nSupports);
+            return nMoves + nConvoys + nHolds + nSupports;
         }// getTotal()
 
     }// inner class Stats

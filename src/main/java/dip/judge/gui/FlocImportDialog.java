@@ -166,8 +166,8 @@ public class FlocImportDialog extends HeaderDialog implements FlocImportCallback
                     .trim().toUpperCase();
             final String gameName = tfGameName.getText().trim();
 
-            boolean invalidJudgeName = (judgeName == null || judgeName
-                    .length() != 4);
+            boolean invalidJudgeName = judgeName == null || judgeName
+                    .length() != 4;
             if (!invalidJudgeName) {
                 for (int i = 0; i < judgeName.length(); i++) {
                     if (!Character.isLetterOrDigit(judgeName.charAt(i))) {
@@ -191,8 +191,8 @@ public class FlocImportDialog extends HeaderDialog implements FlocImportCallback
             }
 
             for (int i = 0; i < gameName.length(); i++) {
-                if (!Character.isLetterOrDigit(gameName.charAt(i)) && (gameName
-                        .charAt(i) != '_')) {
+                if (!Character.isLetterOrDigit(gameName.charAt(i)) && gameName
+                        .charAt(i) != '_') {
                     Utils.popupError(clientFrame,
                             Utils.getLocalString(NOT_REGISTERED_TITLE),
                             Utils.getLocalString(INVALID_INPUT_TEXT));
@@ -239,7 +239,7 @@ public class FlocImportDialog extends HeaderDialog implements FlocImportCallback
         bri.add("judge_name", (String) cbJudges.getSelectedItem());
         bri.add("game_name", tfGameName.getText());
         bri.add("world_open?",
-                String.valueOf((clientFrame.getWorld() != null)));
+                String.valueOf(clientFrame.getWorld() != null));
 
         ErrorDialog.displayNetIO(clientFrame, "www.floc.net", bri);
         enableProgressBar(false);

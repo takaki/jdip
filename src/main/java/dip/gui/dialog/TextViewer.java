@@ -203,7 +203,7 @@ public class TextViewer extends HeaderDialog {
                                 final StringWriter sw = new StringWriter();
                                 final HTMLWriter hw = new HTMLWriter(sw,
                                         (HTMLDocument) doc, selStart,
-                                        (selEnd - selStart));
+                                        selEnd - selStart);
                                 hw.write();
                                 text = filterHTML(
                                         filterExportedText(sw.toString()));
@@ -309,8 +309,8 @@ public class TextViewer extends HeaderDialog {
                                      final DataFlavor[] transferFlavors) {
                 if (comp instanceof JTextComponent && textPane.isEditable()) {
                     // any text type is acceptable.
-                    return (DataFlavor
-                            .selectBestTextFlavor(transferFlavors) != null);
+                    return DataFlavor
+                            .selectBestTextFlavor(transferFlavors) != null;
                 }
                 return false;
             }// canImport()

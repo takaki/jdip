@@ -136,8 +136,8 @@ public class DOMUIEventListener implements EventListener {
      */
     public static boolean isRMBorMetaLMB(final MouseEvent me) {
         final short button = me.getButton();
-        return ((button == BUTTON_RIGHT) || (button == BUTTON_LEFT && me
-                .getMetaKey()));
+        return button == BUTTON_RIGHT || button == BUTTON_LEFT && me
+                .getMetaKey();
     }// isRMBorMetaLMB()
 
 
@@ -147,8 +147,8 @@ public class DOMUIEventListener implements EventListener {
      */
     public static boolean isMMBorControlLMB(final MouseEvent me) {
         final short button = me.getButton();
-        return ((button == BUTTON_MIDDLE) || (button == BUTTON_LEFT && me
-                .getShiftKey()));
+        return button == BUTTON_MIDDLE || button == BUTTON_LEFT && me
+                .getShiftKey();
     }// isMMBorControlLMB()
 
 

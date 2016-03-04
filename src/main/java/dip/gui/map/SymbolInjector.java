@@ -156,8 +156,8 @@ public class SymbolInjector {
         final HashMap<String, Element> defsElementMap = elementMapper(defs, ID_ATTRIBUTE);
 
         final List<Symbol> symbols = sp.getSymbols();
-        assert (symbols != null);
-        assert (!symbols.isEmpty());
+        assert symbols != null;
+        assert !symbols.isEmpty();
 
         for (final Symbol symbol : symbols) {
             final Element element = defsElementMap.get(symbol.getName());

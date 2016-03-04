@@ -229,7 +229,7 @@ public class ClientMenu {
             }
 
             text = Utils.getLocalStringNoEx(name + "_icon");
-            icon = (text == null) ? blank : Utils.getIcon(text);
+            icon = text == null ? blank : Utils.getIcon(text);
         }// Item()
 
         /**
@@ -1018,7 +1018,7 @@ public class ClientMenu {
             // accel only go from F1-F12
             if (i < maxAccel) {
                 menuItem.setAccelerator(KeyStroke
-                        .getKeyStroke((i + startAccel), InputEvent.CTRL_MASK));
+                        .getKeyStroke(i + startAccel, InputEvent.CTRL_MASK));
             }
 
             orderMenu.add(menuItem);

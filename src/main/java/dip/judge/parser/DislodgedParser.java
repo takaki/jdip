@@ -176,7 +176,7 @@ public class DislodgedParser {
             this.power = power;
             this.unit = unit;
             this.src = src;
-            this.retreatLocs = (retreatLocs == null) ? EMPTY : retreatLocs;
+            this.retreatLocs = retreatLocs == null ? EMPTY : retreatLocs;
         }// DislodgedInfo()
 
         /**
@@ -211,7 +211,7 @@ public class DislodgedParser {
          * Indicates if unit was destroyed
          */
         public boolean isDestroyed() {
-            return (retreatLocs.length == 0);
+            return retreatLocs.length == 0;
         }
 
 

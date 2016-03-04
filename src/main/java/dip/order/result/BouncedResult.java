@@ -131,8 +131,8 @@ public class BouncedResult extends OrderResult {
         }
 
         // create messageformat arguments
-        final Object[] args = {((bouncer == null) ? new Integer(0) : new Integer(
-                1)),    // {0}; 0 if no province specified
+        final Object[] args = {bouncer == null ? new Integer(0) : new Integer(
+                1),    // {0}; 0 if no province specified
                 fmtProvince,                                            // {1}
                 new Integer(atkStrength),                                // {2}
                 new Integer(defStrength),                                // {3}

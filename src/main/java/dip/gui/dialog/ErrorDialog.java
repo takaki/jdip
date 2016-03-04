@@ -204,7 +204,7 @@ public class ErrorDialog extends TextViewer {
         args[0] = getCleanName(e.getClass().getName());
         args[1] = getMsg(e);
         args[2] = getStackTrace(e);
-        args[3] = (fileName == null) ? UNKNOWN : fileName;
+        args[3] = fileName == null ? UNKNOWN : fileName;
 
         Log.println("FileIOError: ", args[0]);
         Log.println("  message: ", args[1]);
@@ -253,7 +253,7 @@ public class ErrorDialog extends TextViewer {
         args[0] = getCleanName(e.getClass().getName());
         args[1] = getMsg(e);
         args[2] = getStackTrace(e);
-        args[3] = (connection == null) ? UNKNOWN : connection;
+        args[3] = connection == null ? UNKNOWN : connection;
 
         Log.println("NetworkIOError: ", args[0]);
         Log.println("  message: ", args[1]);
@@ -404,7 +404,7 @@ public class ErrorDialog extends TextViewer {
         appendBatikInfo(sb, t);
 
         final int len = ste.length;
-        for (int i = (len - 1); i >= 0; i--) {
+        for (int i = len - 1; i >= 0; i--) {
             sb.append(ste[i].toString());
             sb.append('\n');
         }
@@ -777,7 +777,7 @@ public class ErrorDialog extends TextViewer {
          */
         public void add(final String name, final String value) {
             final StringBuffer sb = new StringBuffer();
-            sb.append(((name == null) ? "" : name));
+            sb.append(name == null ? "" : name);
             sb.append(": ");
             sb.append(value);
             list.add(sb.toString());
@@ -831,7 +831,7 @@ public class ErrorDialog extends TextViewer {
             sb.append("\n------ Stack Trace------------------------");
 
             final StackTraceElement[] ste = t.getStackTrace();
-            for (int i = (ste.length - 1); i >= 0; i--) {
+            for (int i = ste.length - 1; i >= 0; i--) {
                 sb.append("\n  ");
                 sb.append(ste[i].toString());
             }

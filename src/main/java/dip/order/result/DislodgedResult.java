@@ -167,22 +167,22 @@ public class DislodgedResult extends OrderResult {
 
                 retreats.append(OrderFormat.format(ofo, retreatLocations[i]));
 
-                if (i < (retreatLocations.length - 1)) {
+                if (i < retreatLocations.length - 1) {
                     retreats.append(',');
                 }
             }
         }
 
         // create messageformat arguments
-        final Object[] args = {((dislodger == null) ? new Integer(0) : new Integer(
-                1)),    // {0}; 0 if no province specified
+        final Object[] args = {dislodger == null ? new Integer(0) : new Integer(
+                1),    // {0}; 0 if no province specified
                 fmtDislodger,                                                // {1}
                 new Integer(
                         atkStrength),                                    // {2}
                 new Integer(
                         defStrength),                                    // {3}
-                ((retreatLocations == null) ? new Integer(-1) : new Integer(
-                        retreatLocations.length)),  // {4}
+                retreatLocations == null ? new Integer(-1) : new Integer(
+                        retreatLocations.length),  // {4}
                 retreats.toString() // {5}
         };
 

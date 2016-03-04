@@ -301,8 +301,8 @@ public class OrderControlBar extends ViewControlBar {
         if (currentOrder != null) {
             // cancel if we are in a null location
             if (loc == null) {
-                if ((tempOrder != null && tempOrder
-                        .isComplete())) // We can still finish up
+                if (tempOrder != null && tempOrder
+                        .isComplete()) // We can still finish up
                 {
                     loc = tempOrder.getSource();
                 } else {

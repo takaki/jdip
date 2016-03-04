@@ -179,7 +179,7 @@ public abstract class MapRenderer2 {
                 if (rq != null) {
                     final Iterator iter = tempQueue.iterator();
                     while (iter.hasNext()) {
-                        rq.invokeLater(((RenderCommand) iter.next()));
+                        rq.invokeLater((RenderCommand) iter.next());
                     }
 
                     tempQueue.clear();

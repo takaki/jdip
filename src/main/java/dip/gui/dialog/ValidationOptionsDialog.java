@@ -106,7 +106,7 @@ public class ValidationOptionsDialog extends HeaderDialog {
                                     final ValidationOptions oldOptions) {
         super(parent, Utils.getLocalString(DIALOG_TITLE), true);
         this.parent = parent;
-        oldOpts = (oldOptions == null) ? (new ValidationOptions()) : oldOptions;
+        oldOpts = oldOptions == null ? new ValidationOptions() : oldOptions;
 
         // clone old options into new validation options.
         try {
@@ -146,7 +146,7 @@ public class ValidationOptionsDialog extends HeaderDialog {
 
     @Override
     public void close(final String actionCommand) {
-        returnedOpts = (isOKorAccept(actionCommand)) ? valOpts : oldOpts;
+        returnedOpts = isOKorAccept(actionCommand) ? valOpts : oldOpts;
         dispose();
     }// close()
 
@@ -192,7 +192,7 @@ public class ValidationOptionsDialog extends HeaderDialog {
             if (i < nButtons) {
                 radioButtons[i].setText(bText[i]);
                 radioButtons[i]
-                        .setSelected(((oVals[i].equals(value)) ? true : false));
+                        .setSelected(oVals[i].equals(value) ? true : false);
                 radioButtons[i].setToolTipText(bTips[i]);
                 radioButtons[i].setActionCommand(String.valueOf(i));
                 radioButtons[i].setVisible(true);
@@ -261,7 +261,7 @@ public class ValidationOptionsDialog extends HeaderDialog {
 
         subPanel.add(new JPanel(), c.rcwh(14, 1, 2, 1));
         for (int i = 0; i < radioButtons.length; i++) {
-            subPanel.add(radioButtons[i], c.rc((2 * (i + 1)), 2, "l"));
+            subPanel.add(radioButtons[i], c.rc(2 * (i + 1), 2, "l"));
         }
 
         final JPanel rightPanel = new JPanel();

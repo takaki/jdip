@@ -314,8 +314,8 @@ public class GUIConvoy extends Convoy implements GUIOrder {
 
     @Override
     public boolean isComplete() {
-        assert (currentLocNum <= getNumRequiredLocations());
-        return (currentLocNum == getNumRequiredLocations());
+        assert currentLocNum <= getNumRequiredLocations();
+        return currentLocNum == getNumRequiredLocations();
     }// isComplete()
 
     @Override
@@ -512,8 +512,8 @@ public class GUIConvoy extends Convoy implements GUIOrder {
         float maxDistSquared = 0.0f;
         for (Point2D.Float triPt : triPts) {
             final float distSquared = (float) (Math
-                    .pow((ptConvoyDest.x - triPt.x), 2.0) + Math
-                    .pow((ptConvoyDest.y - triPt.y), 2.0));
+                    .pow(ptConvoyDest.x - triPt.x, 2.0) + Math
+                    .pow(ptConvoyDest.y - triPt.y, 2.0));
             if (distSquared > maxDistSquared) {
                 maxDistSquared = distSquared;
                 newPtFrom = triPt;

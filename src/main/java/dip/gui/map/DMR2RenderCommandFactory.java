@@ -383,7 +383,7 @@ public class DMR2RenderCommandFactory extends RenderCommandFactory {
                     Boolean.valueOf(value));
             final SVGElement mapLayer = (SVGElement) dmr2.layerMap
                     .get(DefaultMapRenderer2.LAYER_MAP);
-            assert (mapLayer != null);
+            assert mapLayer != null;
             dmr2.setElementVisibility(mapLayer, value);
         }// execute()
     }// nested class RCShowMap

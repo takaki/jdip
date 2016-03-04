@@ -274,7 +274,7 @@ public class ClientFrame extends JFrame {
             // replace bad-looking (metal, motif) LAFs with better-looking
             // ones.
             String lafClassName = UIManager.getSystemLookAndFeelClassName();
-            assert (lafClassName != null);
+            assert lafClassName != null;
 
             if (Utils.isWindows()) {
                 // higher-fidelity windows LAF
@@ -318,15 +318,15 @@ public class ClientFrame extends JFrame {
         // do not change the variantDirPath if it was set
         // from the command line
         // use the preferred path, if set, and not overridden from command line
-        variantDirPath = (variantDirPath == null) ? GeneralPreferencePanel
+        variantDirPath = variantDirPath == null ? GeneralPreferencePanel
                 .getVariantDir() : variantDirPath;
         File toolDirPath;
         if (System.getProperty("user.dir") == null) {
-            variantDirPath = (variantDirPath == null) ? new File(".",
+            variantDirPath = variantDirPath == null ? new File(".",
                     VARIANT_DIR) : variantDirPath;
             toolDirPath = new File(".", TOOL_DIR);
         } else {
-            variantDirPath = (variantDirPath == null) ? new File(
+            variantDirPath = variantDirPath == null ? new File(
                     System.getProperty("user.dir"),
                     VARIANT_DIR) : variantDirPath;
             toolDirPath = new File(System.getProperty("user.dir"), TOOL_DIR);
@@ -1188,8 +1188,8 @@ public class ClientFrame extends JFrame {
 
             // see if game has ended; if so, show a dialog & change mode
             if (getTurnState()
-                    .isEnded() || (newTurnState != null && newTurnState
-                    .isEnded())) {
+                    .isEnded() || newTurnState != null && newTurnState
+                    .isEnded()) {
                 Utils.popupInfo(ClientFrame.this,
                         Utils.getLocalString("ClientFrame.ended.dialog.title"),
                         Utils.getText(Utils.getLocalString(

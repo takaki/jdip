@@ -345,7 +345,7 @@ public class NGDMapAndUnits extends JPanel implements NewGameDialog.NGDTabPane {
             final ListItem[] items = new ListItem[mgs.length];
             for (int i = 0; i < items.length; i++) {
                 items[i] = new ListItem(variant, mgs[i]);
-                defaultItem = (mgs[i].isDefault()) ? i : defaultItem;
+                defaultItem = mgs[i].isDefault() ? i : defaultItem;
             }
 
             setItems(items);

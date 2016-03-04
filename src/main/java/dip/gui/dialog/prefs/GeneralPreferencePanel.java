@@ -328,14 +328,14 @@ public class GeneralPreferencePanel extends PreferencePanel {
         final String mlSetting = MapRenderer2
                 .parseLabelValue(prefs.get(NODE_MAP_LABEL_LEVEL, null),
                         MapRenderer2.VALUE_LABELS_NONE);
-        assert (mlSetting != null);
+        assert mlSetting != null;
         mapLabels.setSelectedItem(mlSetting);
 
         // get order sorting setting
         final String osSetting = OrderDisplayPanel
                 .parseSortValue(prefs.get(NODE_ORDER_SORTING, null),
                         OrderDisplayPanel.SORT_PROVINCE);
-        assert (mlSetting != null);
+        assert mlSetting != null;
         orderSorting.setSelectedItem(osSetting);
     }// getSettings()
 
@@ -349,7 +349,7 @@ public class GeneralPreferencePanel extends PreferencePanel {
         final String mlSetting = MapRenderer2
                 .parseLabelValue(prefs.get(NODE_MAP_LABEL_LEVEL, null),
                         MapRenderer2.VALUE_LABELS_NONE);
-        assert (mlSetting != null);
+        assert mlSetting != null;
         return mlSetting;
     }// getMapLabelSetting()
 
@@ -541,7 +541,7 @@ public class GeneralPreferencePanel extends PreferencePanel {
                 final Map.Entry mapEntry = (Map.Entry) iter.next();
                 final File file = (File) mapEntry.getValue();
 
-                prefs.put((NODE_RECENT_FILE + String.valueOf(idx)),
+                prefs.put(NODE_RECENT_FILE + String.valueOf(idx),
                         file.getPath());
                 idx--;
             }

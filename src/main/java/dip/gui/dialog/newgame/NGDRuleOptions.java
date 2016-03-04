@@ -218,7 +218,7 @@ public class NGDRuleOptions extends JPanel implements NewGameDialog.NGDTabPane {
 
                 // select, if we are selected
                 radioButtons[i].setSelected(
-                        ((current == allowedOptVals.get(i)) ? true : false));
+                        current == allowedOptVals.get(i) ? true : false);
             } else {
                 radioButtons[i].setText("");
                 radioButtons[i].setSelected(false);
@@ -254,7 +254,7 @@ public class NGDRuleOptions extends JPanel implements NewGameDialog.NGDTabPane {
         subPanel.add(new JSeparator(), c.rcwh(16, 1, 2, 1, "lr"));
         subPanel.add(new JPanel(), c.rcwh(14, 1, 2, 1));
         for (int i = 0; i < radioButtons.length; i++) {
-            subPanel.add(radioButtons[i], c.rc((2 * (i + 1)), 2, "l"));
+            subPanel.add(radioButtons[i], c.rc(2 * (i + 1), 2, "l"));
         }
 
         final JPanel rightPanel = new JPanel();

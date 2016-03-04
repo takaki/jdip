@@ -308,14 +308,14 @@ public class MetadataDialog extends HeaderDialog {
             gmd.setGameURI(convertURI(gameURI.getText()));
 
             gmd.setJudgeName(
-                    (judgeName.getText().isEmpty()) ? null : judgeName
+                    judgeName.getText().isEmpty() ? null : judgeName
                             .getText());
 
             gmd.setModeratorName(
-                    (modName.getText().isEmpty()) ? null : modName
+                    modName.getText().isEmpty() ? null : modName
                             .getText());
             gmd.setModeratorEmail(
-                    (modEmail.getText().isEmpty()) ? null : modEmail
+                    modEmail.getText().isEmpty() ? null : modEmail
                             .getText());
             gmd.setModeratorURI(convertURI(modURI.getText()));
         }// write()
@@ -362,7 +362,7 @@ public class MetadataDialog extends HeaderDialog {
             add(makeScrollPane(notes), c.rcwh(12, 2, 7, 1, "lrtb"));
 
             for (int i = 0; i < email.length; i++) {
-                final int row = 2 + (i * 2);
+                final int row = 2 + i * 2;
                 add(new JLabel(
                         Utils.getLocalString(PDF_EMAIL) + " " + String
                                 .valueOf(i + 1)), c.rcwh(row, 6, 1, 1, "r"));
@@ -460,7 +460,7 @@ public class MetadataDialog extends HeaderDialog {
             for (int i = 1; i < tabCount; i++)    // no icon for 'game' info
             {
                 final Power power = world.getMap().getPower(tabPane.getTitleAt(i));
-                assert (power != null);
+                assert power != null;
                 final String colorName = mmd.getPowerColor(power);
                 final Color color = SVGColorParser.parseColor(colorName);
                 tabPane.setIconAt(i, new ColorRectIcon(12, 12, color));

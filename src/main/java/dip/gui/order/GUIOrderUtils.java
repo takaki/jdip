@@ -226,8 +226,8 @@ final class GUIOrderUtils {
 		}
 		*/
 
-        assert (!Float.isNaN(pt.x));
-        assert (!Float.isNaN(pt.y));
+        assert !Float.isNaN(pt.x);
+        assert !Float.isNaN(pt.y);
 
         //System.out.println("args: L: "+x1+","+y1+","+x2+","+y2+", C: "+x3+","+y3+","+r);
         //System.out.println("   result: "+pt);
@@ -301,8 +301,8 @@ final class GUIOrderUtils {
 		}
 		*/
 
-        assert (!Float.isNaN(pt.x));
-        assert (!Float.isNaN(pt.y));
+        assert !Float.isNaN(pt.x);
+        assert !Float.isNaN(pt.y);
 
         return pt;
     }// getLineCircleIntersectOuter()
@@ -495,7 +495,7 @@ final class GUIOrderUtils {
             return widths[widths.length - 1];
         }
 
-        return (support >= 0) ? widths[idx] : (widths[idx] * DPB_LINE_WIDTH);
+        return support >= 0 ? widths[idx] : widths[idx] * DPB_LINE_WIDTH;
     }// getLineWidth()
 
 
@@ -597,7 +597,7 @@ final class GUIOrderUtils {
      * Squares the given value
      */
     private static float square(final float v) {
-        return (v * v);
+        return v * v;
     }// square()
 
 

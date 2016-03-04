@@ -34,10 +34,10 @@ import java.awt.*;
  * default to AS_NEEDED.
  */
 public class XJScrollPane extends JScrollPane {
-    private final static int defaultHsbPolicy = ((Utils
-            .isOSX()) ? JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS : JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-    private final static int defaultVsbPolicy = ((Utils
-            .isOSX()) ? JScrollPane.VERTICAL_SCROLLBAR_ALWAYS : JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+    private final static int defaultHsbPolicy = Utils
+            .isOSX() ? JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS : JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED;
+    private final static int defaultVsbPolicy = Utils
+            .isOSX() ? JScrollPane.VERTICAL_SCROLLBAR_ALWAYS : JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED;
 
     /**
      * Create an XJScrollPane

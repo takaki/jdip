@@ -126,7 +126,7 @@ public class AssocJComboBox extends JComboBox {
         if (ao == null) {
             ao = getDefaultAO();
             if (ao == null) {
-                assert (getItemAt(0) != null);
+                assert getItemAt(0) != null;
                 ao = (AssociatedObj) getItemAt(0);
             }
         }

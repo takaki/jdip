@@ -105,7 +105,7 @@ public class Help {
     public static void enableDialogHelp(final JDialog dialog, final HelpID id) {
         checkInit();
         if (hk != null) {
-            final String sID = (id == null) ? null : id.toString();
+            final String sID = id == null ? null : id.toString();
             hk.helpBroker.enableHelpKey(dialog.getRootPane(), sID, hk.helpSet);
         }
     }// enableWindowHelp()
@@ -117,7 +117,7 @@ public class Help {
     public static void enableHelpOnButton(final AbstractButton button, final HelpID id) {
         checkInit();
         if (hk != null) {
-            final String sID = (id == null) ? null : id.toString();
+            final String sID = id == null ? null : id.toString();
             hk.helpBroker.enableHelpOnButton(button, sID, null);
         }
     }// enableHelpOnButton()

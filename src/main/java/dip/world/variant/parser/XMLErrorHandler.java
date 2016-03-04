@@ -27,6 +27,8 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
+import java.util.Objects;
+
 /**
  * A simple error handler for the XML parsers.
  * <p>
@@ -84,7 +86,7 @@ public final class XMLErrorHandler implements ErrorHandler {
         final StringBuffer sb = new StringBuffer(256);
         String systemId = e.getSystemId();
 
-        if (systemId != null) {
+        if (Objects.nonNull(systemId)) {
             final int index = systemId.lastIndexOf('/');
 
             if (index != -1) {

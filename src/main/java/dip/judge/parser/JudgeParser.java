@@ -240,7 +240,7 @@ public class JudgeParser {
 
                             if (i == 0) {
                                 names.add(tok);        // name is first token
-                            } else if (i == (nTok - 1)) {
+                            } else if (i == nTok - 1) {
                                 email.add(
                                         tok);        // email is the last token
                             }
@@ -372,7 +372,7 @@ public class JudgeParser {
             if (m_gs.lookingAt()) {
                 type = JP_TYPE_GAMESTART;
             }
-            if (m_sp.lookingAt() && (type == JP_TYPE_GAMESTART)) {
+            if (m_sp.lookingAt() && type == JP_TYPE_GAMESTART) {
                 phase = Phase.parse("Movement " + line
                         .substring(0, line.indexOf("."))).orElse(null);
                 break;

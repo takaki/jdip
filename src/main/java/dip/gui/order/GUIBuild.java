@@ -215,7 +215,7 @@ public class GUIBuild extends Build implements GUIOrder {
                     .getSupplyCenterOwner(location.getProvince()).orElse(null);
 
             // srcUnitType: already defined
-            assert (srcUnitType != null);
+            assert srcUnitType != null;
 
             sb.setLength(0);
             sb.append(Utils.getLocalString(GUIOrder.COMPLETE, getFullName()));
@@ -228,8 +228,8 @@ public class GUIBuild extends Build implements GUIOrder {
 
     @Override
     public boolean isComplete() {
-        assert (currentLocNum <= getNumRequiredLocations());
-        return (currentLocNum == getNumRequiredLocations());
+        assert currentLocNum <= getNumRequiredLocations();
+        return currentLocNum == getNumRequiredLocations();
     }// isComplete()
 
     @Override

@@ -165,7 +165,7 @@ public class MapPanel extends JPanel {
         final int colors = tk.getMaximumCursorColors();
 
         // determine if the platform supports custom cursors.
-        if (!d.equals(new Dimension(0, 0)) && (colors != 0)) {
+        if (!d.equals(new Dimension(0, 0)) && colors != 0) {
             ImageIcon ii = Utils
                     .getImageIcon("common/cursors/nodrop.gif");
             if (ii == null) {
@@ -674,8 +674,8 @@ public class MapPanel extends JPanel {
             maxZoom = tmp;
         }
 
-        svgCanvas.setMinimumScale(((double) minZoom / 100.0));
-        svgCanvas.setMaximumScale(((double) maxZoom / 100.0));
+        svgCanvas.setMinimumScale((double) minZoom / 100.0);
+        svgCanvas.setMaximumScale((double) maxZoom / 100.0);
     }// setScalingParameters()
 
 
@@ -1065,7 +1065,7 @@ public class MapPanel extends JPanel {
         }
 
         // reload the map
-        assert (turnState != null);
+        assert turnState != null;
         svgCanvas.resumeProcessing();
         isLoaded = false;
         isReloading = true;    // this activates some additional code

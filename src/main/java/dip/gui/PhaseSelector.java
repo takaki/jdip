@@ -184,8 +184,8 @@ public class PhaseSelector {
      * Update Next/Previous menu items
      */
     private void updateNextPrevious() {
-        menu.setEnabled(ClientMenu.HISTORY_PREVIOUS, (currentPos > 0));
-        menu.setEnabled(ClientMenu.HISTORY_NEXT, (currentPos < maxPos));
+        menu.setEnabled(ClientMenu.HISTORY_PREVIOUS, currentPos > 0);
+        menu.setEnabled(ClientMenu.HISTORY_NEXT, currentPos < maxPos);
     }// updateNextPrevious()
 
 

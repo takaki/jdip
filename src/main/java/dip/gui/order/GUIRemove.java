@@ -165,8 +165,8 @@ public class GUIRemove extends Remove implements GUIOrder {
 
     @Override
     public boolean isComplete() {
-        assert (currentLocNum <= getNumRequiredLocations());
-        return (currentLocNum == getNumRequiredLocations());
+        assert currentLocNum <= getNumRequiredLocations();
+        return currentLocNum == getNumRequiredLocations();
     }// isComplete()
 
     @Override

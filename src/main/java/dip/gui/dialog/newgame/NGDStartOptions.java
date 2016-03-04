@@ -150,8 +150,8 @@ public class NGDStartOptions extends JPanel implements NewGameDialog.NGDTabPane 
         String protoType = combos[0];
         for (String combo : combos) {
             phaseBox.addItem(combo);
-            protoType = (combo.length() > protoType
-                    .length()) ? combo : protoType;
+            protoType = combo.length() > protoType
+                    .length() ? combo : protoType;
         }
 
         phaseBox.setPrototypeDisplayValue(protoType + "M");

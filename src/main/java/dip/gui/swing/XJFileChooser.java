@@ -392,13 +392,13 @@ public class XJFileChooser {
 
         @Override
         public void setCurrentDirectory(final File file) {
-            selectedDir = (file.isDirectory()) ? file.toString() : file
+            selectedDir = file.isDirectory() ? file.toString() : file
                     .getPath().toString();
         }// setCurrentDirectory()
 
         @Override
         public void setSelectedFile(final File file) {
-            selectedFile = (file == null) ? null : file.getName();
+            selectedFile = file == null ? null : file.getName();
         }// setSelectedFile()
 
         @Override
@@ -439,8 +439,8 @@ public class XJFileChooser {
                 final File file = new File(fd.getDirectory(), fd.getFile());
 
                 // wfix filename if we can/should (adds appropriate extension if it is missing)
-                if (type == JFileChooser.SAVE_DIALOG && (fd
-                        .getFilenameFilter() instanceof SimpleFileFilter)) {
+                if (type == JFileChooser.SAVE_DIALOG && fd
+                        .getFilenameFilter() instanceof SimpleFileFilter) {
                     return fixFileExtension(
                             (SimpleFileFilter) fd.getFilenameFilter(), file);
                 } else {

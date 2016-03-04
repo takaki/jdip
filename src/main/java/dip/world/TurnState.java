@@ -244,7 +244,10 @@ public final class TurnState implements Serializable {
 
     /**
      * Returns if an order has failed, based on results. Note that
-     * this only applies once the turnstate has been resolved. If
+     * this  == null) {
+                throw new IllegalArgumentException(
+                        "CDATA in <style> node is null.");
+            }only applies once the turnstate has been resolved. If
      * the TurnState is not resolved, this will always return true.
      */
     public boolean isOrderSuccessful(final Orderable o) {

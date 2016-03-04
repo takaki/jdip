@@ -321,8 +321,8 @@ public class GUISupport extends Support implements GUIOrder {
 
     @Override
     public boolean isComplete() {
-        assert (currentLocNum <= getNumRequiredLocations());
-        return (currentLocNum == getNumRequiredLocations());
+        assert currentLocNum <= getNumRequiredLocations();
+        return currentLocNum == getNumRequiredLocations();
     }// isComplete()
 
     @Override
@@ -387,13 +387,13 @@ public class GUISupport extends Support implements GUIOrder {
         boolean found;
         if (isSupportingHold()) {
             // Support a hold
-            found = (GUIOrderUtils
-                    .findMatchingHold(mapInfo, supSrc.getProvince()) != null);
+            found = GUIOrderUtils
+                    .findMatchingHold(mapInfo, supSrc.getProvince()) != null;
         } else {
             // Support a move
-            found = (GUIOrderUtils
+            found = GUIOrderUtils
                     .findMatchingMove(mapInfo, supSrc.getProvince(),
-                            supDest.getProvince()) != null);
+                            supDest.getProvince()) != null;
         }
 
         if (group != null && dependentFound == found) {
@@ -544,8 +544,8 @@ public class GUISupport extends Support implements GUIOrder {
                             ptSupDest.x, ptSupDest.y, ptSupDest.x, ptSupDest.y,
                             moveRadius);
         } else {
-            final float moveRadius = (mmd.getOrderRadius(MapMetadata.EL_MOVE,
-                    mapInfo.getSymbolName(Unit.Type.ARMY)) / 2);
+            final float moveRadius = mmd.getOrderRadius(MapMetadata.EL_MOVE,
+                    mapInfo.getSymbolName(Unit.Type.ARMY)) / 2;
             newSupDest = GUIOrderUtils
                     .getLineCircleIntersection(ptSupSrc.x, ptSupSrc.y,
                             ptSupDest.x, ptSupDest.y, ptSupDest.x, ptSupDest.y,
@@ -606,7 +606,7 @@ public class GUISupport extends Support implements GUIOrder {
 
     private SVGElement[] drawSupportedHold(final MapInfo mapInfo, final float offset) {
         // setup
-        final SVGElement[] elements = new SVGElement[((dependentFound) ? 1 : 2)];
+        final SVGElement[] elements = new SVGElement[(dependentFound ? 1 : 2)];
 
         final MapMetadata mmd = mapInfo.getMapMetadata();
         final Point2D.Float ptSrc = mmd.getUnitPt(src.getProvince(), src.getCoast());

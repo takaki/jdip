@@ -520,7 +520,7 @@ public final class TestSuite {
         println("=====================");
         iter = unRezParadoxes.iterator();
         while (iter.hasNext()) {
-            println("   " + (iter.next()));
+            println("   " + iter.next());
         }
         println("   [total: ", unRezParadoxes.size(), "]");
 
@@ -819,7 +819,7 @@ public final class TestSuite {
         public UnitPos(final Position pos, final Province prov, final boolean isDislodged) {
             province = prov;
             this.isDislodged = isDislodged;
-            unit = (isDislodged) ? pos.getDislodgedUnit(prov).orElse(null) : pos
+            unit = isDislodged ? pos.getDislodgedUnit(prov).orElse(null) : pos
                     .getUnit(prov).orElse(null);
             if (unit == null) {
                 throw new IllegalArgumentException();
@@ -909,7 +909,7 @@ public final class TestSuite {
             }
 
             // set phase to template phase, if no phase was assigned.
-            phase = (phaseName == null) ? templateTurnState.getPhase() : phase;
+            phase = phaseName == null ? templateTurnState.getPhase() : phase;
 
             // setup current turnstate from template
             // use phase, if appropriate.
@@ -1385,9 +1385,9 @@ public final class TestSuite {
         int idx;
 
         if (idxSpace == -1 || idxTab == -1) {
-            idx = (idxSpace > idxTab) ? idxSpace : idxTab;        // return greater
+            idx = idxSpace > idxTab ? idxSpace : idxTab;        // return greater
         } else {
-            idx = (idxSpace < idxTab) ? idxSpace : idxTab;        // return lesser
+            idx = idxSpace < idxTab ? idxSpace : idxTab;        // return lesser
         }
 
         return in.substring(idx + 1);

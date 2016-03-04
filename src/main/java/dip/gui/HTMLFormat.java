@@ -366,7 +366,7 @@ public class HTMLFormat {
 
         while (start != -1) {
             String replace = "";
-            final int end = in.indexOf("@", (start + VAR_PREFIX.length()));
+            final int end = in.indexOf("@", start + VAR_PREFIX.length());
 
             if (end - start > 48) {
                 // probably not valid; skip

@@ -407,7 +407,7 @@ public class XJSVGCanvas extends JSVGCanvas {
      * Test for floating-point "equivalence"
      */
     private boolean isEquivalent(final double a, final double b) {
-        return (Math.abs(a - b) <= 0.0001);
+        return Math.abs(a - b) <= 0.0001;
     }// isEquivalent()
 
 

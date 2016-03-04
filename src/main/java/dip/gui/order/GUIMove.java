@@ -260,8 +260,8 @@ public class GUIMove extends Move implements GUIOrder {
 
     @Override
     public boolean isComplete() {
-        assert (currentLocNum <= getNumRequiredLocations());
-        return (currentLocNum == getNumRequiredLocations());
+        assert currentLocNum <= getNumRequiredLocations();
+        return currentLocNum == getNumRequiredLocations();
     }// isComplete()
 
     @Override
@@ -463,8 +463,8 @@ public class GUIMove extends Move implements GUIOrder {
             // GUIOrder could define the OrderMetadata class.
             //
         } else {
-            r = (mmd.getOrderRadius(MapMetadata.EL_MOVE,
-                    mapInfo.getSymbolName(Unit.Type.ARMY)) / 2);
+            r = mmd.getOrderRadius(MapMetadata.EL_MOVE,
+                    mapInfo.getSymbolName(Unit.Type.ARMY)) / 2;
         }
 
         newPtTo = GUIOrderUtils

@@ -223,7 +223,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
             if (resolvedTS != null && !isReviewingResolvedTS) {
                 isReviewingResolvedTS = true;
                 changeButton(enterOrders);
-                enterOrders.setEnabled((nextTS != null));
+                enterOrders.setEnabled(nextTS != null);
 
                 // we're in the fireTurnstateChanged() thread/event loop;
                 // fire this event outside, so that everyone can receive it.
@@ -316,7 +316,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
      * turn.
      */
     private void setSubmitEnabled() {
-        assert (turnState != null);
+        assert turnState != null;
 
         submit.setEnabled(false);
 
@@ -374,8 +374,8 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
      * Power that has not been eliminated or are inactive.
      */
     private void createTabs() {
-        assert (world != null);
-        assert (turnState != null);
+        assert world != null;
+        assert turnState != null;
 
         // disable tab events
         tabListener.setEnabled(false);
@@ -602,7 +602,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
             final Power[] powers = world.getMap().getPowers().toArray(new Power[0]);
             for (final Power power : powers) {
                 final boolean value = state.getSubmitted(power);
-                aSubmit = (value) ? true : aSubmit;
+                aSubmit = value ? true : aSubmit;
                 setTabEnabled(power, !value);
             }
 
@@ -632,7 +632,7 @@ public class F2FOrderDisplayPanel extends OrderDisplayPanel {
      * Saves the current state, if appropriate.
      */
     private void saveEntryState() {
-        assert (turnState != null);
+        assert turnState != null;
         if (turnState.isResolved()) {
             entryState.clearSubmitted();
             entryState.setCurrentPower(null);

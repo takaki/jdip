@@ -467,8 +467,8 @@ public class PersistenceManager {
 
             // Check if the results (if any) matched the current game,
             // otherwise diplay dialog and try again
-            while ((ji.getResult() == JudgeImport.JI_RESULT_TRYREWIND) || (ji
-                    .getResult() == JudgeImport.JI_RESULT_LOADOTHER)) {
+            while (ji.getResult() == JudgeImport.JI_RESULT_TRYREWIND || ji
+                    .getResult() == JudgeImport.JI_RESULT_LOADOTHER) {
                 final String gameInfo = ji.getGameInfo();
                 final Phase phase = Phase.parse(gameInfo).orElse(null);
 
@@ -656,13 +656,13 @@ public class PersistenceManager {
         // if no file is open, we shouldn't display a gamename/filename
         if (localWorld != null || clientFrame.getWorld() != null) {
             // use local world, if not, use clientFrame world
-            final World world = (localWorld != null) ? localWorld : clientFrame
+            final World world = localWorld != null ? localWorld : clientFrame
                     .getWorld();
 
             // get game name
             // game name is optional; doesn't have to be the same as the file name
             String gameName = world.getGameMetadata().getGameName();
-            gameName = (EMPTY.equals(gameName)) ? null : gameName;
+            gameName = EMPTY.equals(gameName) ? null : gameName;
             title.append(" - ");
 
             if (gameName != null) {
@@ -761,7 +761,7 @@ public class PersistenceManager {
         // the result returned corresponds to 0-2, as specified in dlgOptions.
         // of course, option 1 (a spacer) cannot be returned.
 
-        return (result == 0);
+        return result == 0;
     }
 
     private boolean loadDialog(final String gameInfo) {
@@ -782,7 +782,7 @@ public class PersistenceManager {
         // the result returned corresponds to 0-2, as specified in dlgOptions.
         // of course, option 1 (a spacer) cannot be returned.
 
-        return (result == 0);
+        return result == 0;
     }
 
     private void setChanged(final boolean value) {

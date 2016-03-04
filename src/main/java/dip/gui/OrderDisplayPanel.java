@@ -455,7 +455,7 @@ public class OrderDisplayPanel extends JPanel {
             clientFrame.fireStateModified();
         }
 
-        return ((!map.isEmpty()) ? map : null);
+        return !map.isEmpty() ? map : null;
     }// addOrdersRaw()
 
 
@@ -473,7 +473,7 @@ public class OrderDisplayPanel extends JPanel {
         }
 
         final boolean found = removeOrderFromTS(order);
-        assert (found);
+        assert found;
 
         if (undoable && found) {
             undoManager.addEdit(new UndoDeleteOrder(undoManager, order));
@@ -505,7 +505,7 @@ public class OrderDisplayPanel extends JPanel {
 
         for (final Orderable order : orders) {
             if (isOrderable(order)) {
-                assert (removeOrderFromTS(order));
+                assert removeOrderFromTS(order);
                 deletedOrderList.add(order);
                 count++;
             }
@@ -531,7 +531,7 @@ public class OrderDisplayPanel extends JPanel {
             orderList.clearSelection();
         }
 
-        return (count == orders.length);
+        return count == orders.length;
     }// removeOrders()
 
     /**
@@ -604,7 +604,7 @@ public class OrderDisplayPanel extends JPanel {
         // they should all be DisplayOrder objects.
         for (int i = 0; i < selected.length; i++) {
             selectedOrders[i] = ((DisplayOrder) selected[i]).getOrder();
-            assert (removeOrderFromTS(selectedOrders[i]));
+            assert removeOrderFromTS(selectedOrders[i]);
         }
 
         if (selectedOrders.length == 1) {
@@ -1123,7 +1123,7 @@ public class OrderDisplayPanel extends JPanel {
             // recreate the displayed power list from the turnstate, adding
             // only the 'allowed' powers.
             //
-            assert (turnState != null);
+            assert turnState != null;
 
             synchronized (list) {
                 list.clear();
@@ -1169,7 +1169,7 @@ public class OrderDisplayPanel extends JPanel {
          */
         public void activateMenu() {
             clientFrame.getClientMenu()
-                    .setEditItemsEnabled(((getSize() > 0) && isEditable));
+                    .setEditItemsEnabled(getSize() > 0 && isEditable);
         }// activateMenu()
 
 
@@ -1395,7 +1395,7 @@ public class OrderDisplayPanel extends JPanel {
         public final int compare(final Object o1, final Object o2) {
             final int result = compareDisplayOrders((DisplayOrder) o1,
                     (DisplayOrder) o2);
-            return ((isAscending) ? result : -result);
+            return isAscending ? result : -result;
         }// compare()
 
         /**
@@ -1449,7 +1449,7 @@ public class OrderDisplayPanel extends JPanel {
          * Determine if we are the same Comparator type
          */
         public boolean equals(final Object obj) {
-            return (obj instanceof DOSortPower);
+            return obj instanceof DOSortPower;
         }// equals()
 
         /**
@@ -1479,7 +1479,7 @@ public class OrderDisplayPanel extends JPanel {
          * Determine if we are the same Comparator type
          */
         public boolean equals(final Object obj) {
-            return (obj instanceof DOSortProvince);
+            return obj instanceof DOSortProvince;
         }// equals()
 
         /**
@@ -1511,7 +1511,7 @@ public class OrderDisplayPanel extends JPanel {
          * Determine if we are the same Comparator type
          */
         public boolean equals(final Object obj) {
-            return (obj instanceof DOSortUnit);
+            return obj instanceof DOSortUnit;
         }// equals()
 
         /**
@@ -1543,7 +1543,7 @@ public class OrderDisplayPanel extends JPanel {
          * Determine if we are the same Comparator type
          */
         public boolean equals(final Object obj) {
-            return (obj instanceof DOSortOrder);
+            return obj instanceof DOSortOrder;
         }// equals()
 
         /**

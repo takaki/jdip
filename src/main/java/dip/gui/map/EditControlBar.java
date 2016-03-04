@@ -323,7 +323,7 @@ public class EditControlBar extends ViewControlBar {
                     currentAction == CLICK_TO_REMOVE) {
                 if (hasUnit(loc.getProvince())) {
                     // get old unit
-                    final Unit oldUnit = (isDislodged()) ? position
+                    final Unit oldUnit = isDislodged() ? position
                             .getDislodgedUnit(province).orElse(null) : position
                             .getUnit(province).orElse(null);
 

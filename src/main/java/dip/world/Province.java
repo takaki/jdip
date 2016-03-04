@@ -158,10 +158,10 @@ public class Province implements Serializable, Comparable<Province> {
          */
         protected boolean validate(final Province p) {
             final boolean isDirectional = Coast.ANY_DIRECTIONAL.stream()
-                    .anyMatch(coast -> adjLoc.get(coast) != null);
+                    .anyMatch(adjLoc::containsKey);
 
-            final boolean isLand = adjLoc.get(Coast.LAND) != null;
-            final boolean isSingle = adjLoc.get(Coast.SINGLE) != null;
+            final boolean isLand = adjLoc.containsKey(Coast.LAND);
+            final boolean isSingle = adjLoc.containsKey(Coast.SINGLE);
 
             // covers cases (b) and (c)
             if (isDirectional && isSingle) {

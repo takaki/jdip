@@ -213,8 +213,8 @@ public class GUIMoveExplicit extends Move implements GUIOrder {
 
 
             // we now have to check for convoy-path acceptability.
-            assert (isConvoyableArmy);
-            assert (tmpConvoyPath != null);
+            assert isConvoyableArmy;
+            assert tmpConvoyPath != null;
             result.isConvoy = true;
 
             // the last location must be adjacent to this location. We use
@@ -285,7 +285,7 @@ public class GUIMoveExplicit extends Move implements GUIOrder {
      */
     private boolean testNonConvoyDest(final StateInfo stateInfo, final Location location,
                                       final StringBuffer sb) {
-        assert (currentLocNum == 1);
+        assert currentLocNum == 1;
 
         final Province province = location.getProvince();
 
@@ -370,10 +370,10 @@ public class GUIMoveExplicit extends Move implements GUIOrder {
 
                 // we're good to go. If this unit is a coastal army, it is
                 // considered "possibly convoyable". We may use this later.
-                isConvoyableArmy = (location.getProvince()
-                        .isCoastal() && Unit.Type.ARMY == srcUnitType);
+                isConvoyableArmy = location.getProvince()
+                        .isCoastal() && Unit.Type.ARMY == srcUnitType;
                 if (isConvoyableArmy) {
-                    assert (tmpConvoyPath == null);
+                    assert tmpConvoyPath == null;
                     tmpConvoyPath = new LinkedList();
                     tmpConvoyPath.add(getSource().getProvince());
                 }
@@ -397,7 +397,7 @@ public class GUIMoveExplicit extends Move implements GUIOrder {
                 // we are convoyed....
                 //
                 // add to tmp path
-                assert (isConvoyableArmy);
+                assert isConvoyableArmy;
                 tmpConvoyPath.add(location.getProvince());
                 currentLocNum++;
                 updateConvoyPath();

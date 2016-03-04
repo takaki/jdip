@@ -365,8 +365,8 @@ public class HeaderDialog extends XDialog {
         addToButtonPanel(leftMost);
         addToButtonPanel(makeSpacer(BTN_BAR_BETWEEN));
         addToButtonPanel(rightMost);
-        setDefaultButton((rightDefault) ? rightMost : leftMost);
-        setDefaultCloseButton((rightClose) ? rightMost : leftMost);
+        setDefaultButton(rightDefault ? rightMost : leftMost);
+        setDefaultCloseButton(rightClose ? rightMost : leftMost);
     }// addTwoButtons()
 
     /**
@@ -486,8 +486,8 @@ public class HeaderDialog extends XDialog {
         while (iter.hasNext()) {
             final JButton btn = (JButton) iter.next();
             final Dimension size = btn.getPreferredSize();
-            maxPref.width = (size.width > maxPref.width) ? size.width : maxPref.width;
-            maxPref.height = (size.height > maxPref.height) ? size.height : maxPref.height;
+            maxPref.width = size.width > maxPref.width ? size.width : maxPref.width;
+            maxPref.height = size.height > maxPref.height ? size.height : maxPref.height;
         }
 
         iter = btnList.iterator();

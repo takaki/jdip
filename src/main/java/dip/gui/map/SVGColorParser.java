@@ -118,7 +118,7 @@ public class SVGColorParser {
             final int index = hash % table.length;
 
             for (Entry e = table[index]; e != null; e = e.next) {
-                if ((e.hash == hash) && e.key.equals(key)) {
+                if (e.hash == hash && e.key.equals(key)) {
                     return e.value;
                 }
             }

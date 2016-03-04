@@ -110,7 +110,7 @@ public class ExportPreferencePanel extends PreferencePanel {
 
 
         // layout
-        final int[] h1 = {BORDER, 0, 5, 0, 1, 0, 1, 0, 1, 0, (BORDER * 2), 0, 5, 0, 1, 0, 1, 0, BORDER};
+        final int[] h1 = {BORDER, 0, 5, 0, 1, 0, 1, 0, 1, 0, BORDER * 2, 0, 5, 0, 1, 0, 1, 0, BORDER};
         final int[] w1 = {BORDER, INDENT, 0, 0, BORDER};
 
         final HIGLayout l1 = new HIGLayout(w1, h1);
@@ -191,9 +191,9 @@ public class ExportPreferencePanel extends PreferencePanel {
         final int bpp = prefs.getInt(NODE_PNG_BPP, 0);
 
         // check hints
-        w = (w < 0 || w > MAX_IMG_SIZE) ? 0 : w;
-        h = (h < 0 || h > MAX_IMG_SIZE) ? 0 : h;
-        q = (q < 0.0f || q > 1.0f) ? DEFAULT_JPG_QUALITY : q;
+        w = w < 0 || w > MAX_IMG_SIZE ? 0 : w;
+        h = h < 0 || h > MAX_IMG_SIZE ? 0 : h;
+        q = q < 0.0f || q > 1.0f ? DEFAULT_JPG_QUALITY : q;
 
         // jpg quality slider (0-100 int)
         jpgQuality = new JSlider(JSlider.HORIZONTAL, 0, 100, 100);
@@ -272,7 +272,7 @@ public class ExportPreferencePanel extends PreferencePanel {
         prefs.putInt(NODE_PNG_BPP,
                 ((Integer) pngBPP.getSelectedValue()).intValue());
         prefs.putFloat(NODE_EXPORT_JPG_QUALITY,
-                ((float) jpgQuality.getValue() / 100.0f));
+                (float) jpgQuality.getValue() / 100.0f);
 
         int w = 0;
         int h = 0;
@@ -332,9 +332,9 @@ public class ExportPreferencePanel extends PreferencePanel {
         final int bpp = prefs.getInt(NODE_PNG_BPP, 0);
 
         // check hints
-        w = (w < 0 || w > MAX_IMG_SIZE) ? 0 : w;
-        h = (h < 0 || h > MAX_IMG_SIZE) ? 0 : h;
-        q = (q < 0.0f || q > 1.0f) ? DEFAULT_JPG_QUALITY : q;
+        w = w < 0 || w > MAX_IMG_SIZE ? 0 : w;
+        h = h < 0 || h > MAX_IMG_SIZE ? 0 : h;
+        q = q < 0.0f || q > 1.0f ? DEFAULT_JPG_QUALITY : q;
 
         // add hints
         if (w != 0) {

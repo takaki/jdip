@@ -133,10 +133,10 @@ public class StateWriter {
      * StateWriter constructor
      */
     private StateWriter(final ClientFrame cf, final TurnState ts) {
-        assert (cf != null);
+        assert cf != null;
         turnState = ts;
         allPowers = ts.getWorld().getMap().getPowers();
-        displayablePowers = (cf == null) ? allPowers : Arrays
+        displayablePowers = cf == null ? allPowers : Arrays
                 .asList(cf.getDisplayablePowers());
         powerMap = getUnitsByPower();
         adjMap = Adjustment.getAdjustmentInfo(turnState,
@@ -473,8 +473,8 @@ public class StateWriter {
             }
 
             // blocked builds?
-            final int shouldBuild = (adjInfo.getSupplyCenterCount() - adjInfo
-                    .getUnitCount());
+            final int shouldBuild = adjInfo.getSupplyCenterCount() - adjInfo
+                    .getUnitCount();
             if (adjAmount >= 0 && shouldBuild > adjAmount) {
                 blockedBuildMessage = Utils
                         .getLocalString(ADJ_BLOCKED_BUILD_TEXT,

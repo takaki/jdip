@@ -342,47 +342,47 @@ public class TestParser {
 
         // validate extended parameters
         if (name.equals("move")) {
-            if (!valLocation(orp, (((Move) o).getDest()), toks[4],
+            if (!valLocation(orp, ((Move) o).getDest(), toks[4],
                     failedCases)) {
                 return;
             }
 
-            if (!valBoolean(orp, (((Move) o).isConvoying()), toks[5],
+            if (!valBoolean(orp, ((Move) o).isConvoying(), toks[5],
                     failedCases)) {
                 return;
             }
         } else if (name.equals("retreat")) {
-            if (!valLocation(orp, (((Retreat) o).getDest()), toks[4],
+            if (!valLocation(orp, ((Retreat) o).getDest(), toks[4],
                     failedCases)) {
                 return;
             }
         } else if (name.equals("support")) {
-            if (!valLocation(orp, (((Support) o).getSupportedSrc()), toks[4],
+            if (!valLocation(orp, ((Support) o).getSupportedSrc(), toks[4],
                     failedCases)) {
                 return;
             }
 
-            if (!valUnitType(orp, (((Support) o).getSupportedUnitType()),
+            if (!valUnitType(orp, ((Support) o).getSupportedUnitType(),
                     toks[5], failedCases)) {
                 return;
             }
 
-            if (!valLocation(orp, (((Support) o).getSupportedDest()), toks[6],
+            if (!valLocation(orp, ((Support) o).getSupportedDest(), toks[6],
                     failedCases)) {
                 return;
             }
         } else if (name.equals("convoy")) {
-            if (!valLocation(orp, (((Convoy) o).getConvoySrc()), toks[4],
+            if (!valLocation(orp, ((Convoy) o).getConvoySrc(), toks[4],
                     failedCases)) {
                 return;
             }
 
-            if (!valUnitType(orp, (((Convoy) o).getConvoyUnitType()), toks[5],
+            if (!valUnitType(orp, ((Convoy) o).getConvoyUnitType(), toks[5],
                     failedCases)) {
                 return;
             }
 
-            if (!valLocation(orp, (((Convoy) o).getConvoyDest()), toks[6],
+            if (!valLocation(orp, ((Convoy) o).getConvoyDest(), toks[6],
                     failedCases)) {
                 return;
             }
@@ -587,7 +587,7 @@ public class TestParser {
      * Setup the variant, using variantName, which shouldn't be null
      */
     private void setupVariant() {
-        assert (variantName != null);
+        assert variantName != null;
 
         // get default variant directory.
         File defaultVariantSearchDir = null;
@@ -650,9 +650,9 @@ public class TestParser {
      * for subsequent order processing.
      */
     private void setupPositions(final List<String> nonDislodged, final List<String> dislodged) {
-        assert (nonDislodged != null);
-        assert (dislodged != null);
-        assert (turnState != null);
+        assert nonDislodged != null;
+        assert dislodged != null;
+        assert turnState != null;
 
         final Position pos = turnState.getPosition();
 
@@ -925,7 +925,7 @@ public class TestParser {
         }
 
         // shouldn't occur.
-        assert (false);
+        assert false;
         return null;
     }// parseDSOrder()
 

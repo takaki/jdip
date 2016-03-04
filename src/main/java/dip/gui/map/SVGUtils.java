@@ -261,7 +261,7 @@ public class SVGUtils {
     public static Map tagFinderSVG(final List<String> lookList, final Node root,
                                    final boolean anySVGElement) {
         final List<String> list = new ArrayList<>(lookList);
-        final Map map = new HashMap((4 * lookList.size()) / 3);
+        final Map map = new HashMap(4 * lookList.size() / 3);
 
         // recursively walk tree from root
         nodeWalker(root, list, map, anySVGElement);
@@ -318,9 +318,9 @@ public class SVGUtils {
      */
     private static void nodeWalker(final Node node, final List<String> list, final Map map,
                                    final boolean anySVGElement) {
-        if (node.getNodeType() == Node.ELEMENT_NODE && ((anySVGElement && node instanceof org.w3c.dom.svg.SVGElement) || (node
+        if (node.getNodeType() == Node.ELEMENT_NODE && (anySVGElement && node instanceof SVGElement || node
                 .getNodeName() == SVGConstants.SVG_G_TAG || node
-                .getNodeName() == SVGConstants.SVG_SYMBOL_TAG))) {
+                .getNodeName() == SVGConstants.SVG_SYMBOL_TAG)) {
             // check if the element has an ID attribute
             if (node.hasAttributes()) {
                 final NamedNodeMap attributes = node.getAttributes();
