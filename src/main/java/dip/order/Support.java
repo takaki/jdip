@@ -262,11 +262,11 @@ public class Support extends Order {
         sb.append(' ');
         sb.append(supUnitType.getFullName());
         sb.append(' ');
-        supSrc.appendFull(sb);
+        sb.append(supSrc.getFull());
 
         if (!isSupportingHold()) {
             sb.append(" -> ");
-            supDest.appendFull(sb);
+            sb.append(supDest.getFull());
         }
 
         return sb.toString();

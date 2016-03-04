@@ -105,7 +105,7 @@ public class Build extends Order {
         final StringBuffer sb = new StringBuffer(
                 String.format("%s: %s %s ", power, orderNameFull,
                         srcUnitType.getFullName()));
-        src.appendFull(sb);
+        sb.append(src.getFull());
 
         return sb.toString();
     }// toFullString()

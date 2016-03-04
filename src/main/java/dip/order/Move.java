@@ -331,7 +331,7 @@ public class Move extends Order {
         } else {
             appendFull(sb);
             sb.append(" -> ");
-            dest.appendFull(sb);
+            sb.append(dest.getFull());
 
             if (_isViaConvoy) {
                 sb.append(" by convoy");

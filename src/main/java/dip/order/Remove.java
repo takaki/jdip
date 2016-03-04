@@ -102,7 +102,7 @@ public class Remove extends Order {
         sb.append(' ');
         sb.append(srcUnitType.getFullName());
         sb.append(' ');
-        src.appendFull(sb);
+        sb.append(src.getFull());
 
         return sb.toString();
     }// toFullString()
