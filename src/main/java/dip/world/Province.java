@@ -454,9 +454,8 @@ public class Province implements Serializable, Comparable<Province> {
     public Optional<Border> getTransit(final Location fromLoc, final Type unit,
                                        final Phase phase,
                                        final Class<?> orderClass) {
-        return borders != null ? borders.stream().filter(border -> !border
-                .canTransit(fromLoc, unit, phase, orderClass))
-                .findFirst() : Optional.empty();
+        return borders.stream().filter(border -> !border
+                .canTransit(fromLoc, unit, phase, orderClass)).findFirst();
     }// getTransit()
 
     /**
@@ -474,10 +473,10 @@ public class Province implements Serializable, Comparable<Province> {
      * if there are more than one, which is not recommended.
      */
     public int getBaseMoveModifier(final Location fromLoc) {
-        return borders != null ? borders.stream()
+        return borders.stream()
                 .map(border -> border.getBaseMoveModifier(fromLoc))
                 .filter(baseMoveMod -> (baseMoveMod != 0)).findFirst()
-                .orElse(0) : 0;
+                .orElse(0);
     }// getBaseMoveModifier()
 
 
