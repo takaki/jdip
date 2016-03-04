@@ -35,9 +35,9 @@ import dip.world.Unit;
 import dip.world.Unit.Type;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * This is the base class for all Order objects.
@@ -208,45 +208,43 @@ public abstract class Order extends Object implements Orderable, Serializable {
      */
     protected final void addSupportsOfAndMovesToSource(
             final Adjudicator adjudicator) {
-        final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
-        List<OrderState> depMTS = null;
-        List<OrderState> depSup = null;
+        final OrderState thisOS = adjudicator.findOrderStateBySrc(src);
 
         final List<OrderState> orderStates = adjudicator.getOrderStates();
-        for (final OrderState dependentOS : orderStates) {
-            final Orderable order = dependentOS.getOrder();
+        final List<OrderState> depSup = orderStates.stream()
+                .filter(dependentOS -> {
+                    final Orderable order = dependentOS.getOrder();
+                    if (order != this) {// always exclude self
+                        if (order instanceof Support) {
+                            final Support support = (Support) order;
 
-            if (order != this) {// always exclude self
-                if (order instanceof Move && ((Move) order).getDest()
-                        .isProvinceEqual(getSource())) {
-                    if (depMTS == null) {
-                        depMTS = new ArrayList<>(5);
-                    }
-                    depMTS.add(dependentOS);
-                } else if (order instanceof Support) {
-                    final Support support = (Support) order;
-
-                    // if we don't check for hold-type support (Support.isSupportingHold() == true)
-                    // we will accidentally add move-supports! (bad)
-                    if (support.isSupportingHold() && support.getSupportedSrc()
-                            .isProvinceEqual(getSource())) {
-                        if (depSup == null) {
-                            depSup = new ArrayList<>(5);
+                            // if we don't check for hold-type support (Support.isSupportingHold() == true)
+                            // we will accidentally add move-supports! (bad)
+                            if (support.isSupportingHold() && support
+                                    .getSupportedSrc().isProvinceEqual(src)) {
+                                return true;
+                            }
                         }
-                        depSup.add(dependentOS);
                     }
-                }
-            }
-        }
+                    return false;
+                }).collect(Collectors.toList());
+
+        final List<OrderState> depMTS = orderStates.stream()
+                .filter(dependentOS -> {
+                    final Orderable order = dependentOS.getOrder();
+
+                    if (order != this) {// always exclude self
+                        if (order instanceof Move && ((Move) order).getDest()
+                                .isProvinceEqual(src)) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }).collect(Collectors.toList());
 
         // set supports / endangering moves in OrderState
-        if (depMTS != null) {
-            thisOS.setDependentMovesToSource(depMTS);
-        }
-
-        if (depSup != null) {
-            thisOS.setDependentSupports(depSup);
-        }
+        thisOS.setDependentMovesToSource(depMTS);
+        thisOS.setDependentSupports(depSup);
     }// addSupportsOfAndMovesToSource()
 
 
