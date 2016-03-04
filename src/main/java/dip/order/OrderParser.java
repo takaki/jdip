@@ -282,7 +282,8 @@ public class OrderParser {
         // with shorter version.
         // NOTE: this may be overkill, especially since it won't replace
         // *partial* province names, like "North-atl"
-        map.replaceProvinceNames(sb);
+
+        sb.replace(0, sb.length(), map.replaceProvinceNames(sb.toString()));
 
         // filter out power names [required at beginning to filter out power names
         // with odd characters such as hyphens]. Excludes first token.
@@ -325,7 +326,7 @@ public class OrderParser {
         delChars(sb, TODELETE);
 
         // re-replace, after conversion
-        map.replaceProvinceNames(sb);
+        sb.replace(0, sb.length(), map.replaceProvinceNames(sb.toString()));
 
         // filter out power names; often occurs in 'support' orders.
         // could also appear in a convoy order as well

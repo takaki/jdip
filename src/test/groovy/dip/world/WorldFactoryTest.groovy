@@ -77,15 +77,10 @@ class WorldFactoryTest extends Specification {
 
         map.parseLocation("stp/nc").get().getCoast() == Coast.NORTH
 
-        def mossb = new StringBuffer("moscow")
-        map.replaceProvinceNames(mossb)
-        mossb.toString() == "moscow"
-        def bla0sb = new StringBuffer("black sea")
-        map.replaceProvinceNames(bla0sb)
-        bla0sb.toString() == "bla"
-        def blasb = new StringBuffer("Black Sea")
-        map.replaceProvinceNames(blasb)
-        blasb.toString() == "Black Sea"
+        map.replaceProvinceNames("moscow") == "moscow"
+        map.replaceProvinceNames("black sea") == "bla"
+        map.replaceProvinceNames("black sea english channel") == "bla eng"
+        map.replaceProvinceNames("aa Black Sea aa") == "aa Black Sea aa"
 
         def frasb = new StringBuffer("france france england italy")
         map.filterPowerNames(frasb)

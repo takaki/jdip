@@ -439,21 +439,12 @@ public final class WorldMap implements Serializable {
      * <p>
      * This is a special-purpose method for Order parsing.
      */
-    public void replaceProvinceNames(final StringBuffer sb) {
+    public String replaceProvinceNames(final String sb) {
         // create the whitespace list, if it doesn't exist.
         // search & replace.
-        for (final String currentName : wsNames) {
-            int idx = 0;
-            int start = sb.indexOf(currentName, idx);
-
-            while (start != -1) {
-                final int end = start + currentName.length();
-                sb.replace(start, end, getProvince(currentName).getShortName());
-                // repeat search
-                idx = start + currentName.length();
-                start = sb.indexOf(currentName, idx);
-            }
-        }
+        return wsNames.stream().reduce(sb, (s, wsname) -> s
+                        .replaceAll(wsname, getProvince(wsname).getShortName()),
+                (a, b) -> b);
     }// replaceProvinceNames()
 
 
