@@ -197,7 +197,7 @@ public class Location implements Cloneable {
     @Override
     public String toString() {
         final StringBuffer sb = new StringBuffer(8);
-        appendBrief(sb);
+        sb.append(getBrief());
         return sb.toString();
     }// toString()
 
@@ -214,12 +214,9 @@ public class Location implements Cloneable {
     /**
      * Append the brief Location name to the StringBuffer (e.g., spa/sc)
      */
-    public void appendBrief(final StringBuffer sb) {
-        sb.append(province.getShortName());
-        if (coast.isDirectional()) {
-            sb.append('/');
-            sb.append(coast.getAbbreviation());
-        }
+    public String getBrief() {
+        return coast.isDirectional() ? province.getShortName() + "/" + coast
+                .getAbbreviation() : province.getShortName();
     }// appendBrief()
 
 

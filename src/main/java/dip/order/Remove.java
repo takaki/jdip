@@ -86,7 +86,7 @@ public class Remove extends Order {
         sb.append(' ');
         sb.append(srcUnitType.getShortName());
         sb.append(' ');
-        src.appendBrief(sb);
+        sb.append(src.getBrief());
 
         return sb.toString();
     }// toBriefString()

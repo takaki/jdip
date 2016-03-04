@@ -157,9 +157,9 @@ public class Convoy extends Order {
         sb.append(' ');
         sb.append(convoyUnitType.getShortName());
         sb.append(' ');
-        convoySrc.appendBrief(sb);
+        sb.append(convoySrc.getBrief());
         sb.append('-');
-        convoyDest.appendBrief(sb);
+        sb.append(convoyDest.getBrief());
 
         return sb.toString();
     }// toBriefString()

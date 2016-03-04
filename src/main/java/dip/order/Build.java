@@ -94,7 +94,7 @@ public class Build extends Order {
         final StringBuffer sb = new StringBuffer(
                 String.format("%s: %s %s ", power, orderNameBrief,
                         srcUnitType.getShortName()));
-        src.appendBrief(sb);
+        sb.append(src.getBrief());
 
         return sb.toString();
     }// toBriefString()

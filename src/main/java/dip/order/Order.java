@@ -391,7 +391,7 @@ public abstract class Order extends Object implements Orderable, Serializable {
         sb.append(": ");
         sb.append(srcUnitType.getShortName());
         sb.append(' ');
-        src.appendBrief(sb);
+        sb.append(src.getBrief());
     }// appendBrief()
 
 

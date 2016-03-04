@@ -84,7 +84,7 @@ public class Waive extends Order {
         sb.append(": ");
         sb.append(orderNameBrief);
         sb.append(" build in ");
-        src.appendBrief(sb);
+        sb.append(src.getBrief());
 
         return sb.toString();
     }// toBriefString()

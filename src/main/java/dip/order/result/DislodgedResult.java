@@ -203,7 +203,7 @@ public class DislodgedResult extends OrderResult {
         } else {
             for (final Location retreatLocation : retreatLocations) {
                 sb.append(' ');
-                retreatLocation.appendBrief(sb);
+                sb.append(retreatLocation.getBrief());
             }
         }
 
