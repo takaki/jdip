@@ -260,13 +260,13 @@ public class MapPanel extends JPanel {
         Log.printTimed(startTime, "MapPanel() constructor start.");
 
         this.clientFrame = clientFrame;
-        this.statusBar = clientFrame.getStatusBar();
+        statusBar = clientFrame.getStatusBar();
 
-        this.setMinimumSize(new Dimension(10, 10));
+        setMinimumSize(new Dimension(10, 10));
 
         // bottomPanel: holds control bar / any other components
         bottomPanel = new JPanel(new BorderLayout());
-        this.add(bottomPanel, BorderLayout.SOUTH);
+        add(bottomPanel, BorderLayout.SOUTH);
 
         // add components to frame that do not depend upon GVT
         statusBarUtils = new StatusBarUtils(this, clientFrame.getStatusBar());

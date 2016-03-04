@@ -92,7 +92,7 @@ public class Retreat extends Move {
     public boolean equals(final Object obj) {
         if (obj instanceof Retreat) {
             final Retreat retreat = (Retreat) obj;
-            if (super.equals(retreat) && this.dest.equals(retreat.dest)) {
+            if (super.equals(retreat) && dest.equals(retreat.dest)) {
                 return true;
             }
         }
@@ -124,8 +124,7 @@ public class Retreat extends Move {
 
             // validate Borders
             Border border = src.getProvince()
-                    .getTransit(src, srcUnitType, state.getPhase(),
-                            this.getClass()).orElse(null);
+                    .getTransit(src, srcUnitType, state.getPhase(), getClass()).orElse(null);
             if (border != null) {
                 throw new OrderException(
                         Utils.getLocalString(ORD_VAL_BORDER, src.getProvince(),
@@ -139,8 +138,7 @@ public class Retreat extends Move {
 
             // check that we can transit into destination (check borders)
             border = dest.getProvince()
-                    .getTransit(dest, srcUnitType, state.getPhase(),
-                            this.getClass()).orElse(null);
+                    .getTransit(dest, srcUnitType, state.getPhase(), getClass()).orElse(null);
             if (border != null) {
                 throw new OrderException(
                         Utils.getLocalString(ORD_VAL_BORDER, src.getProvince(),
@@ -174,8 +172,8 @@ public class Retreat extends Move {
     @Override
     public void determineDependencies(final Adjudicator adjudicator) {
         // add moves to destination space, and supports of this space
-        final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
-        List<OrderState> depMTDest = new ArrayList<>(4);
+
+        final List<OrderState> depMTDest = new ArrayList<>(4);
 
         final List<OrderState> orderStates = adjudicator.getOrderStates();
         for (final OrderState dependentOS : orderStates) {
@@ -184,13 +182,14 @@ public class Retreat extends Move {
             if (order instanceof Retreat && order != this) {
                 final Retreat retreat = (Retreat) order;
 
-                if (retreat.getDest().isProvinceEqual(this.getDest())) {
+                if (retreat.getDest().isProvinceEqual(getDest())) {
                     depMTDest.add(dependentOS);
                 }
             }
         }
 
         // set dependent moves to destination
+        final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
         thisOS.setDependentMovesToDestination(depMTDest);
     }// determineDependencies()
 

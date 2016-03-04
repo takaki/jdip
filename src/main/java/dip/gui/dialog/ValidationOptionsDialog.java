@@ -106,7 +106,7 @@ public class ValidationOptionsDialog extends HeaderDialog {
                                     final ValidationOptions oldOptions) {
         super(parent, Utils.getLocalString(DIALOG_TITLE), true);
         this.parent = parent;
-        this.oldOpts = (oldOptions == null) ? (new ValidationOptions()) : oldOptions;
+        oldOpts = (oldOptions == null) ? (new ValidationOptions()) : oldOptions;
 
         // clone old options into new validation options.
         try {

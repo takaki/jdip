@@ -216,7 +216,7 @@ public class TextViewer extends HeaderDialog {
                         // this is the standard cop-out that always works.
                         if (text == null) {
                             text = doc.getText(selStart, selEnd - selStart);
-                            text = TextViewer.this.filterExportedText(text);
+                            text = filterExportedText(text);
                         }
 
                         final StringSelection contents = new StringSelection(text);

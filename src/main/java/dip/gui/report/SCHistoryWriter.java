@@ -99,13 +99,13 @@ public class SCHistoryWriter {
      * StateWriter constructor
      */
     private SCHistoryWriter(final ClientFrame cf, final World w, final boolean inColor) {
-        this.world = w;
-        this.allPowers = w.getMap().getPowers().toArray(new Power[0]);
+        world = w;
+        allPowers = w.getMap().getPowers().toArray(new Power[0]);
 
         if (inColor && cf.getMapPanel() != null) {
-            this.mmd = cf.getMapPanel().getMapMetadata();
+            mmd = cf.getMapPanel().getMapMetadata();
         } else {
-            this.mmd = null;
+            mmd = null;
         }
 
         // find all provinces w/supply centers
@@ -131,7 +131,7 @@ public class SCHistoryWriter {
             }
         });
 
-        this.scProvs = (Province[]) scList.toArray(new Province[scList.size()]);
+        scProvs = (Province[]) scList.toArray(new Province[scList.size()]);
     }// SCHistoryWriter()
 
 

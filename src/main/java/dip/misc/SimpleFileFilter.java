@@ -106,8 +106,8 @@ public class SimpleFileFilter extends FileFilter implements FilenameFilter {
                     "extension must not start with a '.'");
         }
 
-        this.ext = extension;
-        this.dottedExt = '.' + extension.toLowerCase();
+        ext = extension;
+        dottedExt = '.' + extension.toLowerCase();
         this.description = description;
     }// SimpleFileFilter()
 

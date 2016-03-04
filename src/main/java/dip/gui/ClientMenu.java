@@ -211,12 +211,12 @@ public class ClientMenu {
             String text = Utils.getLocalStringNoEx(name + "_mnemonic");
             if (text != null) {
                 final KeyStroke ks = KeyStroke.getKeyStroke(text);
-                this.mnemonic = ks.getKeyCode();
+                mnemonic = ks.getKeyCode();
             }
 
             text = Utils.getLocalStringNoEx(name + "_accelerator");
             if (text != null) {
-                this.accelerator = KeyStroke.getKeyStroke(text);
+                accelerator = KeyStroke.getKeyStroke(text);
                 if (Utils.isOSX()) {
                     // substitute COMMAND for CTRL modifier.
                     //
@@ -229,7 +229,7 @@ public class ClientMenu {
             }
 
             text = Utils.getLocalStringNoEx(name + "_icon");
-            this.icon = (text == null) ? blank : Utils.getIcon(text);
+            icon = (text == null) ? blank : Utils.getIcon(text);
         }// Item()
 
         /**
@@ -279,7 +279,7 @@ public class ClientMenu {
 
     // constructor
     public ClientMenu(final ClientFrame parent) {
-        this.clientFrame = parent;
+        clientFrame = parent;
 
         // create menu bar
         menuBar = new JMenuBar();

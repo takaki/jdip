@@ -143,7 +143,7 @@ public class DislodgedParser {
      */
     public DislodgedParser(final Phase phase, final String input) throws IOException {
         this.phase = phase;
-        this.inputText = input;
+        inputText = input;
         parseInput(input);
     }// DislodgedParser()
 

@@ -41,8 +41,8 @@ public class ColorRectIcon implements Icon {
      * Create a ColorRect
      */
     public ColorRectIcon(final int height, final int width, final Color color) {
-        this.h = height;
-        this.w = width;
+        h = height;
+        w = width;
         this.color = color;
     }// ColorRectIcon()
 

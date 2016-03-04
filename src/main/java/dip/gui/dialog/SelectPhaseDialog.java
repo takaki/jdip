@@ -122,7 +122,7 @@ public class SelectPhaseDialog extends HeaderDialog {
 
         public ListRow(final Phase phase, final int n) {
             this.phase = phase;
-            this.num = n;
+            num = n;
         }// ListRow()
 
         public Phase getPhase() {

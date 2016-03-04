@@ -146,7 +146,7 @@ public class DMR2RenderCommandFactory extends RenderCommandFactory {
             public void execute() {
                 Log.println("DMR2RCF::createRCRenderProvinceForced(): ",
                         province);
-                final DefaultMapRenderer2 dmr2 = (DefaultMapRenderer2) this.mr;
+                final DefaultMapRenderer2 dmr2 = (DefaultMapRenderer2) mr;
                 dmr2.unsyncUpdateProvince(province, true);
             }// execute()
         };
@@ -162,7 +162,7 @@ public class DMR2RenderCommandFactory extends RenderCommandFactory {
             @Override
             public void execute() {
                 Log.println("DMR2RCF::createRCUpdateSC(): ", province);
-                final DefaultMapRenderer2 dmr2 = (DefaultMapRenderer2) this.mr;
+                final DefaultMapRenderer2 dmr2 = (DefaultMapRenderer2) mr;
                 dmr2.unsyncUpdateSC(province);
             }// execute()
         };

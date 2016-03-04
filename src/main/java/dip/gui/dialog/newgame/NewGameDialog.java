@@ -145,7 +145,7 @@ public class NewGameDialog extends HeaderDialog {
      */
     private NewGameDialog(final ClientFrame parent) {
         super(parent, Utils.getLocalString(TITLE), true);
-        this.clientFrame = parent;
+        clientFrame = parent;
 
         // create tab pane
         tabPane = new JTabbedPane(JTabbedPane.TOP);

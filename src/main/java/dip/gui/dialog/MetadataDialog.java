@@ -109,7 +109,7 @@ public class MetadataDialog extends HeaderDialog {
      */
     private MetadataDialog(final ClientFrame parent) {
         super(parent, Utils.getLocalString(TITLE), true);
-        this.clientFrame = parent;
+        clientFrame = parent;
 
         mmd = clientFrame.getMapMetadata();
         if (mmd == null) {
@@ -238,47 +238,47 @@ public class MetadataDialog extends HeaderDialog {
 
             final HIGLayout layout = new HIGLayout(w1, h1);
             layout.setColumnWeight(8, 1);
-            this.setLayout(layout);
+            setLayout(layout);
 
             final HIGConstraints c = new HIGConstraints();
 
-            this.add(new JLabel(Utils.getLocalString(GDF_GAME_NAME)),
+            add(new JLabel(Utils.getLocalString(GDF_GAME_NAME)),
                     c.rcwh(2, 3, 1, 1, "r"));
-            this.add(gameName, c.rcwh(2, 5, 1, 1, "lr"));
+            add(gameName, c.rcwh(2, 5, 1, 1, "lr"));
 
 
-            this.add(new JLabel(Utils.getLocalString(GDF_NOTES)),
+            add(new JLabel(Utils.getLocalString(GDF_NOTES)),
                     c.rcwh(4, 8, 1, 1, "l"));
-            this.add(makeScrollPane(notes), c.rcwh(6, 8, 1, 14, "lrtb"));
+            add(makeScrollPane(notes), c.rcwh(6, 8, 1, 14, "lrtb"));
 
-            this.add(new JLabel(Utils.getLocalString(GDF_COMMENT)),
+            add(new JLabel(Utils.getLocalString(GDF_COMMENT)),
                     c.rcwh(6, 3, 1, 1, "r"));
-            this.add(comment, c.rcwh(6, 5, 1, 1, "lr"));
+            add(comment, c.rcwh(6, 5, 1, 1, "lr"));
 
-            this.add(new JLabel(Utils.getLocalString(GDF_GAME_URI)),
+            add(new JLabel(Utils.getLocalString(GDF_GAME_URI)),
                     c.rcwh(8, 3, 1, 1, "r"));
-            this.add(gameURI, c.rcwh(8, 5, 1, 1, "lr"));
+            add(gameURI, c.rcwh(8, 5, 1, 1, "lr"));
 
-            this.add(new JLabel(Utils.getLocalString(GDF_GAME_ID)),
+            add(new JLabel(Utils.getLocalString(GDF_GAME_ID)),
                     c.rcwh(10, 3, 1, 1, "r"));
-            this.add(gameID, c.rcwh(10, 5, 1, 1, "lr"));
+            add(gameID, c.rcwh(10, 5, 1, 1, "lr"));
 
-            this.add(new JLabel(Utils.getLocalString(GDF_JUDGE_NAME)),
+            add(new JLabel(Utils.getLocalString(GDF_JUDGE_NAME)),
                     c.rcwh(12, 3, 1, 1, "r"));
-            this.add(judgeName, c.rcwh(12, 5, 1, 1, "lr"));
+            add(judgeName, c.rcwh(12, 5, 1, 1, "lr"));
 
 
-            this.add(new JLabel(Utils.getLocalString(GDF_MOD_NAME)),
+            add(new JLabel(Utils.getLocalString(GDF_MOD_NAME)),
                     c.rcwh(14, 3, 1, 1, "r"));
-            this.add(modName, c.rcwh(14, 5, 1, 1, "lr"));
+            add(modName, c.rcwh(14, 5, 1, 1, "lr"));
 
-            this.add(new JLabel(Utils.getLocalString(GDF_MOD_EMAIL)),
+            add(new JLabel(Utils.getLocalString(GDF_MOD_EMAIL)),
                     c.rcwh(16, 3, 1, 1, "r"));
-            this.add(modEmail, c.rcwh(16, 5, 1, 1, "lr"));
+            add(modEmail, c.rcwh(16, 5, 1, 1, "lr"));
 
-            this.add(new JLabel(Utils.getLocalString(GDF_MOD_URI)),
+            add(new JLabel(Utils.getLocalString(GDF_MOD_URI)),
                     c.rcwh(18, 3, 1, 1, "r"));
-            this.add(modURI, c.rcwh(18, 5, 1, 1, "lr"));
+            add(modURI, c.rcwh(18, 5, 1, 1, "lr"));
         }// GamePanel()
 
         /**
@@ -345,28 +345,28 @@ public class MetadataDialog extends HeaderDialog {
             final HIGLayout layout = new HIGLayout(w1, h1);
             layout.setColumnWeight(5, 1);
             layout.setRowWeight(12, 1);
-            this.setLayout(layout);
+            setLayout(layout);
 
             final HIGConstraints c = new HIGConstraints();
 
-            this.add(new JLabel(Utils.getLocalString(PDF_NAME)),
+            add(new JLabel(Utils.getLocalString(PDF_NAME)),
                     c.rcwh(2, 2, 1, 1, "r"));
-            this.add(name, c.rcwh(2, 4, 1, 1, "l"));
+            add(name, c.rcwh(2, 4, 1, 1, "l"));
 
-            this.add(new JLabel(Utils.getLocalString(PDF_URI)),
+            add(new JLabel(Utils.getLocalString(PDF_URI)),
                     c.rcwh(4, 2, 1, 1, "r"));
-            this.add(uri, c.rcwh(4, 4, 1, 1, "l"));
+            add(uri, c.rcwh(4, 4, 1, 1, "l"));
 
-            this.add(new JLabel(Utils.getLocalString(PDF_NOTES)),
+            add(new JLabel(Utils.getLocalString(PDF_NOTES)),
                     c.rcwh(10, 2, 1, 1, "l"));
-            this.add(makeScrollPane(notes), c.rcwh(12, 2, 7, 1, "lrtb"));
+            add(makeScrollPane(notes), c.rcwh(12, 2, 7, 1, "lrtb"));
 
             for (int i = 0; i < email.length; i++) {
                 final int row = 2 + (i * 2);
-                this.add(new JLabel(
+                add(new JLabel(
                         Utils.getLocalString(PDF_EMAIL) + " " + String
                                 .valueOf(i + 1)), c.rcwh(row, 6, 1, 1, "r"));
-                this.add(email[i], c.rcwh(row, 8, 1, 1, "l"));
+                add(email[i], c.rcwh(row, 8, 1, 1, "l"));
             }
         }// PlayerPanel()
 

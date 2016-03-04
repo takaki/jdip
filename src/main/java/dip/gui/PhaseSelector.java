@@ -51,8 +51,8 @@ public class PhaseSelector {
      */
     public PhaseSelector(final ClientFrame parent) {
         this.parent = parent;
-        this.menu = parent.getClientMenu();
-        this.pcl = new PhasePCL();
+        menu = parent.getClientMenu();
+        pcl = new PhasePCL();
         parent.addPropertyChangeListener(pcl);
     }// PhaseSelector()
 
@@ -87,7 +87,7 @@ public class PhaseSelector {
      * Go to the first (initial) phase.
      */
     public void first() {
-        this.currentTS = currentWorld.getInitialTurnState();
+        currentTS = currentWorld.getInitialTurnState();
         parent.fireTurnstateChanged(currentTS);
     }// previous()
 
@@ -95,7 +95,7 @@ public class PhaseSelector {
      * Go to the last phase.
      */
     public void last() {
-        this.currentTS = currentWorld.getLastTurnState();
+        currentTS = currentWorld.getLastTurnState();
         parent.fireTurnstateChanged(currentTS);
     }// previous()
 

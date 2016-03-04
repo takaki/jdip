@@ -66,7 +66,7 @@ public class XJTextField extends JTextField {
             public void replace(final DocumentFilter.FilterBypass fb, final int offset,
                                 final int length, final String text,
                                 final AttributeSet attr) throws BadLocationException {
-                if (!XJTextField.this.isUnicodeAware()) {
+                if (!isUnicodeAware()) {
                     fb.replace(offset, length, getFixedString(text), attr);
                 } else {
                     super.replace(fb, offset, length, text, attr);

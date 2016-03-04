@@ -752,7 +752,7 @@ public class ErrorDialog extends TextViewer {
 
             list = new LinkedList();
             this.t = t;
-            this.memoryLogData = Log.getMemoryBuffer();
+            memoryLogData = Log.getMemoryBuffer();
         }// BugInfo()
 
 

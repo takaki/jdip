@@ -84,7 +84,7 @@ public class VariantInfoWriter {
      * StateWriter constructor
      */
     private VariantInfoWriter(final World w) {
-        this.world = w;
+        world = w;
     }// VariantInfoWriter()
 
 

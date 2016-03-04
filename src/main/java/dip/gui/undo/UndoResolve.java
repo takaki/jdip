@@ -56,9 +56,9 @@ public class UndoResolve extends XAbstractUndoableEdit {
             throw new IllegalArgumentException();
         }
 
-        this.resolvedTS = resolved;
-        this.nextTS = next;        // this may be null (e.g., if game has been won)
-        this.resolvedTSResults = resolvedTS.getResultList();
+        resolvedTS = resolved;
+        nextTS = next;        // this may be null (e.g., if game has been won)
+        resolvedTSResults = resolvedTS.getResultList();
     }// UndoResolve
 
 

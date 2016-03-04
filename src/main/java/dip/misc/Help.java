@@ -193,7 +193,7 @@ public class Help {
             if (value == null) {
                 throw new IllegalArgumentException();
             }
-            this.id = value;
+            id = value;
         }// HelpID()
 
         public String toString() {

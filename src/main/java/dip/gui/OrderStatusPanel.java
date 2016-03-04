@@ -57,7 +57,7 @@ public class OrderStatusPanel extends XJPanel {
      * Creates an OrderStatusPanel object.
      */
     public OrderStatusPanel(final ClientFrame clientFrame) {
-        this.cf = clientFrame;
+        cf = clientFrame;
 
         // setup labels
         phase = new JLabel(EMPTY);

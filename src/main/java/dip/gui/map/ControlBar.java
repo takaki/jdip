@@ -51,7 +51,7 @@ public abstract class ControlBar extends JToolBar implements DOMUIEventHandler {
         // border doesn't look right when the scrollbar is in place.
         //setBorder(new EtchedBorder(EtchedBorder.LOWERED));
         setBorder(new LineBorder(getBackground().darker()));
-        this.mapPanel = mp;
+        mapPanel = mp;
     }// ControlBar()
 
 

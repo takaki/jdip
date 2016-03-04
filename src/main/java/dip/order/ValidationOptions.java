@@ -81,7 +81,7 @@ public class ValidationOptions implements Serializable, Cloneable {
     @Override
     public Object clone() throws CloneNotSupportedException {
         final ValidationOptions vopt = (ValidationOptions) super.clone();
-        vopt.map = (Hashtable<String, Object>) this.map.clone();
+        vopt.map = (Hashtable<String, Object>) map.clone();
         return vopt;
     }// clone()
 

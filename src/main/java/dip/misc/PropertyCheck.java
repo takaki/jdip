@@ -28,8 +28,8 @@ public class PropertyCheck {
 
 
     public PropertyCheck(final String[] args) throws IOException {
-        this.names = args;
-        this.props = new Properties[names.length];
+        names = args;
+        props = new Properties[names.length];
         for (int i = 0; i < props.length; i++) {
             props[i] = new Properties();
             props[i].load(

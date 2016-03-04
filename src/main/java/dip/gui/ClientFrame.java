@@ -912,7 +912,7 @@ public class ClientFrame extends JFrame {
             throw new IllegalArgumentException("bad mode constant");
         }
 
-        this.currentMode = newMode;
+        currentMode = newMode;
         firePropertyChange(EVT_MODE_CHANGED, null, newMode);
     }// fireChangeMode()
 
@@ -988,13 +988,13 @@ public class ClientFrame extends JFrame {
         public void processDroppedFiles(final File[] files) {
             for (File file : files) {
                 if (files.length >= 0) {
-                    final World world = ClientFrame.this.persistMan
-                            .acceptDrag(files[0], ClientFrame.this.getWorld());
+                    final World world = persistMan
+                            .acceptDrag(files[0], getWorld());
                     if (world != null) {
                         world.setGameSetup(new DefaultGUIGameSetup());
-                        ClientFrame.this.createWorld(world);
+                        createWorld(world);
                     }
-                    ClientFrame.this.persistMan.updateTitle();
+                    persistMan.updateTitle();
                 }
             }
         }// processDroppedFiles()
@@ -1029,7 +1029,7 @@ public class ClientFrame extends JFrame {
                     statusBar.setModeText(
                             Utils.getLocalString("ClientFrame.mode.review"));
 
-                    if (ClientFrame.this.getTurnState().isEnded()) {
+                    if (getTurnState().isEnded()) {
                         statusBar.setModeText(
                                 Utils.getLocalString("ClientFrame.mode.ended"));
                     }
@@ -1044,7 +1044,7 @@ public class ClientFrame extends JFrame {
                 }
             } else if (evtName == EVT_TURNSTATE_CHANGED) {
                 synchronized (ClientFrame.this) {
-                    ClientFrame.this.turnState = (TurnState) evt.getNewValue();
+                    turnState = (TurnState) evt.getNewValue();
 
                     if (turnState.isEnded() || turnState.isResolved()) {
                         fireChangeMode(MODE_REVIEW);
@@ -1054,17 +1054,17 @@ public class ClientFrame extends JFrame {
                 }
             } else if (evtName == EVT_DISPLAYABLE_POWERS_CHANGED) {
                 synchronized (ClientFrame.this) {
-                    ClientFrame.this.displayablePowers = (Power[]) evt
+                    displayablePowers = (Power[]) evt
                             .getNewValue();
                 }
             } else if (evtName == EVT_ORDERABLE_POWERS_CHANGED) {
                 synchronized (ClientFrame.this) {
-                    ClientFrame.this.orderablePowers = (Power[]) evt
+                    orderablePowers = (Power[]) evt
                             .getNewValue();
                 }
             } else if (evtName == EVT_MMD_READY) {
                 synchronized (ClientFrame.this) {
-                    ClientFrame.this.mapMetadata = (MapMetadata) evt
+                    mapMetadata = (MapMetadata) evt
                             .getNewValue();
                 }
             }

@@ -467,8 +467,8 @@ public class XJFileChooser {
         @Override
         public void approveSelection() {
             if (getDialogType() != JFileChooser.OPEN_DIALOG) {
-                final File selectedFile = fixFileExtension(this.getFileFilter(),
-                        this.getSelectedFile());
+                final File selectedFile = fixFileExtension(getFileFilter(),
+                        getSelectedFile());
                 if (selectedFile != null) {
                     if (selectedFile.exists()) {
                         final String message = Utils
@@ -495,15 +495,15 @@ public class XJFileChooser {
 
         @Override
         public void reset() {
-            this.setSelectedFile(new File(""));
-            this.resetChoosableFileFilters();
-            this.setMultiSelectionEnabled(false);
-            this.setCurrentDirectory(null);
+            setSelectedFile(new File(""));
+            resetChoosableFileFilters();
+            setMultiSelectionEnabled(false);
+            setCurrentDirectory(null);
         }// reset()
 
         @Override
         public void addFileFilter(final SimpleFileFilter filter) {
-            this.addChoosableFileFilter(filter);
+            addChoosableFileFilter(filter);
         }// addFileFilter()
 
         @Override
@@ -511,7 +511,7 @@ public class XJFileChooser {
             if (filter != null) {
                 super.setFileFilter(filter);
             } else {
-                super.setFileFilter(this.getAcceptAllFileFilter());
+                super.setFileFilter(getAcceptAllFileFilter());
             }
         }// setFileFilter()
 
@@ -536,24 +536,24 @@ public class XJFileChooser {
                 throw new IllegalArgumentException("invalid type");
             }
 
-            this.setDialogType(type);
+            setDialogType(type);
 
             if (acceptButtonText != null) {
-                this.setApproveButtonText(acceptButtonText);
+                setApproveButtonText(acceptButtonText);
             }
 
             if (title != null) {
-                this.setDialogTitle(title);
+                setDialogTitle(title);
             }
 
-            this.setFileSelectionMode(mode);
+            setFileSelectionMode(mode);
 
-            if (this.showDialog(parent, null) == JFileChooser.APPROVE_OPTION) {
-                if (this.getDialogType() != JFileChooser.OPEN_DIALOG) {
-                    return fixFileExtension(this.getFileFilter(),
-                            this.getSelectedFile());
+            if (showDialog(parent, null) == JFileChooser.APPROVE_OPTION) {
+                if (getDialogType() != JFileChooser.OPEN_DIALOG) {
+                    return fixFileExtension(getFileFilter(),
+                            getSelectedFile());
                 } else {
-                    return this.getSelectedFile();
+                    return getSelectedFile();
                 }
             }
 

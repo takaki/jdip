@@ -982,7 +982,7 @@ public class OrderDisplayPanel extends JPanel {
             }
 
             synchronized (this) {
-                this.comparator = comp;
+                comparator = comp;
             }
         }// setSortComparator()
 
@@ -1003,7 +1003,7 @@ public class OrderDisplayPanel extends JPanel {
                 if (comparator.equals(comp)) {
                     comparator.setAscending(!comparator.isAscending());
                 } else {
-                    this.comparator = comp;
+                    comparator = comp;
                 }
             }
 

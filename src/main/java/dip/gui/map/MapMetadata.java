@@ -1019,9 +1019,9 @@ public class MapMetadata {
 
             this.w = (String) tmp[0];
             this.h = (String) tmp[1];
-            this.r = (String) tmp[2];
-            this.rFloat = ((Float) tmp[3]).floatValue();
-            this.units = (String) tmp[4];
+            r = (String) tmp[2];
+            rFloat = ((Float) tmp[3]).floatValue();
+            units = (String) tmp[4];
         }// SymbolSize()
 
         /**

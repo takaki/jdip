@@ -112,7 +112,7 @@ public class BCSpinner extends JSpinner {
                         "Bad min/max values; cannot be 0");
             }
 
-            this.value = initialYear;
+            value = initialYear;
             this.minimum = minimum;
             this.maximum = maximum;
         }// SpinnerYearTypeModel()
@@ -126,7 +126,7 @@ public class BCSpinner extends JSpinner {
                 throw new IllegalArgumentException("invalid min value");
             }
 
-            this.minimum = min;
+            minimum = min;
             fireStateChanged();
         }// setMinimum()
 
@@ -138,7 +138,7 @@ public class BCSpinner extends JSpinner {
                 throw new IllegalArgumentException("invalid max value");
             }
 
-            this.maximum = max;
+            maximum = max;
             fireStateChanged();
         }// setMaximum()
 
@@ -213,7 +213,7 @@ public class BCSpinner extends JSpinner {
             // if legal, use it
             if (yt != null && yt.getYear() >= minimum && yt
                     .getYear() <= maximum) {
-                this.value = yt;
+                value = yt;
             }
 
             // update

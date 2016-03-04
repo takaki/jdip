@@ -139,7 +139,7 @@ public final class splash {
             win = new Window(frame);
 
             // get image
-            final ClassLoader classLoader = this.getClass().getClassLoader();
+            final ClassLoader classLoader = getClass().getClassLoader();
             img = win.getToolkit()
                     .createImage(classLoader.getResource(SPLASH_GRAPHIC));
 

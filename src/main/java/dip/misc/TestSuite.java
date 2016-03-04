@@ -807,9 +807,9 @@ public final class TestSuite {
          * Create a UnitPos
          */
         public UnitPos(final DefineState ds, final boolean isDislodged) {
-            this.unit = new Unit(ds.getPower(), ds.getSourceUnitType());
+            unit = new Unit(ds.getPower(), ds.getSourceUnitType());
             unit.setCoast(ds.getSource().getCoast());
-            this.province = ds.getSource().getProvince();
+            province = ds.getSource().getProvince();
             this.isDislodged = isDislodged;
         }// UnitPos()
 
@@ -817,11 +817,11 @@ public final class TestSuite {
          * Create a UnitPos
          */
         public UnitPos(final Position pos, final Province prov, final boolean isDislodged) {
-            this.province = prov;
+            province = prov;
             this.isDislodged = isDislodged;
-            this.unit = (isDislodged) ? pos.getDislodgedUnit(prov).orElse(null) : pos
+            unit = (isDislodged) ? pos.getDislodgedUnit(prov).orElse(null) : pos
                     .getUnit(prov).orElse(null);
-            if (this.unit == null) {
+            if (unit == null) {
                 throw new IllegalArgumentException();
             }
         }// UnitPos()
@@ -967,7 +967,7 @@ public final class TestSuite {
                     final Order order = parseOrder(line, currentTS, true);
                     temp.add(order);
                 }
-                this.preDislodged = (DefineState[]) temp
+                preDislodged = (DefineState[]) temp
                         .toArray(new DefineState[temp.size()]);
             }
 
@@ -980,7 +980,7 @@ public final class TestSuite {
                     final Order order = parseOrder(line, currentTS, true);
                     temp.add(order);
                 }
-                this.postDislodged = (DefineState[]) temp
+                postDislodged = (DefineState[]) temp
                         .toArray(new DefineState[temp.size()]);
             }
 
@@ -993,7 +993,7 @@ public final class TestSuite {
                     final Order order = parseOrder(line, currentTS, true);
                     temp.add(order);
                 }
-                this.supplySCOwners = (DefineState[]) temp
+                supplySCOwners = (DefineState[]) temp
                         .toArray(new DefineState[temp.size()]);
             }
 
@@ -1050,7 +1050,7 @@ public final class TestSuite {
                     temp.add(new OrderResult(order, ordResultType,
                             " (prestate)"));
                 }
-                this.results = (OrderResult[]) temp
+                results = (OrderResult[]) temp
                         .toArray(new OrderResult[temp.size()]);
 
                 // add results to previous turnstate

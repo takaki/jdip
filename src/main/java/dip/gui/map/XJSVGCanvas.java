@@ -289,7 +289,7 @@ public class XJSVGCanvas extends JSVGCanvas {
 
         @Override
         public boolean isXMLParserValidating() {
-            return XJSVGCanvas.this.isValidating;
+            return isValidating;
         }// isXMLParserValidating()
 
         /**
@@ -325,7 +325,7 @@ public class XJSVGCanvas extends JSVGCanvas {
          */
         private JFrame findParent() {
             // find parent frame, if possible
-            Component comp = XJSVGCanvas.this.getParent();
+            Component comp = getParent();
             while (comp != null) {
                 if (comp instanceof JFrame) {
                     return (JFrame) comp;

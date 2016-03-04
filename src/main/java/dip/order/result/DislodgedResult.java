@@ -57,10 +57,10 @@ public class DislodgedResult extends OrderResult {
             throw new IllegalArgumentException("null order");
         }
 
-        this.power = order.getPower();
+        power = order.getPower();
         this.message = message;
         this.order = order;
-        this.resultType = OrderResult.ResultType.DISLODGED;
+        resultType = OrderResult.ResultType.DISLODGED;
         this.retreatLocations = retreatLocations;
     }// DislodgedResult()
 

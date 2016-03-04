@@ -1067,7 +1067,7 @@ public class Utils {
             public void insertString(final DocumentFilter.FilterBypass fb, final int offset,
                                      final String text,
                                      final AttributeSet attr) throws BadLocationException {
-                this.replace(fb, offset, 0, text, attr);
+                replace(fb, offset, 0, text, attr);
             }// insertString()
 
             @Override
@@ -1128,7 +1128,7 @@ public class Utils {
             public void insertString(final DocumentFilter.FilterBypass fb, final int offset,
                                      final String text,
                                      final AttributeSet attr) throws BadLocationException {
-                this.replace(fb, offset, 0, text, attr);
+                replace(fb, offset, 0, text, attr);
             }// insertString()
 
             @Override

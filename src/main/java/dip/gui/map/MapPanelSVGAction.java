@@ -295,7 +295,7 @@ public class MapPanelSVGAction {
 
             this.mp = mp;
             this.simpleFileFilter = simpleFileFilter;
-            this.transcoder = t;
+            transcoder = t;
         }// ExportJPG()
 
         /**

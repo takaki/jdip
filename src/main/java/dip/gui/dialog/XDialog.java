@@ -169,7 +169,7 @@ public class XDialog extends JDialog {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(final WindowEvent e) {
-                XDialog.this.close();
+                close();
             }
         });
     }// dialogInit()
@@ -186,7 +186,7 @@ public class XDialog extends JDialog {
         final ActionListener actionListener = new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent actionEvent) {
-                XDialog.this.close();
+                close();
             }
         };
 

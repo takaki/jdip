@@ -262,9 +262,9 @@ public class NGDRuleOptions extends JPanel implements NewGameDialog.NGDTabPane {
         rightPanel.add(description, BorderLayout.NORTH);
         rightPanel.add(subPanel, BorderLayout.CENTER);
 
-        this.setLayout(new BorderLayout());
-        this.add(ruleListPanel, BorderLayout.WEST);
-        this.add(rightPanel, BorderLayout.CENTER);
+        setLayout(new BorderLayout());
+        add(ruleListPanel, BorderLayout.WEST);
+        add(rightPanel, BorderLayout.CENTER);
     }// makeLayout()
 
 

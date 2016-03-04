@@ -274,8 +274,8 @@ public class OrderStatsWriter {
                 throw new IllegalArgumentException();
             }
 
-            this.phase = ts.getPhase();
-            this.stats = new Stats[allPowers.length];
+            phase = ts.getPhase();
+            stats = new Stats[allPowers.length];
             collectStats(ts);
         }// MovePhaseTurnData()
 
@@ -401,7 +401,7 @@ public class OrderStatsWriter {
                 throw new IllegalArgumentException();
             }
 
-            this.power = p;
+            power = p;
         }// Stats()
 
         /**

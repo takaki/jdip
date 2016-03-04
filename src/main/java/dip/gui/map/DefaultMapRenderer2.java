@@ -205,7 +205,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      */
     public DefaultMapRenderer2(final MapPanel mp, final SymbolPack sp) throws MapException {
         super(mp);
-        this.symbolPack = sp;
+        symbolPack = sp;
         Log.printTimed(mapPanel.startTime, "DMR2 constructor start");
 
         // init variables
@@ -1526,12 +1526,12 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
 
         @Override
         public String getPowerCSS(final Power power) {
-            return DefaultMapRenderer2.this.getPowerName(power);
+            return getPowerName(power);
         }
 
         @Override
         public String getUnitCSS(final Power power) {
-            return DefaultMapRenderer2.this.getUnitCSSClass(power);
+            return getUnitCSSClass(power);
         }
 
         @Override

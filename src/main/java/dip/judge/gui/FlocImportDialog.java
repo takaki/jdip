@@ -91,7 +91,7 @@ public class FlocImportDialog extends HeaderDialog implements FlocImportCallback
      */
     private FlocImportDialog(final ClientFrame parent) {
         super(parent, Utils.getLocalString(TITLE), true);
-        this.clientFrame = parent;
+        clientFrame = parent;
 
         // get last judge used (unless empty; if so, ignore)
         final Preferences prefs = SharedPrefs.getUserNode();
@@ -262,7 +262,7 @@ public class FlocImportDialog extends HeaderDialog implements FlocImportCallback
      */
     @Override
     public void flocWorldImportComplete(final World w) {
-        this.world = w;
+        world = w;
         enableProgressBar(false);
         close(ACTION_CANCEL);
     }// flocImportComplete()

@@ -367,7 +367,7 @@ public class DisplayPreferencePanel extends PreferencePanel {
             }
 
             this.allowPlural = allowPlural;
-            this.allowParens = allowParentheses;
+            allowParens = allowParentheses;
 
             // create and add components
             bg = new ButtonGroup();

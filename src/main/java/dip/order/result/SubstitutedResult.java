@@ -54,9 +54,9 @@ public class SubstitutedResult extends OrderResult {
             this.message = message;
         }
 
-        this.order = oldOrder;
-        this.resultType = ResultType.SUBSTITUTED;
-        this.power = newOrder.getPower();
+        order = oldOrder;
+        resultType = ResultType.SUBSTITUTED;
+        power = newOrder.getPower();
         this.newOrder = newOrder;
     }// SubstitutedResult()
 

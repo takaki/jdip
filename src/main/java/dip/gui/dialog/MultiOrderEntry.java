@@ -97,7 +97,7 @@ public class MultiOrderEntry {
     private MultiOrderEntry(final ClientFrame parent, final World world) {
         this.parent = parent;
         this.world = world;
-        this.orderDisplayPanel = parent.getOrderDisplayPanel();
+        orderDisplayPanel = parent.getOrderDisplayPanel();
 
         tv = new TextViewer(parent, true);
         tv.setEditable(true);

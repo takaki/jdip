@@ -67,7 +67,7 @@ public class DOMUIEventListener implements EventListener {
      * Set the MapRenderer
      */
     public void setMapRenderer(final MapRenderer2 mr) {
-        this.mapRenderer = mr;
+        mapRenderer = mr;
     }// setMapRenderer()
 
     /**

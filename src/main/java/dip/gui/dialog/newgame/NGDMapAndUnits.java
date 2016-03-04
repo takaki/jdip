@@ -121,10 +121,10 @@ public class NGDMapAndUnits extends JPanel implements NewGameDialog.NGDTabPane {
 
         // main panel layout
         //
-        this.setLayout(new GridLayout(2, 1, 0, 15));
-        this.setBorder(new EmptyBorder(10, 10, 10, 10));
-        this.add(mapSelector);
-        this.add(symbolSelector);
+        setLayout(new GridLayout(2, 1, 0, 15));
+        setBorder(new EmptyBorder(10, 10, 10, 10));
+        add(mapSelector);
+        add(symbolSelector);
     }// makeLayout()
 
 
@@ -455,7 +455,7 @@ public class NGDMapAndUnits extends JPanel implements NewGameDialog.NGDTabPane {
             this.icon = icon;
             this.label = label;
             this.description = description;
-            this.reference = ref;
+            reference = ref;
         }// ListItem()
 
         /**
@@ -477,10 +477,10 @@ public class NGDMapAndUnits extends JPanel implements NewGameDialog.NGDTabPane {
                 }
             }
 
-            this.icon = ii;
-            this.label = sp.getName();
-            this.description = sp.getDescription();
-            this.reference = sp;
+            icon = ii;
+            label = sp.getName();
+            description = sp.getDescription();
+            reference = sp;
         }// ListItem()
 
         /**
@@ -502,10 +502,10 @@ public class NGDMapAndUnits extends JPanel implements NewGameDialog.NGDTabPane {
                 }
             }
 
-            this.icon = ii;
-            this.label = mg.getName();
-            this.description = mg.getDescription();
-            this.reference = mg;
+            icon = ii;
+            label = mg.getName();
+            description = mg.getDescription();
+            reference = mg;
         }// ListItem()
 
         /**
@@ -555,12 +555,12 @@ public class NGDMapAndUnits extends JPanel implements NewGameDialog.NGDTabPane {
 
         public GraphicJListCellRenderer() {
             super();
-            this.setIconTextGap(3);
-            this.setVerticalTextPosition(SwingConstants.BOTTOM);
-            this.setHorizontalTextPosition(SwingConstants.CENTER);
-            this.setHorizontalAlignment(SwingConstants.CENTER);
-            this.setVerticalAlignment(SwingConstants.CENTER);
-            this.setOpaque(true);
+            setIconTextGap(3);
+            setVerticalTextPosition(SwingConstants.BOTTOM);
+            setHorizontalTextPosition(SwingConstants.CENTER);
+            setHorizontalAlignment(SwingConstants.CENTER);
+            setVerticalAlignment(SwingConstants.CENTER);
+            setOpaque(true);
         }// GraphicJListCellRenderer()
 
 

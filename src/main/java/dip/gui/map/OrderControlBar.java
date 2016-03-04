@@ -645,7 +645,7 @@ public class OrderControlBar extends ViewControlBar {
             }
 
             bg.add(buttons[i]);
-            this.add(buttons[i]);
+            add(buttons[i]);
         }
     }
     // makeLayout()
