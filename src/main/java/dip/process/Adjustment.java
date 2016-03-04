@@ -270,18 +270,11 @@ public final class Adjustment {
         /**
          * mostly for debugging
          */
+        @Override
         public String toString() {
-            final StringBuffer sb = new StringBuffer(128);
-            sb.append("[AdjustmentInfo: units=");
-            sb.append(numUnits);
-            sb.append("; supplycenters=");
-            sb.append(numSC);
-            sb.append("; home supplycenters=");
-            sb.append(numHSC);
-            sb.append("; adjustment=");
-            sb.append(getAdjustmentAmount());
-            sb.append(']');
-            return sb.toString();
+            return String
+                    .format("[AdjustmentInfo: units=%d; supplycenters=%d; home supplycenters=%d; adjustment=%d]",
+                            numUnits, numSC, numHSC, getAdjustmentAmount());
         }// toString()
 
 
