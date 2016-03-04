@@ -276,45 +276,29 @@ public class Move extends Order {
 
     @Override
     public String toBriefString() {
-        final StringBuffer sb = new StringBuffer(64);
-
-        if (convoyRoutes != null) {
-            // print all explicit routes
-            sb.append(String.format("%s: %s %s", power,
-                    srcUnitType.getShortName(), convoyRoutes.stream()
-                            .map(path -> formatConvoyRoute(path, true, true))
-                            .collect(Collectors.joining(", "))));
-        } else {
-            sb.append(String.format("%s-%s", getBrief(), dest.getBrief()));
-
-            if (_isViaConvoy) {
-                sb.append(" by convoy");
-            }
-        }
-
-        return sb.toString();
+        // print all explicit routes
+        return convoyRoutes != null ? String
+                .format("%s: %s %s", power, srcUnitType.getShortName(),
+                        convoyRoutes.stream()
+                                .map(path -> formatConvoyRoute(path, true,
+                                        true))
+                                .collect(Collectors.joining(", "))) : String
+                .format("%s-%s%s", getBrief(), dest.getBrief(),
+                        _isViaConvoy ? " by convoy" : "");
     }// toBriefString()
 
 
     @Override
     public String toFullString() {
-        final StringBuffer sb = new StringBuffer(128);
-
-        if (convoyRoutes != null) {
-            // print all explicit routes
-            sb.append(String.format("%s: %s %s", power,
-                    srcUnitType.getFullName(), convoyRoutes.stream()
-                            .map(path -> formatConvoyRoute(path, false, true))
-                            .collect(Collectors.joining(", "))));
-        } else {
-            sb.append(String.format("%s -> %s", getFull(), dest.getFull()));
-
-            if (_isViaConvoy) {
-                sb.append(" by convoy");
-            }
-        }
-
-        return sb.toString();
+        return convoyRoutes != null ?
+                // print all explicit routes
+                String.format("%s: %s %s", power, srcUnitType.getFullName(),
+                        convoyRoutes.stream()
+                                .map(path -> formatConvoyRoute(path, false,
+                                        true))
+                                .collect(Collectors.joining(", "))) : String
+                .format("%s -> %s%s", getFull(), dest.getFull(),
+                        _isViaConvoy ? " by convoy" : "");
     }// toFullString()
 
 
