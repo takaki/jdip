@@ -47,6 +47,8 @@ import dip.world.Unit.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 
 /**
@@ -134,8 +136,8 @@ public class Move extends Order {
                    final Type srcUnitType, final Location dest,
                    final Province[] convoyRoute) {
         this(power, src, srcUnitType, dest, true);
-
-        if (convoyRoute == null || convoyRoute.length < 3) {
+        Objects.requireNonNull(convoyRoute);
+        if (convoyRoute.length < 3) {
             throw new IllegalArgumentException("bad or missing route");
         }
 
@@ -152,10 +154,7 @@ public class Move extends Order {
                    final Type srcUnitType, final Location dest,
                    final List<Province> routes) {
         this(power, src, srcUnitType, dest, true);
-
-        if (routes == null) {
-            throw new IllegalArgumentException("null routes");
-        }
+        Objects.requireNonNull(routes, "null routes");
 
         // TODO: we don't check the routes very strictly.
         convoyRoutes.add(routes.toArray(new Province[0]));
@@ -790,21 +789,25 @@ public class Move extends Order {
         // add moves to destination space, and supports of this space
         final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
 
-        final List<OrderState> depMTDest = new ArrayList<>(5);
-        final List<OrderState> depSup = new ArrayList<>(5);
-        final List<OrderState> depSelfSup = new ArrayList<>(5);
 
         final List<OrderState> orderStates = adjudicator.getOrderStates();
-        for (final OrderState dependentOS : orderStates) {
-            final Orderable order = dependentOS.getOrder();
+        final List<OrderState> depMTDest = orderStates.stream()
+                .filter(dependentOS -> {
+                    final Orderable order = dependentOS.getOrder();
+                    if (order instanceof Move && order != this) {
+                        final Move move = (Move) order;
+                        // move to *destination* space (that are not this order)
+                        if (move.dest.isProvinceEqual(dest)) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }).collect(Collectors.toList());
 
+        orderStates.stream().filter(dependentOS -> {
+            final Orderable order = dependentOS.getOrder();
             if (order instanceof Move && order != this) {
                 final Move move = (Move) order;
-
-                // move to *destination* space (that are not this order)
-                if (move.dest.isProvinceEqual(dest)) {
-                    depMTDest.add(dependentOS);
-                }
 
                 // check if this is a head-to-head move
                 // note that isConvoying() may not yet be properly set, so the
@@ -815,21 +818,44 @@ public class Move extends Order {
                                 dest) && !_isConvoyIntent && !move._isConvoyIntent) {
                     Log.println("Head2Head possible between: ", this, ", ",
                             dependentOS.getOrder());
-                    thisOS.setHeadToHead(dependentOS);
-                }
-            } else if (order instanceof Support) {
-                final Support support = (Support) order;
-                if (support.getSupportedSrc()
-                        .isProvinceEqual(getSource()) && support
-                        .getSupportedDest().isProvinceEqual(dest)) {
-                    if (adjudicator.isSelfSupportedMove(dependentOS)) {
-                        depSelfSup.add(dependentOS);
-                    } else {
-                        depSup.add(dependentOS);
-                    }
+                    return true;
                 }
             }
-        }
+            return false;
+        }).forEach(thisOS::setHeadToHead);
+
+        final List<OrderState> depSelfSup = orderStates.stream()
+                .filter(dependentOS -> {
+                    final Orderable order = dependentOS.getOrder();
+                    if (order instanceof Support) {
+                        final Support support = (Support) order;
+                        if (support.getSupportedSrc()
+                                .isProvinceEqual(getSource()) && support
+                                .getSupportedDest().isProvinceEqual(dest)) {
+                            if (adjudicator.isSelfSupportedMove(dependentOS)) {
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+                }).collect(Collectors.toList());
+
+
+        final List<OrderState> depSup = orderStates.stream()
+                .filter(dependentOS -> {
+                    final Orderable order = dependentOS.getOrder();
+                    if (order instanceof Support) {
+                        final Support support = (Support) order;
+                        if (support.getSupportedSrc()
+                                .isProvinceEqual(getSource()) && support
+                                .getSupportedDest().isProvinceEqual(dest)) {
+                            if (!adjudicator.isSelfSupportedMove(dependentOS)) {
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+                }).collect(Collectors.toList());
 
         // set supports / competing moves in OrderState
         thisOS.setDependentMovesToDestination(depMTDest);
