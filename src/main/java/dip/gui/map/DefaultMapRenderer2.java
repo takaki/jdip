@@ -291,6 +291,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
         final RunnableQueue rq = getRunnableQueue();
         if (rq != null) {
             rq.invokeLater(new Runnable() {
+                @Override
                 public void run() {
                     synchronized (trackerMap) {
                         for (Province province : provinces) {
@@ -322,6 +323,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
     /**
      * Returns a DMR2RenderCommandFactory
      */
+    @Override
     public RenderCommandFactory getRenderCommandFactory() {
         return rcf;
     }// getRenderCommandFactory()
@@ -333,6 +335,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      * WARNING: render events must not be processed after or
      * during a call to this method.
      */
+    @Override
     public void close() {
         // super cleanup
         super.close();
@@ -375,6 +378,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
     /**
      * Gets the MapMetadata object
      */
+    @Override
     public MapMetadata getMapMetadata() {
         return mapMeta;
     }// getMapMetadata()
@@ -389,8 +393,10 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
     /**
      * Called when an order has been added to the order list
      */
+    @Override
     protected void orderCreated(final GUIOrder order) {
         execRenderCommand(new RenderCommand(this) {
+            @Override
             public void execute() {
                 Log.println("DMR2: orderCreated(): ", order);
 
@@ -407,8 +413,10 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
     /**
      * Called when an order has been deleted from the order list
      */
+    @Override
     protected void orderDeleted(final GUIOrder order) {
         execRenderCommand(new RenderCommand(this) {
+            @Override
             public void execute() {
                 Log.println("DMR2: orderDeleted(): ", order);
 
@@ -424,8 +432,10 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
     /**
      * Called when multiple orders have been added from the order list
      */
+    @Override
     protected void multipleOrdersCreated(final GUIOrder[] orders) {
         execRenderCommand(new RenderCommand(this) {
+            @Override
             public void execute() {
                 Log.println("DMR2: multipleOrdersCreated(): ", orders);
                 final MapInfo mapInfo = new DMRMapInfo(turnState);
@@ -445,8 +455,10 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
     /**
      * Called when multiple orders have been deleted from the order list
      */
+    @Override
     protected void multipleOrdersDeleted(final GUIOrder[] orders) {
         execRenderCommand(new RenderCommand(this) {
+            @Override
             public void execute() {
                 Log.println("DMR2: multipleOrdersDeleted(): ", orders);
                 final MapInfo mapInfo = new DMRMapInfo(turnState);
@@ -467,8 +479,10 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
     /**
      * Called when the displayable powers have changed
      */
+    @Override
     protected void displayablePowersChanged(final Power[] diplayPowers) {
         execRenderCommand(new RenderCommand(this) {
+            @Override
             public void execute() {
                 Log.println("DMR2: displayablePowersChanged()");
 
@@ -506,6 +520,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
     /**
      * Get a map rendering setting
      */
+    @Override
     public Object getRenderSetting(final Object key) {
         synchronized (renderSettings) {
             return renderSettings.get(key);
@@ -526,6 +541,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
     /**
      * Get the Symbol Name for the given unit type
      */
+    @Override
     public String getSymbolName(final Unit.Type unitType) {
         if (unitType == Unit.Type.ARMY) {
             return DefaultMapRenderer2.SYMBOL_ARMY;
@@ -543,6 +559,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
     /**
      * Gets the location that corresponds to a given string id<br>Assumes ID is lowercase!
      */
+    @Override
     public Location getLocation(final String id) {
         final Province province = worldMap.getProvince(id);
         if (province != null) {
@@ -562,6 +579,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
         final RunnableQueue rq = getRunnableQueue();
         if (rq != null) {
             rq.invokeLater(new Runnable() {
+                @Override
                 public void run() {
                     SVGGElement orderLayer = layerMap
                             .get(LAYER_ORDERS);
@@ -1501,26 +1519,32 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
             super(ts);
         }// DMRMapInfo()
 
+        @Override
         public MapMetadata getMapMetadata() {
             return mapMeta;
         }
 
+        @Override
         public String getPowerCSS(final Power power) {
             return DefaultMapRenderer2.this.getPowerName(power);
         }
 
+        @Override
         public String getUnitCSS(final Power power) {
             return DefaultMapRenderer2.this.getUnitCSSClass(power);
         }
 
+        @Override
         public String getSymbolName(final Unit.Type unitType) {
             return DefaultMapRenderer2.this.getSymbolName(unitType);
         }
 
+        @Override
         public SVGDocument getDocument() {
             return doc;
         }
 
+        @Override
         public Power[] getDisplayablePowers() {
             final Power[] powers = super.getDisplayablePowers();
             if (powers == null) {
@@ -1530,6 +1554,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
             return powers;
         }// getDisplayablePowers()
 
+        @Override
         public SVGGElement getPowerSVGGElement(final Power p, final int z) {
             return DefaultMapRenderer2.this.getPowerSVGGElement(p, z);
         }

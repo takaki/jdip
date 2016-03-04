@@ -43,6 +43,7 @@ public class F2FGUIGameSetup implements GUIGameSetup {
     /**
      * Setup the game.
      */
+    @Override
     public void setup(final ClientFrame cf, final World world) {
         // create right-panel components
         final F2FOrderDisplayPanel odp = new F2FOrderDisplayPanel(cf);
@@ -97,6 +98,7 @@ public class F2FGUIGameSetup implements GUIGameSetup {
     /**
      * Save the Current Power
      */
+    @Override
     public void save(final ClientFrame cf) {
         final F2FOrderDisplayPanel fodp = (F2FOrderDisplayPanel) cf
                 .getOrderDisplayPanel();

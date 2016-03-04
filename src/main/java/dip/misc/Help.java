@@ -55,6 +55,7 @@ public class Help {
      */
     public synchronized static void init() {
         loaderThread = new SwingWorker() {
+            @Override
             public Object construct() {
                 final long time = System.currentTimeMillis();
                 final HKeeper keeper = new HKeeper();

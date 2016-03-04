@@ -86,6 +86,7 @@ public class ViewControlBar extends ControlBar {
     /**
      * Called when the mouse pointer enters a province
      */
+    @Override
     public void mouseOver(final MouseEvent me, final Location loc) {
         if (loc == null) {
             mapPanel.statusBarUtils
@@ -98,6 +99,7 @@ public class ViewControlBar extends ControlBar {
     /**
      * Called when the mouse pointer leaves a province
      */
+    @Override
     public void mouseOut(final MouseEvent me, final Location loc) {
         mapPanel.statusBarUtils.clearText();
     }// mouseOut()
@@ -106,6 +108,7 @@ public class ViewControlBar extends ControlBar {
     /**
      * Handles ZoomIn / ZoomOut / Revert key functionality.
      */
+    @Override
     public void keyPressed(final DOMKeyEvent ke, final Location loc) {
         final int charCode = ke.getCharCode();    // note: getKeyCode() DOES NOT WORK
         if (charCode == keyZoomIn) {
@@ -129,6 +132,7 @@ public class ViewControlBar extends ControlBar {
         // for everything, and will never fail (famous last words)
         //
         fit = add(new AbstractAction() {
+            @Override
             public void actionPerformed(final ActionEvent evt) {
                 final JSVGCanvas canvas = mapPanel.getJSVGCanvas();
                 if (canvas != null)    // we are being very defensive

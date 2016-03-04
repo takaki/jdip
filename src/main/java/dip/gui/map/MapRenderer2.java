@@ -297,14 +297,17 @@ public abstract class MapRenderer2 {
      * Listener class for order updates and TurnState changes
      */
     private class CFPropertyListener extends AbstractCFPListener {
+        @Override
         public void actionOrderCreated(final Orderable order) {
             orderCreated((GUIOrder) order);
         }
 
+        @Override
         public void actionOrderDeleted(final Orderable order) {
             orderDeleted((GUIOrder) order);
         }
 
+        @Override
         public void actionOrdersCreated(final Orderable[] orders) {
             final GUIOrder[] guiOrders = new GUIOrder[orders.length];
             for (int i = 0; i < guiOrders.length; i++) {
@@ -314,6 +317,7 @@ public abstract class MapRenderer2 {
             multipleOrdersCreated(guiOrders);
         }
 
+        @Override
         public void actionOrdersDeleted(final Orderable[] orders) {
             final GUIOrder[] guiOrders = new GUIOrder[orders.length];
             for (int i = 0; i < guiOrders.length; i++) {
@@ -323,11 +327,13 @@ public abstract class MapRenderer2 {
             multipleOrdersDeleted(guiOrders);
         }
 
+        @Override
         public void actionDisplayablePowersChanged(final Power[] oldPowers,
                                                    final Power[] newPowers) {
             displayablePowersChanged(newPowers);
         }
 
+        @Override
         public void actionTurnstateChanged(final TurnState ts) {
             // OPTIMIZATION:
             // any pending queued events may be deleted, because

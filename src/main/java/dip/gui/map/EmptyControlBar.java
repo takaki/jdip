@@ -45,6 +45,7 @@ public class EmptyControlBar extends ControlBar {
         // we do this to make sure the JButton characteristics
         // are that of a toolbar button.
         final JButton fit = add(new AbstractAction() {
+            @Override
             public void actionPerformed(final ActionEvent evt) {
                 // nothing here!
             }

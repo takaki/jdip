@@ -101,6 +101,7 @@ public class GUIMove extends Move implements GUIOrder {
     /**
      * This only accepts Move orders. All others will throw an IllegalArgumentException.
      */
+    @Override
     public void deriveFrom(final Orderable order) {
         if (!(order instanceof Move)) {
             throw new IllegalArgumentException();
@@ -119,6 +120,7 @@ public class GUIMove extends Move implements GUIOrder {
         currentLocNum = REQ_LOC;
     }// GUIMove()
 
+    @Override
     public boolean testLocation(final StateInfo stateInfo, final Location location,
                                 final StringBuffer sb) {
         sb.setLength(0);
@@ -209,6 +211,7 @@ public class GUIMove extends Move implements GUIOrder {
     }// testLocation()
 
 
+    @Override
     public boolean clearLocations() {
         if (isComplete()) {
             return false;
@@ -227,6 +230,7 @@ public class GUIMove extends Move implements GUIOrder {
     }// clearLocations()
 
 
+    @Override
     public boolean setLocation(final StateInfo stateInfo, final Location location,
                                final StringBuffer sb) {
         if (testLocation(stateInfo, location, sb)) {
@@ -254,15 +258,18 @@ public class GUIMove extends Move implements GUIOrder {
         return false;
     }// setLocation()
 
+    @Override
     public boolean isComplete() {
         assert (currentLocNum <= getNumRequiredLocations());
         return (currentLocNum == getNumRequiredLocations());
     }// isComplete()
 
+    @Override
     public int getNumRequiredLocations() {
         return REQ_LOC;
     }
 
+    @Override
     public int getCurrentLocationNum() {
         return currentLocNum;
     }
@@ -271,6 +278,7 @@ public class GUIMove extends Move implements GUIOrder {
     /**
      * Sets optional Move parameters.
      */
+    @Override
     public void setParam(final Parameter param, final Object value) {
         if (param == BY_CONVOY) {
             if (value instanceof Boolean) {
@@ -287,6 +295,7 @@ public class GUIMove extends Move implements GUIOrder {
     /**
      * Get optional Move parameters.
      */
+    @Override
     public Object getParam(final Parameter param) {
         if (param == BY_CONVOY) {
             return Boolean.valueOf(isViaConvoy());
@@ -296,6 +305,7 @@ public class GUIMove extends Move implements GUIOrder {
     }// getParam()
 
 
+    @Override
     public void removeFromDOM(final MapInfo mapInfo) {
         if (group != null) {
             final SVGGElement powerGroup = mapInfo
@@ -310,6 +320,7 @@ public class GUIMove extends Move implements GUIOrder {
     /**
      * Draws a line with an arrow.
      */
+    @Override
     public void updateDOM(final MapInfo mapInfo) {
         // if we are not displayable, we exit, after remove the order (if
         // it was created)
@@ -608,6 +619,7 @@ public class GUIMove extends Move implements GUIOrder {
     /**
      * We are dependent on the presence of Support orders for certain drawing parameters.
      */
+    @Override
     public boolean isDependent() {
         return true;
     }

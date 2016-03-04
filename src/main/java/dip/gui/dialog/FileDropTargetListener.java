@@ -47,6 +47,7 @@ import java.util.Iterator;
  */
 public abstract class FileDropTargetListener extends DropTargetAdapter {
 
+    @Override
     public void drop(final DropTargetDropEvent dtde) {
         if (dtde.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
             try {

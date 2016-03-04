@@ -78,6 +78,7 @@ public class ConvoyPathResult extends OrderResult {
      * Creates an appropriate internationalized text message given the
      * convoy path.
      */
+    @Override
     public String getMessage(final OrderFormatOptions ofo) {
         /*
         arguments:

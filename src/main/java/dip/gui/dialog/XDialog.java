@@ -156,6 +156,7 @@ public class XDialog extends JDialog {
     /**
      * Dialog setup, including adding Window-Close listener
      */
+    @Override
     protected void dialogInit() {
         super.dialogInit();
 
@@ -166,6 +167,7 @@ public class XDialog extends JDialog {
         super.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
         addWindowListener(new WindowAdapter() {
+            @Override
             public void windowClosing(final WindowEvent e) {
                 XDialog.this.close();
             }
@@ -176,11 +178,13 @@ public class XDialog extends JDialog {
     /**
      * Adds the ESC key listener
      */
+    @Override
     protected JRootPane createRootPane() {
         final JRootPane rootPane = super.createRootPane();
 
         // install ESC key checking.
         final ActionListener actionListener = new ActionListener() {
+            @Override
             public void actionPerformed(final ActionEvent actionEvent) {
                 XDialog.this.close();
             }
@@ -198,6 +202,7 @@ public class XDialog extends JDialog {
     /**
      * Throws an IllegalArgumentException()
      */
+    @Override
     public void setDefaultCloseOperation(final int operation) {
         throw new IllegalArgumentException("override close() instead");
     }// setDefaultCloseOperation()
@@ -212,6 +217,7 @@ public class XDialog extends JDialog {
     }// setHelpID()
 
 
+    @Override
     public void dispose() {
         if (cfl != null) {
             ((JComponent) getParent()).removePropertyChangeListener(cfl);
@@ -232,10 +238,12 @@ public class XDialog extends JDialog {
         if (getParent() instanceof ClientFrame && !isModal()) {
             final ClientFrame cf = (ClientFrame) getParent();
             cf.addPropertyChangeListener(new AbstractCFPListener() {
+                @Override
                 public void actionWorldCreated(final World w) {
                     worldChanged();
                 }
 
+                @Override
                 public void actionWorldDestroyed(final World w) {
                     worldChanged();
                 }

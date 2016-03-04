@@ -55,12 +55,14 @@ public class XJTextField extends JTextField {
 
         final AbstractDocument doc = (AbstractDocument) getDocument();
         doc.setDocumentFilter(new DocumentFilter() {
+            @Override
             public void insertString(final DocumentFilter.FilterBypass fb, final int offset,
                                      final String text,
                                      final AttributeSet attr) throws BadLocationException {
                 replace(fb, offset, 0, text, attr);
             }// insertString()
 
+            @Override
             public void replace(final DocumentFilter.FilterBypass fb, final int offset,
                                 final int length, final String text,
                                 final AttributeSet attr) throws BadLocationException {
@@ -96,6 +98,7 @@ public class XJTextField extends JTextField {
         }
     }
 
+    @Override
     public void setFont(final Font f) {
         super.setFont(f);
         detectUnicode();

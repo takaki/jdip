@@ -178,6 +178,7 @@ public class OrderControlBar extends ViewControlBar {
      * @param loc current Location
      * @since me    mouseEvent (<b>may be null</b>)
      */
+    @Override
     public void mouseOver(final MouseEvent me, final Location loc) {
         lastLoc = loc;
 
@@ -262,6 +263,7 @@ public class OrderControlBar extends ViewControlBar {
      *
      * @param loc current Location
      */
+    @Override
     public void mouseOut(final MouseEvent me, final Location loc) {
         lastLoc = loc;
 
@@ -280,6 +282,7 @@ public class OrderControlBar extends ViewControlBar {
     /**
      * Dispatch mouse click events
      */
+    @Override
     public void mouseClicked(final MouseEvent me, final Location loc) {
         inDrag = false;
         dragLoc = null;
@@ -355,6 +358,7 @@ public class OrderControlBar extends ViewControlBar {
      * @param loc current Location
      * @param me  mouse event
      */
+    @Override
     public void mouseDown(final MouseEvent me, final Location loc) {
         if (loc != null) {
             inDrag = true;
@@ -392,6 +396,7 @@ public class OrderControlBar extends ViewControlBar {
      *
      * @param loc current Location
      */
+    @Override
     public void mouseUp(final MouseEvent me, final Location loc) {
         currentAction = defaultAction;
         if (inDrag) {
@@ -411,6 +416,7 @@ public class OrderControlBar extends ViewControlBar {
      * @param dke DOMKeyEvent
      * @param loc current mouse Location
      */
+    @Override
     public void keyPressed(final DOMKeyEvent dke, final Location loc) {
         super.keyPressed(dke, loc);
 
@@ -649,6 +655,7 @@ public class OrderControlBar extends ViewControlBar {
      * Listens for toggle events; sets which button is selected
      */
     private class ToggleListener implements ActionListener {
+        @Override
         public void actionPerformed(final ActionEvent e) {
             defaultAction = ((JToggleButton) e.getSource()).getActionCommand();
             currentAction = defaultAction;

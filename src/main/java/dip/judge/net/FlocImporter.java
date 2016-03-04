@@ -143,6 +143,7 @@ public class FlocImporter implements Runnable {
     /**
      * Do the work (import text)
      */
+    @Override
     public void run() {
         isInProgress = true;
 
@@ -208,6 +209,7 @@ public class FlocImporter implements Runnable {
 
             final ParserDelegator parser = new ParserDelegator();
             parser.parse(reader, new HTMLEditorKit.ParserCallback() {
+                @Override
                 public void handleText(final char[] text, final int pos) {
                     if (!isInProgress) {
                         gameInformation.setLength(0);    // abort!

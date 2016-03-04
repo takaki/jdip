@@ -97,6 +97,7 @@ public class NGDVariantSelect extends JPanel implements NewGameDialog.NGDTabPane
         variantList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         variantList.setPrototypeCellValue("MMMMMMMMMMMMMM");
         variantList.addListSelectionListener(new ListSelectionListener() {
+            @Override
             public void valueChanged(final ListSelectionEvent e) {
                 doVariantListSelection();
             }
@@ -236,6 +237,7 @@ public class NGDVariantSelect extends JPanel implements NewGameDialog.NGDTabPane
     /**
      * Get the tab name.
      */
+    @Override
     public String getTabName() {
         return Utils.getLocalString(TAB_NAME);
     }// getTabName()
@@ -243,6 +245,7 @@ public class NGDVariantSelect extends JPanel implements NewGameDialog.NGDTabPane
     /**
      * The Variant has Changed.
      */
+    @Override
     public void variantChanged(final Variant variant) {
         // DO NOTHING
     }// variantChanged()
@@ -250,6 +253,7 @@ public class NGDVariantSelect extends JPanel implements NewGameDialog.NGDTabPane
     /**
      * The Enabled status has Changed. We do nothing for this tab.
      */
+    @Override
     public void enablingChanged(final boolean enabled) {
         // DO NOTHING
     }// enablingChanged()

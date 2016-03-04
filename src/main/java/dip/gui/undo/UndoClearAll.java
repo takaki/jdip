@@ -39,16 +39,19 @@ public class UndoClearAll extends CompoundEdit implements java.io.Serializable {
         super();
     }// UndoClearAll()
 
+    @Override
     public String getPresentationName() {
         return Utils.getLocalString(PRESENTATION_NAME);
     }// getPresentationName()
 
+    @Override
     public String getRedoPresentationName() {
         return UIManager
                 .getString("AbstractUndoableEdit.redoText") + " " + Utils
                 .getLocalString(PRESENTATION_NAME);
     }// getRedoPresentationName()
 
+    @Override
     public String getUndoPresentationName() {
         return UIManager
                 .getString("AbstractUndoableEdit.undoText") + " " + Utils

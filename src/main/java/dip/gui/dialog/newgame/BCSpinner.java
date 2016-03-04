@@ -160,6 +160,7 @@ public class BCSpinner extends JSpinner {
         /**
          * Returns the next number in the sequence. Bounds-checks.
          */
+        @Override
         public Object getNextValue() {
             final YearType incremented = value.getNext();
             if (incremented.getYear() > maximum) {
@@ -173,6 +174,7 @@ public class BCSpinner extends JSpinner {
         /**
          * Returns the previous number in the sequence. Bounds-checks.
          */
+        @Override
         public Object getPreviousValue() {
             final YearType decremented = value.getPrevious();
             if (decremented.getYear() < minimum) {
@@ -185,6 +187,7 @@ public class BCSpinner extends JSpinner {
         /**
          * Returns the current value.
          */
+        @Override
         public Object getValue() {
             return value;
         }// getValue().
@@ -195,6 +198,7 @@ public class BCSpinner extends JSpinner {
          * is converted to a String and parsing is attempted.
          * If the value is not valid, the current value is used.
          */
+        @Override
         public void setValue(final Object newValue) {
             // separate by type
             YearType yt = null;

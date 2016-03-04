@@ -87,6 +87,7 @@ public class GUIBuild extends Build implements GUIOrder {
     /**
      * This only accepts Build orders. All others will throw an IllegalArgumentException.
      */
+    @Override
     public void deriveFrom(final Orderable order) {
         if (!(order instanceof Build)) {
             throw new IllegalArgumentException();
@@ -102,6 +103,7 @@ public class GUIBuild extends Build implements GUIOrder {
     }// deriveFrom()
 
 
+    @Override
     public boolean testLocation(final StateInfo stateInfo, final Location location,
                                 final StringBuffer sb) {
         sb.setLength(0);
@@ -187,6 +189,7 @@ public class GUIBuild extends Build implements GUIOrder {
     }// testLocation()
 
 
+    @Override
     public boolean clearLocations() {
         if (isComplete()) {
             return false;
@@ -201,6 +204,7 @@ public class GUIBuild extends Build implements GUIOrder {
     }// clearLocations()
 
 
+    @Override
     public boolean setLocation(final StateInfo stateInfo, final Location location,
                                final StringBuffer sb) {
         if (testLocation(stateInfo, location, sb)) {
@@ -222,15 +226,18 @@ public class GUIBuild extends Build implements GUIOrder {
     }// setLocation()
 
 
+    @Override
     public boolean isComplete() {
         assert (currentLocNum <= getNumRequiredLocations());
         return (currentLocNum == getNumRequiredLocations());
     }// isComplete()
 
+    @Override
     public int getNumRequiredLocations() {
         return REQ_LOC;
     }
 
+    @Override
     public int getCurrentLocationNum() {
         return currentLocNum;
     }
@@ -238,6 +245,7 @@ public class GUIBuild extends Build implements GUIOrder {
     /**
      * Used to set what type of Unit we are building. Value must be a Unit.Type
      */
+    @Override
     public void setParam(final Parameter param, final Object value) {
         if (param != BUILD_UNIT || !(value instanceof Unit.Type)) {
             throw new IllegalArgumentException();
@@ -250,6 +258,7 @@ public class GUIBuild extends Build implements GUIOrder {
     /**
      * Used to set what type of Unit we are building.
      */
+    @Override
     public Object getParam(final Parameter param) {
         if (param != BUILD_UNIT) {
             throw new IllegalArgumentException();
@@ -259,6 +268,7 @@ public class GUIBuild extends Build implements GUIOrder {
     }// getParam()
 
 
+    @Override
     public void removeFromDOM(final MapInfo mapInfo) {
         if (group != null) {
             final SVGGElement powerGroup = mapInfo
@@ -272,6 +282,7 @@ public class GUIBuild extends Build implements GUIOrder {
     /**
      * Places a unit in the desired area.
      */
+    @Override
     public void updateDOM(final MapInfo mapInfo) {
         // if we are not displayable, we exit, after remove the order (if
         // it was created)
@@ -367,6 +378,7 @@ public class GUIBuild extends Build implements GUIOrder {
     }// drawOrder()
 
 
+    @Override
     public boolean isDependent() {
         return false;
     }

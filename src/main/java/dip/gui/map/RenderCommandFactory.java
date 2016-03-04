@@ -96,6 +96,7 @@ public abstract class RenderCommandFactory {
          * returns immediately. Subclasses should subclass
          * execute instead of this method..
          */
+        @Override
         public final void run() {
             if (alive) {
                 // before executing, lock on turnstate, since

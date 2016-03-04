@@ -658,6 +658,7 @@ public class ClientMenu {
 
 
     private class RecentFileListener implements ActionListener {
+        @Override
         public void actionPerformed(final ActionEvent e) {
             final JMenuItem jmi = (JMenuItem) e.getSource();
             final File file = GeneralPreferencePanel
@@ -1048,6 +1049,7 @@ public class ClientMenu {
      * Order menu listener
      */
     private class OrderMenuListener implements ActionListener {
+        @Override
         public void actionPerformed(final ActionEvent e) {
             final JMenuItem jmi = (JMenuItem) e.getSource();
 
@@ -1077,11 +1079,13 @@ public class ClientMenu {
      * Mode Change Listener.
      */
     private class ModeListener extends AbstractCFPListener {
+        @Override
         public void actionWorldCreated(final World w) {
             final Power[] thePowers = w.getMap().getPowers().toArray(new Power[0]);
             updatePowers(thePowers);
         }// actionWorldCreated()
 
+        @Override
         public void actionModeChanged(final String mode) {
             if (mode == ClientFrame.MODE_NONE) {
                 setModeNone();
@@ -1156,6 +1160,7 @@ public class ClientMenu {
         /**
          * Call the target method
          */
+        @Override
         public void actionPerformed(final ActionEvent evt) {
             try {
                 targetMethod.invoke(target, null);

@@ -41,6 +41,7 @@ public class DefaultGUIGameSetup implements GUIGameSetup {
     /**
      * Setup the game.
      */
+    @Override
     public void setup(final ClientFrame cf, final World world) {
         // create right-panel components
         final OrderDisplayPanel odp = new OrderDisplayPanel(cf);
@@ -90,6 +91,7 @@ public class DefaultGUIGameSetup implements GUIGameSetup {
     /**
      * We do not need to save any data.
      */
+    @Override
     public void save(final ClientFrame cf) {
     }
 

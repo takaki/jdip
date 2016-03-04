@@ -95,6 +95,7 @@ public class GUISupport extends Support implements GUIOrder {
      * This only accepts Support orders.
      * All others will throw an IllegalArgumentException.
      */
+    @Override
     public void deriveFrom(final Orderable order) {
         if (!(order instanceof Support)) {
             throw new IllegalArgumentException();
@@ -116,6 +117,7 @@ public class GUISupport extends Support implements GUIOrder {
     }// deriveFrom()
 
 
+    @Override
     public boolean testLocation(final StateInfo stateInfo, final Location location,
                                 final StringBuffer sb) {
         sb.setLength(0);
@@ -252,6 +254,7 @@ public class GUISupport extends Support implements GUIOrder {
     }// testLocation()
 
 
+    @Override
     public boolean clearLocations() {
         if (isComplete()) {
             return false;
@@ -270,6 +273,7 @@ public class GUISupport extends Support implements GUIOrder {
     }// clearLocations()
 
 
+    @Override
     public boolean setLocation(final StateInfo stateInfo, final Location location,
                                final StringBuffer sb) {
         if (isComplete()) {
@@ -315,15 +319,18 @@ public class GUISupport extends Support implements GUIOrder {
         return false;
     }// setLocation()
 
+    @Override
     public boolean isComplete() {
         assert (currentLocNum <= getNumRequiredLocations());
         return (currentLocNum == getNumRequiredLocations());
     }// isComplete()
 
+    @Override
     public int getNumRequiredLocations() {
         return REQ_LOC;
     }
 
+    @Override
     public int getCurrentLocationNum() {
         return currentLocNum;
     }
@@ -332,6 +339,7 @@ public class GUISupport extends Support implements GUIOrder {
     /**
      * Always throws an IllegalArgumentException
      */
+    @Override
     public void setParam(final Parameter param, final Object value) {
         throw new IllegalArgumentException();
     }
@@ -339,11 +347,13 @@ public class GUISupport extends Support implements GUIOrder {
     /**
      * Always throws an IllegalArgumentException
      */
+    @Override
     public Object getParam(final Parameter param) {
         throw new IllegalArgumentException();
     }
 
 
+    @Override
     public void removeFromDOM(final MapInfo mapInfo) {
         if (group != null) {
             final SVGGElement powerGroup = mapInfo
@@ -361,6 +371,7 @@ public class GUISupport extends Support implements GUIOrder {
      * then draws a dashed circle around the unit, then
      * draws a dashed line with arrow representing the move.
      */
+    @Override
     public void updateDOM(final MapInfo mapInfo) {
         // if we are not displayable, we exit, after remove the order (if
         // it was created)
@@ -667,6 +678,7 @@ public class GUISupport extends Support implements GUIOrder {
     /**
      * We are dependent upon other orders to determine how we render this order.
      */
+    @Override
     public boolean isDependent() {
         return true;
     }

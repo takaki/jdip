@@ -46,10 +46,12 @@ public class GradientJLabel extends JPanel {
     public GradientJLabel(final String text, final int horizontalAlignment) {
         super(new FlowLayout(FlowLayout.LEFT, 0, 3));
         label = new JLabel(text, horizontalAlignment) {
+            @Override
             public boolean isOpaque() {
                 return false;
             }
 
+            @Override
             public boolean isFocusable() {
                 return false;
             }
@@ -74,6 +76,7 @@ public class GradientJLabel extends JPanel {
     /**
      * We are not opaque; we will paint the background.
      */
+    @Override
     public boolean isOpaque() {
         return false;
     }
@@ -81,6 +84,7 @@ public class GradientJLabel extends JPanel {
     /**
      * We are not focusable.
      */
+    @Override
     public boolean isFocusable() {
         return false;
     }
@@ -88,6 +92,7 @@ public class GradientJLabel extends JPanel {
     /**
      * Overridden to provide painting functionality.
      */
+    @Override
     protected void paintComponent(final Graphics g) {
         final int width = getWidth();
         final int height = getHeight();

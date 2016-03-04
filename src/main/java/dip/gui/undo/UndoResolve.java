@@ -62,11 +62,13 @@ public class UndoResolve extends XAbstractUndoableEdit {
     }// UndoResolve
 
 
+    @Override
     public String getPresentationName() {
         return Utils.getLocalString(PRESENTATION_NAME_PREFIX);
     }// getPresentationName()
 
 
+    @Override
     public void redo() throws CannotRedoException {
         super.redo();
 
@@ -96,6 +98,7 @@ public class UndoResolve extends XAbstractUndoableEdit {
     }// redo()
 
 
+    @Override
     public void undo() throws CannotUndoException {
         super.undo();
 

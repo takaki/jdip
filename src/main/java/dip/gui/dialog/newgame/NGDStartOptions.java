@@ -84,6 +84,7 @@ public class NGDStartOptions extends JPanel implements NewGameDialog.NGDTabPane 
 
         reset = new JButton(Utils.getLocalString(BUTTON_RESET));
         reset.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(final ActionEvent e) {
                 if (original != null) {
                     resetData();
@@ -124,6 +125,7 @@ public class NGDStartOptions extends JPanel implements NewGameDialog.NGDTabPane 
     /**
      * Enables & Disables controls on this panel
      */
+    @Override
     public void setEnabled(final boolean value) {
         phaseBox.setEnabled(value);
         year.setEnabled(value);
@@ -267,6 +269,7 @@ public class NGDStartOptions extends JPanel implements NewGameDialog.NGDTabPane 
     /**
      * Get the tab name.
      */
+    @Override
     public String getTabName() {
         return Utils.getLocalString(TAB_NAME);
     }// getTabName()
@@ -274,6 +277,7 @@ public class NGDStartOptions extends JPanel implements NewGameDialog.NGDTabPane 
     /**
      * The Variant has Changed.
      */
+    @Override
     public void variantChanged(final Variant variant) {
         // store passed reference, but modify the cloned version
         original = variant;
@@ -290,6 +294,7 @@ public class NGDStartOptions extends JPanel implements NewGameDialog.NGDTabPane 
     /**
      * The Enabled status has Changed.
      */
+    @Override
     public void enablingChanged(final boolean enabled) {
         setEnabled(enabled);
     }// enablingChanged()

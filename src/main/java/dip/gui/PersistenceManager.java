@@ -104,6 +104,7 @@ public class PersistenceManager {
 
         // enable modification event listener
         modListener = new PropertyChangeListener() {
+            @Override
             public void propertyChange(final PropertyChangeEvent evt) {
                 if (!isChanged()) {
                     setChanged(true);

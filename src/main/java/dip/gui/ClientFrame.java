@@ -380,6 +380,7 @@ public class ClientFrame extends JFrame {
         // frame listener, handles JFrame close events
         setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
+            @Override
             public void windowClosing(final WindowEvent e) {
                 persistMan.exit();
             }
@@ -983,6 +984,7 @@ public class ClientFrame extends JFrame {
      * drag events.
      */
     private class CFDropTargetListener extends FileDropTargetListener {
+        @Override
         public void processDroppedFiles(final File[] files) {
             for (File file : files) {
                 if (files.length >= 0) {
@@ -1014,6 +1016,7 @@ public class ClientFrame extends JFrame {
      * Property Listener for listening to Settings Changes
      */
     private class ModeListener implements PropertyChangeListener {
+        @Override
         public void propertyChange(final PropertyChangeEvent evt) {
             final String evtName = evt.getPropertyName();
 

@@ -75,14 +75,17 @@ public class MapPanelSVGAction {
         public TranscoderErrorHandler() {
         }
 
+        @Override
         public void error(final TranscoderException ex) {
             showErrorDialog(ex);
         }
 
+        @Override
         public void fatalError(final TranscoderException ex) {
             showErrorDialog(ex);
         }
 
+        @Override
         public void warning(final TranscoderException ex) {
             showErrorDialog(ex);
         }
@@ -104,6 +107,7 @@ public class MapPanelSVGAction {
             this.mp = mp;
         }// Print()
 
+        @Override
         public void actionPerformed(final ActionEvent e) {
             final Document document = mp.getSVGDocument();
             if (document == null) {
@@ -111,6 +115,7 @@ public class MapPanelSVGAction {
             }
 
             new Thread(getPMTG(mp), "jdipPrintThread") {
+                @Override
                 public void run() {
                     final PrintTranscoder pt = new PrintTranscoder();
                     pt.addTranscodingHint(PrintTranscoder.KEY_SHOW_PAGE_DIALOG,
@@ -154,6 +159,7 @@ public class MapPanelSVGAction {
         /**
          * Set JPEG-specific options
          */
+        @Override
         public void setOptions(final Transcoder t) {
             super.setOptions(t);
             //t.addTranscodingHint(ImageTranscoder.KEY_BACKGROUND_COLOR, Color.WHITE);
@@ -176,6 +182,7 @@ public class MapPanelSVGAction {
         /**
          * Set PNG options
          */
+        @Override
         public void setOptions(final Transcoder t) {
             super.setOptions(t);
             //t.addTranscodingHint(ImageTranscoder.KEY_BACKGROUND_COLOR, Color.WHITE);
@@ -194,6 +201,7 @@ public class MapPanelSVGAction {
         /**
          * DO NOT apply Image export settings for PDF.
          */
+        @Override
         public void setOptions(final Transcoder t) {
         }// ExportJPG()
     }// nested class ExportPDF
@@ -210,6 +218,7 @@ public class MapPanelSVGAction {
             this.mp = mp;
         }// ExportJPG()
 
+        @Override
         public void actionPerformed(final ActionEvent e) {
             final Document document = mp.getSVGDocument();
             if (document == null) {
@@ -217,6 +226,7 @@ public class MapPanelSVGAction {
             }
 
             new Thread(getPMTG(mp), "jdipExportSVGThread") {
+                @Override
                 public void run() {
                     // get the file
                     final File file = getSaveFile(mp.getClientFrame(),
@@ -302,6 +312,7 @@ public class MapPanelSVGAction {
         /**
          * Perform the Export
          */
+        @Override
         public void actionPerformed(final ActionEvent e) {
             final Document document = mp.getSVGDocument();
             if (document == null) {
@@ -309,6 +320,7 @@ public class MapPanelSVGAction {
             }
 
             new Thread(getPMTG(mp), "jdipExportThread") {
+                @Override
                 public void run() {
                     // get the file
                     final File file = getSaveFile(mp.getClientFrame(),

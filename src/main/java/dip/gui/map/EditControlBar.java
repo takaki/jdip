@@ -143,6 +143,7 @@ public class EditControlBar extends ViewControlBar {
         powerBox.insertItemAt(POWER_NONE, 0);
         powerBox.setEditable(false);
         powerBox.addItemListener(new ItemListener() {
+            @Override
             public void itemStateChanged(final ItemEvent e) {
                 currentPower = getSelectedPower();
 
@@ -242,6 +243,7 @@ public class EditControlBar extends ViewControlBar {
      * <p>
      * Adds a brief status bar message as to why a click will or will not be accepted.
      */
+    @Override
     public void mouseOver(final MouseEvent me, final Location loc) {
         // by default, can't accept
         mapPanel.getJSVGCanvas().setCursor(MapPanel.BAD_ACTION);
@@ -269,6 +271,7 @@ public class EditControlBar extends ViewControlBar {
     /**
      * Handles mouseOut()
      */
+    @Override
     public void mouseOut(final MouseEvent me, final Location loc) {
         mapPanel.getStatusBar().clearText();
         mapPanel.getJSVGCanvas().setCursor(defaultCursor);
@@ -278,6 +281,7 @@ public class EditControlBar extends ViewControlBar {
     /**
      * Handle mouse clicks on the map
      */
+    @Override
     public void mouseClicked(final MouseEvent me, final Location loc) {
         if (loc != null) {
             if (DOMUIEventListener.isRMBorMetaLMB(me)) {
@@ -463,6 +467,7 @@ public class EditControlBar extends ViewControlBar {
      * Listens for toggle events; sets which button is selected
      */
     private class ToggleListener implements ActionListener {
+        @Override
         public void actionPerformed(final ActionEvent e) {
             selectedButton = (JToggleButton) e.getSource();
             if (selectedButton == bArmy) {

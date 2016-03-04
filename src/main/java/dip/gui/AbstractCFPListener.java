@@ -52,6 +52,7 @@ public abstract class AbstractCFPListener implements PropertyChangeListener {
     /**
      * Process PropertyChangeEvents into appropriate sub-methods. Marked final for safety.
      */
+    @Override
     public final void propertyChange(final PropertyChangeEvent evt) {
         final String name = evt.getPropertyName();
         if (name == ClientFrame.EVT_WORLD_CREATED) {

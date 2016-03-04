@@ -77,6 +77,7 @@ public class GUIRetreat extends Retreat implements GUIOrder {
     /**
      * This only accepts Retreat orders. All others will throw an IllegalArgumentException.
      */
+    @Override
     public void deriveFrom(final Orderable order) {
         if (!(order instanceof Retreat)) {
             throw new IllegalArgumentException();
@@ -92,6 +93,7 @@ public class GUIRetreat extends Retreat implements GUIOrder {
         currentLocNum = REQ_LOC;
     }// deriveFrom()
 
+    @Override
     public boolean testLocation(final StateInfo stateInfo, final Location location,
                                 final StringBuffer sb) {
         sb.setLength(0);
@@ -192,6 +194,7 @@ public class GUIRetreat extends Retreat implements GUIOrder {
     }// testLocation()
 
 
+    @Override
     public boolean clearLocations() {
         if (isComplete()) {
             return false;
@@ -207,6 +210,7 @@ public class GUIRetreat extends Retreat implements GUIOrder {
     }// clearLocations()
 
 
+    @Override
     public boolean setLocation(final StateInfo stateInfo, final Location location,
                                final StringBuffer sb) {
         if (isComplete()) {
@@ -237,15 +241,18 @@ public class GUIRetreat extends Retreat implements GUIOrder {
         return false;
     }// setLocation()
 
+    @Override
     public boolean isComplete() {
         assert (currentLocNum <= getNumRequiredLocations());
         return (currentLocNum == getNumRequiredLocations());
     }// isComplete()
 
+    @Override
     public int getNumRequiredLocations() {
         return REQ_LOC;
     }
 
+    @Override
     public int getCurrentLocationNum() {
         return currentLocNum;
     }
@@ -254,6 +261,7 @@ public class GUIRetreat extends Retreat implements GUIOrder {
     /**
      * Always throws an IllegalArgumentException
      */
+    @Override
     public void setParam(final Parameter param, final Object value) {
         throw new IllegalArgumentException();
     }
@@ -261,11 +269,13 @@ public class GUIRetreat extends Retreat implements GUIOrder {
     /**
      * Always throws an IllegalArgumentException
      */
+    @Override
     public Object getParam(final Parameter param) {
         throw new IllegalArgumentException();
     }
 
 
+    @Override
     public void removeFromDOM(final MapInfo mapInfo) {
         if (group != null) {
             final SVGGElement powerGroup = mapInfo
@@ -279,6 +289,7 @@ public class GUIRetreat extends Retreat implements GUIOrder {
     /**
      * Draws a line with an arrow. Unlife a Move, we are not dependent.
      */
+    @Override
     public void updateDOM(final MapInfo mapInfo) {
         // if we are not displayable, we exit, after remove the order (if
         // it was created)
@@ -400,6 +411,7 @@ public class GUIRetreat extends Retreat implements GUIOrder {
     }// drawOrder()
 
 
+    @Override
     public boolean isDependent() {
         return false;
     }

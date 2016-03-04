@@ -90,6 +90,7 @@ public class OrderStatsWriter {
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
         tv.lazyLoadDisplayDialog(new TextViewer.TVRunnable() {
+            @Override
             public void run() {
                 setText(getOrderStatsAsHTML(w, orderFormat));
             }

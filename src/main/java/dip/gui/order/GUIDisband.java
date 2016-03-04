@@ -65,6 +65,7 @@ public class GUIDisband extends Disband implements GUIOrder {
     /**
      * This only accepts Disband orders. All others will throw an IllegalArgumentException.
      */
+    @Override
     public void deriveFrom(final Orderable order) {
         if (!(order instanceof Disband)) {
             throw new IllegalArgumentException();
@@ -80,6 +81,7 @@ public class GUIDisband extends Disband implements GUIOrder {
     }// deriveFrom()
 
 
+    @Override
     public boolean testLocation(final StateInfo stateInfo, final Location location,
                                 final StringBuffer sb) {
         sb.setLength(0);
@@ -114,6 +116,7 @@ public class GUIDisband extends Disband implements GUIOrder {
     }// testLocation()
 
 
+    @Override
     public boolean clearLocations() {
         if (isComplete()) {
             return false;
@@ -128,6 +131,7 @@ public class GUIDisband extends Disband implements GUIOrder {
     }// clearLocations()
 
 
+    @Override
     public boolean setLocation(final StateInfo stateInfo, final Location location,
                                final StringBuffer sb) {
         if (testLocation(stateInfo, location, sb)) {
@@ -148,15 +152,18 @@ public class GUIDisband extends Disband implements GUIOrder {
     }// setLocation()
 
 
+    @Override
     public boolean isComplete() {
         assert (currentLocNum <= getNumRequiredLocations());
         return (currentLocNum == getNumRequiredLocations());
     }// isComplete()
 
+    @Override
     public int getNumRequiredLocations() {
         return REQ_LOC;
     }
 
+    @Override
     public int getCurrentLocationNum() {
         return currentLocNum;
     }
@@ -164,6 +171,7 @@ public class GUIDisband extends Disband implements GUIOrder {
     /**
      * Always throws an IllegalArgumentException
      */
+    @Override
     public void setParam(final Parameter param, final Object value) {
         throw new IllegalArgumentException();
     }
@@ -171,11 +179,13 @@ public class GUIDisband extends Disband implements GUIOrder {
     /**
      * Always throws an IllegalArgumentException
      */
+    @Override
     public Object getParam(final Parameter param) {
         throw new IllegalArgumentException();
     }
 
 
+    @Override
     public void removeFromDOM(final MapInfo mapInfo) {
         if (group != null) {
             final SVGGElement powerGroup = mapInfo
@@ -189,6 +199,7 @@ public class GUIDisband extends Disband implements GUIOrder {
     /**
      * Draws a circle with an X in it
      */
+    @Override
     public void updateDOM(final MapInfo mapInfo) {
         // if we are not displayable, we exit, after remove the order (if
         // it was created)
@@ -263,6 +274,7 @@ public class GUIDisband extends Disband implements GUIOrder {
     }// drawOrder()
 
 
+    @Override
     public boolean isDependent() {
         return false;
     }

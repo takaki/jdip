@@ -79,6 +79,7 @@ public class GUIConvoy extends Convoy implements GUIOrder {
     /**
      * This only accepts Convoy orders. All others will throw an IllegalArgumentException.
      */
+    @Override
     public void deriveFrom(final Orderable order) {
         if (!(order instanceof Convoy)) {
             throw new IllegalArgumentException();
@@ -99,6 +100,7 @@ public class GUIConvoy extends Convoy implements GUIOrder {
     }// deriveFrom()
 
 
+    @Override
     public boolean testLocation(final StateInfo stateInfo, final Location location,
                                 final StringBuffer sb) {
         sb.setLength(0);
@@ -249,6 +251,7 @@ public class GUIConvoy extends Convoy implements GUIOrder {
     }// testLocation()
 
 
+    @Override
     public boolean clearLocations() {
         if (isComplete()) {
             return false;
@@ -267,6 +270,7 @@ public class GUIConvoy extends Convoy implements GUIOrder {
     }// clearLocations()
 
 
+    @Override
     public boolean setLocation(final StateInfo stateInfo, final Location location,
                                final StringBuffer sb) {
         if (isComplete()) {
@@ -308,15 +312,18 @@ public class GUIConvoy extends Convoy implements GUIOrder {
         return false;
     }// setLocation()
 
+    @Override
     public boolean isComplete() {
         assert (currentLocNum <= getNumRequiredLocations());
         return (currentLocNum == getNumRequiredLocations());
     }// isComplete()
 
+    @Override
     public int getNumRequiredLocations() {
         return REQ_LOC;
     }
 
+    @Override
     public int getCurrentLocationNum() {
         return currentLocNum;
     }
@@ -325,6 +332,7 @@ public class GUIConvoy extends Convoy implements GUIOrder {
     /**
      * Always throws an IllegalArgumentException
      */
+    @Override
     public void setParam(final Parameter param, final Object value) {
         throw new IllegalArgumentException();
     }
@@ -332,11 +340,13 @@ public class GUIConvoy extends Convoy implements GUIOrder {
     /**
      * Always throws an IllegalArgumentException
      */
+    @Override
     public Object getParam(final Parameter param) {
         throw new IllegalArgumentException();
     }
 
 
+    @Override
     public void removeFromDOM(final MapInfo mapInfo) {
         if (group != null) {
             final SVGGElement powerGroup = mapInfo
@@ -351,6 +361,7 @@ public class GUIConvoy extends Convoy implements GUIOrder {
      * Draws a dashed line to a triangle surrounding convoyed unit, and then a
      * dashed line from convoyed unit to destination.
      */
+    @Override
     public void updateDOM(final MapInfo mapInfo) {
         // if we are not displayable, we exit, after remove the order (if
         // it was created)
@@ -554,6 +565,7 @@ public class GUIConvoy extends Convoy implements GUIOrder {
     }// drawOrder()
 
 
+    @Override
     public boolean isDependent() {
         return false;
     }

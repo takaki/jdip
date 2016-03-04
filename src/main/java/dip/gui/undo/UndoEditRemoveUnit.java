@@ -54,6 +54,7 @@ public class UndoEditRemoveUnit extends XAbstractUndoableEdit {
         this.isDislodged = isDislodged;
     }// UndoEditRemoveUnit
 
+    @Override
     public String getPresentationName() {
         return Utils
                 .getLocalString(PRESENTATION_NAME, unit.getType().getFullName(),
@@ -61,12 +62,14 @@ public class UndoEditRemoveUnit extends XAbstractUndoableEdit {
     }// getPresentationName()
 
 
+    @Override
     public void redo() throws CannotRedoException {
         super.redo();
         UndoEditRemoveUnit
                 .removeUnit(undoRedoManager, position, province, isDislodged);
     }// redo()
 
+    @Override
     public void undo() throws CannotUndoException {
         super.undo();
         UndoEditAddUnit.addUnit(undoRedoManager, position, province, unit,

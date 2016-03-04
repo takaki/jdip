@@ -43,6 +43,7 @@ public final class XMLErrorHandler implements ErrorHandler {
     /**
      * Handle a (recoverable) error
      */
+    @Override
     public void error(final SAXParseException exception) {
         showError(exception, "Error");
     }// error()
@@ -50,6 +51,7 @@ public final class XMLErrorHandler implements ErrorHandler {
     /**
      * Handle a non-recoverable error
      */
+    @Override
     public void fatalError(final SAXParseException exception) {
         showError(exception, "Fatal Error");
     }// fatalError()
@@ -57,6 +59,7 @@ public final class XMLErrorHandler implements ErrorHandler {
     /**
      * Handle a warning
      */
+    @Override
     public void warning(final SAXParseException exception) {
         showError(exception, "Warning");
     }// warning()

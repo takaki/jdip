@@ -258,11 +258,13 @@ public class ExportPreferencePanel extends PreferencePanel {
     }// makeAndSetGUIItems()
 
 
+    @Override
     public String getName() {
         return Utils.getLocalString(I18N_TAB_NAME);
     }// getName()
 
 
+    @Override
     public void apply() {
         final Preferences prefs = SharedPrefs.getUserNode();
 
@@ -293,11 +295,13 @@ public class ExportPreferencePanel extends PreferencePanel {
     }// apply()
 
 
+    @Override
     public void cancel() {
         // do nothing
     }// cancel()
 
 
+    @Override
     public void setDefault() {
         jrb[JRB_FULLSIZE].setSelected(true);
         pngBPP.setSelectedIndex(0);

@@ -80,6 +80,7 @@ public class NGDMapAndUnits extends JPanel implements NewGameDialog.NGDTabPane {
 			then no SymbolPack change is made.
 		*/
         mapSelector.addListSelectionListener(new ListSelectionListener() {
+            @Override
             public void valueChanged(final ListSelectionEvent e) {
                 if (!e.getValueIsAdjusting()) {
                     final ListItem item = mapSelector.getSelectedItem();
@@ -130,6 +131,7 @@ public class NGDMapAndUnits extends JPanel implements NewGameDialog.NGDTabPane {
     /**
      * Get the tab name.
      */
+    @Override
     public String getTabName() {
         return Utils.getLocalString(TAB_NAME);
     }// getTabName()
@@ -137,6 +139,7 @@ public class NGDMapAndUnits extends JPanel implements NewGameDialog.NGDTabPane {
     /**
      * The Variant has Changed.
      */
+    @Override
     public void variantChanged(final Variant variant) {
         if (variant != null) {
             // create the list of map graphics
@@ -149,6 +152,7 @@ public class NGDMapAndUnits extends JPanel implements NewGameDialog.NGDTabPane {
     /**
      * The Enabled status has Changed.
      */
+    @Override
     public void enablingChanged(final boolean enabled) {
     }// enablingChanged()
 
@@ -396,6 +400,7 @@ public class NGDMapAndUnits extends JPanel implements NewGameDialog.NGDTabPane {
         /**
          * Receive selection events.
          */
+        @Override
         public void valueChanged(final ListSelectionEvent e) {
             // change the description if not adjusting.
             if (!e.getValueIsAdjusting()) {
@@ -559,6 +564,7 @@ public class NGDMapAndUnits extends JPanel implements NewGameDialog.NGDTabPane {
         }// GraphicJListCellRenderer()
 
 
+        @Override
         public Component getListCellRendererComponent(final JList list, final Object value,
                                                       final int index,
                                                       final boolean isSelected,

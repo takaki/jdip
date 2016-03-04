@@ -863,6 +863,7 @@ public class Utils {
             jep = new JEditorPane() {
                 final boolean mayFocus = isFocusable;
 
+                @Override
                 public boolean isFocusable() {
                     return mayFocus;
                 }
@@ -871,6 +872,7 @@ public class Utils {
             jep = new XJEditorPane() {
                 final boolean mayFocus = isFocusable;
 
+                @Override
                 public boolean isFocusable() {
                     return mayFocus;
                 }
@@ -1061,12 +1063,14 @@ public class Utils {
         final JTextField jtf = new JTextField(cols);
         final AbstractDocument doc = (AbstractDocument) jtf.getDocument();
         doc.setDocumentFilter(new DocumentFilter() {
+            @Override
             public void insertString(final DocumentFilter.FilterBypass fb, final int offset,
                                      final String text,
                                      final AttributeSet attr) throws BadLocationException {
                 this.replace(fb, offset, 0, text, attr);
             }// insertString()
 
+            @Override
             public void replace(final DocumentFilter.FilterBypass fb, final int offset,
                                 final int length, final String text,
                                 final AttributeSet attr) throws BadLocationException {
@@ -1120,12 +1124,14 @@ public class Utils {
         final JTextField jtf = new JTextField(cols);
         final AbstractDocument doc = (AbstractDocument) jtf.getDocument();
         doc.setDocumentFilter(new DocumentFilter() {
+            @Override
             public void insertString(final DocumentFilter.FilterBypass fb, final int offset,
                                      final String text,
                                      final AttributeSet attr) throws BadLocationException {
                 this.replace(fb, offset, 0, text, attr);
             }// insertString()
 
+            @Override
             public void replace(final DocumentFilter.FilterBypass fb, final int offset,
                                 final int length, final String text,
                                 final AttributeSet attr) throws BadLocationException {
@@ -1179,12 +1185,14 @@ public class Utils {
         final JTextField jtf = new JTextField(cols);
         final AbstractDocument doc = (AbstractDocument) jtf.getDocument();
         doc.setDocumentFilter(new DocumentFilter() {
+            @Override
             public void insertString(final DocumentFilter.FilterBypass fb, final int offset,
                                      final String text,
                                      final AttributeSet attr) throws BadLocationException {
                 replace(fb, offset, 0, text, attr);
             }// insertString()
 
+            @Override
             public void replace(final DocumentFilter.FilterBypass fb, final int offset,
                                 final int length, final String text,
                                 final AttributeSet attr) throws BadLocationException {

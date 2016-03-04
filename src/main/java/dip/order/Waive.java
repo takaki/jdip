@@ -58,20 +58,24 @@ public class Waive extends Order {
         srcUnitType = Unit.Type.UNDEFINED;
     }// Waive()
 
+    @Override
     public String getFullName() {
         return orderNameFull;
     }// getName()
 
+    @Override
     public String getBriefName() {
         return orderNameBrief;
     }// getBriefName()
 
 
+    @Override
     public String getDefaultFormat() {
         return orderFormatString;
     }// getFormatBrief()
 
 
+    @Override
     public String toBriefString() {
         final StringBuffer sb = new StringBuffer(64);
 
@@ -85,6 +89,7 @@ public class Waive extends Order {
     }// toBriefString()
 
 
+    @Override
     public String toFullString() {
         final StringBuffer sb = new StringBuffer(128);
 
@@ -113,6 +118,7 @@ public class Waive extends Order {
      * and season. The adjudicator must check tricky situations, such as too
      * many or too few build orders.
      */
+    @Override
     public void validate(final TurnState state, final ValidationOptions valOpts,
                          final RuleOptions ruleOpts) throws OrderException {
         checkSeasonAdjustment(state, orderNameFull);
@@ -126,6 +132,7 @@ public class Waive extends Order {
     /**
      * Waive orders do not require verification.
      */
+    @Override
     public void verify(final Adjudicator adjudicator) {
         final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
         thisOS.setVerified(true);
@@ -134,6 +141,7 @@ public class Waive extends Order {
     /**
      * Empty method: Waive orders do not require dependency determination.
      */
+    @Override
     public void determineDependencies(final Adjudicator adjudicator) {
     }
 
@@ -149,6 +157,7 @@ public class Waive extends Order {
      * <p>
      * Extra build orders are NOT considered in the evaluate() method here.
      */
+    @Override
     public void evaluate(final Adjudicator adjudicator) {
         Log.println("--- evaluate() dip.order.Waive ---");
         Log.println("   order: ", this);

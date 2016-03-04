@@ -158,6 +158,7 @@ public class FlocImportDialog extends HeaderDialog implements FlocImportCallback
     /**
      * Handle OK and CANCEL selections
      */
+    @Override
     public void close(final String actionCommand) {
         if (isOKorAccept(actionCommand)) {
             // check game name text
@@ -230,6 +231,7 @@ public class FlocImportDialog extends HeaderDialog implements FlocImportCallback
     /**
      * FlocImportCallback implementation
      */
+    @Override
     public void flocImportException(final IOException e) {
         // enhance our error report
         final ErrorDialog.BugReportInfo bri = new ErrorDialog.BugReportInfo(e);
@@ -248,6 +250,7 @@ public class FlocImportDialog extends HeaderDialog implements FlocImportCallback
     /**
      * FlocImportCallback implementation
      */
+    @Override
     public boolean flocTextImportComplete(final String text) {
         // we don't do anything with the raw text.
         // and don't close the dialog, either
@@ -257,6 +260,7 @@ public class FlocImportDialog extends HeaderDialog implements FlocImportCallback
     /**
      * FlocImportCallback implementation
      */
+    @Override
     public void flocWorldImportComplete(final World w) {
         this.world = w;
         enableProgressBar(false);
@@ -266,6 +270,7 @@ public class FlocImportDialog extends HeaderDialog implements FlocImportCallback
     /**
      * FlocImportCallback implementation
      */
+    @Override
     public void flocImportMessage(final String message) {
         clientFrame.getStatusBar().setText(message);
     }// flocImportMessage()
@@ -273,6 +278,7 @@ public class FlocImportDialog extends HeaderDialog implements FlocImportCallback
     /**
      * FlocImportCallback implementation
      */
+    @Override
     public void flocImportUnregistered() {
         enableProgressBar(false);
 

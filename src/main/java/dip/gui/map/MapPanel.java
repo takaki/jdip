@@ -686,6 +686,7 @@ public class MapPanel extends JPanel {
     private class MP_GVTRenderListener extends GVTTreeRendererAdapter {
         private boolean loaded = false;
 
+        @Override
         public void gvtRenderingStarted(final GVTTreeRendererEvent e) {
             Log.printTimed(startTime, "MapPanel() GVTRender start.");
             if (!loaded) {
@@ -694,6 +695,7 @@ public class MapPanel extends JPanel {
             }
         }// gvtRenderingStarted()
 
+        @Override
         public void gvtRenderingCompleted(final GVTTreeRendererEvent e) {
             Log.printTimed(startTime, "MapPanel() GVTRender completing...");
             if (!loaded) {
@@ -793,6 +795,7 @@ public class MapPanel extends JPanel {
      * NOTE: we use setDocument(), and thus this really isn't used.
      */
     private class MP_DocumentListener extends SVGDocumentLoaderAdapter {
+        @Override
         public void documentLoadingStarted(final SVGDocumentLoaderEvent e) {
             Log.printTimed(startTime, "MapPanel() DocumentLoad started.");
             clientFrame.getClientMenu().setViewRenderItemsEnabled(false);
@@ -800,11 +803,13 @@ public class MapPanel extends JPanel {
             //statusBar.setText(Utils.getLocalString(DOC_LOAD_STARTED));
         }// documentLoadingStarted()
 
+        @Override
         public void documentLoadingFailed(final SVGDocumentLoaderEvent e) {
             statusBar.setText(Utils.getLocalString(DOC_LOAD_FAILED));
             statusBar.hidePB();
         }// documentLoadingFailed()
 
+        @Override
         public void documentLoadingCompleted(final SVGDocumentLoaderEvent e) {
             Log.printTimed(startTime, "MapPanel() DocumentLoad completed.");
             statusBar.incPBValue();
@@ -818,17 +823,20 @@ public class MapPanel extends JPanel {
      * Statusbar messages
      */
     private class MP_GVTTreeBuilderListener extends GVTTreeBuilderAdapter {
+        @Override
         public void gvtBuildStarted(final GVTTreeBuilderEvent e) {
             Log.printTimed(startTime, "MapPanel() GVTTreeBuild completed.");
             statusBar.incPBValue();
             statusBar.setText(Utils.getLocalString(GVT_BUILD_STARTED));
         }// documentLoadingStarted()
 
+        @Override
         public void gvtBuildFailed(final GVTTreeBuilderEvent e) {
             statusBar.setText(Utils.getLocalString(GVT_BUILD_FAILED));
             statusBar.hidePB();
         }// documentLoadingFailed()
 
+        @Override
         public void gvtBuildCompleted(final GVTTreeBuilderEvent e) {
             Log.printTimed(startTime, "MapPanel() GVTTreeBuild completed.");
             statusBar.incPBValue();
@@ -843,6 +851,7 @@ public class MapPanel extends JPanel {
      */
     private class MP_PropertyListener extends AbstractCFPListener {
 
+        @Override
         public void actionWorldCreated(final World w) {
             if (mapRenderer != null) {
                 throw new IllegalStateException();
@@ -851,12 +860,14 @@ public class MapPanel extends JPanel {
             }
         }// actionWorldCreated()
 
+        @Override
         public void actionWorldDestroyed(final World w) {
             if (mapRenderer != null) {
                 close();
             }
         }// actionWorldDestroyed()
 
+        @Override
         public void actionValOptsChanged(final ValidationOptions options) {
             if (mapRenderer != null) {
                 // if we have an OrderControl bar or derivitive
@@ -868,6 +879,7 @@ public class MapPanel extends JPanel {
             }
         }// actionValOptsChanged()
 
+        @Override
         public void actionModeChanged(final String mode) {
             if (mapRenderer != null) {
                 setControlBar();
@@ -875,6 +887,7 @@ public class MapPanel extends JPanel {
             }
         }// actionModeChanged()
 
+        @Override
         public synchronized void actionTurnstateChanged(final TurnState ts) {
             if (mapRenderer != null) {
                 turnState = ts;
@@ -965,31 +978,38 @@ public class MapPanel extends JPanel {
     private class MP_UpdateManagerListener implements UpdateManagerListener {
         private String lastModeText = null;
 
+        @Override
         public void managerResumed(
                 final org.apache.batik.bridge.UpdateManagerEvent e) {
         }
 
+        @Override
         public void managerStarted(
                 final org.apache.batik.bridge.UpdateManagerEvent e) {
         }
 
+        @Override
         public void managerStopped(
                 final org.apache.batik.bridge.UpdateManagerEvent e) {
         }
 
+        @Override
         public void managerSuspended(
                 final org.apache.batik.bridge.UpdateManagerEvent e) {
         }
 
+        @Override
         public void updateCompleted(
                 final org.apache.batik.bridge.UpdateManagerEvent e) {
             resetText();
         }// updateCompleted()
 
+        @Override
         public void updateFailed(final org.apache.batik.bridge.UpdateManagerEvent e) {
             resetText();
         }// updateFailed()
 
+        @Override
         public void updateStarted(
                 final org.apache.batik.bridge.UpdateManagerEvent e) {
             lastModeText = statusBar.getModeText();

@@ -90,6 +90,7 @@ public class UndoRedoManager extends UndoManager {
     /**
      * Add an Edit (UndoableEdit)
      */
+    @Override
     public synchronized boolean addEdit(final UndoableEdit anEdit) {
         //System.out.println("URM: addEdit(): edits (before): "+edits.size());
         checkState();
@@ -103,6 +104,7 @@ public class UndoRedoManager extends UndoManager {
     /**
      * Redo last undo
      */
+    @Override
     public synchronized void redo() {
         //System.out.println("URM: redo(): edits (before): "+edits.size());
         checkState();
@@ -114,6 +116,7 @@ public class UndoRedoManager extends UndoManager {
     /**
      * Undo an UndoableEdit
      */
+    @Override
     public synchronized void undo() {
         //System.out.println("URM: undo(): edits (before): "+edits.size());
         checkState();
@@ -125,6 +128,7 @@ public class UndoRedoManager extends UndoManager {
     /**
      * Throw away all stored edits
      */
+    @Override
     public synchronized void discardAllEdits() {
         checkState();
         super.discardAllEdits();
@@ -134,6 +138,7 @@ public class UndoRedoManager extends UndoManager {
     /**
      * Undo or Redo
      */
+    @Override
     public synchronized void undoOrRedo() {
         checkState();
         super.undoOrRedo();

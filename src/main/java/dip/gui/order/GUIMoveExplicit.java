@@ -113,6 +113,7 @@ public class GUIMoveExplicit extends Move implements GUIOrder {
     /**
      * This only accepts Move orders. All others will throw an IllegalArgumentException.
      */
+    @Override
     public void deriveFrom(final Orderable order) {
         if (!(order instanceof Move)) {
             throw new IllegalArgumentException();
@@ -132,6 +133,7 @@ public class GUIMoveExplicit extends Move implements GUIOrder {
     }// GUIMove()
 
 
+    @Override
     public boolean testLocation(final StateInfo stateInfo, final Location location,
                                 final StringBuffer sb) {
         final LocationTestResult result = testLocationLTR(stateInfo, location,
@@ -318,6 +320,7 @@ public class GUIMoveExplicit extends Move implements GUIOrder {
         return false;
     }// testNonConvoyDest()
 
+    @Override
     public boolean clearLocations() {
         if (isComplete()) {
             return false;
@@ -346,6 +349,7 @@ public class GUIMoveExplicit extends Move implements GUIOrder {
     }// inner class LocationTestResult
 
 
+    @Override
     public boolean setLocation(final StateInfo stateInfo, final Location location,
                                final StringBuffer sb) {
         // WE need to manage isComplete here, as well as
@@ -433,14 +437,17 @@ public class GUIMoveExplicit extends Move implements GUIOrder {
         }
     }// updateConvoyPath()
 
+    @Override
     public boolean isComplete() {
         return isComplete;
     }// isComplete()
 
+    @Override
     public int getNumRequiredLocations() {
         return REQ_LOC;
     }
 
+    @Override
     public int getCurrentLocationNum() {
         return currentLocNum;
     }
@@ -449,6 +456,7 @@ public class GUIMoveExplicit extends Move implements GUIOrder {
     /**
      * Always throws an IllegalArgumentException
      */
+    @Override
     public void setParam(final Parameter param, final Object value) {
         throw new IllegalArgumentException();
     }
@@ -456,11 +464,13 @@ public class GUIMoveExplicit extends Move implements GUIOrder {
     /**
      * Always throws an IllegalArgumentException
      */
+    @Override
     public Object getParam(final Parameter param) {
         throw new IllegalArgumentException();
     }
 
 
+    @Override
     public void removeFromDOM(final MapInfo mapInfo) {
         if (group != null) {
             final SVGGElement powerGroup = mapInfo
@@ -475,6 +485,7 @@ public class GUIMoveExplicit extends Move implements GUIOrder {
     /**
      * Draws a line with an arrow.
      */
+    @Override
     public void updateDOM(final MapInfo mapInfo) {
         // if we are not displayable, we exit, after remove the order (if
         // it was created)
@@ -752,6 +763,7 @@ public class GUIMoveExplicit extends Move implements GUIOrder {
     /**
      * We are dependent on the presence of Support orders for certain drawing parameters.
      */
+    @Override
     public boolean isDependent() {
         return true;
     }

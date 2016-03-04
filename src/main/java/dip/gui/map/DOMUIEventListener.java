@@ -82,6 +82,7 @@ public class DOMUIEventListener implements EventListener {
      * Handle Events; this method dispatches events to the appropriate
      * DOMUIEventHandler methods.
      */
+    @Override
     public void handleEvent(final Event evt) {
         if (handler == null || mapRenderer == null) {
             return;

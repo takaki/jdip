@@ -118,6 +118,7 @@ public class NewGameDialog extends HeaderDialog {
         if (dialogInstance == null) {
             if (loader == null) {
                 loader = new SwingWorker() {
+                    @Override
                     public Object construct() {
                         final long time = System.currentTimeMillis();
                         NewGameDialog ngd = new NewGameDialog(parent);
@@ -176,6 +177,7 @@ public class NewGameDialog extends HeaderDialog {
 
         // ensure list selection is visible
         addWindowListener(new WindowAdapter() {
+            @Override
             public void windowOpened(final WindowEvent e) {
                 tabVariant.ensureSelectionIsVisible();
             }
@@ -186,6 +188,7 @@ public class NewGameDialog extends HeaderDialog {
     /**
      * Handle dialog closing
      */
+    @Override
     public void close(final String actionCommand) {
         if (isOKorAccept(actionCommand)) {
             doOK();

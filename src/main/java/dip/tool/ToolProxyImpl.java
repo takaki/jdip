@@ -43,14 +43,17 @@ public class ToolProxyImpl implements ToolProxy {
 
     // basic methods
     //
+    @Override
     public World getWorld() {
         return clientFrame.getWorld();
     }// getWorld()
 
+    @Override
     public TurnState getCurrentTurnState() {
         return clientFrame.getTurnState();
     }// getCurrentTurnState()
 
+    @Override
     public ClientFrame getClient() {
         return clientFrame;
     }// getJFrame()

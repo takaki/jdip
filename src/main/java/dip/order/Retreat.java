@@ -83,6 +83,7 @@ public class Retreat extends Move {
     }// isByConvoy()
 
 
+    @Override
     public String getFullName() {
         return orderNameFull;
     }// getFullName()
@@ -99,6 +100,7 @@ public class Retreat extends Move {
     }// equals()
 
 
+    @Override
     public void validate(final TurnState state, final ValidationOptions valOpts,
                          final RuleOptions ruleOpts) throws OrderException {
         // step 0
@@ -158,6 +160,7 @@ public class Retreat extends Move {
     /**
      * No verification is performed.
      */
+    @Override
     public void verify(final Adjudicator adjudicator) {
         final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
         thisOS.setVerified(true);
@@ -168,6 +171,7 @@ public class Retreat extends Move {
      * Retreat orders are only dependent on other
      * retreat orders that are moving to the same destination.
      */
+    @Override
     public void determineDependencies(final Adjudicator adjudicator) {
         // add moves to destination space, and supports of this space
         final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
@@ -195,6 +199,7 @@ public class Retreat extends Move {
      * If a retreat is valid, it will be successfull unless
      * there exists one or more retreats to the same destination.
      */
+    @Override
     public void evaluate(final Adjudicator adjudicator) {
         final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
 

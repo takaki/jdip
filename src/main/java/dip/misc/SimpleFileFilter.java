@@ -114,6 +114,7 @@ public class SimpleFileFilter extends FileFilter implements FilenameFilter {
     /**
      * Get the Description provided
      */
+    @Override
     public String getDescription() {
         return description;
     }// getDescription()
@@ -128,6 +129,7 @@ public class SimpleFileFilter extends FileFilter implements FilenameFilter {
     /**
      * Implementation of FileFilter
      */
+    @Override
     public boolean accept(final File f) {
         if (f != null) {
             if (f.isDirectory()) {
@@ -142,6 +144,7 @@ public class SimpleFileFilter extends FileFilter implements FilenameFilter {
     /**
      * Implementation of FilenameFilter
      */
+    @Override
     public boolean accept(final File dir, final String name) {
         if (name == null || dir == null) {
             return true;

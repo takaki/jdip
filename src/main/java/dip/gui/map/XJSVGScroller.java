@@ -47,6 +47,7 @@ public class XJSVGScroller extends JSVGScrollPane {
      * Inner class to catch mouse wheel events
      */
     private class WheelListener implements MouseWheelListener {
+        @Override
         public void mouseWheelMoved(final MouseWheelEvent e) {
             final JScrollBar sb = (vertical
                     .isVisible()) ? vertical : horizontal;    // vertical is preferred

@@ -44,15 +44,18 @@ public class UndoDeleteMultipleOrders extends XAbstractUndoableEdit {
         this.orders = orders;
     }// UndoDeleteMultipleOrders()
 
+    @Override
     public String getPresentationName() {
         return Utils.getLocalString(PRESENTATION_NAME_PREFIX);
     }// getPresentationName()
 
+    @Override
     public void redo() throws CannotRedoException {
         super.redo();
         undoRedoManager.getOrderDisplayPanel().removeOrders(orders, false);
     }// redo()
 
+    @Override
     public void undo() throws CannotUndoException {
         super.undo();
         undoRedoManager.getOrderDisplayPanel().addOrdersRaw(orders, false);

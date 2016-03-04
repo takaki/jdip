@@ -120,6 +120,7 @@ public class HeaderDialog extends XDialog {
      * Set the dialog content; this may be
      * called at any time.
      */
+    @Override
     public void setContentPane(final Container container) {
         if (container == null) {
             throw new IllegalArgumentException();
@@ -139,6 +140,7 @@ public class HeaderDialog extends XDialog {
     /**
      * Get the content panel
      */
+    @Override
     public Container getContentPane() {
         return content;
     }// getContentPane()
@@ -211,6 +213,7 @@ public class HeaderDialog extends XDialog {
     /**
      * Do not override this method!
      */
+    @Override
     protected final void close() {
         close(defaultCloseButtonAction);
     }// close()
@@ -285,6 +288,7 @@ public class HeaderDialog extends XDialog {
 
         if (doClose) {
             btn.addActionListener(new ActionListener() {
+                @Override
                 public void actionPerformed(final ActionEvent e) {
                     close(btn.getActionCommand());
                 }
@@ -516,6 +520,7 @@ public class HeaderDialog extends XDialog {
         /**
          * We are not opaque; we will paint the background.
          */
+        @Override
         public boolean isOpaque() {
             return false;
         }
@@ -523,6 +528,7 @@ public class HeaderDialog extends XDialog {
         /**
          * We are not focusable.
          */
+        @Override
         public boolean isFocusable() {
             return false;
         }
@@ -531,6 +537,7 @@ public class HeaderDialog extends XDialog {
         /**
          * Overridden to provide painting functionality.
          */
+        @Override
         protected void paintComponent(final Graphics g) {
             final int width = getWidth();
             final int height = getHeight();

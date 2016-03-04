@@ -58,36 +58,42 @@ public abstract class ControlBar extends JToolBar implements DOMUIEventHandler {
     /**
      * Key Pressed event. Does Nothing by default.
      */
+    @Override
     public void keyPressed(final DOMKeyEvent ke, final Location loc) {
     }
 
     /**
      * Mouse Over event: Mouse over a province. Does Nothing by default.
      */
+    @Override
     public void mouseOver(final MouseEvent me, final Location loc) {
     }
 
     /**
      * Mouse Out event: Mouse out of a province. Does Nothing by default.
      */
+    @Override
     public void mouseOut(final MouseEvent me, final Location loc) {
     }
 
     /**
      * Mouse clicked. Does Nothing by default.
      */
+    @Override
     public void mouseClicked(final MouseEvent me, final Location loc) {
     }
 
     /**
      * Mouse button pressed. Does Nothing by default.
      */
+    @Override
     public void mouseDown(final MouseEvent me, final Location loc) {
     }
 
     /**
      * Mouse button released. Does Nothing by default.
      */
+    @Override
     public void mouseUp(final MouseEvent me, final Location loc) {
     }
 

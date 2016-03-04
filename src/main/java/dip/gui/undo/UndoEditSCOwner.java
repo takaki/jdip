@@ -53,17 +53,20 @@ public class UndoEditSCOwner extends XAbstractUndoableEdit {
         this.newPower = newPower;
     }// UndoEditSCOwner
 
+    @Override
     public String getPresentationName() {
         return Utils.getLocalString(PRESENTATION_NAME);
     }// getPresentationName()
 
 
+    @Override
     public void redo() throws CannotRedoException {
         super.redo();
         UndoEditSCOwner
                 .changeSCOwner(undoRedoManager, position, province, newPower);
     }// redo()
 
+    @Override
     public void undo() throws CannotUndoException {
         super.undo();
         UndoEditSCOwner

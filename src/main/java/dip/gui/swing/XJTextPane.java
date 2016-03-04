@@ -34,6 +34,7 @@ public class XJTextPane extends JTextPane {
     /**
      * Override paint with new RenderingHints
      */
+    @Override
     public void paint(final Graphics g) {
         final Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,

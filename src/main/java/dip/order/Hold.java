@@ -58,21 +58,25 @@ public class Hold extends Order {
     }// Hold()
 
 
+    @Override
     public String getFullName() {
         return orderNameFull;
     }// getName()
 
+    @Override
     public String getBriefName() {
         return orderNameBrief;
     }// getBriefName()
 
 
     // format-strings for orders
+    @Override
     public String getDefaultFormat() {
         return orderFormatString;
     }// getFormatBrief()
 
 
+    @Override
     public String toBriefString() {
         final StringBuffer sb = new StringBuffer(64);
 
@@ -84,6 +88,7 @@ public class Hold extends Order {
     }// toBriefString()
 
 
+    @Override
     public String toFullString() {
         final StringBuffer sb = new StringBuffer(128);
 
@@ -103,6 +108,7 @@ public class Hold extends Order {
     }// equals()
 
 
+    @Override
     public void validate(final TurnState state, final ValidationOptions valOpts,
                          final RuleOptions ruleOpts) throws OrderException {
         checkSeasonMovement(state, orderNameFull);
@@ -125,6 +131,7 @@ public class Hold extends Order {
     /**
      * No verification is required for Hold orders.
      */
+    @Override
     public void verify(final Adjudicator adjudicator) {
         final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
         thisOS.setVerified(true);
@@ -138,6 +145,7 @@ public class Hold extends Order {
      * <li>Moves to this space
      * </ol>
      */
+    @Override
     public void determineDependencies(final Adjudicator adjudicator) {
         addSupportsOfAndMovesToSource(adjudicator);
     }// determineDependencies()
@@ -145,6 +153,7 @@ public class Hold extends Order {
     /**
      * Hold order evaluation logic.
      */
+    @Override
     public void evaluate(final Adjudicator adjudicator) {
         Log.println("--- evaluate() dip.order.Hold ---");
 

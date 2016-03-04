@@ -115,6 +115,7 @@ public class MultiOrderEntry {
 
 
     private class Acceptor implements TextViewer.AcceptListener {
+        @Override
         public boolean isAcceptable(final TextViewer t) {
             String text = t.getText();
             text = text.trim();
@@ -124,6 +125,7 @@ public class MultiOrderEntry {
             return true;
         }// isAcceptable()
 
+        @Override
         public boolean getCloseDialogAfterUnacceptable() {
             return true;
         }// getCloseDialogAfterUnacceptable()

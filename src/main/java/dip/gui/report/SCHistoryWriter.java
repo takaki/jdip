@@ -87,6 +87,7 @@ public class SCHistoryWriter {
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
         tv.lazyLoadDisplayDialog(new TextViewer.TVRunnable() {
+            @Override
             public void run() {
                 setText(SCHistoryToHTML(clientFrame, w, true));
             }
@@ -118,6 +119,7 @@ public class SCHistoryWriter {
 
         // sort list by alphabetical order of the short name (abbreviation)
         Collections.sort(scList, new Comparator() {
+            @Override
             public int compare(final Object o1, final Object o2) {
                 final Province p1 = (Province) o1;
                 final Province p2 = (Province) o2;

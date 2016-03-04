@@ -709,6 +709,7 @@ public class OrderDisplayPanel extends JPanel {
      * Overriden to return the preferred size. This ensures that
      * we resize properly in a JSplitPane.
      */
+    @Override
     public Dimension getMinimumSize() {
         return new Dimension(getPreferredSize());
     }// getMinimumSize()
@@ -827,27 +828,33 @@ public class OrderDisplayPanel extends JPanel {
      */
     protected class ODPPropertyListener extends AbstractCFPListener {
 
+        @Override
         public void actionOrderCreated(final Orderable order) {
             orderListModel.addOrder(order);
         }// actionOrderCreated()
 
+        @Override
         public void actionOrderDeleted(final Orderable order) {
             orderListModel.removeOrder(order);
         }// actionOrderDeleted()
 
+        @Override
         public void actionOrdersCreated(final Orderable[] orders) {
             orderListModel.addOrders(orders);
         }// actionOrdersCreated()
 
+        @Override
         public void actionOrdersDeleted(final Orderable[] orders) {
             orderListModel.removeOrders(orders);
         }// actionOrdersDeleted()
 
+        @Override
         public void actionOrderablePowersChanged(final Power[] oldPowers,
                                                  final Power[] newPowers) {
             orderablePowers = newPowers;
         }// actionOrderablePowersChanged()
 
+        @Override
         public void actionDisplayablePowersChanged(final Power[] oldPowers,
                                                    final Power[] newPowers) {
             displayablePowers = newPowers;
@@ -856,6 +863,7 @@ public class OrderDisplayPanel extends JPanel {
             }
         }// actionDisplayablePowersChanged()
 
+        @Override
         public void actionValOptsChanged(final ValidationOptions options) {
             valOpts = options;
             if (turnState != null) {
@@ -863,12 +871,14 @@ public class OrderDisplayPanel extends JPanel {
             }
         }// actionValOptsChanged()
 
+        @Override
         public synchronized void actionWorldCreated(final World w) {
             world = w;
             undoManager = clientFrame.getUndoRedoManager();
             valOpts = clientFrame.getValidationOptions();
         }// actionWorldCreated()
 
+        @Override
         public void actionWorldDestroyed(final World w) {
             orderListModel.removeAllOrders();
             orderListModel.setSortComparator(new DOSortProvince());
@@ -880,6 +890,7 @@ public class OrderDisplayPanel extends JPanel {
             orderablePowers = null;
         }// actionWorldDestroyed()
 
+        @Override
         public void actionTurnstateChanged(final TurnState ts) {
             turnState = ts;
             if (turnState.getPhase()
@@ -895,6 +906,7 @@ public class OrderDisplayPanel extends JPanel {
             orderList.clearSelection();
         }// actionTurnstateChanged()
 
+        @Override
         public synchronized void actionModeChanged(final String newMode) {
             if (newMode == ClientFrame.MODE_ORDER) {
                 isEditable = true;
@@ -948,6 +960,7 @@ public class OrderDisplayPanel extends JPanel {
         /**
          * Return the Size of the list.
          */
+        @Override
         public int getSize() {
             return list.size();
         }// getSize()
@@ -955,6 +968,7 @@ public class OrderDisplayPanel extends JPanel {
         /**
          * Returns the object (DisplayOrder) at the given index.
          */
+        @Override
         public Object getElementAt(final int index) {
             return list.get(index);
         }// getElementAt()
@@ -1202,6 +1216,7 @@ public class OrderDisplayPanel extends JPanel {
      */
     private class OrderListRenderer extends DefaultListCellRenderer {
 
+        @Override
         public Component getListCellRendererComponent(final JList list, final Object value,
                                                       final int index,
                                                       final boolean isSelected,
@@ -1250,12 +1265,14 @@ public class OrderDisplayPanel extends JPanel {
         /**
          * Overridden for performance
          */
+        @Override
         public void invalidate() {
         }
 
         /**
          * Overriden for performance
          */
+        @Override
         public void repaint() {
         }
 
@@ -1374,6 +1391,7 @@ public class OrderDisplayPanel extends JPanel {
          * The compare method. This essentially returns the result of
          * compareDisplayOrders() unless the sort is reversed.
          */
+        @Override
         public final int compare(final Object o1, final Object o2) {
             final int result = compareDisplayOrders((DisplayOrder) o1,
                     (DisplayOrder) o2);
@@ -1438,6 +1456,7 @@ public class OrderDisplayPanel extends JPanel {
          * DOComparator Implementation. Passed parameters are
          * assumed to be DisplayOrder objects.
          */
+        @Override
         protected int compareDisplayOrders(final DisplayOrder do1, final DisplayOrder do2) {
             final Power p1 = do1.getOrder().getPower();
             final Power p2 = do2.getOrder().getPower();
@@ -1445,6 +1464,7 @@ public class OrderDisplayPanel extends JPanel {
             return p1.compareTo(p2);
         }// compare()
 
+        @Override
         protected Object getComparisonObject(final DisplayOrder displayedOrder) {
             return displayedOrder.getOrder().getPower();
         }// getComparisonObject()
@@ -1465,6 +1485,7 @@ public class OrderDisplayPanel extends JPanel {
         /**
          * DOComparator Implementation.
          */
+        @Override
         protected int compareDisplayOrders(final DisplayOrder do1, final DisplayOrder do2) {
             final Province pr1 = do1.getOrder().getSource().getProvince();
             final Province pr2 = do2.getOrder().getSource().getProvince();
@@ -1475,6 +1496,7 @@ public class OrderDisplayPanel extends JPanel {
         /**
          * DOComparator Implementation.
          */
+        @Override
         protected Object getComparisonObject(final DisplayOrder displayedOrder) {
             return displayedOrder.getOrder().getSource().getProvince();
         }// getComparisonObject()
@@ -1495,6 +1517,7 @@ public class OrderDisplayPanel extends JPanel {
         /**
          * DOComparator Implementation.
          */
+        @Override
         protected int compareDisplayOrders(final DisplayOrder do1, final DisplayOrder do2) {
             final String name1 = do1.getOrder().getSourceUnitType().getFullName();
             final String name2 = do2.getOrder().getSourceUnitType().getFullName();
@@ -1505,6 +1528,7 @@ public class OrderDisplayPanel extends JPanel {
         /**
          * DOComparator Implementation.
          */
+        @Override
         protected Object getComparisonObject(final DisplayOrder displayedOrder) {
             return displayedOrder.getOrder().getSourceUnitType();
         }// getComparisonObject()
@@ -1525,6 +1549,7 @@ public class OrderDisplayPanel extends JPanel {
         /**
          * DOComparator Implementation.
          */
+        @Override
         protected int compareDisplayOrders(final DisplayOrder do1, final DisplayOrder do2) {
             final String ordName1 = do1.getOrder().getFullName();
             final String ordName2 = do2.getOrder().getFullName();
@@ -1535,6 +1560,7 @@ public class OrderDisplayPanel extends JPanel {
         /**
          * DOComparator Implementation.
          */
+        @Override
         protected Object getComparisonObject(final DisplayOrder displayedOrder) {
             return displayedOrder.getOrder().getBriefName();
         }// getComparisonObject()
@@ -1581,6 +1607,7 @@ public class OrderDisplayPanel extends JPanel {
         sortCombo.addItem(Utils.getLocalString(LABEL_SORT_ORDER));
         sortCombo.setSelectedItem(Utils.getLocalString(LABEL_SORT_PROVINCE));
         sortCombo.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(final ActionEvent e) {
                 final String item = (String) ((JComboBox) e.getSource())
                         .getSelectedItem();

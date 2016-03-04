@@ -144,6 +144,7 @@ public class ValidationOptionsDialog extends HeaderDialog {
     }// ValidationOptionsDialog()
 
 
+    @Override
     public void close(final String actionCommand) {
         returnedOpts = (isOKorAccept(actionCommand)) ? valOpts : oldOpts;
         dispose();
@@ -207,6 +208,7 @@ public class ValidationOptionsDialog extends HeaderDialog {
 
 
     private class RBListener implements ActionListener {
+        @Override
         public void actionPerformed(final ActionEvent e) {
             // set options according to what we found from the button group.
             // if possible. The action command corresponds to the button index,
@@ -236,6 +238,7 @@ public class ValidationOptionsDialog extends HeaderDialog {
         optionList.setBorder(new EtchedBorder());
         optionList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         optionList.addListSelectionListener(new ListSelectionListener() {
+            @Override
             public void valueChanged(final ListSelectionEvent e) {
                 updatePanel();
             }

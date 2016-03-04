@@ -80,6 +80,7 @@ public class NGDRuleOptions extends JPanel implements NewGameDialog.NGDTabPane {
         optionList.setFixedCellWidth(100);
         optionList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         optionList.addListSelectionListener(new ListSelectionListener() {
+            @Override
             public void valueChanged(final ListSelectionEvent e) {
                 updateChoices();
             }
@@ -88,6 +89,7 @@ public class NGDRuleOptions extends JPanel implements NewGameDialog.NGDTabPane {
         // reset button
         reset = new JButton(Utils.getLocalString(BUTTON_RESET));
         reset.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(final ActionEvent e) {
                 resetData();
             }
@@ -129,6 +131,7 @@ public class NGDRuleOptions extends JPanel implements NewGameDialog.NGDTabPane {
     /**
      * Enables & Disables controls on this panel
      */
+    @Override
     public void setEnabled(final boolean value) {
         optionList.setEnabled(value);
         reset.setEnabled(value);
@@ -280,6 +283,7 @@ public class NGDRuleOptions extends JPanel implements NewGameDialog.NGDTabPane {
     /**
      * Get the tab name.
      */
+    @Override
     public String getTabName() {
         return Utils.getLocalString(TAB_NAME);
     }// getTabName()
@@ -287,6 +291,7 @@ public class NGDRuleOptions extends JPanel implements NewGameDialog.NGDTabPane {
     /**
      * The Variant has Changed.
      */
+    @Override
     public void variantChanged(final Variant variant) {
         this.variant = variant;
         resetData();
@@ -296,6 +301,7 @@ public class NGDRuleOptions extends JPanel implements NewGameDialog.NGDTabPane {
     /**
      * The Enabled status has Changed.
      */
+    @Override
     public void enablingChanged(final boolean enabled) {
         setEnabled(enabled);
     }// enablingChanged()
@@ -325,6 +331,7 @@ public class NGDRuleOptions extends JPanel implements NewGameDialog.NGDTabPane {
      * RB listener
      */
     private class RBListener implements ActionListener {
+        @Override
         public void actionPerformed(final ActionEvent e) {
             // set options according to what we found from the button group.
             // if possible. The action command corresponds to the button index,

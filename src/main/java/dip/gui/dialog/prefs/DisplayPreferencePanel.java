@@ -174,11 +174,13 @@ public class DisplayPreferencePanel extends PreferencePanel {
     }// DisplayPreferencePanel()
 
 
+    @Override
     public String getName() {
         return Utils.getLocalString(I18N_TAB_NAME);
     }// getName()
 
 
+    @Override
     public void apply() {
         final Preferences prefs = SharedPrefs.getUserNode();
 
@@ -201,11 +203,13 @@ public class DisplayPreferencePanel extends PreferencePanel {
     }// apply()
 
 
+    @Override
     public void setDefault() {
         orderFormat = OrderFormatOptions.createDefault();
     }// setDefault()
 
 
+    @Override
     public void cancel() {
         // do nothing
     }// cancel()
@@ -500,12 +504,14 @@ public class DisplayPreferencePanel extends PreferencePanel {
      * Listens for radiobutton changes, and updates the Example text.
      */
     private class ExampleChangeListener implements ChangeListener, ActionListener {
+        @Override
         public void stateChanged(final ChangeEvent e) {
             if (example != null) {
                 updateExampleAndFormatOptions();
             }
         }// stateChanged()
 
+        @Override
         public void actionPerformed(final ActionEvent e) {
             if (example != null) {
                 updateExampleAndFormatOptions();

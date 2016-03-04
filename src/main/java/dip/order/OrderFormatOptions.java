@@ -643,6 +643,7 @@ public class OrderFormatOptions implements Cloneable {
     /**
      * Clone
      */
+    @Override
     public Object clone() {
         try {
             return (OrderFormatOptions) super.clone();

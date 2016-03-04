@@ -454,6 +454,7 @@ public class ErrorDialog extends TextViewer {
                                                   final boolean submittable,
                                                   final BugReportInfo bri) {
         final ErrorDialog ed = new ErrorDialog(parent, title) {
+            @Override
             protected void close(final String actionCommand) {
                 if (ACTION_SUBMIT.equals(actionCommand)) {
                     setButtonEnabled(ACTION_SUBMIT, false);
@@ -507,6 +508,7 @@ public class ErrorDialog extends TextViewer {
                                                    final boolean submittable,
                                                    final BugReportInfo bri) {
         final ErrorDialog ed = new ErrorDialog(parent, title) {
+            @Override
             protected void close(final String actionCommand) {
                 if (ACTION_SUBMIT.equals(actionCommand)) {
                     if (submitBug(parent, bri)) {

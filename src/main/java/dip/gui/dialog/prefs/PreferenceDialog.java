@@ -91,6 +91,7 @@ public class PreferenceDialog extends HeaderDialog {
     /**
      * Apply or Cancel settings after closing dialog
      */
+    @Override
     public void close(final String actionCommand) {
         super.close(actionCommand);
 

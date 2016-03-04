@@ -131,6 +131,7 @@ public class MetadataDialog extends HeaderDialog {
     /**
      * Handle OK/Cancel selections
      */
+    @Override
     public void close(final String actionCommand) {
         super.close(actionCommand);
 
@@ -441,6 +442,7 @@ public class MetadataDialog extends HeaderDialog {
      * Listener to get Tab Icon colors
      */
     private class IconColorListener extends AbstractCFPListener {
+        @Override
         public void actionMMDReady(final MapMetadata mmd) {
             MetadataDialog.this.mmd = mmd;
             setTabIcons();

@@ -140,6 +140,7 @@ public class GeneralPreferencePanel extends PreferencePanel {
         saveDir.setEditable(false);
         browseSaveDir = new JButton(Utils.getLocalString(GPP_SAVE_DIR_BUTTON));
         browseSaveDir.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(final ActionEvent e) {
                 directoryBrowse();
             }// actionPerformed()
@@ -148,6 +149,7 @@ public class GeneralPreferencePanel extends PreferencePanel {
 
         clearMRU = new JButton(Utils.getLocalString(GPP_CLEAR_MRU_BUTTON));
         clearMRU.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(final ActionEvent e) {
                 clearFileList();
                 cf.getClientMenu().updateRecentFiles();
@@ -257,6 +259,7 @@ public class GeneralPreferencePanel extends PreferencePanel {
     }// directoryBrowse()
 
 
+    @Override
     public void apply() {
         final Preferences prefs = SharedPrefs.getUserNode();
 
@@ -281,11 +284,13 @@ public class GeneralPreferencePanel extends PreferencePanel {
     }// apply()
 
 
+    @Override
     public void cancel() {
         // do nothing
     }// cancel()
 
 
+    @Override
     public void setDefault() {
         saveWindowSettings.setSelected(false);
         showResolution.setSelected(false);
@@ -297,6 +302,7 @@ public class GeneralPreferencePanel extends PreferencePanel {
     }// applyDefault()
 
 
+    @Override
     public String getName() {
         return Utils.getLocalString(TAB_NAME);
     }// getName()
