@@ -26,7 +26,6 @@ import dip.misc.Utils;
 import dip.order.OrderFactory;
 import dip.world.World;
 
-import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.HTMLEditorKit.ParserCallback;
 import javax.swing.text.html.parser.ParserDelegator;
 import java.io.BufferedReader;
@@ -191,10 +190,9 @@ public class FlocImporter implements Runnable {
     private String getGameInfo() throws IOException {
         final StringBuffer gameInformation = new StringBuffer(16384);
 
-        URL u;
         BufferedReader reader = null;
         try {
-            u = new URL(
+            URL u = new URL(
                     "http://www.floc.net/observer.py?judge=" + judgeName + "&game=" + gameName + "&page=history&history_from=0&history_to=999999");
 
             fic.flocImportMessage(Utils.getLocalString(READING_CONTACT));
