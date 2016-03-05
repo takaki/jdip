@@ -946,6 +946,8 @@ public class ClientFrame extends JFrame {
         if (revision != null) {
             sb.append('.');
             sb.append(revision);
+        } else {
+            sb.append("");
         }
 
         if (language != null) {

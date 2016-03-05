@@ -52,9 +52,11 @@ class AdjustmentTest extends Specification {
         aim.get(pr).getDislodgedUnitCount() == 0
         aim.get(pr).getHomeSupplyCenterCount() == 4
         aim.get(pr).getSupplyCenterCount() == 4
+        aim.get(pr).getAdjustmentAmount() == 0
         aim.get(pe).getUnitCount() == 3
         aim.get(pe).getDislodgedUnitCount() == 0
         aim.get(pe).getHomeSupplyCenterCount() == 3
         aim.get(pe).getSupplyCenterCount() == 3
+        aim.get(pe).getAdjustmentAmount() == 0
     }
 }
