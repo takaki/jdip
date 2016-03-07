@@ -111,18 +111,11 @@ public class Result implements Serializable, Comparable<Result> {
     /**
      * For debugging. Use getPower() and getMessage() for general use.
      */
+    @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer(128);
 
-        if (power == null) {
-            sb.append("(none)");
-        } else {
-            sb.append(power);
-        }
-
-        sb.append(": ");
-        sb.append(message);
-        return sb.toString();
+        return String
+                .format("%s: %s", power != null ? power : "(none)", message);
     }// toString()
 
 
@@ -133,9 +126,7 @@ public class Result implements Serializable, Comparable<Result> {
      * If message may be empty, but never is null.
      */
     @Override
-    public int compareTo(final Result o) {
-        final Result result = (Result) o;
-
+    public int compareTo(final Result result) {
         // first: compare powers
         int compareResult;
         if (result.power == null && power == null) {

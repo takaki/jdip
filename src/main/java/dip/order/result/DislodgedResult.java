@@ -28,6 +28,8 @@ import dip.order.Orderable;
 import dip.world.Location;
 import dip.world.Province;
 
+import java.util.Objects;
+
 
 /**
  * Similar to an OrderResult, but allows the <b>optional</b> specification of:
@@ -53,9 +55,7 @@ public class DislodgedResult extends OrderResult {
 
     public DislodgedResult(final Orderable order, final String message,
                            final Location[] retreatLocations) {
-        if (order == null) {
-            throw new IllegalArgumentException("null order");
-        }
+        Objects.requireNonNull(order);
 
         power = order.getPower();
         this.message = message;
