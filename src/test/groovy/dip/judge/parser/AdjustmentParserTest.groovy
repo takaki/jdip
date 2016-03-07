@@ -63,13 +63,6 @@ The next phase of 'delphi' will be Adjustments for Winter of 1902.
         def ap = new AdjustmentParser(map, input);
         def oi = ap.getOwnership();
         def ai = ap.getAdjustments();
-        System.out.println("oi = " + oi);
-        System.out.println("ai = " + ai);
-        System.out.println("ai.length = " + ai.length);
-        for (int i = 0; i < ai.length; i++) {
-            System.out.println(ai[i]);
-            System.out.println("");
-        }
         def of = oi.find {o -> o.getPowerName() == "France"}
         def oa = oi.find {o -> o.getPowerName() == "Austria"}
 
@@ -77,6 +70,7 @@ The next phase of 'delphi' will be Adjustments for Winter of 1902.
         def aa = ai.find {o -> o.getPowerName() == "Austria"}
 
         expect:
+        ai.length == 7
         of.getProvinces().size() == 6
         oa.getProvinces().size() == 2
 

@@ -34,6 +34,7 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
 
 /**
  * First stage of Judge output parsing. Looks for the "::" line, determines
@@ -52,20 +53,20 @@ public class JudgeParser {
     private static final String JP_NO_COLONS = "JP.jp.nocolons";
 
     // instance variables
-    private final static int READ_AHEAD_LENGTH = 7200;
-    private BufferedReader reader;
-    private OrderFactory orderFactory;
+    private static final int READ_AHEAD_LENGTH = 7200;
+    private final BufferedReader reader;
+    private final OrderFactory orderFactory;
 
     private String judgeName;
     private String variantName;
     private String gameName;
-    private Phase phase = null;
+    private Phase phase;
 
     private String[] playerEmails;
     private String[] playerNames;
 
-    private String text = null;
-    private String initialText = null;
+    private String text;
+    private String initialText;
 
     public static final String JP_TYPE_LISTING = "Listing";
     public static final String JP_TYPE_HISTORY = "History";
@@ -250,9 +251,9 @@ public class JudgeParser {
                     line = reader.readLine();
                 }
 
-                playerNames = (String[]) names
+                playerNames = names
                         .toArray(new String[names.size()]);
-                playerEmails = (String[]) email
+                playerEmails = email
                         .toArray(new String[email.size()]);
                 return;
             }
@@ -328,8 +329,10 @@ public class JudgeParser {
         // we are not a history.
         // Next we try to find a result header.
         final Pattern hm = Pattern.compile(JudgeOrderParser.MOVE_ORDER_HEADER);
-        final Pattern hr = Pattern.compile(JudgeOrderParser.RETREAT_ORDER_HEADER);
-        final Pattern ha = Pattern.compile(JudgeOrderParser.ADJUSTMENT_ORDER_HEADER);
+        final Pattern hr = Pattern
+                .compile(JudgeOrderParser.RETREAT_ORDER_HEADER);
+        final Pattern ha = Pattern
+                .compile(JudgeOrderParser.ADJUSTMENT_ORDER_HEADER);
 
         reader.reset();
         count = 0;
@@ -344,7 +347,8 @@ public class JudgeParser {
                     m_hr.lookingAt() ||
                     m_ha.lookingAt()) {
                 type = JP_TYPE_RESULTS;
-                phase = Phase.parse(line.substring(0, line.indexOf("."))).orElse(null);
+                phase = Phase.parse(line.substring(0, line.indexOf(".")))
+                        .orElse(null);
                 break;
             }
             line = reader.readLine();
@@ -358,8 +362,10 @@ public class JudgeParser {
         }
 
         // Try to find a game starting message
-        final Pattern gs = Pattern.compile(JudgeOrderParser.GAME_STARTING_HEADER);
-        final Pattern sp = Pattern.compile(JudgeOrderParser.STARTING_POSITION_REGEX);
+        final Pattern gs = Pattern
+                .compile(JudgeOrderParser.GAME_STARTING_HEADER);
+        final Pattern sp = Pattern
+                .compile(JudgeOrderParser.STARTING_POSITION_REGEX);
 
         reader.reset();
         count = 0;
@@ -397,24 +403,12 @@ public class JudgeParser {
     /**
      * Given the current position in the reader, get the rest of the text to the end of the input
      */
-    private void makeRestOfText(final String toPrepend) throws IOException {
-        final StringBuffer sb = new StringBuffer(16384);
-
+    private void makeRestOfText(final String toPrepend) {
         // prepend text first, if any
-        if (toPrepend != null) {
-            sb.append(toPrepend);
-            sb.append('\n');
-        }
-
         // read rest of text
-        String line = reader.readLine();
-        while (line != null) {
-            sb.append(line);
-            sb.append('\n');
-            line = reader.readLine();
-        }
-
-        text = sb.toString();
+        text = String
+                .format("%s%s\n", toPrepend != null ? toPrepend + '\n' : "",
+                        reader.lines().collect(Collectors.joining("\n")));
     }// makeRestOfText()
 
 }// class JudgeParser
