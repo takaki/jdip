@@ -22,8 +22,8 @@
 //
 package dip.judge.parser;
 
-import dip.world.WorldMap;
 import dip.world.Power;
+import dip.world.WorldMap;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -132,7 +132,8 @@ public class AdjustmentParser {
     /**
      * Creates a AdjustmentParser object, which parses the given input for an Ownership and Adjustment info blocks
      */
-    public AdjustmentParser(final WorldMap map, final String input) throws IOException {
+    public AdjustmentParser(final WorldMap map,
+                            final String input) throws IOException {
         if (map == null || input == null) {
             throw new IllegalArgumentException();
         }
@@ -190,17 +191,10 @@ public class AdjustmentParser {
         /**
          * String output for debugging; may change between versions.
          */
+        @Override
         public String toString() {
-            final StringBuffer sb = new StringBuffer();
-            sb.append("OwnerInfo[power=");
-            sb.append(power);
-            sb.append(", locations=");
-            for (String location : locations) {
-                sb.append(location);
-                sb.append(',');
-            }
-            sb.append(']');
-            return sb.toString();
+            return String.format("OwnerInfo[power=%s, locations=%s]", power,
+                    String.join(",", locations));
         }// toString()
     }// nested class OwnerInfo
 
@@ -218,8 +212,8 @@ public class AdjustmentParser {
         /**
          * Create an AdjustInfo object
          */
-        public AdjustInfo(final String power, final int numSC, final int numUnits,
-                          final int toBuildOrRemove) {
+        public AdjustInfo(final String power, final int numSC,
+                          final int numUnits, final int toBuildOrRemove) {
             if (numSC < 0 || numUnits < 0 || toBuildOrRemove < 0 || power == null) {
                 throw new IllegalArgumentException("bad arguments");
             }
@@ -344,7 +338,8 @@ public class AdjustmentParser {
             } else if (tok.endsWith(":")) {
                 // should be a Power
                 //
-                final Power p = map.getPower(tok.substring(0, tok.length() - 1));
+                final Power p = map
+                        .getPower(tok.substring(0, tok.length() - 1));
                 if (p == null) {
                     throw new IOException(
                             "Adjustment Block: Power " + tok + " not recognized.");
