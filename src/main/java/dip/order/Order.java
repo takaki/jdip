@@ -372,12 +372,9 @@ public abstract class Order extends Object implements Orderable, Serializable {
      * <br>
      * Example: France: Army Spain/sc
      */
-    protected final void appendFull(final StringBuffer sb) {
-        sb.append(power);
-        sb.append(": ");
-        sb.append(srcUnitType.getFullName());
-        sb.append(' ');
-        src.appendFull(sb);
+    protected final String getFull() {
+        return String.format("%s: %s %s", power, srcUnitType.getFullName(),
+                src.getFull());
     }// appendFull()
 
 
@@ -386,12 +383,9 @@ public abstract class Order extends Object implements Orderable, Serializable {
      * <br>
      * Example: France: Army spa/sc
      */
-    protected final void appendBrief(final StringBuffer sb) {
-        sb.append(power);
-        sb.append(": ");
-        sb.append(srcUnitType.getShortName());
-        sb.append(' ');
-        src.appendBrief(sb);
+    protected final String getBrief() {
+        return String.format("%s: %s %s", power, srcUnitType.getShortName(),
+                src.getBrief());
     }// appendBrief()
 
 
@@ -404,6 +398,7 @@ public abstract class Order extends Object implements Orderable, Serializable {
     /**
      * For debugging: calls toBriefString(). Note this will fail if order is null.
      */
+    @Override
     public String toString() {
         return toBriefString();
     }// toString()

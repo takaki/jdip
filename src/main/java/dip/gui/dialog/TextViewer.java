@@ -726,14 +726,12 @@ public class TextViewer extends HeaderDialog {
                     .getText(Utils.getResourceBasePrefix() + m.group(1));
 
             if (cssText != null) {
-                final StringBuffer sb = new StringBuffer(text.length() + 4096);
-                sb.append(text.substring(0, m.start()));
-                sb.append(
-                        "<style type=\"text/css\" media=\"screen\">\n\t<!--\n");
-                sb.append(cssText);
-                sb.append("\n\t-->\n</style>");
-                sb.append(text.substring(m.end()));
-                return sb.toString();
+                String sb = text.substring(0, m.start()) +
+                        "<style type=\"text/css\" media=\"screen\">\n\t<!--\n" +
+                        cssText +
+                        "\n\t-->\n</style>" +
+                        text.substring(m.end());
+                return sb;
             }
         }
 

@@ -777,11 +777,10 @@ public class ErrorDialog extends TextViewer {
          * on a single line.
          */
         public void add(final String name, final String value) {
-            final StringBuffer sb = new StringBuffer();
-            sb.append(name == null ? "" : name);
-            sb.append(": ");
-            sb.append(value);
-            list.add(sb.toString());
+            String sb = (name == null ? "" : name) +
+                    ": " +
+                    value;
+            list.add(sb);
         }// add()
 
 
@@ -812,11 +811,10 @@ public class ErrorDialog extends TextViewer {
          * Gets a brief description of the throwable
          */
         public String getBriefDescription() {
-            final StringBuffer sb = new StringBuffer(128);
-            sb.append(t.getClass().getName());
-            sb.append(": ");
-            sb.append(t.getMessage());
-            return sb.toString();
+            String sb = t.getClass().getName() +
+                    ": " +
+                    t.getMessage();
+            return sb;
         }// getBriefDescription()
 
 
@@ -872,11 +870,10 @@ public class ErrorDialog extends TextViewer {
                 while (propEnum.hasMoreElements()) {
                     final String propName = (String) propEnum.nextElement();
                     if (!propName.equals("line.separator")) {
-                        final StringBuffer line = new StringBuffer(128);
-                        line.append(propName);
-                        line.append(": ");
-                        line.append(props.getProperty(propName));
-                        list.add(line.toString());
+                        String line = propName +
+                                ": " +
+                                props.getProperty(propName);
+                        list.add(line);
                     }
                 }
 

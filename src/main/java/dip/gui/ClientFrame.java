@@ -22,7 +22,14 @@
 //
 package dip.gui;
 
-import dip.gui.dialog.*;
+import dip.gui.dialog.AboutDialog;
+import dip.gui.dialog.ErrorDialog;
+import dip.gui.dialog.FileDropTargetListener;
+import dip.gui.dialog.MapPicker;
+import dip.gui.dialog.MetadataDialog;
+import dip.gui.dialog.MultiOrderEntry;
+import dip.gui.dialog.SelectPhaseDialog;
+import dip.gui.dialog.ValidationOptionsDialog;
 import dip.gui.dialog.newgame.NewGameDialog;
 import dip.gui.dialog.prefs.DisplayPreferencePanel;
 import dip.gui.dialog.prefs.GeneralPreferencePanel;
@@ -32,7 +39,11 @@ import dip.gui.map.MapPanel;
 import dip.gui.map.MapRenderer2;
 import dip.gui.map.RenderCommandFactory.RenderCommand;
 import dip.gui.order.GUIOrderFactory;
-import dip.gui.report.*;
+import dip.gui.report.OrderStatsWriter;
+import dip.gui.report.ResultWriter;
+import dip.gui.report.SCHistoryWriter;
+import dip.gui.report.StateWriter;
+import dip.gui.report.VariantInfoWriter;
 import dip.gui.swing.XJFileChooser;
 import dip.gui.undo.UndoRedoManager;
 import dip.gui.undo.UndoResolve;
@@ -52,7 +63,13 @@ import dip.world.Power;
 import dip.world.TurnState;
 import dip.world.World;
 import dip.world.variant.VariantManager;
-import jcmdline.*;
+import jcmdline.BooleanParam;
+import jcmdline.CmdLineHandler;
+import jcmdline.FileParam;
+import jcmdline.HelpCmdLineHandler;
+import jcmdline.Parameter;
+import jcmdline.StringParam;
+import jcmdline.VersionCmdLineHandler;
 import org.apache.batik.util.XMLResourceDescriptor;
 import org.xml.sax.XMLReader;
 
@@ -820,7 +837,8 @@ public class ClientFrame extends JFrame {
     /**
      * Fired when multiple orders were created
      */
-    public final void fireMultipleOrdersCreated(final Orderable[] createdOrders) {
+    public final void fireMultipleOrdersCreated(
+            final Orderable[] createdOrders) {
         synchronized (fireLock) {
             checkNotNull(createdOrders);
             firePropertyChange(EVT_MULTIPLE_ORDERS_CREATED, null,
@@ -831,7 +849,8 @@ public class ClientFrame extends JFrame {
     /**
      * Fired when multiple orders were deleted
      */
-    public final void fireMultipleOrdersDeleted(final Orderable[] deletedOrders) {
+    public final void fireMultipleOrdersDeleted(
+            final Orderable[] deletedOrders) {
         synchronized (fireLock) {
             checkNotNull(deletedOrders);
             firePropertyChange(EVT_MULTIPLE_ORDERS_DELETED, deletedOrders,
@@ -897,8 +916,8 @@ public class ClientFrame extends JFrame {
     /**
      * Fired if we change the order Validation Options. New/Old options sent.
      */
-    public final void fireValidationOptionsChanged(final ValidationOptions oldOpts,
-                                                   final ValidationOptions newOpts) {
+    public final void fireValidationOptionsChanged(
+            final ValidationOptions oldOpts, final ValidationOptions newOpts) {
         checkNotNull(oldOpts);
         checkNotNull(newOpts);
         firePropertyChange(EVT_VALOPTS_CHANGED, oldOpts, newOpts);
@@ -938,23 +957,9 @@ public class ClientFrame extends JFrame {
         final String revision = Utils.getLocalStringNoEx(KEY_VERSION_REVISION);
         final String language = Utils.getLocalStringNoEx(KEY_CURRENT_LANGUAGE);
 
-        final StringBuffer sb = new StringBuffer(80);
-        sb.append(VERSION_MAJOR);
-        sb.append('.');
-        sb.append(VERSION_MINOR);
-
-        if (revision != null) {
-            sb.append('.');
-            sb.append(revision);
-        }
-
-        if (language != null) {
-            sb.append(" (");
-            sb.append(language);
-            sb.append(")");
-        }
-
-        return sb.toString();
+        return String.format("%s.%d%s%s", String.valueOf(VERSION_MAJOR),
+                VERSION_MINOR, revision != null ? '.' + revision : "",
+                language != null ? " (" + language + ")" : "");
     }// getVersion()
 
 
@@ -1055,18 +1060,15 @@ public class ClientFrame extends JFrame {
                 }
             } else if (evtName == EVT_DISPLAYABLE_POWERS_CHANGED) {
                 synchronized (ClientFrame.this) {
-                    displayablePowers = (Power[]) evt
-                            .getNewValue();
+                    displayablePowers = (Power[]) evt.getNewValue();
                 }
             } else if (evtName == EVT_ORDERABLE_POWERS_CHANGED) {
                 synchronized (ClientFrame.this) {
-                    orderablePowers = (Power[]) evt
-                            .getNewValue();
+                    orderablePowers = (Power[]) evt.getNewValue();
                 }
             } else if (evtName == EVT_MMD_READY) {
                 synchronized (ClientFrame.this) {
-                    mapMetadata = (MapMetadata) evt
-                            .getNewValue();
+                    mapMetadata = (MapMetadata) evt.getNewValue();
                 }
             }
         }
@@ -1120,7 +1122,8 @@ public class ClientFrame extends JFrame {
 
         // if Locale has been set, use it.
         if (argLocale.isSet()) {
-            final Locale locale = new Locale(argLocale.getValue().toLowerCase());
+            final Locale locale = new Locale(
+                    argLocale.getValue().toLowerCase());
             System.out.println(
                     "Using Language: " + locale.getLanguage() + " [" + locale
                             .getDisplayLanguage() + "]");
@@ -1165,8 +1168,8 @@ public class ClientFrame extends JFrame {
     public void resolveOrders() {
         if (orderDisplayPanel != null) {
             final TurnState resolvedTurnState = getTurnState();
-            final StdAdjudicator stdJudge = new StdAdjudicator(getGUIOrderFactory(),
-                    resolvedTurnState);
+            final StdAdjudicator stdJudge = new StdAdjudicator(
+                    getGUIOrderFactory(), resolvedTurnState);
             stdJudge.setStatReporting(true);        // report order statistics
             stdJudge.setPowerOrderChecking(true);    // check for cheats & bugs
             stdJudge.process();
@@ -1188,8 +1191,7 @@ public class ClientFrame extends JFrame {
             undoManager.simplify();
 
             // see if game has ended; if so, show a dialog & change mode
-            if (getTurnState()
-                    .isEnded() || newTurnState != null && newTurnState
+            if (getTurnState().isEnded() || newTurnState != null && newTurnState
                     .isEnded()) {
                 Utils.popupInfo(ClientFrame.this,
                         Utils.getLocalString("ClientFrame.ended.dialog.title"),
@@ -1473,7 +1475,8 @@ public class ClientFrame extends JFrame {
         //
         public void onHistorySelect() {
             if (orderDisplayPanel != null) {
-                final Phase phase = SelectPhaseDialog.displayDialog(ClientFrame.this);
+                final Phase phase = SelectPhaseDialog
+                        .displayDialog(ClientFrame.this);
                 if (phase != null) {
                     fireTurnstateChanged(world.getTurnState(phase));
                 }
@@ -1521,7 +1524,8 @@ public class ClientFrame extends JFrame {
 
         public void onViewUnits() {
             if (mapPanel != null) {
-                final boolean value = clientMenu.getSelected(ClientMenu.VIEW_UNITS);
+                final boolean value = clientMenu
+                        .getSelected(ClientMenu.VIEW_UNITS);
                 final RenderCommand rc = mapPanel.getRenderCommandFactory()
                         .createRCSetDisplayUnits(mapPanel.getMapRenderer(),
                                 value);
@@ -1640,7 +1644,7 @@ public class ClientFrame extends JFrame {
      */
     private void initVariantManager() {
 //        try {
-            new VariantManager(); // FIXME
+        new VariantManager(); // FIXME
 //        } catch (dip.world.variant.NoVariantsException e) {
 //            // display informative message, as a popup
 //            Utils.popupError(null, Utils.getLocalString(

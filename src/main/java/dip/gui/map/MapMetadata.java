@@ -429,10 +429,8 @@ public class MapMetadata {
      * is not recognized. Case sensitive.
      */
     public SymbolSize getSymbolSize(final String symbolName) {
-        final StringBuffer sbKey = new StringBuffer(64);
-        sbKey.append(EL_SYMBOLSIZE);
-        sbKey.append(symbolName);
-        return (SymbolSize) displayProps.get(sbKey.toString());
+        String sbKey = EL_SYMBOLSIZE + symbolName;
+        return (SymbolSize) displayProps.get(sbKey);
     }// getSymbolSize()
 
 
@@ -536,10 +534,8 @@ public class MapMetadata {
      * For filter parameter, if no filter is supplied, returns an empty string.
      */
     private Object getOrderParam(final String el, final String att) {
-        final StringBuffer sb = new StringBuffer(64);
-        sb.append(el);
-        sb.append(att);
-        final Object value = displayProps.get(sb.toString());
+        String sb = el + att;
+        final Object value = displayProps.get(sb);
 
         if (value == null) {
             throw new IllegalArgumentException(
@@ -944,10 +940,8 @@ public class MapMetadata {
             throw new MapException(el + " attribute " + att + " is missing!");
         }
 
-        final StringBuffer sb = new StringBuffer(64);
-        sb.append(el);
-        sb.append(att);
-        displayProps.put(sb.toString(), value);
+        String sb = el + att;
+        displayProps.put(sb, value);
     }// putOrderParam()
 
 
@@ -960,10 +954,8 @@ public class MapMetadata {
             throw new IllegalArgumentException();
         }
 
-        final StringBuffer sb = new StringBuffer(64);
-        sb.append(el);
-        sb.append(att);
-        displayProps.put(sb.toString(), value);
+        String sb = el + att;
+        displayProps.put(sb, value);
     }// putOptionalOrderParam()
 
 
@@ -987,11 +979,9 @@ public class MapMetadata {
                     .getTagName() + " symbol named \"" + name + "\" not found in symbol pack! Case sensitive.");
         }
 
-        final StringBuffer sbKey = new StringBuffer(64);
-        sbKey.append(EL_SYMBOLSIZE);
-        sbKey.append(name);
+        String sbKey = EL_SYMBOLSIZE + name;
 
-        displayProps.put(sbKey.toString(),
+        displayProps.put(sbKey,
                 new SymbolSize(w, h, symbol.getScale(), el));
     }// parseAndAddSymbolSize()
 

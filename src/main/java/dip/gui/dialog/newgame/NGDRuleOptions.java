@@ -273,11 +273,10 @@ public class NGDRuleOptions extends JPanel implements NGDTabPane {
      * makes the text HTML
      */
     private String makeHTML(final String in) {
-        final StringBuffer sb = new StringBuffer(in.length() + 64);
-        sb.append("<html><font face=\"Arial, Helvetica\" size=\"-1\">");
-        sb.append(in);
-        sb.append("</html>");
-        return sb.toString();
+        String sb = "<html><font face=\"Arial, Helvetica\" size=\"-1\">" +
+                in +
+                "</html>";
+        return sb;
     }// makeHTML()
 
 

@@ -22,8 +22,8 @@
 //
 package dip.judge.parser;
 
-import dip.world.WorldMap;
 import dip.world.Power;
+import dip.world.WorldMap;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -31,6 +31,8 @@ import java.io.StringReader;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -61,14 +63,14 @@ public class AdjustmentParser {
 
 
     // INSTANCE VARIABLES
-    private WorldMap map = null;
+    private WorldMap map;
 
-    private List<OwnerInfo> ownerList = null;
-    private List<AdjustInfo> adjustList = null;
-    private Pattern regexAdjust = null;
+    private List<OwnerInfo> ownerList;
+    private List<AdjustInfo> adjustList;
+    private Pattern regexAdjust;
 
-    private OwnerInfo[] ownerInfo = null;
-    private AdjustInfo[] adjustInfo = null;
+    private OwnerInfo[] ownerInfo;
+    private AdjustInfo[] adjustInfo;
 
 	/*
     // TEST
@@ -132,10 +134,10 @@ public class AdjustmentParser {
     /**
      * Creates a AdjustmentParser object, which parses the given input for an Ownership and Adjustment info blocks
      */
-    public AdjustmentParser(final WorldMap map, final String input) throws IOException {
-        if (map == null || input == null) {
-            throw new IllegalArgumentException();
-        }
+    public AdjustmentParser(final WorldMap map,
+                            final String input) throws IOException {
+        Objects.requireNonNull(map);
+        Objects.requireNonNull(input);
 
         this.map = map;
         parseInput(input);
@@ -190,17 +192,10 @@ public class AdjustmentParser {
         /**
          * String output for debugging; may change between versions.
          */
+        @Override
         public String toString() {
-            final StringBuffer sb = new StringBuffer();
-            sb.append("OwnerInfo[power=");
-            sb.append(power);
-            sb.append(", locations=");
-            for (String location : locations) {
-                sb.append(location);
-                sb.append(',');
-            }
-            sb.append(']');
-            return sb.toString();
+            return String.format("OwnerInfo[power=%s, locations=%s]", power,
+                    String.join(",", locations));
         }// toString()
     }// nested class OwnerInfo
 
@@ -218,9 +213,10 @@ public class AdjustmentParser {
         /**
          * Create an AdjustInfo object
          */
-        public AdjustInfo(final String power, final int numSC, final int numUnits,
-                          final int toBuildOrRemove) {
-            if (numSC < 0 || numUnits < 0 || toBuildOrRemove < 0 || power == null) {
+        public AdjustInfo(final String power, final int numSC,
+                          final int numUnits, final int toBuildOrRemove) {
+            Objects.requireNonNull(power);
+            if (numSC < 0 || numUnits < 0 || toBuildOrRemove < 0) {
                 throw new IllegalArgumentException("bad arguments");
             }
 
@@ -261,18 +257,11 @@ public class AdjustmentParser {
         /**
          * String output for debugging; may change between versions.
          */
+        @Override
         public String toString() {
-            final StringBuffer sb = new StringBuffer();
-            sb.append("AdjustInfo[power=");
-            sb.append(power);
-            sb.append(", SC=");
-            sb.append(numSC);
-            sb.append(", units=");
-            sb.append(numUnits);
-            sb.append(", change=");
-            sb.append(toBuildOrRemove);
-            sb.append(']');
-            return sb.toString();
+            return String
+                    .format("AdjustInfo[power=%s, SC=%d, units=%d, change=%d]",
+                            power, numSC, numUnits, toBuildOrRemove);
         }// toString()
     }// nested class AdjustInfo
 
@@ -309,10 +298,8 @@ public class AdjustmentParser {
 
 
         // create the output array
-        ownerInfo = (OwnerInfo[]) ownerList
-                .toArray(new OwnerInfo[ownerList.size()]);
-        adjustInfo = (AdjustInfo[]) adjustList
-                .toArray(new AdjustInfo[adjustList.size()]);
+        ownerInfo = ownerList.toArray(new OwnerInfo[ownerList.size()]);
+        adjustInfo = adjustList.toArray(new AdjustInfo[adjustList.size()]);
 
         // cleanup
         br.close();
@@ -329,7 +316,7 @@ public class AdjustmentParser {
      */
     private void parseOwnerBlock(final String text) throws IOException {
         // map of Powers to StringBuffers
-        final HashMap<Power, StringBuffer> pmap = new HashMap<>();
+        final Map<Power, StringBuffer> pmap = new HashMap<>();
 
         // parse and re-formulate
         // into a new string
@@ -345,7 +332,8 @@ public class AdjustmentParser {
             } else if (tok.endsWith(":")) {
                 // should be a Power
                 //
-                final Power p = map.getPower(tok.substring(0, tok.length() - 1));
+                final Power p = map
+                        .getPower(tok.substring(0, tok.length() - 1));
                 if (p == null) {
                     throw new IOException(
                             "Adjustment Block: Power " + tok + " not recognized.");
@@ -368,8 +356,7 @@ public class AdjustmentParser {
         // there may be a "." on the end of some
         // which should be eliminated.
         //
-        final Power[] allPowers = map.getPowers().toArray(new Power[0]);
-        for (Power allPower : allPowers) {
+        for (Power allPower : map.getPowers()) {
             final StringBuffer sb = pmap.get(allPower);
             if (sb != null) {
                 final String[] provs = sb.toString().split("[\\,]");

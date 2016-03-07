@@ -233,43 +233,17 @@ public class Support extends Order {
 
     @Override
     public String toBriefString() {
-        final StringBuffer sb = new StringBuffer(64);
-
-        appendBrief(sb);
-        sb.append(' ');
-        sb.append(orderNameBrief);
-        sb.append(' ');
-        sb.append(supUnitType.getShortName());
-        sb.append(' ');
-        supSrc.appendBrief(sb);
-
-        if (!isSupportingHold()) {
-            sb.append('-');
-            supDest.appendBrief(sb);
-        }
-
-        return sb.toString();
+        return String.format("%s %s %s %s%s", getBrief(), orderNameBrief,
+                supUnitType.getShortName(), supSrc.getBrief(),
+                isSupportingHold() ? "" : '-' + supDest.getBrief());
     }// toBriefString()
 
 
     @Override
     public String toFullString() {
-        final StringBuffer sb = new StringBuffer(128);
-
-        appendFull(sb);
-        sb.append(' ');
-        sb.append(orderNameFull);
-        sb.append(' ');
-        sb.append(supUnitType.getFullName());
-        sb.append(' ');
-        supSrc.appendFull(sb);
-
-        if (!isSupportingHold()) {
-            sb.append(" -> ");
-            supDest.appendFull(sb);
-        }
-
-        return sb.toString();
+        return String.format("%s %s %s %s%s", getFull(), orderNameFull,
+                supUnitType.getFullName(), supSrc.getFull(),
+                isSupportingHold() ? "" : " -> " + supDest.getFull());
     }// toFullString()
 
 

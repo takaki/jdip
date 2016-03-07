@@ -403,31 +403,24 @@ public final class NJudgeOrderParser {
          * For debugging only
          */
         public String toString() {
-            final StringBuffer sb = new StringBuffer(256);
-            sb.append(getClass().getName());
-            sb.append("[");
-            sb.append(order);
+            String sb = getClass().getName() +
+                    "[" +
+                    order +
+                    ";results=" +
+                    results +
+                    ",isAdjust=" +
+                    isAdjustment +
+                    ",adjPower=" +
+                    specialAdjustmentPower +
+                    ",waive=" +
+                    isWaive +
+                    ",unusedPendingBuilds=" +
+                    unusedPendingBuilds +
+                    ",unusedPendingWaives=" +
+                    unusedPendingWaives +
+                    "]";
 
-            sb.append(";results=");
-            sb.append(results);
-
-            sb.append(",isAdjust=");
-            sb.append(isAdjustment);
-
-            sb.append(",adjPower=");
-            sb.append(specialAdjustmentPower);
-
-            sb.append(",waive=");
-            sb.append(isWaive);
-
-            sb.append(",unusedPendingBuilds=");
-            sb.append(unusedPendingBuilds);
-
-            sb.append(",unusedPendingWaives=");
-            sb.append(unusedPendingWaives);
-
-            sb.append("]");
-            return sb.toString();
+            return sb;
         }
     }// nested class NJudgeOrder
 

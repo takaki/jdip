@@ -37,9 +37,10 @@ import dip.world.Unit.Type;
 import dip.world.WorldMap;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.StringTokenizer;
+import java.util.stream.Collectors;
 
 /**
  * Parses text to create an Order object.
@@ -281,7 +282,8 @@ public class OrderParser {
         // with shorter version.
         // NOTE: this may be overkill, especially since it won't replace
         // *partial* province names, like "North-atl"
-        map.replaceProvinceNames(sb);
+
+        sb.replace(0, sb.length(), map.replaceProvinceNames(sb.toString()));
 
         // filter out power names [required at beginning to filter out power names
         // with odd characters such as hyphens]. Excludes first token.
@@ -302,7 +304,7 @@ public class OrderParser {
         // get the 'power token' (or null).
         // this is so if a power name has odd characters in it (e.g., chaos map)
         // they do not undergo replacement.
-        final String ptok = map.getFirstPowerToken(sb).get();
+        final String ptok = map.getFirstPowerToken(sb.toString()).get();
         final int startIdx = ptok == null ? 0 : ptok.length();
 
         // string replacement
@@ -324,7 +326,7 @@ public class OrderParser {
         delChars(sb, TODELETE);
 
         // re-replace, after conversion
-        map.replaceProvinceNames(sb);
+        sb.replace(0, sb.length(), map.replaceProvinceNames(sb.toString()));
 
         // filter out power names; often occurs in 'support' orders.
         // could also appear in a convoy order as well
@@ -901,37 +903,30 @@ public class OrderParser {
         final Coast coast = Coast.parse(locName);
 
         // parse the province. if there are 'ties', we return the result.
-        final Collection<Province> col = map
-                .getProvincesMatchingClosest(locName);
-        final Province[] provinces = col.toArray(new Province[col.size()]);
+        final List<Province> provinces = new ArrayList<>(
+                map.getProvincesMatchingClosest(locName));
 
-
-        switch (provinces.length) {
+        switch (provinces.size()) {
             case 0:
                 // nothing matched! we didn't recognize.
                 throw new OrderException(
                         Utils.getLocalString(OF_PROVINCE_NOT_RECOGNIZED,
                                 locName));
             case 1:
-                return new Location(provinces[0], coast);
+                return new Location(provinces.get(0), coast);
             case 2:
                 // 2 matches... means it's unclear!
                 throw new OrderException(
                         Utils.getLocalString(OF_PROVINCE_UNCLEAR, locName,
-                                provinces[0], provinces[1]));
+                                provinces.get(0), provinces.get(1)));
             default:
                 // multiple matches! unclear. give a more detailed error message.
                 // create a comma-separated list of all but the last.
-                final StringBuffer sb = new StringBuffer(128);
-                for (int i = 0; i < provinces.length - 1; i++) {
-                    sb.append(provinces[i]);
-                    sb.append(", ");
-                }
-
                 throw new OrderException(
                         Utils.getLocalString(OF_PROVINCE_UNCLEAR, locName,
-                                sb.toString(),
-                                provinces[provinces.length - 1]));
+                                provinces.stream().map(Province::toString)
+                                        .collect(Collectors.joining(", ")),
+                                ""));
         }
     }// parseLocation()
 

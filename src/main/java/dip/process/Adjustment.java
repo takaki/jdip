@@ -60,27 +60,25 @@ public final class Adjustment {
 
         final Position position = turnState.getPosition();
         final List<Province> provinces = position.getProvinces();
+        ai.numUnits += provinces.stream()
+                .filter(province -> position.getUnit(province)
+                        .filter(u -> Objects.equals(u.getPower(), power))
+                        .isPresent()).count();
 
-        for (final Province province : provinces) {
-            // tally units
-            position.getUnit(province)
-                    .filter(u -> Objects.equals(u.getPower(), power))
-                    .ifPresent(u -> ai.numUnits++);
-
-            position.getDislodgedUnit(province)
-                    .filter(unit -> Objects.equals(unit.getPower(), power))
-                    .ifPresent(unit -> ai.numDislodgedUnits++);
-
-            // tally supply centers
-            position.getSupplyCenterOwner(province)
-                    .filter(p -> Objects.equals(p, power)).ifPresent(p0 -> {
-                ai.numSC++;
-                position.getSupplyCenterHomePower(province)
+        ai.numDislodgedUnits += provinces.stream()
+                .filter(province -> position.getDislodgedUnit(province)
+                        .filter(unit -> Objects.equals(unit.getPower(), power))
+                        .isPresent()).count();
+        ai.numSC += provinces.stream()
+                .filter(province -> position.getSupplyCenterOwner(province)
+                        .filter(p -> Objects.equals(p, power)).isPresent())
+                .count();
+        ai.numHSC += provinces.stream()
+                .filter(province -> position.getSupplyCenterOwner(province)
                         .filter(p -> Objects.equals(p, power))
-                        .ifPresent(p -> ai.numHSC++);
-            });
-        }
-
+                        .map(p0 -> position.getSupplyCenterHomePower(province)
+                                .filter(p -> Objects.equals(p, power)))
+                        .isPresent()).count();
         return ai;
     }// getAdjustmentInfo()
 
@@ -106,22 +104,23 @@ public final class Adjustment {
 
         // Iterate for all Powers
         final Position position = turnState.getPosition();
-        final List<Province> provinces = position.getProvinces();
 
+        final List<Province> provinces = position.getProvinces();
         for (final Province province : provinces) {
-            boolean hasUnit = false;
+            final boolean hasUnit;
 
             // tally units
             final Unit unit = position.getUnit(province).orElse(null);
             if (unit != null) {
                 adjMap.get(unit.getPower()).numUnits++;
                 hasUnit = true;
+            } else {
+                hasUnit = false;
             }
 
-            final Unit orElse = position.getDislodgedUnit(province)
-                    .orElse(null);
-            if (orElse != null) {
-                adjMap.get(orElse.getPower()).numDislodgedUnits++;
+            final Unit unit1 = position.getDislodgedUnit(province).orElse(null);
+            if (unit1 != null) {
+                adjMap.get(unit1.getPower()).numDislodgedUnits++;
             }
 
             // tally supply centers
@@ -135,13 +134,13 @@ public final class Adjustment {
                 }
 
 
-                final Power anElse = position.getSupplyCenterHomePower(province)
+                final Power power1 = position.getSupplyCenterHomePower(province)
                         .orElse(null);
-                if (anElse != null) {
-                    adjMap.get(anElse).numHSC++;
+                if (power1 != null) {
+                    adjMap.get(power1).numHSC++;
 
                     if (hasUnit) {
-                        adjMap.get(anElse).numOccHSC++;
+                        adjMap.get(power1).numOccHSC++;
                     }
                 }
             }
@@ -206,30 +205,34 @@ public final class Adjustment {
 
             assert numOccSC <= numSC;
 
-            if (buildOpt == OptionValue.VALUE_BUILDS_HOME_ONLY) {
-                // Adjustment = number of SC gained. But, if we have gained more adjustments
-                // than we have home supply centers to build on, those builds are discarded.
-                // Or, if some are occupied, those builds are discarded.
-                // e.g.:
-                // 		3 builds, 3 empty owned home supply centers: adjustments: +3
-                // 		3 builds, 2 empty owned home supply centers: adjustments: +2
-                adj = numSC - numUnits;
-                adj = adj > numHSC - numOccHSC ? numHSC - numOccHSC : adj;
-            } else if (buildOpt == OptionValue.VALUE_BUILDS_ANY_OWNED) {
-                // We can build in any owned supply center. Effectively, then,
-                // ALL owned supply centers are home supply centers.
-                numHSC = numSC;
-                adj = numSC - numUnits;
-                adj = adj > numSC - numOccSC ? numSC - numOccSC : adj;
-            } else if (buildOpt == OptionValue.VALUE_BUILDS_ANY_IF_HOME_OWNED) {
-                // We can build in any supply center, if at least ONE home supply
-                // center is owned.
-                adj = numSC - numUnits;
-                adj = adj > 0 && numHSC < 1 ? 0 : adj;
-                adj = adj > numSC - numOccSC ? numSC - numOccSC : adj;
-            } else {
-                // should not occur
-                throw new IllegalStateException();
+            switch (buildOpt) {
+                case VALUE_BUILDS_HOME_ONLY:
+                    // Adjustment = number of SC gained. But, if we have gained more adjustments
+                    // than we have home supply centers to build on, those builds are discarded.
+                    // Or, if some are occupied, those builds are discarded.
+                    // e.g.:
+                    // 		3 builds, 3 empty owned home supply centers: adjustments: +3
+                    // 		3 builds, 2 empty owned home supply centers: adjustments: +2
+                    adj = numSC - numUnits;
+                    adj = adj > numHSC - numOccHSC ? numHSC - numOccHSC : adj;
+                    break;
+                case VALUE_BUILDS_ANY_OWNED:
+                    // We can build in any owned supply center. Effectively, then,
+                    // ALL owned supply centers are home supply centers.
+                    numHSC = numSC;
+                    adj = numSC - numUnits;
+                    adj = adj > numSC - numOccSC ? numSC - numOccSC : adj;
+                    break;
+                case VALUE_BUILDS_ANY_IF_HOME_OWNED:
+                    // We can build in any supply center, if at least ONE home supply
+                    // center is owned.
+                    adj = numSC - numUnits;
+                    adj = adj > 0 && numHSC < 1 ? 0 : adj;
+                    adj = adj > numSC - numOccSC ? numSC - numOccSC : adj;
+                    break;
+                default:
+                    // should not occur
+                    throw new IllegalStateException();
             }
 
             isCalc = true;
@@ -270,18 +273,11 @@ public final class Adjustment {
         /**
          * mostly for debugging
          */
+        @Override
         public String toString() {
-            final StringBuffer sb = new StringBuffer(128);
-            sb.append("[AdjustmentInfo: units=");
-            sb.append(numUnits);
-            sb.append("; supplycenters=");
-            sb.append(numSC);
-            sb.append("; home supplycenters=");
-            sb.append(numHSC);
-            sb.append("; adjustment=");
-            sb.append(getAdjustmentAmount());
-            sb.append(']');
-            return sb.toString();
+            return String
+                    .format("[AdjustmentInfo: units=%d; supplycenters=%d; home supplycenters=%d; adjustment=%d]",
+                            numUnits, numSC, numHSC, getAdjustmentAmount());
         }// toString()
 
 

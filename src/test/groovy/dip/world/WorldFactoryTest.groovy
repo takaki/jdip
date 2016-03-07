@@ -60,10 +60,10 @@ class WorldFactoryTest extends Specification {
         map.getFirstPower("Fra xxx-yyy") == Optional.empty()
         map.getFirstPower("xxx-yyy") == Optional.empty()
 
-        map.getFirstPowerToken(new StringBuffer("France: xxx-yyy")).get() == "France"
-        map.getFirstPowerToken(new StringBuffer("Fra: xxx-yyy")).get() == "Fra"
-        map.getFirstPowerToken(new StringBuffer("Fra xxx-yyy")) == Optional.empty()
-        map.getFirstPowerToken(new StringBuffer("xxx-yyy")) == Optional.empty()
+        map.getFirstPowerToken("France: xxx-yyy").get() == "France"
+        map.getFirstPowerToken("Fra: xxx-yyy").get() == "Fra"
+        map.getFirstPowerToken("Fra xxx-yyy") == Optional.empty()
+        map.getFirstPowerToken("xxx-yyy") == Optional.empty()
 
 
         map.getProvincesMatchingClosest("Moscow").size() == 1
@@ -77,15 +77,10 @@ class WorldFactoryTest extends Specification {
 
         map.parseLocation("stp/nc").get().getCoast() == Coast.NORTH
 
-        def mossb = new StringBuffer("moscow")
-        map.replaceProvinceNames(mossb)
-        mossb.toString() == "moscow"
-        def bla0sb = new StringBuffer("black sea")
-        map.replaceProvinceNames(bla0sb)
-        bla0sb.toString() == "bla"
-        def blasb = new StringBuffer("Black Sea")
-        map.replaceProvinceNames(blasb)
-        blasb.toString() == "Black Sea"
+        map.replaceProvinceNames("moscow") == "moscow"
+        map.replaceProvinceNames("black sea") == "bla"
+        map.replaceProvinceNames("black sea english channel") == "bla eng"
+        map.replaceProvinceNames("aa Black Sea aa") == "aa Black Sea aa"
 
         def frasb = new StringBuffer("france france england italy")
         map.filterPowerNames(frasb)

@@ -26,7 +26,6 @@ import dip.misc.Utils;
 import dip.order.OrderFactory;
 import dip.world.World;
 
-import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.HTMLEditorKit.ParserCallback;
 import javax.swing.text.html.parser.ParserDelegator;
 import java.io.BufferedReader;
@@ -63,7 +62,8 @@ public class FlocImporter implements Runnable {
      * Create a floc.net importer. Null parameters are not accepted.
      */
     public FlocImporter(final String gameName, final String judgeName,
-                        final OrderFactory orderFactory, final FlocImportCallback fic) {
+                        final OrderFactory orderFactory,
+                        final FlocImportCallback fic) {
         if (gameName == null || judgeName == null || fic == null || orderFactory == null) {
             throw new IllegalArgumentException();
         }
@@ -191,18 +191,16 @@ public class FlocImporter implements Runnable {
     private String getGameInfo() throws IOException {
         final StringBuffer gameInformation = new StringBuffer(16384);
 
-        URL u;
-        BufferedReader reader = null;
-        try {
-            u = new URL(
-                    "http://www.floc.net/observer.py?judge=" + judgeName + "&game=" + gameName + "&page=history&history_from=0&history_to=999999");
+        final URL u = new URL(
+                "http://www.floc.net/observer.py?judge=" + judgeName + "&game=" + gameName + "&page=history&history_from=0&history_to=999999");
 
-            fic.flocImportMessage(Utils.getLocalString(READING_CONTACT));
+        fic.flocImportMessage(Utils.getLocalString(READING_CONTACT));
 
-            // output is in HTML, so using the HTML editor kit parser removes
-            // HTML cruft.
-            //
-            reader = new BufferedReader(new InputStreamReader(u.openStream()));
+        // output is in HTML, so using the HTML editor kit parser removes
+        // HTML cruft.
+        //
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(u.openStream()))) {
 
             if (!isInProgress) {
                 return "";
@@ -223,10 +221,6 @@ public class FlocImporter implements Runnable {
                     gameInformation.append("\n");
                 }// handleText()
             }, false);
-        } finally {
-            if (reader != null) {
-                reader.close();
-            }
         }
 
         return gameInformation.toString();
@@ -266,9 +260,9 @@ public class FlocImporter implements Runnable {
 		return gameInformation.toString();
 	}
 	*/
-	
+
 	/*
-	// for testing
+    // for testing
 	public static void main(String[] args){
 		
 		FlocImportCallback ficb = new FlocImportCallback()

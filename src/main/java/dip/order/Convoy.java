@@ -149,37 +149,26 @@ public class Convoy extends Order {
 
     @Override
     public String toBriefString() {
-        final StringBuffer sb = new StringBuffer(64);
 
-        appendBrief(sb);
-        sb.append(' ');
-        sb.append(orderNameBrief);
-        sb.append(' ');
-        sb.append(convoyUnitType.getShortName());
-        sb.append(' ');
-        convoySrc.appendBrief(sb);
-        sb.append('-');
-        convoyDest.appendBrief(sb);
-
-        return sb.toString();
+        return String.format("%s %s %s %s-%s", getBrief(), orderNameBrief,
+                convoyUnitType.getShortName(), convoySrc.getBrief(),
+                convoyDest.getBrief());
     }// toBriefString()
 
 
     @Override
     public String toFullString() {
-        final StringBuffer sb = new StringBuffer(128);
+        String sb = getFull() +
+                ' ' +
+                orderNameFull +
+                ' ' +
+                convoyUnitType.getFullName() +
+                ' ' +
+                convoySrc.getFull() +
+                " -> " +
+                convoyDest.getFull();
 
-        appendFull(sb);
-        sb.append(' ');
-        sb.append(orderNameFull);
-        sb.append(' ');
-        sb.append(convoyUnitType.getFullName());
-        sb.append(' ');
-        convoySrc.appendFull(sb);
-        sb.append(" -> ");
-        convoyDest.appendFull(sb);
-
-        return sb.toString();
+        return sb;
     }// toFullString()
 
 

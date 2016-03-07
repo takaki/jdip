@@ -65,58 +65,8 @@ public class PositionParser {
 
 
     // instance variables
-    private PositionInfo[] posInfo = null;
-    private Phase phase = null;
-
-	/*
-    // for testing only
-	public static void main(String args[])
-	throws IOException, PatternSyntaxException
-	{
-		String in = 
-		"sdkflaakdljf fdakjd slkjdfsa klfd\n"+
-		"dslkafflddfskj fdakjd slkjdfsa klfd\n"+
-		"kldsjfkdskajfdsak fdakjd slkjdfsa klfd\n"+
-		"\n"+
-		
-		// start
-		"Starting position for Spring of 1901.\n"+
-		//"Status of the Movement phase for Fall of 1906.  (realtime.026)\n"+
-		"\n"+
-		"Argentina:Army  Santa Cruz.\n"+
-		"Argentina:Fleet Buenos Aires.\n"+
-		"Argentina:Fleet Chile.\n"+
-		"\n"+
-		"Brazil:  Army  Brasilia.\n"+
-		"Brazil:  Army  Rio de Janeiro.\n"+
-		"Brazil:  Fleet Recife.\n"+
-		"\n"+
-		"Oz:      Fleet New South Wales.\n"+
-		"Oz:      Fleet Victoria.\n"+
-		"Oz:      Fleet Western Australia.\n"+
-		"\n"+
-		"The deadline for the first movement orders is Tue Dec  4 2001 23:30:00 PST.\n"+
-		
-		// ending text
-		"The next phase of 'ferret' will be Movement for Fall of 1901.\n"+
-		"The deadline for orders will be Tue Jan 22 2002 23:30:00 -0500.\n";
-		
-		
-		PositionParser pp = new PositionParser(in);
-		
-		PositionInfo[] pi = pp.getPositionInfo();
-		System.out.println("# of orders: "+pi.length);
-		System.out.println("phase: "+pp.getPhase());
-		
-		for(int i=0; i<pi.length; i++)
-		{
-			System.out.println("  "+pi[i]);
-		}
-		
-		
-	}// main()
-	// end testing method
-	*/
+    private PositionInfo[] posInfo;
+    private Phase phase;
 
     /**
      * Parses the input for Position information, if any is present.
@@ -152,7 +102,8 @@ public class PositionParser {
         /**
          * Creates a PositionInfo object
          */
-        public PositionInfo(final String power, final String unit, final String location) {
+        public PositionInfo(final String power, final String unit,
+                            final String location) {
             this.power = power;
             this.unit = unit;
             this.location = location;
@@ -182,16 +133,11 @@ public class PositionParser {
         /**
          * For debugging only; this may change between versions.
          */
+        @Override
         public String toString() {
-            final StringBuffer sb = new StringBuffer();
-            sb.append("PositionInfo[power=");
-            sb.append(power);
-            sb.append(",unit=");
-            sb.append(unit);
-            sb.append(",location=");
-            sb.append(location);
-            sb.append(']');
-            return sb.toString();
+            return String
+                    .format("PositionInfo[power=%s,unit=%s,location=%s]", power,
+                            unit, location);
         }// toString()
     }// nested class PositionInfo
 
@@ -233,8 +179,7 @@ public class PositionParser {
 
         // cleanup & create array
         br.close();
-        posInfo = (PositionInfo[]) posList
-                .toArray(new PositionInfo[posList.size()]);
+        posInfo = posList.toArray(new PositionInfo[posList.size()]);
     }// parseInput()
 
 
@@ -264,22 +209,17 @@ public class PositionParser {
     /**
      * Makes the phase; throws an exception if we cannot.
      */
-    private Phase makePhase(String phaseType, final String seasonType,
+    private Phase makePhase(final String phaseType, final String seasonType,
                             final String year) throws IOException {
-        phaseType = phaseType == null ? "Movement" : phaseType;
 
-        final StringBuffer sb = new StringBuffer();
-        sb.append(phaseType);
-        sb.append(' ');
-        sb.append(seasonType);
-        sb.append(' ');
-        sb.append(year);
-
+        final String sb0 = String
+                .format("%s %s %s", phaseType == null ? "Movement" : phaseType,
+                        seasonType, year);
         try {
-            return Phase.parse(sb.toString()).orElse(null);
-        } catch (final Exception e) {
-            throw new IOException(
-                    Utils.getLocalString(PP_UNKNOWN_PHASE, sb.toString()));
+            return Phase.parse(sb0).orElse(null);
+        } catch (final RuntimeException e) {
+            throw new IOException(Utils.getLocalString(PP_UNKNOWN_PHASE, sb0),
+                    e);
         }
     }// makePhase()
 

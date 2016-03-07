@@ -51,8 +51,7 @@ public class Hold extends Order {
     /**
      * Creates a Hold order
      */
-    protected Hold(final Power power, final Location src,
-                   final Type srcUnit) {
+    protected Hold(final Power power, final Location src, final Type srcUnit) {
         super(power, src, srcUnit);
     }// Hold()
 
@@ -60,7 +59,6 @@ public class Hold extends Order {
      * Creates a Hold order
      */
     protected Hold() {
-        super();
     }// Hold()
 
 
@@ -84,33 +82,18 @@ public class Hold extends Order {
 
     @Override
     public String toBriefString() {
-        final StringBuffer sb = new StringBuffer(64);
-
-        super.appendBrief(sb);
-        sb.append(' ');
-        sb.append(orderNameBrief);
-
-        return sb.toString();
+        return String.format("%s %s", getBrief(), orderNameBrief);
     }// toBriefString()
 
 
     @Override
     public String toFullString() {
-        final StringBuffer sb = new StringBuffer(128);
-
-        super.appendFull(sb);
-        sb.append(' ');
-        sb.append(orderNameFull);
-
-        return sb.toString();
+        return String.format("%s %s", getFull(), orderNameFull);
     }// toFullString()
 
 
     public boolean equals(final Object obj) {
-        if (obj instanceof Hold && super.equals(obj)) {
-            return true;
-        }
-        return false;
+        return obj instanceof Hold && super.equals(obj);
     }// equals()
 
 

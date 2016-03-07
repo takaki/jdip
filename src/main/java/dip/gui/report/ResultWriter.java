@@ -85,15 +85,14 @@ public class ResultWriter {
     public static void displayDialog(final ClientFrame clientFrame,
                                      final TurnState ts,
                                      final OrderFormatOptions orderFormatOptions) {
-        final StringBuffer title = new StringBuffer(64);
-        title.append(Utils.getLocalString(DIALOG_TITLE));
-        title.append(": ");
-        title.append(ts.getPhase());
+        String title = Utils.getLocalString(DIALOG_TITLE) +
+                ": " +
+                ts.getPhase();
 
         final TextViewer tv = new TextViewer(clientFrame);
         tv.setEditable(false);
         tv.addSingleButton(tv.makeOKButton());
-        tv.setTitle(title.toString());
+        tv.setTitle(title);
         tv.setHelpID(HelpID.Dialog_ResultReport);
         tv.setHeaderVisible(false);
         tv.setHorizontalScrollBarPolicy(

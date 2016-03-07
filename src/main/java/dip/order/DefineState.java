@@ -59,7 +59,6 @@ public class DefineState extends Order {
 
 
     protected DefineState() {
-        super();
     }// DefineState()
 
     @Override
@@ -82,17 +81,13 @@ public class DefineState extends Order {
 
     @Override
     public String toBriefString() {
-        final StringBuffer sb = new StringBuffer(64);
-        super.appendBrief(sb);
-        return sb.toString();
+        return getBrief();
     }// toBriefString()
 
 
     @Override
     public String toFullString() {
-        final StringBuffer sb = new StringBuffer(128);
-        super.appendFull(sb);
-        return sb.toString();
+        return getFull();
     }// toFullString()
 
 

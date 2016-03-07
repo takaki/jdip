@@ -78,29 +78,25 @@ public class Waive extends Order {
 
     @Override
     public String toBriefString() {
-        final StringBuffer sb = new StringBuffer(64);
+        String sb = String.valueOf(power) +
+                ": " +
+                orderNameBrief +
+                " build in " +
+                src.getBrief();
 
-        sb.append(power);
-        sb.append(": ");
-        sb.append(orderNameBrief);
-        sb.append(" build in ");
-        src.appendBrief(sb);
-
-        return sb.toString();
+        return sb;
     }// toBriefString()
 
 
     @Override
     public String toFullString() {
-        final StringBuffer sb = new StringBuffer(128);
+        String sb = String.valueOf(power) +
+                ": " +
+                orderNameFull +
+                " build in " +
+                src.getFull();
 
-        sb.append(power);
-        sb.append(": ");
-        sb.append(orderNameFull);
-        sb.append(" build in ");
-        src.appendFull(sb);
-
-        return sb.toString();
+        return sb;
     }// toFullString()
 
 

@@ -148,10 +148,8 @@ public class SVGUtils {
                                                  final SymbolSize symbolSize) {
         // prepend '#' to name, if required
         if (symbolName.charAt(0) != '#') {
-            final StringBuffer sb = new StringBuffer(symbolName.length() + 1);
-            sb.append('#');
-            sb.append(symbolName);
-            symbolName = sb.toString();
+            String sb = "#" + symbolName;
+            symbolName = sb;
         }
 
         final SVGUseElement useElement = (SVGUseElement) document

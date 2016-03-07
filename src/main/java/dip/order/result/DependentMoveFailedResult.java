@@ -78,13 +78,11 @@ public class DependentMoveFailedResult extends OrderResult {
      * Primarily for debugging.
      */
     public String toString() {
-        final StringBuffer sb = new StringBuffer(256);
-        sb.append(super.toString());
+        String sb = super.toString() +
+                "Dependent Order: " +
+                dependentOrder;
 
-        sb.append("Dependent Order: ");
-        sb.append(dependentOrder);
-
-        return sb.toString();
+        return sb;
     }// toString()
 
 

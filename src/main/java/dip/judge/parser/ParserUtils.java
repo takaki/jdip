@@ -40,7 +40,8 @@ public class ParserUtils {
      * Starts with first non-short line, adds text until we get a blank line, returns
      * text in-between. Lines are trimmed.
      */
-    public static String parseBlock(final BufferedReader br) throws IOException {
+    public static String parseBlock(
+            final BufferedReader br) throws IOException {
         // create first block: the ownership block
         final StringBuffer accum = new StringBuffer(2048);
         boolean inBlock = false;
@@ -87,7 +88,8 @@ public class ParserUtils {
     /**
      * Gets the next non-short line from a buffered reader. Trims it as well. Returns null if EOF.
      */
-    public static String getNextLongLine(final BufferedReader br) throws IOException {
+    public static String getNextLongLine(
+            final BufferedReader br) throws IOException {
         String line = br.readLine();
         while (line != null) {
             if (line.length() > SHORT_LINE) {

@@ -26,7 +26,12 @@ import dip.misc.Utils;
 import dip.process.Adjudicator;
 import dip.process.OrderState;
 import dip.process.Tristate;
-import dip.world.*;
+import dip.world.Location;
+import dip.world.Position;
+import dip.world.Power;
+import dip.world.RuleOptions;
+import dip.world.TurnState;
+import dip.world.Unit;
 import dip.world.Unit.Type;
 
 /**
@@ -46,7 +51,8 @@ public class Disband extends Order {
     /**
      * Creates a Disband order
      */
-    protected Disband(final Power power, final Location src, final Type srcUnit) {
+    protected Disband(final Power power, final Location src,
+                      final Type srcUnit) {
         super(power, src, srcUnit);
     }// Disband()
 
@@ -54,7 +60,6 @@ public class Disband extends Order {
      * Creates a Disband order
      */
     protected Disband() {
-        super();
     }// Disband()
 
     @Override
@@ -77,25 +82,13 @@ public class Disband extends Order {
 
     @Override
     public String toBriefString() {
-        final StringBuffer sb = new StringBuffer(64);
-
-        super.appendBrief(sb);
-        sb.append(' ');
-        sb.append(orderNameBrief);
-
-        return sb.toString();
+        return String.format("%s %s", getBrief(), orderNameBrief);
     }// toBriefString()
 
 
     @Override
     public String toFullString() {
-        final StringBuffer sb = new StringBuffer(128);
-
-        super.appendFull(sb);
-        sb.append(' ');
-        sb.append(orderNameFull);
-
-        return sb.toString();
+        return String.format("%s %s", getFull(), orderNameFull);
     }// toFullString()
 
 
@@ -118,8 +111,9 @@ public class Disband extends Order {
 
         // step 1
         final Position position = state.getPosition();
-        final Unit unit = position.getDislodgedUnit(src.getProvince()).orElse(null);
-        super.validate(valOpts, unit);
+        final Unit unit = position.getDislodgedUnit(src.getProvince())
+                .orElse(null);
+        validate(valOpts, unit);
     }// validate()
 
 

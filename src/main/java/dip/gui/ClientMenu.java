@@ -643,12 +643,11 @@ public class ClientMenu {
         numItems = array.length;
         for (int i = 0; i < array.length; i++) {
             final String mnemonic = String.valueOf(i + 1);
-            final StringBuffer sb = new StringBuffer(32);
-            sb.append(mnemonic);
-            sb.append(' ');
-            sb.append(array[i]);
+            String sb = mnemonic +
+                    ' ' +
+                    array[i];
 
-            final JMenuItem menuItem = new JMenuItem(sb.toString());
+            final JMenuItem menuItem = new JMenuItem(sb);
             menuItem.setMnemonic(KeyStroke.getKeyStroke(mnemonic).getKeyCode());
             menuItem.setIcon(blankIcon);
             menuItem.addActionListener(rfListener);
@@ -1003,12 +1002,10 @@ public class ClientMenu {
         final int maxAccel = 12;                    // only go upto VK_F12 (pc/mac/unix usually have 12 Fn keys)
         for (int i = 0; i < powers.length; i++) {
             final String mnemonic = String.valueOf(i + 1);
-            final StringBuffer sb = new StringBuffer(32);
-            sb.append(mnemonic);
-            sb.append(' ');
-            sb.append(powers[i].getName());
-            final JCheckBoxMenuItem menuItem = new JCheckBoxMenuItem(
-                    sb.toString(), true);
+            String sb = mnemonic +
+                    ' ' +
+                    powers[i].getName();
+            final JCheckBoxMenuItem menuItem = new JCheckBoxMenuItem(sb, true);
             //menuItem.setFont(menuFont);
 
             // mnemonics only go upto 9 (1-9)

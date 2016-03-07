@@ -625,14 +625,12 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
                                             SVGDOMImplementation.SVG_NAMESPACE_URI,
                                             SVGConstants.SVG_G_TAG);
                             // make layer name (needs to be unique)
-                            final StringBuffer sb = new StringBuffer(32);
-                            sb.append(getPowerName(power));
-                            sb.append('_');
-                            sb.append(String.valueOf(z));
+                            String sb = getPowerName(power) +
+                                    '_' +
+                                    String.valueOf(z);
 
                             gElement.setAttributeNS(null,
-                                    SVGConstants.SVG_ID_ATTRIBUTE,
-                                    sb.toString());
+                                    SVGConstants.SVG_ID_ATTRIBUTE, sb);
                             orderLayer.appendChild(gElement);
                             powerOrderMap[z].put(power, gElement);
                         }
@@ -1133,10 +1131,8 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      * If the power starts with a number, the a capital X is prepended.
      */
     private String getUnitCSSClass(final Power power) {
-        final StringBuffer sb = new StringBuffer(power.getName().length() + 4);
-        sb.append("unit");
-        sb.append(getPowerName(power));
-        return sb.toString();
+        String sb = "unit" + getPowerName(power);
+        return sb;
     }// getUnitCSSClass()
 
 
@@ -1149,10 +1145,8 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
             return SC_NOPOWER;
         }
 
-        final StringBuffer sb = new StringBuffer(power.getName().length() + 2);
-        sb.append("sc");
-        sb.append(getPowerName(power));
-        return sb.toString();
+        String sb = "sc" + getPowerName(power);
+        return sb;
     }// getSCCSSClass()
 
 
@@ -1164,10 +1158,8 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
         final String name = power.getName().toLowerCase();
 
         if (Character.isDigit(name.charAt(0))) {
-            final StringBuffer sb = new StringBuffer(name.length() + 1);
-            sb.append('X');
-            sb.append(name);
-            return sb.toString();
+            String sb = "X" + name;
+            return sb;
         }
 
         return name;
@@ -1503,13 +1495,12 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
          * For debugging only
          */
         public String toString() {
-            final StringBuffer sb = new StringBuffer(128);
-            sb.append("elUnit=");
-            sb.append(elUnit);
-            sb.append(",unit=");
-            sb.append(unit);
-            sb.append(']');
-            return sb.toString();
+            String sb = "elUnit=" +
+                    elUnit +
+                    ",unit=" +
+                    unit +
+                    ']';
+            return sb;
         }// toString()
 
     }// inner class Tracker

@@ -45,6 +45,7 @@ import dip.world.Unit;
 import dip.world.Unit.Type;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -275,70 +276,29 @@ public class Move extends Order {
 
     @Override
     public String toBriefString() {
-        final StringBuffer sb = new StringBuffer(64);
-
-
-        if (convoyRoutes != null) {
-            // print all explicit routes
-            sb.append(power);
-            sb.append(": ");
-            sb.append(srcUnitType.getShortName());
-            sb.append(' ');
-            final int size = convoyRoutes.size();
-            for (int i = 0; i < size; i++) {
-                final Province[] path = convoyRoutes.get(i);
-                formatConvoyRoute(sb, path, true, true);
-
-                // prepare for next path
-                if (i < size - 1) {
-                    sb.append(", ");
-                }
-            }
-        } else {
-            appendBrief(sb);
-            sb.append('-');
-            dest.appendBrief(sb);
-
-            if (_isViaConvoy) {
-                sb.append(" by convoy");
-            }
-        }
-
-        return sb.toString();
+        // print all explicit routes
+        return convoyRoutes != null ? String
+                .format("%s: %s %s", power, srcUnitType.getShortName(),
+                        convoyRoutes.stream()
+                                .map(path -> formatConvoyRoute(path, true,
+                                        true))
+                                .collect(Collectors.joining(", "))) : String
+                .format("%s-%s%s", getBrief(), dest.getBrief(),
+                        _isViaConvoy ? " by convoy" : "");
     }// toBriefString()
 
 
     @Override
     public String toFullString() {
-        final StringBuffer sb = new StringBuffer(128);
-
-        if (convoyRoutes != null) {
-            // print all explicit routes
-            sb.append(power);
-            sb.append(": ");
-            sb.append(srcUnitType.getFullName());
-            sb.append(' ');
-            final int size = convoyRoutes.size();
-            for (int i = 0; i < size; i++) {
-                final Province[] path = convoyRoutes.get(i);
-                formatConvoyRoute(sb, path, false, true);
-
-                // prepare for next path
-                if (i < size - 1) {
-                    sb.append(", ");
-                }
-            }
-        } else {
-            appendFull(sb);
-            sb.append(" -> ");
-            dest.appendFull(sb);
-
-            if (_isViaConvoy) {
-                sb.append(" by convoy");
-            }
-        }
-
-        return sb.toString();
+        return convoyRoutes != null ?
+                // print all explicit routes
+                String.format("%s: %s %s", power, srcUnitType.getFullName(),
+                        convoyRoutes.stream()
+                                .map(path -> formatConvoyRoute(path, false,
+                                        true))
+                                .collect(Collectors.joining(", "))) : String
+                .format("%s -> %s%s", getFull(), dest.getFull(),
+                        _isViaConvoy ? " by convoy" : "");
     }// toFullString()
 
 
@@ -518,40 +478,10 @@ public class Move extends Order {
     protected String formatConvoyRoute(final Province[] route,
                                        final boolean isBrief,
                                        final boolean useHyphen) {
-        final StringBuffer sb = new StringBuffer(128);
-        formatConvoyRoute(sb, route, isBrief, useHyphen);
-        return sb.toString();
+        return Arrays.stream(route)
+                .map(r -> isBrief ? r.getShortName() : r.getFullName())
+                .collect(Collectors.joining(useHyphen ? "-" : " -> "));
     }// formatConvoyRoute()
-
-
-    /**
-     * Format a convoy route into a StringBuffer
-     */
-    protected void formatConvoyRoute(final StringBuffer sb,
-                                     final Province[] route,
-                                     final boolean isBrief,
-                                     final boolean useHyphen) {
-        if (isBrief) {
-            sb.append(route[0].getShortName());
-        } else {
-            sb.append(route[0].getFullName());
-        }
-
-        for (int i = 1; i < route.length; i++) {
-            if (useHyphen) {
-                sb.append('-');
-            } else {
-                sb.append(" -> ");
-            }
-
-
-            if (isBrief) {
-                sb.append(route[i].getShortName());
-            } else {
-                sb.append(route[i].getFullName());
-            }
-        }
-    }// formatConvoyRoute
 
 
     /**

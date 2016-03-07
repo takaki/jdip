@@ -28,11 +28,13 @@ import dip.world.Phase;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Parses the Dislodged block
@@ -82,68 +84,14 @@ public class DislodgedParser {
 
 
     // INSTANCE VARIABLES
-    private DislodgedInfo[] dislodgedInfo = null;
-    private Phase phase = null;
-    private String inputText = null;
-
-	/*	// TEST PATTERN: DO NOT DELETE
-    public static void main(String args[])
-	throws IOException
-	{
-		
-		// this is a GOOD test pattern
-		//
-		String in = 
-			"Italy: Fleet Naples SUPPORT Fleet Tunis -> Ionian Sea.\n"+
-			"Italy: Fleet Tunis -> Ionian Sea.\n"+
-			"Italy: Army Rome SUPPORT Army Venice -> Apulia.\n"+
-			"\n"+
-			"Russia: Army Smyrna -> Constantinople.\n"+
-			"\n"+
-			"\n"+
-			"The following units were dislodged:\n"+
-			"\n"+
-			"The 1Austrian Army in Apulia with no valid retreats was destroyed.\n"+
-			"The 2Austrian Fleet in the Ionian Sea can retreat to Tyrrhenian Sea or Albania\n"+
-			"or Greece or Eastern Mediterranean.\n"+
-			"The 3French Army in Paris with no valid retreats was destroyed.\n"+
-			"The 4German Fleet in the North Sea can retreat to Norwegian Sea or Skagerrak or\n"+
-			"Belgium or London.\n"+
-			"The 5Italian Fleet in Spain (south coast) can retreat to Portugal (north coast) or Western\n"+
-			"Mediterranean.\n"+
-			"The 6Chinese Fleet in the South Atlantic Ocean with no valid retreats was\n"+	
-			"destroyed.\n"+
-			"The 7Russian Army in Constantinople can retreat to Ankara or Smyrna.\n"+
-			"The 8Soviet Army in St. Petersburg can retreat to Here or There.\n"+
-			"The 9Unlucky Army in Badlands can retreat to St. Elsewhere or Picardy.\n"+	
-			"The 10Germany Army in AAAAAA can retreat to BBBBBBB.\n"+
-			"The 11Germany Army in NewAAAA can retreat to St. BBBBBBB.\n"+				
-			"The 12Germany Army in ReallyNewAAAA can retreat to St.\n"+					
-			"BBBBBBB.\n"+					
-			"\n"+
-			"The next phase of 'ferret' will be Retreats for Fall of 1906.\n"+
-			"The deadline for orders will be Wed Apr 10 2002 17:54:23 -0500.\n";		
-
-		
-		DislodgedParser dp = new DislodgedParser(in);
-		DislodgedInfo[] di = dp.getDislodgedInfo();
-		System.out.println("di = "+di);
-		System.out.println("length = "+di.length);
-		for(int i=0; i<di.length; i++)
-		{
-			System.out.println(di[i]);
-			System.out.println("");
-		}
-	}
-	*/
+    private DislodgedInfo[] dislodgedInfo;
 
 
     /**
      * Creates a DislodgedParser object, which parses the given input for a Dislodged (retreat) information block
      */
-    public DislodgedParser(final Phase phase, final String input) throws IOException {
-        this.phase = phase;
-        inputText = input;
+    public DislodgedParser(final Phase phase,
+                           final String input) throws IOException {
         parseInput(input);
     }// DislodgedParser()
 
@@ -171,8 +119,8 @@ public class DislodgedParser {
         /**
          * Create a DislodgedInfo object
          */
-        public DislodgedInfo(final String power, final String unit, final String src,
-                             final String[] retreatLocs) {
+        public DislodgedInfo(final String power, final String unit,
+                             final String src, final String[] retreatLocs) {
             this.power = power;
             this.unit = unit;
             this.src = src;
@@ -218,21 +166,13 @@ public class DislodgedParser {
         /**
          * String output for debugging; may change between versions.
          */
+        @Override
         public String toString() {
-            final StringBuffer sb = new StringBuffer();
-            sb.append("DislodgedInfo[power=");
-            sb.append(power);
-            sb.append(", src=");
-            sb.append(src);
-            sb.append(", unit=");
-            sb.append(unit);
-            sb.append(", locNames=");
-            for (String retreatLoc : retreatLocs) {
-                sb.append(retreatLoc);
-                sb.append(',');
-            }
-            sb.append(']');
-            return sb.toString();
+            return String
+                    .format("DislodgedInfo[power=%s, src=%s, unit=%s, locNames=%s]",
+                            power, src, unit,
+                            Arrays.stream(retreatLocs).map(String::toString)
+                                    .collect(Collectors.joining(",")));
         }// toString()
     }// nested class DislodgedInfo
 
@@ -241,7 +181,7 @@ public class DislodgedParser {
         Log.println("DislodgedParser::parseInput()");
 
         // Create HEADER_REGEX pattern, HEADER_END_REGEX pattern
-        Pattern header = Pattern.compile(HEADER_REGEX);
+        final Pattern header = Pattern.compile(HEADER_REGEX);
         final Pattern endHeader = Pattern.compile(HEADER_END_REGEX);
 
         // search for HEADER_REGEX
@@ -299,9 +239,9 @@ public class DislodgedParser {
 
         // cleanup
         br.close();
-		
+
 		/*
-		System.out.println("(DislodgedParser) text:");
+        System.out.println("(DislodgedParser) text:");
 		System.out.println("||>>"+accum.toString()+"<<||");
 		System.out.println("-----");
 		*/
@@ -319,6 +259,7 @@ public class DislodgedParser {
         // parse accum line-by-line, looking for DESTROYED_REGEX and
         // DISLODGED_REGEX.
         //
+        accum.toString().split("\n+");
         final StringTokenizer st = new StringTokenizer(accum.toString(), "\n");
         while (st.hasMoreTokens()) {
             line = st.nextToken();
@@ -327,7 +268,7 @@ public class DislodgedParser {
 
             boolean foundMatch = false;
 
-            for (Pattern destroyed : destroyeds) {
+            for (final Pattern destroyed : destroyeds) {
                 final Matcher m = destroyed.matcher(line);
                 if (m.lookingAt()) {
                     disList.add(new DislodgedInfo(m.group(1), m.group(2),
@@ -361,13 +302,12 @@ public class DislodgedParser {
             }
         }// while()
 
-        dislodgedInfo = (DislodgedInfo[]) disList
-                .toArray(new DislodgedInfo[disList.size()]);
+        dislodgedInfo = disList.toArray(new DislodgedInfo[disList.size()]);
     }// parseInput()
 
 
 }// class DislodgedParser
-	
+
 	
 	
 

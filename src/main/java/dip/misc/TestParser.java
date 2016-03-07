@@ -208,14 +208,13 @@ public class TestParser {
 
                 // if marked as fail, and we succeed, it's a failure!
                 if (isMarkedFail) {
-                    final StringBuffer sb = new StringBuffer(128);
-                    sb.append("Order line ");
-                    sb.append(String.valueOf(orp.getLineNumber()));
-                    sb.append("\"");
-                    sb.append(orp.getOrder());
-                    sb.append("\"");
-                    sb.append(" succeeded, but should have failed.");
-                    failedCases.add(sb.toString());
+                    String sb = "Order line " +
+                            String.valueOf(orp.getLineNumber()) +
+                            "\"" +
+                            orp.getOrder() +
+                            "\"" +
+                            " succeeded, but should have failed.";
+                    failedCases.add(sb);
                 } else {
                     // check order normally
                     checkORP(orp, o, failedCases);
@@ -223,15 +222,14 @@ public class TestParser {
             } catch (final OrderException e) {
                 // only count as a failure if RESULT line does NOT have a "FAIL" result.
                 if (!isMarkedFail) {
-                    final StringBuffer sb = new StringBuffer(128);
-                    sb.append("Order line ");
-                    sb.append(String.valueOf(orp.getLineNumber()));
-                    sb.append(" \"");
-                    sb.append(orp.getOrder());
-                    sb.append("\"");
-                    sb.append(" failed: ");
-                    sb.append(e);
-                    failedCases.add(sb.toString());
+                    String sb = "Order line " +
+                            String.valueOf(orp.getLineNumber()) +
+                            " \"" +
+                            orp.getOrder() +
+                            "\"" +
+                            " failed: " +
+                            e;
+                    failedCases.add(sb);
                 }
             }
         }
@@ -307,18 +305,17 @@ public class TestParser {
 
         // validate name
         if (!name.equalsIgnoreCase(o.getFullName())) {
-            final StringBuffer sb = new StringBuffer(128);
-            sb.append("Order line ");
-            sb.append(String.valueOf(orp.getLineNumber()));
-            sb.append(" \"");
-            sb.append(orp.getOrder());
-            sb.append("\"");
-            sb.append(" failed; a ");
-            sb.append(o.getFullName());
-            sb.append(" was parsed but a ");
-            sb.append(name);
-            sb.append(" order was expected.");
-            failedCases.add(sb.toString());
+            String sb = "Order line " +
+                    String.valueOf(orp.getLineNumber()) +
+                    " \"" +
+                    orp.getOrder() +
+                    "\"" +
+                    " failed; a " +
+                    o.getFullName() +
+                    " was parsed but a " +
+                    name +
+                    " order was expected.";
+            failedCases.add(sb);
             return;
         }
 
@@ -428,14 +425,13 @@ public class TestParser {
 
         // does tok match? if not, add to failed cases, return false
         if (power != thePower) {
-            final StringBuffer sb = new StringBuffer(128);
-            sb.append("Order line ");
-            sb.append(String.valueOf(orp.getLineNumber()));
-            sb.append(" \"");
-            sb.append(orp.getOrder());
-            sb.append("\"");
-            sb.append(" failed; the powers do not match. ");
-            failedCases.add(sb.toString());
+            String sb = "Order line " +
+                    String.valueOf(orp.getLineNumber()) +
+                    " \"" +
+                    orp.getOrder() +
+                    "\"" +
+                    " failed; the powers do not match. ";
+            failedCases.add(sb);
             return false;
         }
 
@@ -461,24 +457,22 @@ public class TestParser {
         // does tok match? if not, add to failed cases, return false
         // cannot use identity-equals here
         if (!loc.equals(theLoc)) {
-            final StringBuffer sb = new StringBuffer(128);
-            sb.append("Order line ");
-            sb.append(String.valueOf(orp.getLineNumber()));
-            sb.append(" \"");
-            sb.append(orp.getOrder());
-            sb.append("\"");
-            sb.append(" failed; the location ");
-            sb.append("\"");
-            sb.append(loc);
-            sb.append("\"");
-            sb.append(" does not match ");
-            sb.append("\"");
-            sb.append(theLoc);
-            sb.append("\"");
-            sb.append(
-                    " (Was the coast specified? e.g., naf/xc naf/mv or stp/nc).");
+            String sb = "Order line " +
+                    String.valueOf(orp.getLineNumber()) +
+                    " \"" +
+                    orp.getOrder() +
+                    "\"" +
+                    " failed; the location " +
+                    "\"" +
+                    loc +
+                    "\"" +
+                    " does not match " +
+                    "\"" +
+                    theLoc +
+                    "\"" +
+                    " (Was the coast specified? e.g., naf/xc naf/mv or stp/nc).";
 
-            failedCases.add(sb.toString());
+            failedCases.add(sb);
             return false;
         }
 
@@ -502,21 +496,20 @@ public class TestParser {
 
         // does tok match? if not, add to failed cases, return false
         if (ut != theUnitType) {
-            final StringBuffer sb = new StringBuffer(128);
-            sb.append("Order line ");
-            sb.append(String.valueOf(orp.getLineNumber()));
-            sb.append(" \"");
-            sb.append(orp.getOrder());
-            sb.append("\"");
-            sb.append(" failed; the Unit Type ");
-            sb.append("\"");
-            sb.append(ut);
-            sb.append("\"");
-            sb.append(" does not match ");
-            sb.append("\"");
-            sb.append(theUnitType);
-            sb.append("\"");
-            failedCases.add(sb.toString());
+            String sb = "Order line " +
+                    String.valueOf(orp.getLineNumber()) +
+                    " \"" +
+                    orp.getOrder() +
+                    "\"" +
+                    " failed; the Unit Type " +
+                    "\"" +
+                    ut +
+                    "\"" +
+                    " does not match " +
+                    "\"" +
+                    theUnitType +
+                    "\"";
+            failedCases.add(sb);
             return false;
         }
 
@@ -545,21 +538,20 @@ public class TestParser {
 
         // does tok match? if not, add to failed cases, return false
         if (bool != theBoolean) {
-            final StringBuffer sb = new StringBuffer(128);
-            sb.append("Order line ");
-            sb.append(String.valueOf(orp.getLineNumber()));
-            sb.append(" \"");
-            sb.append(orp.getOrder());
-            sb.append("\"");
-            sb.append(" failed; the value ");
-            sb.append("\"");
-            sb.append(bool);
-            sb.append("\"");
-            sb.append(" does not match ");
-            sb.append("\"");
-            sb.append(theBoolean);
-            sb.append("\"");
-            failedCases.add(sb.toString());
+            String sb = "Order line " +
+                    String.valueOf(orp.getLineNumber()) +
+                    " \"" +
+                    orp.getOrder() +
+                    "\"" +
+                    " failed; the value " +
+                    "\"" +
+                    bool +
+                    "\"" +
+                    " does not match " +
+                    "\"" +
+                    theBoolean +
+                    "\"";
+            failedCases.add(sb);
             return false;
         }
 

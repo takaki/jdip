@@ -28,9 +28,11 @@ import dip.world.Power;
 import dip.world.Province;
 import dip.world.Unit.Type;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.StringTokenizer;
+import java.util.stream.Collectors;
 
 /**
  * OrderFormat formats orders according to the specified format string.
@@ -138,11 +140,10 @@ public class OrderFormat {
      */
     private static String handleNull(final Class<?> cls) {
         assert cls != null;
-        final StringBuffer sb = new StringBuffer(64);
-        sb.append("null(");
-        sb.append(cls.getName());
-        sb.append(")");
-        return sb.toString();
+        String sb = "null(" +
+                cls.getName() +
+                ")";
+        return sb;
     }// handleNull()
 
 
@@ -243,19 +244,17 @@ public class OrderFormat {
                         text = coast.getName();
                         break;
                     case OrderFormatOptions.FORMAT_COAST_PAREN_BRIEF: {
-                        final StringBuffer sb = new StringBuffer(4);
-                        sb.append('(');
-                        sb.append(coast.getAbbreviation());
-                        sb.append(')');
-                        text = sb.toString();
+                        String sb = "(" +
+                                coast.getAbbreviation() +
+                                ')';
+                        text = sb;
                     }
                     break;
                     case OrderFormatOptions.FORMAT_COAST_PAREN_FULL:
-                        final StringBuffer sb = new StringBuffer(16);
-                        sb.append('(');
-                        sb.append(coast.getName());
-                        sb.append(')');
-                        text = sb.toString();
+                        String sb = "(" +
+                                coast.getName() +
+                                ')';
+                        text = sb;
                         break;
                     default:
                         throw new IllegalStateException();
@@ -377,25 +376,15 @@ public class OrderFormat {
      */
     public static String format(final OrderFormatOptions ofo,
                                 final Location loc) {
-        if (ofo == null) {
-            throw new IllegalArgumentException();
-        }
+        Objects.requireNonNull(ofo);
 
         if (loc == null) {
             return ofo.isDebug() ? handleNull(Location.class) : EMPTY;
         } else {
-            final StringBuffer sb = new StringBuffer(64);
-
-            sb.append(format(ofo, loc.getProvince()));
-
             final String coastText = format(ofo, loc.getCoast());
-            if (!EMPTY.equals(coastText)) {
-                sb.append(ofo.getCoastSeparator());
-                sb.append(coastText);
-            }
-
-
-            return sb.toString();
+            return format(ofo, loc.getProvince()) + (EMPTY
+                    .equals(coastText) ? "" : ofo
+                    .getCoastSeparator() + coastText);
         }
     }// format()
 
@@ -529,8 +518,8 @@ public class OrderFormat {
 
         if (isMethod) {
             try {
-                return cls.getMethod(name.substring(0, name.length() - 2), (Class<?>)null)
-                        .invoke(order, (Object)null);
+                return cls.getMethod(name.substring(0, name.length() - 2),
+                        (Class<?>) null).invoke(order, (Object) null);
             } catch (final Exception e) {
                 Log.println(
                         "OrderFormat::getViaReflection() cannot reflect method \"",
@@ -611,29 +600,16 @@ public class OrderFormat {
             if (input == null) {
                 return EMPTY;
             } else if (input instanceof Location[]) {
-                final StringBuffer sb = new StringBuffer(128);
                 final Location[] locs = (Location[]) input;
-                for (int i = 0; i < locs.length; i++) {
-                    sb.append(format(ofo, locs[i].getProvince()));
-                    if (i < locs.length - 1) {
-                        sb.append(' ');
-                        sb.append(ofo.getArrow());
-                        sb.append(' ');
-                    }
-                }
-                return sb.toString();
+                return Arrays.stream(locs)
+                        .map(loc -> format(ofo, loc.getProvince())).collect(
+                                Collectors.joining(String.format("%s%s ", ' ',
+                                        ofo.getArrow())));
             } else if (input instanceof Province[]) {
-                final StringBuffer sb = new StringBuffer(128);
                 final Province[] provs = (Province[]) input;
-                for (int i = 0; i < provs.length; i++) {
-                    sb.append(format(ofo, provs[i]));
-                    if (i < provs.length - 1) {
-                        sb.append(' ');
-                        sb.append(ofo.getArrow());
-                        sb.append(' ');
-                    }
-                }
-                return sb.toString();
+                return Arrays.stream(provs).map(prov -> format(ofo, prov))
+                        .collect(Collectors.joining(
+                                String.format(" %s ", ofo.getArrow())));
             }
         }
 

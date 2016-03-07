@@ -196,43 +196,34 @@ public class Location implements Cloneable {
      */
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer(8);
-        appendBrief(sb);
-        return sb.toString();
+        return getBrief();
     }// toString()
 
     /**
      * Returns the full (long) Locatin name (as per appendFull()) as a String
      */
     public String toLongString() {
-        final StringBuffer sb = new StringBuffer(64);
-        appendFull(sb);
-        return sb.toString();
+        return getFull();
     }// toString()
 
 
     /**
      * Append the brief Location name to the StringBuffer (e.g., spa/sc)
      */
-    public void appendBrief(final StringBuffer sb) {
-        sb.append(province.getShortName());
-        if (coast.isDirectional()) {
-            sb.append('/');
-            sb.append(coast.getAbbreviation());
-        }
+    public String getBrief() {
+        return coast.isDirectional() ? String
+                .format("%s/%s", province.getShortName(),
+                        coast.getAbbreviation()) : province.getShortName();
     }// appendBrief()
 
 
     /**
      * Append the full Location name to the StringBuffer. (e.g., Spain/South Coast)
      */
-    public void appendFull(final StringBuffer sb) {
-        sb.append(province);
-        if (coast.isDirectional()) {
-            sb.append('(');
-            sb.append(coast.getName());
-            sb.append(')');
-        }
+    public String getFull() {
+        return coast.isDirectional() ? String
+                .format("%s(%s)", province, coast.getName()) : province
+                .toString();
     }// appendFull()
 
 

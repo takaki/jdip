@@ -439,21 +439,12 @@ public final class WorldMap implements Serializable {
      * <p>
      * This is a special-purpose method for Order parsing.
      */
-    public void replaceProvinceNames(final StringBuffer sb) {
+    public String replaceProvinceNames(final String sb) {
         // create the whitespace list, if it doesn't exist.
         // search & replace.
-        for (final String currentName : wsNames) {
-            int idx = 0;
-            int start = sb.indexOf(currentName, idx);
-
-            while (start != -1) {
-                final int end = start + currentName.length();
-                sb.replace(start, end, getProvince(currentName).getShortName());
-                // repeat search
-                idx = start + currentName.length();
-                start = sb.indexOf(currentName, idx);
-            }
-        }
+        return wsNames.stream().reduce(sb, (s, wsname) -> s
+                        .replaceAll(wsname, getProvince(wsname).getShortName()),
+                (a, b) -> b);
     }// replaceProvinceNames()
 
 
@@ -514,22 +505,22 @@ public final class WorldMap implements Serializable {
      * xxx-yyy				// returns null (xxx doesn't match a power)
      * </code>
      */
-    public Optional<String> getFirstPowerToken(final StringBuffer sb) {
+    public Optional<String> getFirstPowerToken(final String sb) {
         assert lcPowerNames != null;
 
         // if we find a colon, we will ASSUME that the first token
         // is a power, and use getClosestPower(); otherwise, we will
         // just check against the lcPowerNames list.
-        if (sb.length() == 0) {
+        if (sb.isEmpty()) {
             return Optional.empty();
         }
 
         // find first white space (or ':')
-        final String[] colonTokens = sb.toString().split(":", -1);
+        final String[] colonTokens = sb.split(":", -1);
         if (colonTokens.length >= 2) {
             return Optional.of(colonTokens[0].trim());
         }
-        final String[] spaceTokens = sb.toString().split("\\s", -1);
+        final String[] spaceTokens = sb.split("\\s", -1);
         if (spaceTokens.length >= 2) {
             return lcPowerNames.stream()
                     .filter(spaceTokens[0].trim()::startsWith).findFirst();
