@@ -65,8 +65,8 @@ public class PositionParser {
 
 
     // instance variables
-    private PositionInfo[] posInfo = null;
-    private Phase phase = null;
+    private PositionInfo[] posInfo;
+    private Phase phase;
 
     /**
      * Parses the input for Position information, if any is present.
@@ -133,15 +133,11 @@ public class PositionParser {
         /**
          * For debugging only; this may change between versions.
          */
+        @Override
         public String toString() {
-            String sb = "PositionInfo[power=" +
-                    power +
-                    ",unit=" +
-                    unit +
-                    ",location=" +
-                    location +
-                    ']';
-            return sb;
+            return String
+                    .format("PositionInfo[power=%s,unit=%s,location=%s]", power,
+                            unit, location);
         }// toString()
     }// nested class PositionInfo
 
@@ -183,8 +179,7 @@ public class PositionParser {
 
         // cleanup & create array
         br.close();
-        posInfo = (PositionInfo[]) posList
-                .toArray(new PositionInfo[posList.size()]);
+        posInfo = posList.toArray(new PositionInfo[posList.size()]);
     }// parseInput()
 
 
@@ -222,8 +217,9 @@ public class PositionParser {
                         seasonType, year);
         try {
             return Phase.parse(sb0).orElse(null);
-        } catch (final Exception e) {
-            throw new IOException(Utils.getLocalString(PP_UNKNOWN_PHASE, sb0));
+        } catch (final RuntimeException e) {
+            throw new IOException(Utils.getLocalString(PP_UNKNOWN_PHASE, sb0),
+                    e);
         }
     }// makePhase()
 

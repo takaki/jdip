@@ -64,7 +64,7 @@ public class TurnParser {
 
 
     // instance variables
-    private Turn[] turns = null;
+    private Turn[] turns;
 
 
     /**
@@ -165,7 +165,7 @@ public class TurnParser {
         }
 
         // convert to array
-        turns = (Turn[]) turnList.toArray(new Turn[turnList.size()]);
+        turns = turnList.toArray(new Turn[turnList.size()]);
     }// parseTurns()
 
 

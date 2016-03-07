@@ -25,10 +25,11 @@ import dip.misc.Utils;
 import dip.order.OrderFormat;
 import dip.order.OrderFormatOptions;
 import dip.order.Orderable;
-import dip.order.result.OrderResult.ResultType;
 import dip.world.Province;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * An OrderResult that contains the path taken by a successfully
@@ -40,21 +41,21 @@ public class ConvoyPathResult extends OrderResult {
     private static final String KEY_ARROW = "ConvoyPathResult.arrow";
 
     // instance fields
-    private Province[] convoyPath = null;
+    private Province[] convoyPath;
 
 
     /**
      * Create a ConvoyPathResult
      */
     public ConvoyPathResult(final Orderable order, final List<Province> path) {
-        this(order, (Province[]) path.toArray(new Province[path.size()]));
+        this(order, path.toArray(new Province[path.size()]));
     }// ConvoyPathResult()
 
     /**
      * Create a ConvoyPathResult
      */
-    public ConvoyPathResult(final Orderable order, final Province[] convoyPath) {
-        super();
+    public ConvoyPathResult(final Orderable order,
+                            final Province[] convoyPath) {
         if (convoyPath == null || convoyPath.length < 3) {
             throw new IllegalArgumentException("bad path (null or length < 3)");
         }
@@ -68,55 +69,32 @@ public class ConvoyPathResult extends OrderResult {
 
 
     /**
-     * Gets the Convoy Path; path includes source and destination provinces.
-     */
-    public Province[] getConvoyPath() {
-        return convoyPath;
-    }// getConvoyPath()
-
-
-    /**
      * Creates an appropriate internationalized text message given the
      * convoy path.
      */
     @Override
     public String getMessage(final OrderFormatOptions ofo) {
         /*
-        arguments:
-			{0}	: convoy path taken.
+        arguments:        			{0}	: convoy path taken.
 		*/
-
         // create path list
-        final StringBuffer sb = new StringBuffer(128);
         final String arrow = Utils.getLocalString(KEY_ARROW);
-
-        sb.append(OrderFormat.format(ofo, convoyPath[0]));
-        for (int i = 1; i < convoyPath.length; i++) {
-            sb.append(arrow);
-            sb.append(OrderFormat.format(ofo, convoyPath[i]));
-        }
-
         // return formatted message
-        return Utils.getLocalString(KEY_MESSAGE, sb.toString());
+        return Utils.getLocalString(KEY_MESSAGE,
+                Arrays.stream(convoyPath).map(c -> OrderFormat.format(ofo, c))
+                        .collect(Collectors.joining(arrow)));
     }// getMessage()
 
 
     /**
      * Primarily for debugging.
      */
+    @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer(256);
-        sb.append(super.toString());
-
         // add convoy path
-        sb.append(" convoy path: ");
-        sb.append(convoyPath[0].getShortName());
-        for (int i = 1; i < convoyPath.length; i++) {
-            sb.append("-");
-            sb.append(convoyPath[i].getShortName());
-        }
-
-        return sb.toString();
+        return String.format("%s convoy path: %s", super.toString(),
+                Arrays.stream(convoyPath).map(Province::getShortName)
+                        .collect(Collectors.joining("-")));
     }// toString()
 
 }// class ConvoyPathResult
