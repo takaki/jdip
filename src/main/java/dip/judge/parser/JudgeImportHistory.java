@@ -557,12 +557,12 @@ public final class JudgeImportHistory {
         // units, but we will do it for all units for consistency
         //
         // create orderMap, which maps powers to their respective order list
-        final Power[] powers = map.getPowers().toArray(new Power[0]);
+        final List<Power> powers = map.getPowers();
 
         Log.println("  :created power->order mapping");
 
-        final HashMap<Power, LinkedList<Order>> orderMap = new HashMap<>(
-                powers.length);
+        final Map<Power, LinkedList<Order>> orderMap = new HashMap<>(
+                powers.size());
         for (final Power power1 : powers) {
             orderMap.put(power1, new LinkedList<>());
         }
@@ -768,9 +768,9 @@ public final class JudgeImportHistory {
         // generate results
         // create units for all successfull move (retreat) orders in destination province
         // create orderMap, which maps powers to their respective order list
-        final Power[] powers = map.getPowers().toArray(new Power[0]);
+        final List<Power> powers = map.getPowers();
         final Map<Power, LinkedList<Order>> orderMap = new HashMap<>(
-                powers.length);
+                powers.size());
         for (final Power power1 : powers) {
             orderMap.put(power1, new LinkedList<>());
         }
