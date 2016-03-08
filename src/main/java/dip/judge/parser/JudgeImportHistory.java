@@ -1108,20 +1108,14 @@ public final class JudgeImportHistory {
 
         // get position info
         final Position newPos = current.getPosition();
-        Position oldPos;
-        if (previousTS == null) {
-            oldPos = oldPosition;
-        } else {
-            oldPos = previousTS.getPosition();
-        }
+        final Position oldPos = previousTS == null ? oldPosition : previousTS
+                .getPosition();
 
         Log.println("copyPreviousPositions() from: ", oldPos);
 
         // clone!
-        final Province[] provinces = map.getProvinces()
-                .toArray(new Province[0]);
-        for (final Province p : provinces) {
-            Unit unit = oldPos.getUnit(p).orElse(null);
+        for (final Province p : map.getProvinces()) {
+            final Unit unit = oldPos.getUnit(p).orElse(null);
             if (unit != null) {
                 final Unit newUnit = unit.clone();
                 newPos.setUnit(p, newUnit);
@@ -1129,12 +1123,12 @@ public final class JudgeImportHistory {
                         unit.getPower());
             }
 
-            unit = oldPos.getDislodgedUnit(p).orElse(null);
-            if (isCopyDislodged && unit != null) {
-                final Unit newUnit = unit.clone();
+            final Unit unit0 = oldPos.getDislodgedUnit(p).orElse(null);
+            if (isCopyDislodged && unit0 != null) {
+                final Unit newUnit = unit0.clone();
                 newPos.setDislodgedUnit(p, newUnit);
                 Log.println("  cloned dislodged unit from/into: ", p, " - ",
-                        unit.getPower());
+                        unit0.getPower());
             }
 
             // clone any lastOccupied info as well.
@@ -1179,9 +1173,7 @@ public final class JudgeImportHistory {
         final Position currentPos = current.getPosition();
 
         // copy!
-        final Province[] provinces = map.getProvinces()
-                .toArray(new Province[0]);
-        for (final Province province : provinces) {
+        for (final Province province : map.getProvinces()) {
             Power power = prevPos.getSupplyCenterOwner(province).orElse(null);
             if (power != null) {
                 //System.out.println("  SC @ "+provinces[i]+", owned by "+power);
@@ -1207,9 +1199,7 @@ public final class JudgeImportHistory {
         final Position oldPos = previousTS == null ? oldPosition : previousTS
                 .getPosition();
 
-        final Province[] provinces = map.getProvinces()
-                .toArray(new Province[0]);
-        for (final Province p : provinces) {
+        for (final Province p : map.getProvinces()) {
             // clone any lastOccupied info as well.
             newPos.setLastOccupier(p, oldPos.getLastOccupier(p).orElse(null));
         }
@@ -1265,7 +1255,7 @@ public final class JudgeImportHistory {
     private void makeDislodgedResults(final Phase phase,
                                       final List<Result> results,
                                       final Position position,
-                                      final DislodgedInfo[] dislodgedInfo,
+                                      final List<DislodgedInfo> dislodgedInfo,
                                       final boolean positionPlacement) throws IOException {
         Log.println("JIH::makeDislodgedResults() [", phase, "]");
         Log.println("  # results: ", results.size());
@@ -1277,7 +1267,7 @@ public final class JudgeImportHistory {
                 if (ResultType.DISLODGED == orderResult.getResultType()) {
                     Log.println("  failed order: ", orderResult.getOrder());
 
-                    String[] retreatLocNames = null;
+                    List<String> retreatLocNames = null;
                     for (final DislodgedInfo aDislodgedInfo : dislodgedInfo) {
                         // find the province for this dislodgedInfo source
                         // remember, we use map.parseLocation() to auto-normalize coasts (see Coast.normalize())
@@ -1307,10 +1297,11 @@ public final class JudgeImportHistory {
                     } else {
                         try {
                             // create objects from retreat location names
-                            final Location[] retreatLocations = new Location[retreatLocNames.length];
-                            for (int i = 0; i < retreatLocNames.length; i++) {
+                            final Location[] retreatLocations = new Location[retreatLocNames
+                                    .size()];
+                            for (int i = 0; i < retreatLocNames.size(); i++) {
                                 retreatLocations[i] = map
-                                        .parseLocation(retreatLocNames[i])
+                                        .parseLocation(retreatLocNames.get(i))
                                         .orElse(null);
                                 retreatLocations[i] = retreatLocations[i]
                                         .getValidated(orderResult.getOrder()
@@ -1377,7 +1368,7 @@ public final class JudgeImportHistory {
         final Matcher m = pattern.matcher(jp.getText());
 
         if (m.find()) {
-            String sb = m.group(1) +
+            final String sb = m.group(1) +
                     ' ' +
                     m.group(2) +
                     ' ' +
@@ -1431,7 +1422,7 @@ public final class JudgeImportHistory {
         final Matcher m = pattern.matcher(lastTurn.getText());
 
         if (m.find()) {
-            String sb = m.group(1) +
+            final String sb = m.group(1) +
                     ' ' +
                     m.group(2) +
                     ' ' +
