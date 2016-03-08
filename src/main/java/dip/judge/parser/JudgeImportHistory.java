@@ -62,10 +62,12 @@ import dip.world.WorldMap;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -103,8 +105,8 @@ public final class JudgeImportHistory {
     private final WorldMap map;
     private final OrderFactory orderFactory;
     private final World world;
-    private JudgeParser jp;
-    private Position oldPosition;
+    private final JudgeParser jp;
+    private final Position oldPosition;
     private final ValidationOptions valOpts;
     private HSCInfo[] homeSCInfo;
     private boolean finalTurn;
@@ -169,14 +171,14 @@ public final class JudgeImportHistory {
      */
     private void processTurns() throws IOException {
         // break data up into turns
-        final Turn[] turns = new TurnParser(jp.getText()).getTurns();
+        final List<Turn> turns = new TurnParser(jp.getText()).getTurns();
         //System.out.println("# of turns: "+turns.length);
 
         // find first movement phase, if any
         int firstMovePhase = -1;
-        for (int i = 0; i < turns.length; i++) {
-            if (turns[i].getPhase() != null) {
-                if (turns[i].getPhase().getPhaseType() == PhaseType.MOVEMENT) {
+        for (int i = 0; i < turns.size(); i++) {
+            if (turns.get(i).getPhase() != null) {
+                if (turns.get(i).getPhase().getPhaseType() == PhaseType.MOVEMENT) {
                     firstMovePhase = i;
                     break;
                 }
@@ -214,41 +216,41 @@ public final class JudgeImportHistory {
         homeSCInfo = hscList.toArray(new HSCInfo[hscList.size()]);
 
         // process all but the final phase
-        for (int i = firstMovePhase; i < turns.length - 1; i++) {
+        for (int i = firstMovePhase; i < turns.size() - 1; i++) {
             //System.out.println("processing turn: "+i+"; phase = "+turns[i].getPhase());
             if (i == 0) {
-                procTurn(turns[i], null, null, false);
+                procTurn(turns.get(i), null, null, false);
             } else if (i == 1) {
-                procTurn(turns[i], turns[i - 1], null, false);
+                procTurn(turns.get(i), turns.get(i - 1), null, false);
             } else {
-                procTurn(turns[i], turns[i - 1], turns[i - 2], false);
+                procTurn(turns.get(i), turns.get(i - 1), turns.get(i - 2), false);
             }
         }
         // process the last turn once more, but as the final turn, to allow proper positioning.
         finalTurn = true;
-        if (turns.length == 1) {
-            procTurn(turns[turns.length - 1], null, null, true);
-        } else if (turns.length == 2) {
-            procTurn(turns[turns.length - 1], turns[turns.length - 2], null,
+        if (turns.size() == 1) {
+            procTurn(turns.get(turns.size() - 1), null, null, true);
+        } else if (turns.size() == 2) {
+            procTurn(turns.get(turns.size() - 1), turns.get(turns.size() - 2), null,
                     true);
-        } else if (turns.length >= 3) {
-            procTurn(turns[turns.length - 1], turns[turns.length - 2],
-                    turns[turns.length - 3], true);
+        } else if (turns.size() >= 3) {
+            procTurn(turns.get(turns.size() - 1), turns.get(turns.size() - 2),
+                    turns.get(turns.size() - 3), true);
         }
 
         final Pattern endofgame = Pattern.compile(END_FOF_GAME);
 
-        final Matcher e = endofgame.matcher(turns[turns.length - 1].getText());
+        final Matcher e = endofgame.matcher(turns.get(turns.size() - 1).getText());
 
         if (e.find()) {
             // The imported game has ended
             // Reprocess the last turn, again, not as final, so it looks right for viewing.
             finalTurn = false;
-            procTurn(turns[turns.length - 1], turns[turns.length - 2],
-                    turns[turns.length - 3], false);
+            procTurn(turns.get(turns.size() - 1), turns.get(turns.size() - 2),
+                    turns.get(turns.size() - 3), false);
             // Set the game as ended.
             final TurnState ts = world
-                    .getTurnState(turns[turns.length - 1].getPhase());
+                    .getTurnState(turns.get(turns.size() - 1).getPhase());
             final VictoryConditions vc = world.getVictoryConditions();
             final RuleOptions ruleOpts = world.getRuleOptions();
             final AdjustmentInfoMap adjMap = Adjustment
@@ -264,18 +266,20 @@ public final class JudgeImportHistory {
         } else {
 
             // create last (un-resolved) turnstate
-            makeLastTurnState(turns[turns.length - 1]);
+            makeLastTurnState(turns.get(turns.size() - 1));
 
             // reprocess the last turn, again, not as final, so it looks right for viewing.
             finalTurn = false;
-            if (turns.length == 1) {
-                procTurn(turns[turns.length - 1], null, null, false);
-            } else if (turns.length == 2) {
-                procTurn(turns[turns.length - 1], turns[turns.length - 2], null,
+            if (turns.size() == 1) {
+                procTurn(turns.get(turns.size() - 1), null, null, false);
+            } else if (turns.size() == 2) {
+                procTurn(turns.get(turns.size() - 1),
+                        turns.get(turns.size() - 2), null,
                         false);
-            } else if (turns.length >= 3) {
-                procTurn(turns[turns.length - 1], turns[turns.length - 2],
-                        turns[turns.length - 3], false);
+            } else if (turns.size() >= 3) {
+                procTurn(turns.get(turns.size() - 1),
+                        turns.get(turns.size() - 2),
+                        turns.get(turns.size() - 3), false);
             }
         }
 
@@ -483,13 +487,13 @@ public final class JudgeImportHistory {
         // parse orders, and create orders for each unit
         final JudgeOrderParser jop = new JudgeOrderParser(map, orderFactory,
                 turn.getText());
-        final NJudgeOrder[] nJudgeOrders = jop.getNJudgeOrders();
+        final List<NJudgeOrder> nJudgeOrders = jop.getNJudgeOrders();
 
         // get Position. Remember, this position contains no units.
         final Position position = ts.getPosition();
 
         Log.println("  :Creating start positions; # NJudgeOrders = ",
-                nJudgeOrders.length);
+                nJudgeOrders.size());
         Log.println("  :getResultList().size() = ", results.size());
 
         // create units from start position
@@ -559,7 +563,7 @@ public final class JudgeImportHistory {
 
         Log.println("  :created power->order mapping");
 
-        final HashMap<Power, LinkedList<dip.order.Order>> orderMap = new HashMap<>(
+        final HashMap<Power, LinkedList<Order>> orderMap = new HashMap<>(
                 powers.length);
         for (final Power power1 : powers) {
             orderMap.put(power1, new LinkedList<>());
@@ -760,7 +764,7 @@ public final class JudgeImportHistory {
         // parse orders, and create orders for each unit
         final JudgeOrderParser jop = new JudgeOrderParser(map, orderFactory,
                 turn.getText());
-        final NJudgeOrder[] nJudgeOrders = jop.getNJudgeOrders();
+        final List<NJudgeOrder> nJudgeOrders = jop.getNJudgeOrders();
 
         // Copy previous phase positions
         copyPreviousPositions(ts);
@@ -771,7 +775,7 @@ public final class JudgeImportHistory {
         // create units for all successfull move (retreat) orders in destination province
         // create orderMap, which maps powers to their respective order list
         final Power[] powers = map.getPowers().toArray(new Power[0]);
-        final HashMap<Power, LinkedList<dip.order.Order>> orderMap = new HashMap<>(
+        final Map<Power, LinkedList<Order>> orderMap = new HashMap<>(
                 powers.length);
         for (final Power power1 : powers) {
             orderMap.put(power1, new LinkedList<>());
@@ -792,7 +796,7 @@ public final class JudgeImportHistory {
             try {
                 order.validate(ts, valOpts, ruleOpts);
 
-                final LinkedList<Order> list = orderMap.get(order.getPower());
+                final Deque<Order> list = orderMap.get(order.getPower());
                 list.add(order);
 
                 results.addAll(njo.getResults());
@@ -812,9 +816,8 @@ public final class JudgeImportHistory {
 
         // clear all dislodged units from board
         if (positionPlacement) {
-            final Province[] dislProv = position.getDislodgedUnitProvinces()
-                    .toArray(new Province[0]);
-            for (final Province aDislProv : dislProv) {
+            for (final Province aDislProv : position.getDislodgedUnitProvinces()
+                    ) {
                 position.setDislodgedUnit(aDislProv, null);
             }
         }
@@ -915,7 +918,7 @@ public final class JudgeImportHistory {
         // parse orders, and create orders for each unit
         final JudgeOrderParser jop = new JudgeOrderParser(map, orderFactory,
                 turn.getText());
-        final NJudgeOrder[] nJudgeOrders = jop.getNJudgeOrders();
+        final List<NJudgeOrder> nJudgeOrders = jop.getNJudgeOrders();
 
         // Copy previous phase positions
         copyPreviousPositions(ts);
@@ -941,7 +944,7 @@ public final class JudgeImportHistory {
 
             // create orderMap, which maps powers to their respective order list
             final Power[] powers = map.getPowers().toArray(new Power[0]);
-            final HashMap<Power, LinkedList<dip.order.Order>> orderMap = new HashMap<>(
+            final HashMap<Power, LinkedList<Order>> orderMap = new HashMap<>(
                     powers.length);
             for (final Power power1 : powers) {
                 orderMap.put(power1, new LinkedList<>());
@@ -959,7 +962,7 @@ public final class JudgeImportHistory {
                             "Internal error: JIH:procAdjustments(): " + "getResults() != 1");
                 }
 
-                final Result result = (Result) njo.getResults().get(0);
+                final Result result = njo.getResults().get(0);
 
                 // if result is a substituted result, the player defaulted,
                 // and the Judge inserted a Disband order

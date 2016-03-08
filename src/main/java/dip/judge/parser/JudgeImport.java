@@ -196,19 +196,19 @@ public final class JudgeImport {
         gmd.setGameName(jp.getGameName());
 
         // set player metadata (email address)
-        final String[] pPowerNames = jp.getPlayerPowerNames();
-        final String[] pPowerEmail = jp.getPlayerEmails();
+        final List<String> pPowerNames = jp.getPlayerPowerNames();
+        final List<String> pPowerEmail = jp.getPlayerEmails();
 
         final WorldMap map = world.getMap();
-        for (int i = 0; i < pPowerNames.length; i++) {
-            final Power power = map.getPowerMatching(pPowerNames[i])
+        for (int i = 0; i < pPowerNames.size(); i++) {
+            final Power power = map.getPowerMatching(pPowerNames.get(i))
                     .orElse(null);
             if (power != null) {
                 final PlayerMetadata pmd = world.getPlayerMetadata(power);
                 pmd.setEmailAddresses(
-                        Collections.singletonList(pPowerEmail[i]));
-            } else if (pPowerNames[i].equalsIgnoreCase("master")) {
-                gmd.setModeratorEmail(pPowerEmail[i]);
+                        Collections.singletonList(pPowerEmail.get(i)));
+            } else if (pPowerNames.get(i).equalsIgnoreCase("master")) {
+                gmd.setModeratorEmail(pPowerEmail.get(i));
             }
         }
 
@@ -292,7 +292,7 @@ public final class JudgeImport {
         // parse position information
         final PositionParser pp = new PositionParser(jp.getText());
         final Phase phase = pp.getPhase();
-        final PositionInfo[] posInfo = pp.getPositionInfo();
+        final List<PositionInfo> posInfo = pp.getPositionInfo();
 
         // parse ownership / adjustment information
         final AdjustmentParser ap = new AdjustmentParser(world.getMap(),
@@ -300,7 +300,7 @@ public final class JudgeImport {
         final List<OwnerInfo> ownerInfo = ap.getOwnership();
 
         // ERROR if no positions, or no owner information.
-        if (posInfo.length == 0) {
+        if (posInfo.isEmpty()) {
             throw new IOException(Utils.getLocalString(JI_NO_UNIT_INFO));
         }
 
@@ -341,7 +341,7 @@ public final class JudgeImport {
 
             for (final String ownedProvName : anOwnerInfo.getProvinces()) {
                 final Province province = map.getProvinceMatching(ownedProvName)
-                        .orElseThrow(()->new IOException(
+                        .orElseThrow(() -> new IOException(
                                 Utils.getLocalString(JI_UNKNOWN_PROVINCE,
                                         anOwnerInfo.getPowerName())));
 

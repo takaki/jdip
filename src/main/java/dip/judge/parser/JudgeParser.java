@@ -29,7 +29,9 @@ import dip.world.Phase;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -62,8 +64,8 @@ public class JudgeParser {
     private String gameName;
     private Phase phase;
 
-    private String[] playerEmails;
-    private String[] playerNames;
+    private List<String> playerEmails;
+    private List<String> playerNames;
 
     private String text;
     private String initialText;
@@ -121,15 +123,15 @@ public class JudgeParser {
     /**
      * Returns the list of players in the game, or a zero-length-array
      */
-    public String[] getPlayerPowerNames() {
-        return playerNames;
+    public List<String> getPlayerPowerNames() {
+        return Collections.unmodifiableList(playerNames);
     }
 
     /**
      * Returns the email address for each player in the game, or a zero-length array
      */
-    public String[] getPlayerEmails() {
-        return playerEmails;
+    public List<String> getPlayerEmails() {
+        return Collections.unmodifiableList(playerEmails);
     }
 
     /**
@@ -251,10 +253,8 @@ public class JudgeParser {
                     line = reader.readLine();
                 }
 
-                playerNames = names
-                        .toArray(new String[names.size()]);
-                playerEmails = email
-                        .toArray(new String[email.size()]);
+                playerNames = names;
+                playerEmails = email;
                 return;
             }
 
@@ -262,8 +262,8 @@ public class JudgeParser {
         }
 
         reader.reset();
-        playerEmails = new String[0];
-        playerNames = new String[0];
+        playerEmails = Collections.emptyList();
+        playerNames = Collections.emptyList();
     }// findPlayerList()
 
 

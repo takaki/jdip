@@ -50,11 +50,11 @@ The deadline for orders will be Tue Jan 22 2002 23:30:00 -0500.
         PositionParser pp = new PositionParser(input);
 
         def pi = pp.getPositionInfo();
-        System.out.println("# of orders: " + pi.length);
+        System.out.println("# of orders: " + pi.size());
         System.out.println("phase: " + pp.getPhase());
 
         expect:
-        pi.length == 9
+        pi.size() == 9
         pp.getPhase().getYear() == 1901
         pp.getPhase().getBriefName() == "S1901M"
         pi[0].getPowerName() == 'Argentina'

@@ -42,9 +42,6 @@ import java.util.stream.Collectors;
  * Parses the Dislodged block
  */
 public class DislodgedParser {
-    // CONSTANTS
-    // empty string
-    private static final String[] EMPTY = new String[0];
 
     /**
      * Header text to look for
@@ -251,9 +248,9 @@ public class DislodgedParser {
         final List<DislodgedInfo> disList = new LinkedList<>();
 
         // Create patterns
-        final Pattern[] destroyeds = new Pattern[2];
-        destroyeds[0] = Pattern.compile(DESTROYED_REGEX_1);
-        destroyeds[1] = Pattern.compile(DESTROYED_REGEX_2);
+        final List<Pattern> destroyeds = Arrays
+                .asList(Pattern.compile(DESTROYED_REGEX_1),
+                        Pattern.compile(DESTROYED_REGEX_2));
 
         final Pattern dislodged = Pattern.compile(DISLODGED_REGEX);
 
