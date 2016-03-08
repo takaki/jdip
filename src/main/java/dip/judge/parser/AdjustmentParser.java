@@ -29,6 +29,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -38,6 +39,7 @@ import java.util.Objects;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Parses the Adjustment information block.
@@ -45,9 +47,6 @@ import java.util.regex.Pattern;
  * This includes both supply center ownership, and build/removes.
  */
 public class AdjustmentParser {
-    // CONSTANTS
-    // empty string
-    private static final String[] EMPTY = new String[0];
 
     /**
      * Header text to look for
@@ -106,16 +105,16 @@ public class AdjustmentParser {
      * An OwnerInfo object is created for each power.
      * <p>
      */
-    public static class OwnerInfo {
+    public static final class OwnerInfo {
         private final String power;
-        private final String[] locations;
+        private final List<String> locations;
 
         /**
          * Create a OwnerInfo object
          */
-        public OwnerInfo(final String power, final String[] locations) {
+        public OwnerInfo(final String power, final List<String> locations) {
             this.power = power;
-            this.locations = locations == null ? EMPTY : locations;
+            this.locations = new ArrayList<>(locations);
         }// OwnerInfo()
 
         /**
@@ -128,8 +127,8 @@ public class AdjustmentParser {
         /**
          * Names of provinces with owned supply centers
          */
-        public String[] getProvinces() {
-            return locations;
+        public List<String> getProvinces() {
+            return Collections.unmodifiableList(locations);
         }
 
         /**
@@ -147,7 +146,7 @@ public class AdjustmentParser {
      * An AdjustInfo object is created for each power, and contains adjustment information
      * <p>
      */
-    public static class AdjustInfo {
+    public static final class AdjustInfo {
         private final String power;
         private final int numSC;
         private final int numUnits;
@@ -299,28 +298,21 @@ public class AdjustmentParser {
         // there may be a "." on the end of some
         // which should be eliminated.
         //
-        for (Power allPower : map.getPowers()) {
+        for (final Power allPower : map.getPowers()) {
             final StringBuffer sb = pmap.get(allPower);
             if (sb != null) {
-                final String[] provs = sb.toString().split("[\\,]");
-
                 // clean up province tokens
                 // remove parentheses (put on blockaded SC in games with Wings)
-                for (int pi = 0; pi < provs.length; pi++) {
-                    provs[pi] = provs[pi].trim();
-                    if (provs[pi].endsWith(".") || provs[pi].endsWith(")")) {
-                        provs[pi] = provs[pi]
-                                .substring(0, provs[pi].length() - 1);
-                    }
-
-
-                    if (provs[pi].startsWith("(")) {
-                        provs[pi] = provs[pi].substring(1);
-                    }
-                }
-
+                final List<String> locs = Arrays
+                        .stream(sb.toString().split("[\\,]")).map(String::trim)
+                        .map(prov -> prov.endsWith(".") || prov
+                                .endsWith(")") ? prov
+                                .substring(0, prov.length() - 1) : prov)
+                        .map(prov -> prov.startsWith("(") ? prov
+                                .substring(1) : prov)
+                        .collect(Collectors.toList());
                 // create OwnerInfo
-                ownerList.add(new OwnerInfo(allPower.getName(), provs));
+                ownerList.add(new OwnerInfo(allPower.getName(), locs));
             }
         }
     }// parseOwnerBlock()
@@ -330,9 +322,7 @@ public class AdjustmentParser {
      * Given a trimmed block, determines adjustment
      */
     private void parseAdjustmentBlock(final String text) {
-        final String[] lines = text.split("\\n");
-
-        for (String line : lines) {
+        for (final String line : text.split("\\n")) {
             final Matcher m = regexAdjust.matcher(line);
 
             if (m.find()) {

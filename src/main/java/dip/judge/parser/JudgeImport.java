@@ -339,15 +339,11 @@ public final class JudgeImport {
                         anOwnerInfo.getPowerName()));
             }
 
-            final String[] ownedProvNames = anOwnerInfo.getProvinces();
-            for (final String ownedProvName : ownedProvNames) {
+            for (final String ownedProvName : anOwnerInfo.getProvinces()) {
                 final Province province = map.getProvinceMatching(ownedProvName)
-                        .orElse(null);
-                if (province == null) {
-                    throw new IOException(
-                            Utils.getLocalString(JI_UNKNOWN_PROVINCE,
-                                    anOwnerInfo.getPowerName()));
-                }
+                        .orElseThrow(()->new IOException(
+                                Utils.getLocalString(JI_UNKNOWN_PROVINCE,
+                                        anOwnerInfo.getPowerName())));
 
                 position.setSupplyCenterOwner(province, power);
             }

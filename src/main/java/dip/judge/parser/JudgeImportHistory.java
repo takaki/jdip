@@ -1241,8 +1241,7 @@ public final class JudgeImportHistory {
                                 "Unregognized power \"%s\" in Ownership block.",
                                 anOwnerInfo.getPowerName())));
                 Log.println("   SC Owned by Power: ", power);
-                final String[] provNames = anOwnerInfo.getProvinces();
-                for (final String provName : provNames) {
+                for (final String provName : anOwnerInfo.getProvinces()) {
                     final Province province = map.getProvinceMatching(provName)
                             .orElseThrow(() -> new IOException(String.format(
                                     "Unknown Province in SC Ownership block: %s",
