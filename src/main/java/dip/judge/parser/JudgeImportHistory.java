@@ -108,7 +108,7 @@ public final class JudgeImportHistory {
     private final JudgeParser jp;
     private final Position oldPosition;
     private final ValidationOptions valOpts;
-    private HSCInfo[] homeSCInfo;
+    private List<HSCInfo> homeSCInfo;
     private boolean finalTurn;
 
     /**
@@ -178,7 +178,8 @@ public final class JudgeImportHistory {
         int firstMovePhase = -1;
         for (int i = 0; i < turns.size(); i++) {
             if (turns.get(i).getPhase() != null) {
-                if (turns.get(i).getPhase().getPhaseType() == PhaseType.MOVEMENT) {
+                if (turns.get(i).getPhase()
+                        .getPhaseType() == PhaseType.MOVEMENT) {
                     firstMovePhase = i;
                     break;
                 }
@@ -203,17 +204,15 @@ public final class JudgeImportHistory {
         // get home supply center information from the oldPosition object
         // and store it in HSCInfo object array, so that it can be set during each successive
         // turn.
-        final ArrayList<HSCInfo> hscList = new ArrayList<>(50);
-        final Province[] provinces = map.getProvinces()
-                .toArray(new Province[0]);
-        for (final Province province : provinces) {
+        final List<HSCInfo> hscList = new ArrayList<>(50);
+        for (final Province province : map.getProvinces()) {
             final Power power = oldPosition.getSupplyCenterHomePower(province)
                     .orElse(null);
             if (power != null) {
                 hscList.add(new HSCInfo(province, power));
             }
         }
-        homeSCInfo = hscList.toArray(new HSCInfo[hscList.size()]);
+        homeSCInfo = hscList;
 
         // process all but the final phase
         for (int i = firstMovePhase; i < turns.size() - 1; i++) {
@@ -223,7 +222,8 @@ public final class JudgeImportHistory {
             } else if (i == 1) {
                 procTurn(turns.get(i), turns.get(i - 1), null, false);
             } else {
-                procTurn(turns.get(i), turns.get(i - 1), turns.get(i - 2), false);
+                procTurn(turns.get(i), turns.get(i - 1), turns.get(i - 2),
+                        false);
             }
         }
         // process the last turn once more, but as the final turn, to allow proper positioning.
@@ -231,8 +231,8 @@ public final class JudgeImportHistory {
         if (turns.size() == 1) {
             procTurn(turns.get(turns.size() - 1), null, null, true);
         } else if (turns.size() == 2) {
-            procTurn(turns.get(turns.size() - 1), turns.get(turns.size() - 2), null,
-                    true);
+            procTurn(turns.get(turns.size() - 1), turns.get(turns.size() - 2),
+                    null, true);
         } else if (turns.size() >= 3) {
             procTurn(turns.get(turns.size() - 1), turns.get(turns.size() - 2),
                     turns.get(turns.size() - 3), true);
@@ -240,7 +240,8 @@ public final class JudgeImportHistory {
 
         final Pattern endofgame = Pattern.compile(END_FOF_GAME);
 
-        final Matcher e = endofgame.matcher(turns.get(turns.size() - 1).getText());
+        final Matcher e = endofgame
+                .matcher(turns.get(turns.size() - 1).getText());
 
         if (e.find()) {
             // The imported game has ended
@@ -274,8 +275,7 @@ public final class JudgeImportHistory {
                 procTurn(turns.get(turns.size() - 1), null, null, false);
             } else if (turns.size() == 2) {
                 procTurn(turns.get(turns.size() - 1),
-                        turns.get(turns.size() - 2), null,
-                        false);
+                        turns.get(turns.size() - 2), null, false);
             } else if (turns.size() >= 3) {
                 procTurn(turns.get(turns.size() - 1),
                         turns.get(turns.size() - 2),
@@ -296,16 +296,14 @@ public final class JudgeImportHistory {
         // and store it in HSCInfo object array, so that it can be set during each successive
         // turn.
         final ArrayList<HSCInfo> hscList = new ArrayList<>(50);
-        final Province[] provinces = map.getProvinces()
-                .toArray(new Province[0]);
-        for (final Province province : provinces) {
+        for (final Province province : map.getProvinces()) {
             final Power power = oldPosition.getSupplyCenterHomePower(province)
                     .orElse(null);
             if (power != null) {
                 hscList.add(new HSCInfo(province, power));
             }
         }
-        homeSCInfo = hscList.toArray(new HSCInfo[hscList.size()]);
+        homeSCInfo = hscList;
 
         // process the turn
         procTurn(turn, null, null, false);
@@ -633,14 +631,10 @@ public final class JudgeImportHistory {
         Log.println("JIH::procMove():ORDER PARSING COMPLETE");
 
         // clear all units (dislodged or not) from the board
-        final Province[] unitProv = position.getUnitProvinces()
-                .toArray(new Province[0]);
-        final Province[] dislProv = position.getDislodgedUnitProvinces()
-                .toArray(new Province[0]);
-        for (final Province anUnitProv : unitProv) {
+        for (final Province anUnitProv : position.getUnitProvinces()) {
             position.setUnit(anUnitProv, null);
         }
-        for (final Province aDislProv : dislProv) {
+        for (final Province aDislProv : position.getDislodgedUnitProvinces()) {
             position.setUnit(aDislProv, null);
         }
 
@@ -816,8 +810,8 @@ public final class JudgeImportHistory {
 
         // clear all dislodged units from board
         if (positionPlacement) {
-            for (final Province aDislProv : position.getDislodgedUnitProvinces()
-                    ) {
+            for (final Province aDislProv : position
+                    .getDislodgedUnitProvinces()) {
                 position.setDislodgedUnit(aDislProv, null);
             }
         }
@@ -943,9 +937,8 @@ public final class JudgeImportHistory {
             final Position position = ts.getPosition();
 
             // create orderMap, which maps powers to their respective order list
-            final Power[] powers = map.getPowers().toArray(new Power[0]);
-            final HashMap<Power, LinkedList<Order>> orderMap = new HashMap<>(
-                    powers.length);
+            final List<Power> powers = map.getPowers();
+            final Map<Power, LinkedList<Order>> orderMap = new HashMap<>();
             for (final Power power1 : powers) {
                 orderMap.put(power1, new LinkedList<>());
             }
@@ -1067,9 +1060,7 @@ public final class JudgeImportHistory {
             //System.out.println(previousTS.getPhase());
             final Position oldPosition = previousTS.getPosition();
             final Position position = ts.getPosition();
-            final Province[] provinces = position.getProvinces()
-                    .toArray(new Province[0]);
-            for (final Province province : provinces) {
+            for (final Province province : position.getProvinces()) {
                 if (province != null && province.hasSupplyCenter()) {
                     final Unit unit = position.getUnit(province).orElse(null);
                     if (unit != null) {
