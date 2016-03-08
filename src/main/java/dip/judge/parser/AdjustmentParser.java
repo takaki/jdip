@@ -28,6 +28,8 @@ import dip.world.WorldMap;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -69,67 +71,8 @@ public class AdjustmentParser {
     private List<AdjustInfo> adjustList;
     private Pattern regexAdjust;
 
-    private OwnerInfo[] ownerInfo;
-    private AdjustInfo[] adjustInfo;
-
-	/*
-    // TEST
-	public static void main(String args[])
-	throws IOException
-	{
-		// NOTE: 2 stp. because one is split, as it's been seen on floc.net and 
-		// thus is a good test.
-		String in = 
-			"The deadline for orders will be Wed Apr 10 2002 17:54:23 -0500.\n"+
-			"asdfjafsdkjfadslk: sdljfjldksfkjfdlsls \n"+
-			"fadslkfkjdlsafslkj\n"+
-			"\n"+
-			"Ownership of supply centers:\n"+
-			"\n"+
-			"Austria:   Greece, Serbia.\n"+
-			"England:   Edinburgh, Liverpool, London.\n"+
-			"France:    Belgium, Brest, Marseilles, Paris, \n"+
-			"           Portugal, Spain.\n"+
-			"Germany:   Berlin, Denmark, Holland, Kiel, Munich, Norway.\n"+
-			"Italy:     Naples, Rome, Trieste, Tunis, Venice, St.\n"+
-			"           Petersburg.\n"+
-			"Russia:    Moscow, Norway, Rumania, Sevastopol,\n"+
-			"	    St. Petersburg, Vienna, Warsaw.\n"+
-			"Turkey:    Ankara, Bulgaria, Constantinople, Smyrna.\n"+
-			"\n"+
-			"Austria:   2 Supply centers,  3 Units:  Removes  1 unit.\n"+
-			"England:   3 Supply centers,  4 Units:  Removes  1 unit.\n"+
-			"France:    6 Supply centers,  4 Units:  Builds   2 units.\n"+
-			"Germany:   6 Supply centers,  5 Units:  Builds   1 unit.\n"+
-			"Italy:     5 Supply centers,  5 Units:  Builds   0 units.\n"+
-			"Russia:    8 Supply centers,  7 Units:  Builds   1 unit.\n"+
-			"Turkey:    4 Supply centers,  4 Units:  Builds   0 units.\n"+
-			"\n"+
-			"The next phase of 'delphi' will be Adjustments for Winter of 1902.\n";
-
-		
-		
-		
-		AdjustmentParser ap = new AdjustmentParser(in);
-		OwnerInfo[] oi = ap.getOwnership();
-		AdjustInfo[] ai = ap.getAdjustments();
-		System.out.println("oi = "+oi);
-		System.out.println("oi.length = "+oi.length);
-		for(int i=0; i<oi.length; i++)
-		{
-			System.out.println(oi[i]);
-			System.out.println("");
-		}
-		System.out.println("ai = "+ai);
-		System.out.println("ai.length = "+ai.length);
-		for(int i=0; i<ai.length; i++)
-		{
-			System.out.println(ai[i]);
-			System.out.println("");
-		}
-	}// main()
-	
-	*/
+    private List<OwnerInfo> ownerInfo;
+    private List<AdjustInfo> adjustInfo;
 
     /**
      * Creates a AdjustmentParser object, which parses the given input for an Ownership and Adjustment info blocks
@@ -147,15 +90,15 @@ public class AdjustmentParser {
     /**
      * Returns an array of OwnerInfo objects; this never returns null.
      */
-    public OwnerInfo[] getOwnership() {
-        return ownerInfo;
+    public List<OwnerInfo> getOwnership() {
+        return Collections.unmodifiableList(ownerInfo);
     }// getOwnership()
 
     /**
      * Returns an array of AdjustInfo objects; this never returns null.
      */
-    public AdjustInfo[] getAdjustments() {
-        return adjustInfo;
+    public List<AdjustInfo> getAdjustments() {
+        return Collections.unmodifiableList(adjustInfo);
     }// getAdjustments()
 
 
@@ -298,8 +241,8 @@ public class AdjustmentParser {
 
 
         // create the output array
-        ownerInfo = ownerList.toArray(new OwnerInfo[ownerList.size()]);
-        adjustInfo = adjustList.toArray(new AdjustInfo[adjustList.size()]);
+        ownerInfo = new ArrayList<>(ownerList);
+        adjustInfo = new ArrayList<>(adjustList);
 
         // cleanup
         br.close();

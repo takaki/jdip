@@ -297,14 +297,14 @@ public final class JudgeImport {
         // parse ownership / adjustment information
         final AdjustmentParser ap = new AdjustmentParser(world.getMap(),
                 jp.getText());
-        final OwnerInfo[] ownerInfo = ap.getOwnership();
+        final List<OwnerInfo> ownerInfo = ap.getOwnership();
 
         // ERROR if no positions, or no owner information.
         if (posInfo.length == 0) {
             throw new IOException(Utils.getLocalString(JI_NO_UNIT_INFO));
         }
 
-        if (ownerInfo.length == 0) {
+        if (ownerInfo.isEmpty()) {
             throw new IOException(Utils.getLocalString(JI_NO_SUPPLY_INFO));
         }
 

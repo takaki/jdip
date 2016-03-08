@@ -601,8 +601,7 @@ public final class JudgeImportHistory {
                 try {
                     order.validate(ts, valOpts, ruleOpts);
 
-                    final List<Order> list = orderMap
-                            .get(order.getPower());
+                    final List<Order> list = orderMap.get(order.getPower());
                     list.add(order);
 
                     results.addAll(njo.getResults());
@@ -942,7 +941,8 @@ public final class JudgeImportHistory {
 
             // create orderMap, which maps powers to their respective order list
             final Power[] powers = map.getPowers().toArray(new Power[0]);
-            final HashMap<Power, LinkedList<dip.order.Order>> orderMap = new HashMap<>(powers.length);
+            final HashMap<Power, LinkedList<dip.order.Order>> orderMap = new HashMap<>(
+                    powers.length);
             for (final Power power1 : powers) {
                 orderMap.put(power1, new LinkedList<>());
             }
@@ -1163,7 +1163,7 @@ public final class JudgeImportHistory {
                 .getPosition();
 
 		/*
-		if(previousTS != null)
+        if(previousTS != null)
 		{
 			Log.println("  Copying *previous* SC ownership info from: ", previousTS.getPhase());
 		}
@@ -1225,11 +1225,11 @@ public final class JudgeImportHistory {
      * If no SC owner info exists, copyPreviousSCInfo() is used to
      * supply the appropriate information.
      */
-    private void procAdjustmentBlock(final OwnerInfo[] ownerInfo,
+    private void procAdjustmentBlock(final List<OwnerInfo> ownerInfo,
                                      final TurnState ts,
                                      final Position position) throws IOException {
         Log.println("procAdjustmentBlock(): ", ts.getPhase());
-        if (ownerInfo.length == 0) {
+        if (ownerInfo.isEmpty()) {
             Log.println(
                     "   No adjustment block. Copying previous SC ownership info.");
             copyPreviousSCInfo(ts);
@@ -1237,26 +1237,18 @@ public final class JudgeImportHistory {
             for (final OwnerInfo anOwnerInfo : ownerInfo) {
                 final Power power = map
                         .getPowerMatching(anOwnerInfo.getPowerName())
-                        .orElse(null);
-                if (power != null) {
-                    Log.println("   SC Owned by Power: ", power);
-                    final String[] provNames = anOwnerInfo.getProvinces();
-                    for (final String provName : provNames) {
-                        final Province province = map
-                                .getProvinceMatching(provName).orElse(null);
-                        if (province == null) {
-                            throw new IOException(
-                                    "Unknown Province in SC Ownership block: " + provName);
-                        }
-
-                        Log.println("       ", province);
-                        position.setSupplyCenterOwner(province, power);
-                    }
-                } else {
-                    Log.println("  *** Unrecognized power: ",
-                            anOwnerInfo.getPowerName());
-                    throw new IOException("Unregognized power \"" + anOwnerInfo
-                            .getPowerName() + "\" in Ownership block.");
+                        .orElseThrow(() -> new IOException(String.format(
+                                "Unregognized power \"%s\" in Ownership block.",
+                                anOwnerInfo.getPowerName())));
+                Log.println("   SC Owned by Power: ", power);
+                final String[] provNames = anOwnerInfo.getProvinces();
+                for (final String provName : provNames) {
+                    final Province province = map.getProvinceMatching(provName)
+                            .orElseThrow(() -> new IOException(String.format(
+                                    "Unknown Province in SC Ownership block: %s",
+                                    provName)));
+                    Log.println("       ", province);
+                    position.setSupplyCenterOwner(province, power);
                 }
             }
         }
@@ -1271,7 +1263,8 @@ public final class JudgeImportHistory {
      * <p>
      * old Dislodged results are discarded.
      */
-    private void makeDislodgedResults(final Phase phase, final List<Result> results,
+    private void makeDislodgedResults(final Phase phase,
+                                      final List<Result> results,
                                       final Position position,
                                       final DislodgedInfo[] dislodgedInfo,
                                       final boolean positionPlacement) throws IOException {
@@ -1338,9 +1331,9 @@ public final class JudgeImportHistory {
                                 final Province province = orderResult.getOrder()
                                         .getSource().getProvince();
                                 final Unit unit;
-								
+
 								/*
-								 * Check for the positionPlacement flag. If so, go ahead and set the unit to the
+                                 * Check for the positionPlacement flag. If so, go ahead and set the unit to the
 								 * dislodged one. If not, the unit that is dislodged is not SHOWN as dislodged
 								 * therefore get that one.
 								 */
