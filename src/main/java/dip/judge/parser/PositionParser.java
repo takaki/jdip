@@ -28,6 +28,7 @@ import dip.world.Phase;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -65,7 +66,7 @@ public class PositionParser {
 
 
     // instance variables
-    private PositionInfo[] posInfo;
+    private final List<PositionInfo> posInfo;
     private Phase phase;
 
     /**
@@ -73,15 +74,46 @@ public class PositionParser {
      */
     public PositionParser(
             final String input) throws IOException, PatternSyntaxException {
-        parseInput(input);
+        // search for header input. once found, shuttle all input to the appropriate
+        // handler type.
+        final Pattern pp1 = Pattern.compile(HEADER_REGEX_1);
+        final Pattern pp2 = Pattern.compile(HEADER_REGEX_2);
+
+        // init
+        final List<PositionInfo> posList = new LinkedList<>();
+        final BufferedReader br = new BufferedReader(new StringReader(input));
+
+        // header parse loop
+        String line = ParserUtils.getNextLongLine(br);
+        while (line != null) {
+            Matcher m = pp1.matcher(line);
+            if (m.lookingAt()) {
+                phase = makePhase(null, m.group(1), m.group(2));
+                parsePositions(br, posList);
+                break;
+            }
+
+            m = pp2.matcher(line);
+            if (m.lookingAt()) {
+                phase = makePhase(m.group(1), m.group(2), m.group(3));
+                parsePositions(br, posList);
+                break;
+            }
+
+            line = ParserUtils.getNextLongLine(br);
+        }
+
+        // cleanup & create array
+        br.close();
+        posInfo = posList;
     }// PositionParser()
 
 
     /**
      * Returns PositionInfo, or a zero-length array
      */
-    public PositionInfo[] getPositionInfo() {
-        return posInfo;
+    public List<PositionInfo> getPositionInfo() {
+        return Collections.unmodifiableList(posInfo);
     }// getPositionInfo()
 
     /**
@@ -140,47 +172,6 @@ public class PositionParser {
                             unit, location);
         }// toString()
     }// nested class PositionInfo
-
-
-    /**
-     * Parses the input; looks for the appropriate header. Then parses the position list
-     * until no more positions can be found.
-     */
-    private void parseInput(
-            final String input) throws IOException, PatternSyntaxException {
-        // search for header input. once found, shuttle all input to the appropriate
-        // handler type.
-        final Pattern pp1 = Pattern.compile(HEADER_REGEX_1);
-        final Pattern pp2 = Pattern.compile(HEADER_REGEX_2);
-
-        // init
-        final List<PositionInfo> posList = new LinkedList<>();
-        final BufferedReader br = new BufferedReader(new StringReader(input));
-
-        // header parse loop
-        String line = ParserUtils.getNextLongLine(br);
-        while (line != null) {
-            Matcher m = pp1.matcher(line);
-            if (m.lookingAt()) {
-                phase = makePhase(null, m.group(1), m.group(2));
-                parsePositions(br, posList);
-                break;
-            }
-
-            m = pp2.matcher(line);
-            if (m.lookingAt()) {
-                phase = makePhase(m.group(1), m.group(2), m.group(3));
-                parsePositions(br, posList);
-                break;
-            }
-
-            line = ParserUtils.getNextLongLine(br);
-        }
-
-        // cleanup & create array
-        br.close();
-        posInfo = posList.toArray(new PositionInfo[posList.size()]);
-    }// parseInput()
 
 
     /**

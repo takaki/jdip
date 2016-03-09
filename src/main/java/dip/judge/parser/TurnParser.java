@@ -28,10 +28,11 @@ import dip.world.Phase;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 /**
  * Parses the Turns of a History file.
@@ -64,38 +65,23 @@ public class TurnParser {
 
 
     // instance variables
-    private Turn[] turns;
+    private final List<Turn> turns;
 
 
     /**
      * Create the TurnParser and perform parsing.
      */
-    public TurnParser(final String input) throws IOException, PatternSyntaxException {
-        parseTurns(input);
-    }// TurnParser()
-
-
-    /**
-     * Returns the turns. If not parsed, or an error occured, it may return null.
-     */
-    public Turn[] getTurns() {
-        return turns;
-    }// getTurns()
-
-
-    /**
-     * Creates Turn objects.
-     */
-    private void parseTurns(
-            final String input) throws IOException, PatternSyntaxException {
+    public TurnParser(final String input) throws IOException {
         // patterns
         final Pattern subjPhasePattern = Pattern.compile(SUBJ_PHASE_REGEX);
-        final Pattern subjPhasePatternOld = Pattern.compile(SUBJ_PHASE_REGEX_OLD);
+        final Pattern subjPhasePatternOld = Pattern
+                .compile(SUBJ_PHASE_REGEX_OLD);
         final Pattern isResultsPattern = Pattern.compile(RESULT_SUBJ_REGEX);
 
 
         final LinkedList<Turn> turnList = new LinkedList<>();
-        final BufferedReader reader = new BufferedReader(new StringReader(input));
+        final BufferedReader reader = new BufferedReader(
+                new StringReader(input));
 
         String line = reader.readLine();
         StringBuffer sb = null;
@@ -118,7 +104,8 @@ public class TurnParser {
                     final Matcher m = subjPhasePattern.matcher(nextLine);
                     final Matcher m_o = subjPhasePatternOld.matcher(nextLine);
                     if (m.find()) {
-                        final Phase phase = Phase.parse(m.group(0).trim()).orElse(null);
+                        final Phase phase = Phase.parse(m.group(0).trim())
+                                .orElse(null);
                         if (phase == null) {
                             throw new IOException(
                                     Utils.getLocalString(TP_BAD_PHASE,
@@ -127,7 +114,8 @@ public class TurnParser {
 
                         turn.setPhase(phase);
                     } else if (m_o.find()) {
-                        final Phase phase = Phase.parse(m_o.group(0).trim()).orElse(null);
+                        final Phase phase = Phase.parse(m_o.group(0).trim())
+                                .orElse(null);
                         if (phase == null) {
                             throw new IOException(
                                     Utils.getLocalString(TP_BAD_PHASE,
@@ -165,8 +153,16 @@ public class TurnParser {
         }
 
         // convert to array
-        turns = turnList.toArray(new Turn[turnList.size()]);
-    }// parseTurns()
+        turns = turnList;
+    }// TurnParser()
+
+
+    /**
+     * Returns the turns. If not parsed, or an error occured, it may return null.
+     */
+    public List<Turn> getTurns() {
+        return Collections.unmodifiableList(turns);
+    }// getTurns()
 
 
     /**

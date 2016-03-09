@@ -28,7 +28,9 @@ import dip.world.Phase;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -40,9 +42,6 @@ import java.util.stream.Collectors;
  * Parses the Dislodged block
  */
 public class DislodgedParser {
-    // CONSTANTS
-    // empty string
-    private static final String[] EMPTY = new String[0];
 
     /**
      * Header text to look for
@@ -84,7 +83,7 @@ public class DislodgedParser {
 
 
     // INSTANCE VARIABLES
-    private DislodgedInfo[] dislodgedInfo;
+    private List<DislodgedInfo> dislodgedInfo;
 
 
     /**
@@ -99,8 +98,8 @@ public class DislodgedParser {
     /**
      * Returns the dislodged units, or a zero-length array if no units were dislodged
      */
-    public DislodgedInfo[] getDislodgedInfo() {
-        return dislodgedInfo;
+    public List<DislodgedInfo> getDislodgedInfo() {
+        return Collections.unmodifiableList(dislodgedInfo);
     }// getRetreatInfo()
 
 
@@ -114,17 +113,17 @@ public class DislodgedParser {
         private final String power;
         private final String src;
         private final String unit;
-        private final String[] retreatLocs;    // zero-length if destroyed
+        private final List<String> retreatLocs;    // zero-length if destroyed
 
         /**
          * Create a DislodgedInfo object
          */
         public DislodgedInfo(final String power, final String unit,
-                             final String src, final String[] retreatLocs) {
+                             final String src, final List<String> retreatLocs) {
             this.power = power;
             this.unit = unit;
             this.src = src;
-            this.retreatLocs = retreatLocs == null ? EMPTY : retreatLocs;
+            this.retreatLocs = new ArrayList<>(retreatLocs);
         }// DislodgedInfo()
 
         /**
@@ -151,15 +150,15 @@ public class DislodgedParser {
         /**
          * Names of valid retreat locations; zero-length if no valid retreats
          */
-        public String[] getRetreatLocationNames() {
-            return retreatLocs;
+        public List<String> getRetreatLocationNames() {
+            return Collections.unmodifiableList(retreatLocs);
         }
 
         /**
          * Indicates if unit was destroyed
          */
         public boolean isDestroyed() {
-            return retreatLocs.length == 0;
+            return retreatLocs.isEmpty();
         }
 
 
@@ -170,8 +169,7 @@ public class DislodgedParser {
         public String toString() {
             return String
                     .format("DislodgedInfo[power=%s, src=%s, unit=%s, locNames=%s]",
-                            power, src, unit,
-                            Arrays.stream(retreatLocs).map(String::toString)
+                            power, src, unit, retreatLocs.stream()
                                     .collect(Collectors.joining(",")));
         }// toString()
     }// nested class DislodgedInfo
@@ -250,9 +248,9 @@ public class DislodgedParser {
         final List<DislodgedInfo> disList = new LinkedList<>();
 
         // Create patterns
-        final Pattern[] destroyeds = new Pattern[2];
-        destroyeds[0] = Pattern.compile(DESTROYED_REGEX_1);
-        destroyeds[1] = Pattern.compile(DESTROYED_REGEX_2);
+        final List<Pattern> destroyeds = Arrays
+                .asList(Pattern.compile(DESTROYED_REGEX_1),
+                        Pattern.compile(DESTROYED_REGEX_2));
 
         final Pattern dislodged = Pattern.compile(DISLODGED_REGEX);
 
@@ -272,7 +270,8 @@ public class DislodgedParser {
                 final Matcher m = destroyed.matcher(line);
                 if (m.lookingAt()) {
                     disList.add(new DislodgedInfo(m.group(1), m.group(2),
-                            ParserUtils.filter(m.group(3).trim()), null));
+                            ParserUtils.filter(m.group(3).trim()),
+                            Collections.emptyList()));
 
                     foundMatch = true;
                     break;
@@ -283,15 +282,13 @@ public class DislodgedParser {
                 final Matcher m = dislodged.matcher(line);
                 if (m.lookingAt()) {
                     // parse location-list predicate
-                    final String[] retreatLocs = m.group(4)
-                            .split(DISLODGED_SPLIT_REGEX);
-                    for (int i = 0; i < retreatLocs.length; i++) {
-                        retreatLocs[i] = ParserUtils.filter(retreatLocs[i]);
-                    }
+                    final List<String> retlocs = Arrays
+                            .stream(m.group(4).split(DISLODGED_SPLIT_REGEX))
+                            .map(ParserUtils::filter)
+                            .collect(Collectors.toList());
 
                     disList.add(new DislodgedInfo(m.group(1), m.group(2),
-                            ParserUtils.filter(m.group(3).trim()),
-                            retreatLocs));
+                            ParserUtils.filter(m.group(3).trim()), retlocs));
                     foundMatch = true;
                 }
             }
@@ -302,7 +299,7 @@ public class DislodgedParser {
             }
         }// while()
 
-        dislodgedInfo = disList.toArray(new DislodgedInfo[disList.size()]);
+        dislodgedInfo = disList;
     }// parseInput()
 
 

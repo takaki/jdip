@@ -34,6 +34,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -96,8 +97,8 @@ public class JudgeOrderParser {
 
 
     // instance variables
-    private NJudgeOrder[] nJudgeOrders = null;
-    private PhaseType phaseType = null;
+    private List<NJudgeOrder> nJudgeOrders;
+    private PhaseType phaseType;
     private final WorldMap map;
     private final NJudgeOrderParser parser;
     private final OrderFactory orderFactory;
@@ -125,8 +126,8 @@ public class JudgeOrderParser {
     /**
      * Returns the NJudgeOrder(s) after parsing. This is never null, but may be a zero-length array.
      */
-    public NJudgeOrder[] getNJudgeOrders() {
-        return nJudgeOrders;
+    public List<NJudgeOrder> getNJudgeOrders() {
+        return Collections.unmodifiableList(nJudgeOrders);
     }// getNJudgeOrders()
 
 
@@ -176,8 +177,7 @@ public class JudgeOrderParser {
         br.close();
 
         // create array
-        nJudgeOrders = (NJudgeOrder[]) orderList
-                .toArray(new NJudgeOrder[orderList.size()]);
+        nJudgeOrders = orderList;
     }// parseInput()
 
 

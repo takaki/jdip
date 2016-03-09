@@ -70,7 +70,7 @@ The next phase of 'delphi' will be Adjustments for Winter of 1902.
         def aa = ai.find {o -> o.getPowerName() == "Austria"}
 
         expect:
-        ai.length == 7
+        ai.size() == 7
         of.getProvinces().size() == 6
         oa.getProvinces().size() == 2
 
