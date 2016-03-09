@@ -21,6 +21,67 @@ package dip.judge.parser
 import spock.lang.Specification
 
 class ParserUtilsTest extends Specification {
+    def "test parseBlock" ( ) {
+        when:
+        def input = """0
+abcdeabcdeabcde
+012345
+abcdeabcdeabcde
+123456789012345
+012345
+abcdeabcdeabcde
+123456789012345
+"""
+        then:
+        ParserUtils.parseBlock(new BufferedReader(new StringReader(input))) == """abcdeabcdeabcde
+"""
+
+        when:
+        def input0 = """abcdeabcdeabcde
+012345
+abcdeabcdeabcde
+123456789012345
+012345
+abcdeabcdeabcde
+123456789012345
+"""
+
+        then:
+        ParserUtils.parseBlock(new BufferedReader(new StringReader(input0))) == """abcdeabcdeabcde
+abcdeabcdeabcde
+123456789012345
+"""
+    }
+
+    def "test getNextLongLine" (){
+        when:
+        def input = """0
+abcdeabcdeabcde
+012345
+abcdeabcdeabcde
+123456789012345
+012345
+abcdeabcdeabcde
+123456789012345
+"""
+        then:
+        ParserUtils.getNextLongLine(new BufferedReader(new StringReader(input))) == """abcdeabcdeabcde"""
+
+        when:
+        def input0 = """0abcdeabcdeabcde
+012345
+abcdeabcdeabcde
+123456789012345
+012345
+abcdeabcdeabcde
+123456789012345
+"""
+
+        then:
+        ParserUtils.getNextLongLine(new BufferedReader(new StringReader(input0))) == """0abcdeabcdeabcde"""
+
+    }
+
     def "test filter" (){
         expect:
         ParserUtils.filter("  ") == ""
