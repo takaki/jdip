@@ -21,7 +21,7 @@ package dip.judge.parser
 import spock.lang.Specification
 
 class ParserUtilsTest extends Specification {
-    def "test parseBlock" ( ) {
+    def "test parseBlock"() {
         when:
         def input = """0
 abcdeabcdeabcde
@@ -53,7 +53,7 @@ abcdeabcdeabcde
 """
     }
 
-    def "test getNextLongLine" (){
+    def "test getNextLongLine"() {
         when:
         def input = """0
 abcdeabcdeabcde
@@ -82,12 +82,30 @@ abcdeabcdeabcde
 
     }
 
-    def "test filter" (){
+    def "test filter"() {
         expect:
         ParserUtils.filter("  ") == ""
         ParserUtils.filter("a b") == "ab"
+        ParserUtils.filter(" a b") == "a b"
         ParserUtils.filter("a  b") == "ab"
+        ParserUtils.filter("a  b ") == "ab "
+        ParserUtils.filter("a  b  ") == "ab "
+        ParserUtils.filter(" a  b  ") == "a b "
         ParserUtils.filter("  a  b  ") == "a b "
+        ParserUtils.filter("aa b") == "aa b"
+        ParserUtils.filter(" aa b") == "aa b"
+        ParserUtils.filter("aa  b") == "aa b"
+        ParserUtils.filter("aa  b ") == "aa b "
+        ParserUtils.filter("aa  b  ") == "aa b "
+        ParserUtils.filter(" aa  b  ") == "aa b "
+        ParserUtils.filter("  aa  b  ") == "aa b "
+        ParserUtils.filter("aa bb") == "aa bb"
+        ParserUtils.filter(" aa bb") == "aa bb"
+        ParserUtils.filter("aa  bb") == "aa bb"
+        ParserUtils.filter("aa  bb ") == "aa bb "
+        ParserUtils.filter("aa  bb  ") == "aa bb "
+        ParserUtils.filter(" aa  bb  ") == "aa bb "
+        ParserUtils.filter("  aa  bb  ") == "aa bb "
 
         ParserUtils.filter("   aa   b   ") == "aa b "
         ParserUtils.filter("   aa  b  ") == "aa b "
