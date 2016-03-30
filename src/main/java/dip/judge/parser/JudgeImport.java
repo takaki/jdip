@@ -265,12 +265,8 @@ public final class JudgeImport {
         // right game, check phase
         if (currentWorld.getLastTurnState().getPhase()
                 .compareTo(jp.getPhase()) != 0) {
-            if (currentWorld.getLastTurnState().getPhase()
-                    .compareTo(jp.getPhase()) > 0) {
-                importResult = JI_RESULT_TRYREWIND;
-            } else {
-                importResult = JI_RESULT_LOADOTHER;
-            }
+            importResult = currentWorld.getLastTurnState().getPhase().compareTo(
+                    jp.getPhase()) > 0 ? JI_RESULT_TRYREWIND : JI_RESULT_LOADOTHER;
             return;
         }
 
