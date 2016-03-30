@@ -64,14 +64,14 @@ public class AdjustmentParser {
 
 
     // INSTANCE VARIABLES
-    private WorldMap map;
+    private final WorldMap map;
 
     private List<OwnerInfo> ownerList;
     private List<AdjustInfo> adjustList;
     private Pattern regexAdjust;
 
-    private List<OwnerInfo> ownerInfo;
-    private List<AdjustInfo> adjustInfo;
+    private final List<OwnerInfo> ownerInfo;
+    private final List<AdjustInfo> adjustInfo;
 
     /**
      * Creates a AdjustmentParser object, which parses the given input for an Ownership and Adjustment info blocks
@@ -82,7 +82,44 @@ public class AdjustmentParser {
         Objects.requireNonNull(input);
 
         this.map = map;
-        parseInput(input);
+        // create lists
+        ownerList = new LinkedList<>();
+        adjustList = new LinkedList<>();
+
+        // create patterns
+        regexAdjust = Pattern.compile(ADJUST_REGEX);
+
+        // Create HEADER_REGEX pattern
+        final Pattern header = Pattern.compile(HEADER_REGEX);
+
+        // search for HEADER_REGEX
+        // create a block of text
+        final BufferedReader br = new BufferedReader(new StringReader(input));
+
+        String line = br.readLine();
+        while (line != null) {
+            final Matcher m = header.matcher(line);
+            if (m.lookingAt()) {
+                parseOwnerBlock(ParserUtils.parseBlock(br));
+                parseAdjustmentBlock(ParserUtils.parseBlock(br));
+                break;
+            }
+
+            line = br.readLine();
+        }
+
+
+        // create the output array
+        ownerInfo = new ArrayList<>(ownerList);
+        adjustInfo = new ArrayList<>(adjustList);
+
+        // cleanup
+        br.close();
+        ownerList.clear();
+        adjustList.clear();
+        ownerList = null;
+        adjustList = null;
+        regexAdjust = null;
     }// AdjustmentParser()
 
 
@@ -206,51 +243,6 @@ public class AdjustmentParser {
                             power, numSC, numUnits, toBuildOrRemove);
         }// toString()
     }// nested class AdjustInfo
-
-
-    /**
-     * Parse the input, and create the appropriate Info objects (or a zero-length arrays)
-     */
-    private void parseInput(final String input) throws IOException {
-        // create lists
-        ownerList = new LinkedList<>();
-        adjustList = new LinkedList<>();
-
-        // create patterns
-        regexAdjust = Pattern.compile(ADJUST_REGEX);
-
-        // Create HEADER_REGEX pattern
-        final Pattern header = Pattern.compile(HEADER_REGEX);
-
-        // search for HEADER_REGEX
-        // create a block of text
-        final BufferedReader br = new BufferedReader(new StringReader(input));
-
-        String line = br.readLine();
-        while (line != null) {
-            final Matcher m = header.matcher(line);
-            if (m.lookingAt()) {
-                parseOwnerBlock(ParserUtils.parseBlock(br));
-                parseAdjustmentBlock(ParserUtils.parseBlock(br));
-                break;
-            }
-
-            line = br.readLine();
-        }
-
-
-        // create the output array
-        ownerInfo = new ArrayList<>(ownerList);
-        adjustInfo = new ArrayList<>(adjustList);
-
-        // cleanup
-        br.close();
-        ownerList.clear();
-        adjustList.clear();
-        ownerList = null;
-        adjustList = null;
-        regexAdjust = null;
-    }// parseInput()
 
 
     /**

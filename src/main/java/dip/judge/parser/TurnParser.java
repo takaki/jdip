@@ -48,20 +48,20 @@ public class TurnParser {
      * Pattern for matching the phase in the Subject: line<br>
      * xDDDDx pattern. Entire group is used.
      */
-    public static final String SUBJ_PHASE_REGEX = "\\s+\\p{Alpha}\\d{4}\\p{Alpha}\\s+";
+    private static final String SUBJ_PHASE_REGEX = "\\s+\\p{Alpha}\\d{4}\\p{Alpha}\\s+";
 
     /**
      * Pattern for matching the phase in the Subject: line<br>
      * xDDDDx pattern. Entire group is used.
      * For older versions of nJudge
      */
-    public static final String SUBJ_PHASE_REGEX_OLD = "\\s+\\p{Alpha}\\d{4}\\p{Alpha}\\s*$";
+    private static final String SUBJ_PHASE_REGEX_OLD = "\\s+\\p{Alpha}\\d{4}\\p{Alpha}\\s*$";
 
     /**
      * This text (or pattern) must be present in the Subject: line. If it is not present,
      * the turn is ignored.
      */
-    public static final String RESULT_SUBJ_REGEX = "(?i)results";
+    private static final String RESULT_SUBJ_REGEX = "(?i)results";
 
 
     // instance variables
@@ -95,7 +95,7 @@ public class TurnParser {
 
                 // set the subject line; if not present, throw an error (shouldn't occur)
                 final String nextLine = reader.readLine();
-                if (nextLine.toLowerCase().indexOf("subject:") == -1) {
+                if (!nextLine.toLowerCase().contains("subject:")) {
                     throw new IOException(Utils.getLocalString(TP_NO_SUBJECT));
                 } else if (isResultsPattern.matcher(nextLine).find()) {
                     turn.setSubjectLine(nextLine);
