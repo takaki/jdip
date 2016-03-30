@@ -22,6 +22,7 @@
 //
 package dip.judge.parser;
 
+import com.codepoetics.protonpack.StreamUtils;
 import dip.world.Power;
 import dip.world.WorldMap;
 
@@ -36,7 +37,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -64,14 +64,13 @@ public class AdjustmentParser {
 
 
     // INSTANCE VARIABLES
-    private WorldMap map;
+    private final WorldMap map;
 
-    private List<OwnerInfo> ownerList;
-    private List<AdjustInfo> adjustList;
-    private Pattern regexAdjust;
+    private final List<OwnerInfo> ownerList;
+    private final Pattern regexAdjust;
 
-    private List<OwnerInfo> ownerInfo;
-    private List<AdjustInfo> adjustInfo;
+    private final List<OwnerInfo> ownerInfo;
+    private final List<AdjustInfo> adjustInfo;
 
     /**
      * Creates a AdjustmentParser object, which parses the given input for an Ownership and Adjustment info blocks
@@ -82,7 +81,51 @@ public class AdjustmentParser {
         Objects.requireNonNull(input);
 
         this.map = map;
-        parseInput(input);
+        // create lists
+        ownerList = new LinkedList<>();
+        final List<AdjustInfo> adjustList = new LinkedList<>();
+
+        // create patterns
+        regexAdjust = Pattern.compile(ADJUST_REGEX);
+
+        // Create HEADER_REGEX pattern
+        final Pattern header = Pattern.compile(HEADER_REGEX);
+
+        // search for HEADER_REGEX
+        // create a block of text
+        final BufferedReader br = new BufferedReader(new StringReader(input));
+
+        String line = br.readLine();
+        while (line != null) {
+            final Matcher m = header.matcher(line);
+            if (m.lookingAt()) {
+                parseOwnerBlock(ParserUtils.parseBlock(br));
+
+
+//
+                adjustList.addAll(StreamUtils.takeWhile(
+                        Arrays.stream(ParserUtils.parseBlock(br).split("\\n"))
+                                .map(regexAdjust::matcher), Matcher::find)
+                        .map(ml -> new AdjustInfo(ml.group(1),
+                                Integer.parseInt(ml.group(2)),
+                                Integer.parseInt(ml.group(3)),
+                                Integer.parseInt(ml.group(4))))
+                        .collect(Collectors.toList()));
+                break;
+            }
+
+            line = br.readLine();
+        }
+
+
+        // create the output array
+        ownerInfo = new ArrayList<>(ownerList);
+        adjustInfo = new ArrayList<>(adjustList);
+
+        // cleanup
+        br.close();
+        ownerList.clear();
+        adjustList.clear();
     }// AdjustmentParser()
 
 
@@ -209,51 +252,6 @@ public class AdjustmentParser {
 
 
     /**
-     * Parse the input, and create the appropriate Info objects (or a zero-length arrays)
-     */
-    private void parseInput(final String input) throws IOException {
-        // create lists
-        ownerList = new LinkedList<>();
-        adjustList = new LinkedList<>();
-
-        // create patterns
-        regexAdjust = Pattern.compile(ADJUST_REGEX);
-
-        // Create HEADER_REGEX pattern
-        final Pattern header = Pattern.compile(HEADER_REGEX);
-
-        // search for HEADER_REGEX
-        // create a block of text
-        final BufferedReader br = new BufferedReader(new StringReader(input));
-
-        String line = br.readLine();
-        while (line != null) {
-            final Matcher m = header.matcher(line);
-            if (m.lookingAt()) {
-                parseOwnerBlock(ParserUtils.parseBlock(br));
-                parseAdjustmentBlock(ParserUtils.parseBlock(br));
-                break;
-            }
-
-            line = br.readLine();
-        }
-
-
-        // create the output array
-        ownerInfo = new ArrayList<>(ownerList);
-        adjustInfo = new ArrayList<>(adjustList);
-
-        // cleanup
-        br.close();
-        ownerList.clear();
-        adjustList.clear();
-        ownerList = null;
-        adjustList = null;
-        regexAdjust = null;
-    }// parseInput()
-
-
-    /**
      * Given a trimmed block, determines ownership
      */
     private void parseOwnerBlock(final String text) throws IOException {
@@ -264,9 +262,8 @@ public class AdjustmentParser {
         // into a new string
         //
         Power currentPower = null;
-        final StringTokenizer st = new StringTokenizer(text, " \f\t\n\r");
-        while (st.hasMoreTokens()) {
-            final String tok = st.nextToken();
+        ;
+        for (final String tok : text.split("[ \f\t\n\r]+")) {
             if (tok.equalsIgnoreCase("unowned:")) {
                 // we don't process unowned SC yet. I'm not sure that
                 // all judges support this??
@@ -303,38 +300,19 @@ public class AdjustmentParser {
             if (sb != null) {
                 // clean up province tokens
                 // remove parentheses (put on blockaded SC in games with Wings)
-                final List<String> locs = Arrays
-                        .stream(sb.toString().split("[\\,]")).map(String::trim)
-                        .map(prov -> prov.endsWith(".") || prov
-                                .endsWith(")") ? prov
-                                .substring(0, prov.length() - 1) : prov)
-                        .map(prov -> prov.startsWith("(") ? prov
-                                .substring(1) : prov)
-                        .collect(Collectors.toList());
                 // create OwnerInfo
-                ownerList.add(new OwnerInfo(allPower.getName(), locs));
+                ownerList.add(new OwnerInfo(allPower.getName(),
+                        Arrays.stream(sb.toString().split("[\\,]"))
+                                .map(String::trim)
+                                .map(prov -> prov.endsWith(".") || prov
+                                        .endsWith(")") ? prov
+                                        .substring(0, prov.length() - 1) : prov)
+                                .map(prov -> prov.startsWith("(") ? prov
+                                        .substring(1) : prov)
+                                .collect(Collectors.toList())));
             }
         }
     }// parseOwnerBlock()
-
-
-    /**
-     * Given a trimmed block, determines adjustment
-     */
-    private void parseAdjustmentBlock(final String text) {
-        for (final String line : text.split("\\n")) {
-            final Matcher m = regexAdjust.matcher(line);
-
-            if (m.find()) {
-                adjustList.add(new AdjustInfo(m.group(1),
-                        Integer.parseInt(m.group(2)),
-                        Integer.parseInt(m.group(3)),
-                        Integer.parseInt(m.group(4))));
-            } else {
-                break;
-            }
-        }
-    }// parseAdjustmentBlock()
 
 
 }// class AdjustmentParser
