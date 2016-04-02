@@ -59,9 +59,12 @@ import dip.world.Unit.Type;
 import dip.world.VictoryConditions;
 import dip.world.World;
 import dip.world.WorldMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -79,6 +82,9 @@ import java.util.regex.PatternSyntaxException;
  * <br>positioning units with orders that failed parsing (e.g., a move to Switzerland (swi))
  */
 public final class JudgeImportHistory {
+    private static final Logger LOG = LoggerFactory
+            .getLogger(JudgeImportHistory.class);
+
     // constants
     private static final String STDADJ_MV_UNIT_DESTROYED = "STDADJ_MV_UNIT_DESTROYED";
 
@@ -1302,8 +1308,8 @@ public final class JudgeImportHistory {
                                                 .getSourceUnitType());
                             }
 
-                            Log.println("    possible retreats: ",
-                                    retreatLocations);
+                            LOG.debug("    possible retreats: {}",
+                                    Arrays.toString(retreatLocations));
 
                             // remove old dislodged result, replacing with the new dislodged result
                             iter.set(new DislodgedResult(orderResult.getOrder(),

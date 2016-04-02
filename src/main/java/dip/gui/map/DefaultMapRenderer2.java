@@ -31,7 +31,6 @@ import dip.misc.Log;
 import dip.order.Orderable;
 import dip.world.Coast;
 import dip.world.Location;
-import dip.world.Phase;
 import dip.world.Phase.PhaseType;
 import dip.world.Position;
 import dip.world.Power;
@@ -45,6 +44,8 @@ import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.util.CSSConstants;
 import org.apache.batik.util.RunnableQueue;
 import org.apache.batik.util.SVGConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
 import org.w3c.dom.events.EventTarget;
 import org.w3c.dom.svg.SVGDocument;
@@ -69,6 +70,8 @@ import java.util.Map.Entry;
  * using File | Export Map As... | SVG and looking at the SVG output.
  */
 public class DefaultMapRenderer2 extends MapRenderer2 {
+    private static final Logger LOG = LoggerFactory
+            .getLogger(DefaultMapRenderer2.class);
     // Symbol Names
     //
     /**
@@ -207,7 +210,8 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
     /**
      * Creates a DefaultMapRenderer object
      */
-    public DefaultMapRenderer2(final MapPanel mp, final SymbolPack sp) throws MapException {
+    public DefaultMapRenderer2(final MapPanel mp,
+                               final SymbolPack sp) throws MapException {
         super(mp);
         symbolPack = sp;
         Log.printTimed(mapPanel.startTime, "DMR2 constructor start");
@@ -441,7 +445,8 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
         execRenderCommand(new RenderCommand(this) {
             @Override
             public void execute() {
-                Log.println("DMR2: multipleOrdersCreated(): ", orders);
+                LOG.debug("DMR2: multipleOrdersCreated(): {}",
+                        Arrays.toString(orders));
                 final MapInfo mapInfo = new DMRMapInfo(turnState);
 
                 // render orders and update provinces
@@ -464,7 +469,8 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
         execRenderCommand(new RenderCommand(this) {
             @Override
             public void execute() {
-                Log.println("DMR2: multipleOrdersDeleted(): ", orders);
+                LOG.debug("DMR2: multipleOrdersDeleted(): {}",
+                        Arrays.toString(orders));
                 final MapInfo mapInfo = new DMRMapInfo(turnState);
 
                 // render orders and update provinces
@@ -516,8 +522,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
         // change turnstate.
         turnState = ts;
         position = ts.getPosition();
-        isDislodgedPhase = ts.getPhase()
-                .getPhaseType() == PhaseType.RETREAT;
+        isDislodgedPhase = ts.getPhase().getPhaseType() == PhaseType.RETREAT;
     }// setTurnState()
 
 
@@ -585,15 +590,13 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
             rq.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    SVGGElement orderLayer = layerMap
-                            .get(LAYER_ORDERS);
+                    SVGGElement orderLayer = layerMap.get(LAYER_ORDERS);
 
                     for (int z = powerOrderMap.length - 1; z >= 0; z--) {
                         // determine which order layer we should use.
                         if (z == 0) {
                             // special case: this has its own explicit group in the SVG file
-                            orderLayer = layerMap
-                                    .get(HIGHEST_ORDER_LAYER);
+                            orderLayer = layerMap.get(HIGHEST_ORDER_LAYER);
                         } else {
                             // typical case
                             // these occur under the "OrderLayer" group
@@ -669,7 +672,8 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      * Sets the Visibility (CSS visibility) for a Power's orders.
      * This manipulates all layers for a given power.
      */
-    private void setPowerOrderVisibility(final Power p, final boolean isVisible) {
+    private void setPowerOrderVisibility(final Power p,
+                                         final boolean isVisible) {
         for (int i = 0; i < powerOrderMap.length; i++) {
             setElementVisibility(getPowerSVGGElement(p, i), isVisible);
         }
@@ -952,7 +956,8 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      * will alter the DOM. If the 'force' flag is true, we will update
      * the unit information EVEN IF it hasn't changed.
      */
-    protected void unsyncUpdateProvince(final Tracker tracker, final Province province,
+    protected void unsyncUpdateProvince(final Tracker tracker,
+                                        final Province province,
                                         final boolean force) {
         if (tracker == null) {
             // avoid NPE when in mid-render and batik exits
@@ -972,7 +977,8 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
         }
 
         // set province hiliting based upon current render settings
-        final SVGElement provinceGroupElement = tracker.getProvinceHiliteElement();
+        final SVGElement provinceGroupElement = tracker
+                .getProvinceHiliteElement();
         if (provinceGroupElement != null) {
             // if we are in 'influence mode', we hilite provinces differently
             if (renderSettings
@@ -1003,8 +1009,8 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
                 } else {
                     if (province.hasSupplyCenter()) {
                         // get supply center owner
-                        final Power power = position.getSupplyCenterOwner(province)
-                                .orElse(null);
+                        final Power power = position
+                                .getSupplyCenterOwner(province).orElse(null);
 
                         // note:
                         // if we are not showing province SC (supply center) hilites, then
@@ -1055,7 +1061,8 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      * Changes a Unit in the DOM
      */
     private void changeUnitInDOM(final Unit posUnit, final Tracker tracker,
-                                 final Province province, final boolean isDislodged) {
+                                 final Province province,
+                                 final boolean isDislodged) {
         // make tracker unit mirror posUnit
         //
         SVGElement newElement = null;
@@ -1182,7 +1189,8 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
     /**
      * Set the visibility of an element
      */
-    protected void setElementVisibility(final SVGElement element, final boolean value) {
+    protected void setElementVisibility(final SVGElement element,
+                                        final boolean value) {
         // optimization: if no change, make no change to the DOM.
         final String oldValue = element
                 .getAttributeNS(null, CSSConstants.CSS_VISIBILITY_PROPERTY);
@@ -1297,8 +1305,10 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      */
     private void addProvinceHilitesToTracker() {
         // Make a list of all possible provinces with underscores
-        final ArrayList<String> uscoreProvList = new ArrayList<>(125);    // stores underscore-preceded names
-        final ArrayList<Province> lookupProvList = new ArrayList<>(125);    // stores corresponding Province
+        final ArrayList<String> uscoreProvList = new ArrayList<>(
+                125);    // stores underscore-preceded names
+        final ArrayList<Province> lookupProvList = new ArrayList<>(
+                125);    // stores corresponding Province
         for (Province province : provinces) {
             final String[] shortNames = province.getShortNames()
                     .toArray(new String[0]);
@@ -1317,10 +1327,10 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
 
         // go through the map and add non-null objects to the tracker.
         for (int i = 0; i < lookupProvList.size(); i++) {
-            final SVGElement element = (SVGElement) map.get(uscoreProvList.get(i));
+            final SVGElement element = (SVGElement) map
+                    .get(uscoreProvList.get(i));
             if (element != null) {
-                final Tracker tracker = trackerMap
-                        .get(lookupProvList.get(i));
+                final Tracker tracker = trackerMap.get(lookupProvList.get(i));
                 tracker.setProvinceHiliteElement(element);
             }
         }
@@ -1366,7 +1376,8 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
     private boolean isOrdered(final Province province) {
         final Unit unit = getPhaseApropriateUnit(province);
         if (unit != null) {
-            final List<dip.order.Order> list = turnState.getOrders(unit.getPower());
+            final List<dip.order.Order> list = turnState
+                    .getOrders(unit.getPower());
             final Iterator<dip.order.Order> iter = list.iterator();
             while (iter.hasNext()) {
                 final Orderable order = iter.next();
