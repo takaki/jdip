@@ -22,9 +22,6 @@
 //
 package dip.misc;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-
 /**
  * A very simple logging class that logs all data to stdout. Note that this
  * was implemented for speed and simplicity, rather than using the J2SDK
@@ -40,20 +37,6 @@ public final class Log {
      * Set logging to NONE
      */
     public static final int LOG_NONE = 0;
-
-    /**
-     * Set logging to memory only
-     */
-    public static final int LOG_TO_MEMORY = 1;
-
-    /**
-     * Set logging to file only
-     */
-    public static final int LOG_TO_FILE = 2;
-
-    private static int logLevel = LOG_NONE;
-    private static boolean isLogging;
-    private static BufferedWriter bw;
 
     private static String[] buffer;
     private static int bufferNext;
@@ -95,34 +78,6 @@ public final class Log {
 
 
     /**
-     * Print the given Object to the output file / stdout
-     * via the Object's toString() method. Follows with a
-     * newline.
-     */
-    private static void println(final Object s) {
-        if (isLogging) {
-            synchronized (Log.class) {
-                final String str = s.toString();
-                memLog(str);
-                if (logLevel == LOG_TO_FILE) {
-                    if (bw == null) {
-                        System.out.println(s);
-                    } else {
-                        try {
-                            bw.write(str);
-                            bw.newLine();
-                            bw.flush();
-                        } catch (final IOException e) {
-                            System.err.println(e);
-                        }
-                    }
-                }
-            }
-        }
-    }// println()
-
-
-    /**
      * Print text followed timing delta and current time.
      */
     public static String printTimed(final long lastTime, final Object s0) {
@@ -139,16 +94,6 @@ public final class Log {
         final long now = System.currentTimeMillis();
         return String.format("%s %d ms [delta]%d", s0, now - lastTime, now);
     }// printDelta()
-
-
-    /**
-     * Add to the memory buffer. Unsynchronized!
-     */
-    private static void memLog(final String s) {
-        buffer[bufferNext] = s;
-        bufferNext++;
-        bufferNext = bufferNext >= buffer.length ? 0 : bufferNext;
-    }// memLog()
 
 
     /**
