@@ -182,38 +182,13 @@ public final class Log {
         }
     }// close()
 
-    /**
-     * Print the given Object to the output file / stdout
-     * via the Object's toString() method.
-     */
-    public static void print(final Object s) {
-        if (isLogging) {
-            synchronized (Log.class) {
-                final String str = s.toString();
-                memLog(str);
-                if (logLevel == LOG_TO_FILE) {
-                    if (bw == null) {
-                        System.out.print(s);
-                    } else {
-                        try {
-                            bw.write(str);
-                            bw.flush();
-                        } catch (final IOException e) {
-                            System.err.print(e);
-                        }
-                    }
-                }
-            }
-        }
-    }// print()
-
 
     /**
      * Print the given Object to the output file / stdout
      * via the Object's toString() method. Follows with a
      * newline.
      */
-    public static void println(final Object s) {
+    protected static void println(final Object s) {
         if (isLogging) {
             synchronized (Log.class) {
                 final String str = s.toString();
@@ -244,41 +219,6 @@ public final class Log {
             final StringBuffer sb = new StringBuffer(256);
             sb.append(s0);
             sb.append(b);
-            println(sb);
-        }
-    }// println()
-
-    /**
-     * Print text followed by an array; comma-seperated array print; can be null
-     */
-    public static void println(final Object s0, final Object[] arr) {
-        if (isLogging) {
-            final StringBuffer sb = new StringBuffer(256);
-            sb.append(s0);
-            if (arr == null) {
-                sb.append("null");
-            } else {
-                sb.append('[');
-                for (int i = 0; i < arr.length; i++) {
-                    sb.append(arr[i]);
-                    if (i < arr.length - 1) {
-                        sb.append(',');
-                    }
-                }
-                sb.append(']');
-            }
-            println(sb);
-        }
-    }// println()
-
-    /**
-     * Print text followed by an int
-     */
-    public static void println(final Object s0, final int i0) {
-        if (isLogging) {
-            final StringBuffer sb = new StringBuffer(256);
-            sb.append(s0);
-            sb.append(i0);
             println(sb);
         }
     }// println()
@@ -317,47 +257,6 @@ public final class Log {
 
         return 0L;
     }// printDelta()
-
-
-    /**
-     * Print the given objects to the log
-     */
-    public static void println(final Object s0, final Object s1) {
-        if (isLogging) {
-            final StringBuffer sb = new StringBuffer(256);
-            sb.append(s0);
-            sb.append(s1);
-            println(sb);
-        }
-    }// println()
-
-    /**
-     * Print the given objects to the log
-     */
-    public static void println(final Object s0, final Object s1, final Object s2) {
-        if (isLogging) {
-            final StringBuffer sb = new StringBuffer(256);
-            sb.append(s0);
-            sb.append(s1);
-            sb.append(s2);
-            println(sb);
-        }
-    }// println()
-
-
-    /**
-     * Print the given objects to the log
-     */
-    public static void println(final Object s0, final Object s1, final Object s2, final Object s3) {
-        if (isLogging) {
-            final StringBuffer sb = new StringBuffer(256);
-            sb.append(s0);
-            sb.append(s1);
-            sb.append(s2);
-            sb.append(s3);
-            println(sb);
-        }
-    }// println()
 
 
     /**
