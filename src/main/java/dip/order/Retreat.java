@@ -35,6 +35,8 @@ import dip.world.RuleOptions;
 import dip.world.TurnState;
 import dip.world.Unit;
 import dip.world.Unit.Type;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,6 +51,7 @@ import java.util.stream.Collectors;
  */
 
 public class Retreat extends Move {
+    public static final Logger LOG = LoggerFactory.getLogger(Retreat.class);
     // il8n constants
     private static final String RETREAT_SRC_EQ_DEST = "RETREAT_SRC_EQ_DEST";
     private static final String RETREAT_CANNOT = "RETREAT_CANNOT";
@@ -275,8 +278,8 @@ public class Retreat extends Move {
                         }
                     } else {
                         // remain uncertain. Dependent orderstate not yet evaluated.
-                        Log.println("    Uncertain: ", depMoveOS.getOrder(),
-                                " not yet evaluated.");
+                        LOG.debug("    Uncertain: {} not yet evaluated.",
+                                depMoveOS.getOrder());
                         isStrongerThanAllOthers = false;    // we don't know yet.
                         evalResult = Tristate.UNCERTAIN;
                     }

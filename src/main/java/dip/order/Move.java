@@ -43,6 +43,8 @@ import dip.world.RuleOptions.OptionValue;
 import dip.world.TurnState;
 import dip.world.Unit;
 import dip.world.Unit.Type;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,6 +62,7 @@ import java.util.stream.Collectors;
  * section 4.A.3.
  */
 public class Move extends Order {
+    private static final Logger LOG = LoggerFactory.getLogger(Move.class);
     // il8n constants
     /*
     private static final String MOVE_VAL_CONVOY_WARNING = "MOVE_VAL_CONVOY_WARNING";
@@ -746,7 +749,7 @@ public class Move extends Order {
                 if (move.dest.isProvinceEqual(getSource()) && move.getSource()
                         .isProvinceEqual(
                                 dest) && !_isConvoyIntent && !move._isConvoyIntent) {
-                    Log.println("Head2Head possible between: ", this, ", ",
+                    LOG.debug("Head2Head possible between: {}, {}", this,
                             dependentOS.getOrder());
                     return true;
                 }

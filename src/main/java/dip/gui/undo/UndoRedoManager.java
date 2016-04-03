@@ -26,6 +26,8 @@ import dip.gui.ClientFrame;
 import dip.gui.ClientMenu;
 import dip.gui.OrderDisplayPanel;
 import dip.misc.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.undo.UndoManager;
 import javax.swing.undo.UndoableEdit;
@@ -38,6 +40,8 @@ import java.util.ListIterator;
  * This is not a singleton.
  */
 public class UndoRedoManager extends UndoManager {
+    public static final Logger LOG = LoggerFactory
+            .getLogger(UndoRedoManager.class);
     // the max number of undo/redo events we can hold
     private static final int MAX_UNDOS = 1000;
 
@@ -52,7 +56,6 @@ public class UndoRedoManager extends UndoManager {
      */
     public UndoRedoManager(final ClientFrame clientFrame,
                            final OrderDisplayPanel orderDisplayPanel) {
-        super();
         if (clientFrame == null || orderDisplayPanel == null) {
             throw new IllegalArgumentException("null argument(s)");
         }
@@ -60,7 +63,7 @@ public class UndoRedoManager extends UndoManager {
         this.clientFrame = clientFrame;
         this.orderDisplayPanel = orderDisplayPanel;
 
-        super.setLimit(MAX_UNDOS);
+        setLimit(MAX_UNDOS);
     }// UndoRedoManager()
 
 
@@ -221,8 +224,7 @@ public class UndoRedoManager extends UndoManager {
         }
 
         // trim the edits (trimEdits() does nothing if from > to)
-        Log.println("  trimEdits(): ", String.valueOf(from), "->",
-                String.valueOf(edits.size() - 1));
+        LOG.debug("  trimEdits(): {}->{}", from, edits.size() - 1);
         trimEdits(from, edits.size() - 1);
         refreshMenu();
     }// filterF2F()
@@ -278,8 +280,7 @@ public class UndoRedoManager extends UndoManager {
         }
 
         // trim the edits (trimEdits() does nothing if from > to)
-        Log.println("  trimEdits(): ", String.valueOf(from), "->",
-                String.valueOf(to));
+        LOG.debug("  trimEdits(): {}->{}", from, to);
         trimEdits(from, to);
         refreshMenu();
     }// simplify()

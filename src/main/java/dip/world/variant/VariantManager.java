@@ -31,6 +31,8 @@ import dip.world.variant.data.VersionNumber;
 import dip.world.variant.parser.XMLSymbolParser;
 import dip.world.variant.parser.XMLVariantParser;
 import javafx.util.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.net.MalformedURLException;
@@ -72,6 +74,7 @@ import java.util.stream.Stream;
  * <br>
  */
 public final class VariantManager {
+    public static final Logger LOG = LoggerFactory.getLogger(VariantManager.class);
     /**
      * Version Constant representing the most recent version of a Variant or SymbolPack
      */
@@ -350,9 +353,8 @@ public final class VariantManager {
                         return Optional
                                 .of(new URL(String.format("jar:%s!/", txtUrl)));
                     } catch (final MalformedURLException e) {
-                        Log.println("Could not convert ", url,
-                                " to a JAR url.");
-                        Log.println("Exception: ", e);
+                        LOG.debug("Could not convert {} to a JAR url.", url);
+                        LOG.debug("Exception: {}", e);
                         return Optional.empty();
                     }
                 }));

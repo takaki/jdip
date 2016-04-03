@@ -27,10 +27,16 @@ import dip.misc.Log;
 import dip.misc.Utils;
 import dip.order.Hold;
 import dip.order.Orderable;
-import dip.world.*;
+import dip.world.Location;
+import dip.world.Position;
+import dip.world.Power;
+import dip.world.Province;
+import dip.world.Unit;
 import dip.world.Unit.Type;
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.util.SVGConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.svg.SVGElement;
 import org.w3c.dom.svg.SVGGElement;
 import org.w3c.dom.svg.SVGPolygonElement;
@@ -41,27 +47,28 @@ import java.awt.geom.Point2D;
  * GUIOrder subclass of Hold order.
  */
 public class GUIHold extends Hold implements GUIOrder {
+    public static final Logger LOG = LoggerFactory.getLogger(GUIHold.class);
     // i18n keys
 
     // instance variables
-    private transient final static int REQ_LOC = 1;
-    private transient int currentLocNum = 0;
+    private static final transient int REQ_LOC = 1;
+    private transient int currentLocNum;
     private transient int numSupports = -1;    // WARNING: this will become '0' when de-serialized; not -1
-    private transient Point2D.Float failPt = null;
-    private transient SVGGElement group = null;
+    private transient Point2D.Float failPt;
+    private transient SVGGElement group;
 
 
     /**
      * Creates a GUIHold
      */
     protected GUIHold() {
-        super();
     }// GUIHold()
 
     /**
      * Creates a GUIHold
      */
-    protected GUIHold(final Power power, final Location source, final Type sourceUnitType) {
+    protected GUIHold(final Power power, final Location source,
+                      final Type sourceUnitType) {
         super(power, source, sourceUnitType);
     }// GUIHold()
 
@@ -85,7 +92,8 @@ public class GUIHold extends Hold implements GUIOrder {
     }// deriveFrom()
 
     @Override
-    public boolean testLocation(final StateInfo stateInfo, final Location location,
+    public boolean testLocation(final StateInfo stateInfo,
+                                final Location location,
                                 final StringBuffer sb) {
         sb.setLength(0);
 
@@ -138,11 +146,12 @@ public class GUIHold extends Hold implements GUIOrder {
     }// clearLocations()
 
     @Override
-    public boolean setLocation(final StateInfo stateInfo, final Location location,
-                               final StringBuffer sb) {
+    public boolean setLocation(final StateInfo stateInfo,
+                               final Location location, final StringBuffer sb) {
         if (testLocation(stateInfo, location, sb)) {
             currentLocNum++;
-            final Unit unit = stateInfo.getPosition().getUnit(location.getProvince()).orElse(null);
+            final Unit unit = stateInfo.getPosition()
+                    .getUnit(location.getProvince()).orElse(null);
             src = new Location(location.getProvince(), unit.getCoast());
             power = unit.getPower();
             srcUnitType = unit.getType();
@@ -203,8 +212,8 @@ public class GUIHold extends Hold implements GUIOrder {
 
     @Override
     public void updateDOM(final MapInfo mapInfo) {
-        Log.println("GUIHold::updateDOM(): group,support: ", group,
-                String.valueOf(numSupports));
+        LOG.debug("GUIHold::updateDOM(): group,support: {}{}", group,
+                numSupports);
 
         // if we are not displayable, we exit, after remove the order (if
         // it was created)
@@ -278,8 +287,9 @@ public class GUIHold extends Hold implements GUIOrder {
         }
 
         // create hold polygon
-        final float width = GUIOrderUtils.getLineWidth(mapInfo, MapMetadata.EL_HOLD,
-                MapMetadata.ATT_WIDTHS, numSupports);
+        final float width = GUIOrderUtils
+                .getLineWidth(mapInfo, MapMetadata.EL_HOLD,
+                        MapMetadata.ATT_WIDTHS, numSupports);
 
         element = drawOrder(mapInfo, 0);
         element.setAttributeNS(null, SVGConstants.SVG_STROKE_WIDTH_ATTRIBUTE,
@@ -302,7 +312,8 @@ public class GUIHold extends Hold implements GUIOrder {
         final MapMetadata mmd = mi.getMapMetadata();
 
         // attributes
-        final Point2D.Float center = mmd.getUnitPt(src.getProvince(), src.getCoast());
+        final Point2D.Float center = mmd
+                .getUnitPt(src.getProvince(), src.getCoast());
         final float radius = mmd.getOrderRadius(MapMetadata.EL_HOLD,
                 mi.getSymbolName(srcUnitType));
 

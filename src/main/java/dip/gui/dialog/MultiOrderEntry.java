@@ -29,8 +29,10 @@ import dip.misc.Help.HelpID;
 import dip.misc.Log;
 import dip.misc.Utils;
 import dip.order.OrderException;
-import dip.world.WorldMap;
 import dip.world.World;
+import dip.world.WorldMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.io.BufferedReader;
@@ -50,6 +52,7 @@ import java.util.regex.Pattern;
  * more reliable.
  */
 public class MultiOrderEntry {
+    public static final Logger LOG = LoggerFactory.getLogger(MultiOrderEntry.class);
     // i18n constants
     private static final String TITLE = "MOED.title";
     private static final String HEADER_TEXT_LOCATION = "MOED.header.text.location";
@@ -297,7 +300,7 @@ public class MultiOrderEntry {
             }
 
             final String text = fromTokens(tokens, i, tokens.length);
-            Log.println("  MOE::recursiveParse(): now trying: \"", text, "\"");
+            LOG.debug("  MOE::recursiveParse(): now trying: \"{}\"", text);
 
             try {
                 orderDisplayPanel.addOrderRaw(text, true);

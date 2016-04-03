@@ -64,6 +64,8 @@ import dip.world.Unit;
 import dip.world.Unit.Type;
 import dip.world.VictoryConditions;
 import dip.world.World;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -84,6 +86,8 @@ import java.util.Objects;
  * classes (1 for each phase).
  */
 public final class StdAdjudicator implements Adjudicator {
+    public static final Logger LOG = LoggerFactory
+            .getLogger(StdAdjudicator.class);
     // il8n messages
     private static final String STDADJ_DUP_ORDER = "STDADJ_DUP_ORDER";
     private static final String STDADJ_MV_NO_UNIT = "STDADJ_MV_NO_UNIT";
@@ -308,7 +312,7 @@ public final class StdAdjudicator implements Adjudicator {
     @Override
     public final void addBouncedResult(final OrderState os,
                                        final OrderState bouncer) {
-        Log.println("Bounce Result added: ", os.getOrder(), "; by ",
+        LOG.debug("Bounce Result added: {}; by {}", os.getOrder(),
                 bouncer.getSourceProvince());
         final BouncedResult br = new BouncedResult(os.getOrder());
         br.setBouncer(bouncer.getSourceProvince());
@@ -320,7 +324,7 @@ public final class StdAdjudicator implements Adjudicator {
      */
     @Override
     public final void addDislodgedResult(final OrderState os) {
-        Log.println("Bounce Result added: ", os.getOrder(), "; from: ",
+        LOG.debug("Bounce Result added: {}; from: {}", os.getOrder(),
                 os.getDislodger().getSourceProvince());
         final DislodgedResult dr = new DislodgedResult(os.getOrder(), null);
         dr.setDislodger(os.getDislodger().getSourceProvince());
@@ -948,7 +952,7 @@ public final class StdAdjudicator implements Adjudicator {
                 Log.println("======================");
 
                 for (final OrderState os : orderStates) {
-                    Log.println("  > ", os.getOrder(), " ", os.getEvalState());
+                    LOG.debug("  > {} {}", os.getOrder(), os.getEvalState());
                 }
 
                 Log.println("======================");
@@ -1026,8 +1030,8 @@ public final class StdAdjudicator implements Adjudicator {
                     Log.println("  checking move: ", move);
 
                     for (final OrderState itos : getConvoyList(move)) {
-                        Log.println("    convoy: ", itos.getOrder(),
-                                "  evalstate:", itos.getEvalState());
+                        LOG.debug("    convoy: {}  evalstate:{}",
+                                itos.getOrder(), itos.getEvalState());
                         if (itos.getEvalState() == Tristate.UNCERTAIN) {
                             Log.println(
                                     "    *** Syzkman rule applied to this move!!!");
@@ -1259,8 +1263,8 @@ public final class StdAdjudicator implements Adjudicator {
                 nextPosition.setUnit(destProvince, newUnit);
                 nextPosition.setLastOccupier(destProvince, newUnit.getPower());
 
-                Log.println("  moved: unit from ", os.getSourceProvince(),
-                        " to ", destProvince);
+                LOG.debug("  moved: unit from {} to {}", os.getSourceProvince(),
+                        destProvince);
             }
         }
 

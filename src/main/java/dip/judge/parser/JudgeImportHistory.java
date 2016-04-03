@@ -470,9 +470,9 @@ public final class JudgeImportHistory {
      */
     private void procMove(final Turn turn, final boolean positionPlacement,
                           final boolean isRetreatMoveProcessing) throws IOException {
-        Log.println("JIH::procMove():METHOD ENTRY");
-        Log.println("  positionPlacement = ", positionPlacement);
-        Log.println("  isRetreatMoveProcessing = ", isRetreatMoveProcessing);
+        LOG.debug("JIH::procMove():METHOD ENTRY");
+        LOG.debug("  positionPlacement = {}", positionPlacement);
+        LOG.debug("  isRetreatMoveProcessing = {}", isRetreatMoveProcessing);
         if (turn == null) {
             return;
         }
@@ -545,10 +545,10 @@ public final class JudgeImportHistory {
 
             if (isUnitDislodged) {
                 position.setDislodgedUnit(loc.getProvince(), unit);
-                Log.println("  :created dislodged unit: ", unit, " at ", loc);
+                LOG.debug("  :created dislodged unit: {} at {}", unit, loc);
             } else {
                 position.setUnit(loc.getProvince(), unit);
-                Log.println("  :created unit: ", unit, " at ", loc);
+                LOG.debug("  :created unit: {} at {}", unit, loc);
             }
 
             // if we found a Wing unit, make sure Wing units are enabled.
@@ -620,9 +620,9 @@ public final class JudgeImportHistory {
                     results.add(new Result(
                             Utils.getLocalString(JIH_ORDER_PARSE_FAILURE, order,
                                     e.getMessage())));
-                    Log.println(
-                            "JIH::procMove():OrderException (during validation): ",
-                            order, "; ", e1.getMessage());
+                    LOG.debug(
+                            "JIH::procMove():OrderException (during validation): {}; {}",
+                            order, e1.getMessage());
                     throw new IOException(
                             "Cannot validate order on second pass.\n" + e1
                                     .getMessage());
@@ -758,8 +758,8 @@ public final class JudgeImportHistory {
         final List<Result> results = ts.getResultList();
         final RuleOptions ruleOpts = world.getRuleOptions();
 
-        Log.println("  :procRetreat(): ", ts.getPhase(),
-                "; positionPlacement: ", String.valueOf(positionPlacement));
+        LOG.debug("  :procRetreat(): {}; positionPlacement: {}", ts.getPhase(),
+                positionPlacement);
 
         // parse orders, and create orders for each unit
         final JudgeOrderParser jop = new JudgeOrderParser(map, orderFactory,
@@ -806,11 +806,11 @@ public final class JudgeImportHistory {
                 results.add(new Result(
                         Utils.getLocalString(JIH_ORDER_PARSE_FAILURE, order,
                                 e.getMessage())));
-                Log.println(
-                        "JIH::procMove():OrderException (during validation): ",
-                        order, "; ", e.getMessage());
+                LOG.debug(
+                        "JIH::procMove():OrderException (during validation): {}; {}",
+                        order, e.getMessage());
                 throw new IOException(
-                        "Cannot validate retreat order.\n" + e.getMessage());
+                        "Cannot validate retreat order.\n" + e.getMessage(), e);
             }
         }
 
@@ -1119,7 +1119,7 @@ public final class JudgeImportHistory {
             if (unit != null) {
                 final Unit newUnit = unit.clone();
                 newPos.setUnit(p, newUnit);
-                Log.println("  cloned unit from/into: ", p, " - ",
+                LOG.debug("  cloned unit from/into: {} - {}", p,
                         unit.getPower());
             }
 
@@ -1127,7 +1127,7 @@ public final class JudgeImportHistory {
             if (isCopyDislodged && unit0 != null) {
                 final Unit newUnit = unit0.clone();
                 newPos.setDislodgedUnit(p, newUnit);
-                Log.println("  cloned dislodged unit from/into: ", p, " - ",
+                LOG.debug("  cloned dislodged unit from/into: {} - {}", p,
                         unit0.getPower());
             }
 
@@ -1178,12 +1178,12 @@ public final class JudgeImportHistory {
             if (power != null) {
                 //System.out.println("  SC @ "+provinces[i]+", owned by "+power);
                 currentPos.setSupplyCenterOwner(province, power);
-                Log.println("  set SC: ", province, " owned by ", power);
+                LOG.debug("  set SC: {} owned by {}", province, power);
             }
             power = prevPos.getSupplyCenterHomePower(province).orElse(null);
             if (power != null) {
                 currentPos.setSupplyCenterHomePower(province, power);
-                Log.println("  set HSC: ", province, " owned by ", power);
+                LOG.debug("  set HSC: {} owned by {}", province, power);
             }
         }
     }// copyPreviousSCInfo()
@@ -1257,8 +1257,8 @@ public final class JudgeImportHistory {
                                       final Position position,
                                       final List<DislodgedInfo> dislodgedInfo,
                                       final boolean positionPlacement) throws IOException {
-        Log.println("JIH::makeDislodgedResults() [", phase, "]");
-        Log.println("  # results: ", results.size());
+        LOG.debug("JIH::makeDislodgedResults() [{}]", phase);
+        LOG.debug("  # results: {}", results.size());
         final ListIterator<Result> iter = results.listIterator();
         while (iter.hasNext()) {
             final Result result = iter.next();

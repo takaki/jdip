@@ -23,6 +23,8 @@
 package dip.tool;
 
 import dip.misc.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,6 +41,7 @@ import java.util.jar.Manifest;
  * Manages Tool plugins.
  */
 public class ToolManager {
+    public static final Logger LOG = LoggerFactory.getLogger(ToolManager.class);
     // constants
     private static final String TOOL_EXT_JAR = "Tool.jar";
 
@@ -82,14 +85,13 @@ public class ToolManager {
                             JarFile.OPEN_READ);
                     final Manifest manifest = jarFile.getManifest();
                     final Attributes attr = manifest.getMainAttributes();
-                    mainClassNames[i] = attr
-                            .getValue(Name.MAIN_CLASS);
+                    mainClassNames[i] = attr.getValue(Name.MAIN_CLASS);
                     jarFile.close();
                 } catch (final IOException e) {
                     mainClassNames[i] = null;
-                    Log.println(
-                            "ERROR: ToolManager: could not find main-class attribute in manifest for tool: ",
-                            foundToolFiles[i], "; reason: ", e.getMessage());
+                    LOG.debug(
+                            "ERROR: ToolManager: could not find main-class attribute in manifest for tool: {}; reason: {}",
+                            foundToolFiles[i], e.getMessage());
                 }
             }
         }
