@@ -22,14 +22,22 @@
 //
 package dip.gui.map;
 
-import dip.gui.*;
+import dip.gui.AbstractCFPListener;
+import dip.gui.ClientFrame;
+import dip.gui.ClientMenu;
+import dip.gui.OrderDisplayPanel;
+import dip.gui.StatusBar;
 import dip.gui.dialog.ErrorDialog;
 import dip.gui.dialog.prefs.GeneralPreferencePanel;
 import dip.gui.map.RenderCommandFactory.RenderCommand;
 import dip.misc.Log;
 import dip.misc.Utils;
 import dip.order.ValidationOptions;
-import dip.world.*;
+import dip.world.Position;
+import dip.world.Province;
+import dip.world.RuleOptions;
+import dip.world.TurnState;
+import dip.world.World;
 import dip.world.World.VariantInfo;
 import dip.world.variant.VariantManager;
 import dip.world.variant.data.MapGraphic;
@@ -46,6 +54,8 @@ import org.apache.batik.swing.svg.GVTTreeBuilderEvent;
 import org.apache.batik.swing.svg.SVGDocumentLoaderAdapter;
 import org.apache.batik.swing.svg.SVGDocumentLoaderEvent;
 import org.apache.batik.util.XMLResourceDescriptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.svg.SVGDocument;
 
@@ -72,6 +82,8 @@ import java.net.URL;
  * <p>
  */
 public class MapPanel extends JPanel {
+    private static final Logger LOG = LoggerFactory.getLogger(MapPanel.class);
+
     // constants
     // il8n localizers
     private static final String MP_VARIANT_NOT_FOUND = "MapPanel.error.novariant";
@@ -307,7 +319,7 @@ public class MapPanel extends JPanel {
      * Set the SVG Document from XML Document
      */
     private void setDocument(final Document xmlDoc, final Variant variant) {
-        Log.println("MP: setDocument()");
+        LOG.debug("MP: setDocument()");
 
         // setup private loader-listeners
         gvtRenderListener = new MP_GVTRenderListener();
@@ -348,7 +360,7 @@ public class MapPanel extends JPanel {
             omd.setURLObject(new VariantManager().getVariantPackageJarURL(variant).orElse(null));
         } else {
             // shouldn't happen.
-            Log.println(
+            LOG.debug(
                     "ERROR: MapPanel::setDocument(): object model replacement? SVGOMDocument not found. URI not set.");
         }
     }// setDocument()
@@ -470,7 +482,7 @@ public class MapPanel extends JPanel {
      * Sets View or Order control bar, as appropriate, based on the mode
      */
     private void setControlBar() {
-        Log.println("MP::setControlBar())");
+        LOG.debug("MP::setControlBar())");
         ControlBar cb;
 
         if (turnState == null) {
@@ -611,8 +623,8 @@ public class MapPanel extends JPanel {
             world = null;
             turnState = null;
         } catch (final Exception e) {
-            Log.println("MapPanel::close() exception...");
-            Log.println(e);
+            LOG.debug("MapPanel::close() exception...");
+            LOG.debug(e.toString());
         }
     }// close()
 

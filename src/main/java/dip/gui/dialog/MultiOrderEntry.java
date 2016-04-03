@@ -26,7 +26,6 @@ import dip.gui.ClientFrame;
 import dip.gui.OrderDisplayPanel;
 import dip.gui.dialog.TextViewer.AcceptListener;
 import dip.misc.Help.HelpID;
-import dip.misc.Log;
 import dip.misc.Utils;
 import dip.order.OrderException;
 import dip.world.World;
@@ -52,7 +51,7 @@ import java.util.regex.Pattern;
  * more reliable.
  */
 public class MultiOrderEntry {
-    public static final Logger LOG = LoggerFactory.getLogger(MultiOrderEntry.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MultiOrderEntry.class);
     // i18n constants
     private static final String TITLE = "MOED.title";
     private static final String HEADER_TEXT_LOCATION = "MOED.header.text.location";
@@ -230,7 +229,7 @@ public class MultiOrderEntry {
      * with the Reducing Recursive Token Elimination Parser.
      */
     private void parseOrder(String input) throws OrderException {
-        Log.println("MOE::parseOrder() applying list prefix eliminator on: ",
+        LOG.debug("MOE::parseOrder() applying list prefix eliminator on: {}",
                 input);
 
         if (listPattern == null) {
@@ -245,8 +244,8 @@ public class MultiOrderEntry {
             input = input.substring(m.end());
         }
 
-        Log.println("MOE::parseOrder(): after list prefix eliminator: ", input);
-        Log.println(
+        LOG.debug("MOE::parseOrder(): after list prefix eliminator: {}", input);
+        LOG.debug(
                 "MOE::parseOrder(): now applying recursive elimination parser...");
 
         recursiveParse(input);
@@ -274,16 +273,16 @@ public class MultiOrderEntry {
      * from being over-parsed into move orders.
      */
     private void recursiveParse(final String input) throws OrderException {
-        Log.println("MOE::recursiveParse(): ", input);
+        LOG.debug("MOE::recursiveParse(): {}", input);
         OrderException firstException;
 
         // first pass
         try {
             orderDisplayPanel.addOrderRaw(input, true);
-            Log.println("  MOE::recursiveParse(): success on first pass.");
+            LOG.debug("  MOE::recursiveParse(): success on first pass.");
             return;
         } catch (final OrderException oe) {
-            Log.println("  MOE::recursiveParse(): first pass failed.");
+            LOG.debug("  MOE::recursiveParse(): first pass failed.");
             firstException = oe;
         }
 
@@ -293,8 +292,8 @@ public class MultiOrderEntry {
         // test
         for (int i = 0; i < tokens.length; i++) {
             if (isRecognized(tokens[i])) {
-                Log.println(
-                        "  MOE::recursiveParse(): abort; token is recognized: ",
+                LOG.debug(
+                        "  MOE::recursiveParse(): abort; token is recognized: {}",
                         tokens[i]);
                 break;
             }
@@ -306,15 +305,15 @@ public class MultiOrderEntry {
                 orderDisplayPanel.addOrderRaw(text, true);
                 return;
             } catch (final OrderException oe) {
-                Log.println("  MOE::recursiveParse(): try failed.");
+                LOG.debug("  MOE::recursiveParse(): try failed.");
                 // do nothing.
             }
 
             // if we failed, and this current token already is a
             // definate known province, we shouldn't process further.
             if (world.getMap().getProvince(tokens[i]) != null) {
-                Log.println(
-                        "  MOE::recursiveParse(): abort; known province recognized: ",
+                LOG.debug(
+                        "  MOE::recursiveParse(): abort; known province recognized: {}",
                         tokens[i]);
                 break;
             }

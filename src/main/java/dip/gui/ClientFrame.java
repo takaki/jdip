@@ -71,6 +71,8 @@ import jcmdline.Parameter;
 import jcmdline.StringParam;
 import jcmdline.VersionCmdLineHandler;
 import org.apache.batik.util.XMLResourceDescriptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.XMLReader;
 
 import javax.swing.*;
@@ -94,6 +96,8 @@ import java.util.Locale;
  * <p>
  */
 public class ClientFrame extends JFrame {
+    private static final Logger LOG = LoggerFactory.getLogger(ClientFrame.class);
+
     // public property constants for PropertyChange events
     /**
      * Event indicating that a World object was created
@@ -248,12 +252,9 @@ public class ClientFrame extends JFrame {
         parseCmdLine(args);
         dtime = Log.printDelta(dtime, "CF: arg parse time: ");
 
-        Log.println("   mem max: ",
-                String.valueOf(Runtime.getRuntime().maxMemory()));
-        Log.println("   mem total: ",
-                String.valueOf(Runtime.getRuntime().totalMemory()));
-        Log.println("   mem free: ",
-                String.valueOf(Runtime.getRuntime().freeMemory()));
+        LOG.debug("   mem max: {}", Runtime.getRuntime().maxMemory());
+        LOG.debug("   mem total: {}", Runtime.getRuntime().totalMemory());
+        LOG.debug("   mem free: {}", Runtime.getRuntime().freeMemory());
 
 
         // set Batik XMLReader based on JAXP XMLReader.
@@ -263,14 +264,14 @@ public class ClientFrame extends JFrame {
             final XMLReader xmlReader = factory.newSAXParser().getXMLReader();
             XMLResourceDescriptor
                     .setXMLParserClassName(xmlReader.getClass().getName());
-            Log.println("Batik XMLReader: ",
+            LOG.debug("Batik XMLReader: {}",
                     XMLResourceDescriptor.getXMLParserClassName());
         } catch (final Exception e) {
             ErrorDialog.displayFatal(this, e);
         }
 
 
-        Log.println("Applying GUI enhancements: " + applyGUIEnhancements);
+        LOG.debug("Applying GUI enhancements: {}", applyGUIEnhancements);
 
         if (applyGUIEnhancements) {
             // setup per-OS options
@@ -318,11 +319,11 @@ public class ClientFrame extends JFrame {
                             com.jgoodies.looks.LookUtils.class
                                     .getClassLoader());
                 }
-                Log.println(lafClassName);
+                LOG.debug(lafClassName);
                 UIManager.setLookAndFeel(lafClassName);
             } catch (final Exception e) {
                 // do nothing; swing will load default L&F
-                Log.println(e);
+                LOG.debug(e.toString());
             }
         }
 
@@ -350,7 +351,7 @@ public class ClientFrame extends JFrame {
             toolDirPath = new File(System.getProperty("user.dir"), TOOL_DIR);
         }
 
-        Log.println("Using variant directory: ", variantDirPath);
+        LOG.debug("Using variant directory: {}", variantDirPath);
 
         // parse variants
         initVariantManager();

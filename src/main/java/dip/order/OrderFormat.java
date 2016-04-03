@@ -109,7 +109,7 @@ import java.util.stream.Collectors;
  * by OrderFormatOptions.
  */
 public class OrderFormat {
-    public static final Logger LOG = LoggerFactory.getLogger(OrderFormat.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OrderFormat.class);
 
     // keywords
     private static final String ARROW = "_arrow_";
@@ -527,7 +527,7 @@ public class OrderFormat {
                         name);
                 LOG.debug(
                         "OrderFormat::getViaReflection() exception details:\n{}",
-                        e);
+                        e.toString());
             }
         } else {
             try {
@@ -538,7 +538,7 @@ public class OrderFormat {
                         name);
                 LOG.debug(
                         "OrderFormat::getViaReflection() exception details:\n{}",
-                        e);
+                        e.toString());
             }
         }
 

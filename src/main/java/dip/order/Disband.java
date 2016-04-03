@@ -21,7 +21,6 @@
 //
 package dip.order;
 
-import dip.misc.Log;
 import dip.misc.Utils;
 import dip.process.Adjudicator;
 import dip.process.OrderState;
@@ -33,11 +32,15 @@ import dip.world.RuleOptions;
 import dip.world.TurnState;
 import dip.world.Unit;
 import dip.world.Unit.Type;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of the Disband order.
  */
 public class Disband extends Order {
+    private static final Logger LOG = LoggerFactory.getLogger(Disband.class);
+
     // il8n
     private static final String DISBAND_FORMAT = "DISBAND_FORMAT";
 
@@ -141,14 +144,14 @@ public class Disband extends Order {
     public void evaluate(final Adjudicator adjudicator) {
         final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
 
-        Log.println("--- evaluate() dip.order.Disband ---");
-        Log.println("   order: ", this);
+        LOG.debug("--- evaluate() dip.order.Disband ---");
+        LOG.debug("   order: {}", this);
 
         if (thisOS.getEvalState() == Tristate.UNCERTAIN) {
             thisOS.setEvalState(Tristate.SUCCESS);
         }
 
-        Log.println("   result: ", thisOS.getEvalState());
+        LOG.debug("   result: {}", thisOS.getEvalState());
     }// evaluate()
 
 }// class Disband

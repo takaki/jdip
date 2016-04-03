@@ -22,13 +22,14 @@
 //
 package dip.gui.map;
 
-import dip.misc.Log;
 import dip.world.Coast;
 import dip.world.Power;
 import dip.world.Province;
 import dip.world.WorldMap;
 import dip.world.variant.data.Symbol;
 import dip.world.variant.data.SymbolPack;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -45,6 +46,7 @@ import java.util.StringTokenizer;
  * <p>
  */
 public class MapMetadata {
+    private static final Logger LOG = LoggerFactory.getLogger(MapMetadata.class);
     /**
      * jDip namespace constant
      */
@@ -688,7 +690,7 @@ public class MapMetadata {
                     final InfoEntry ie = new InfoEntry(new Point2D.Float(0, 0),
                             new Point2D.Float(0, 0), new Point2D.Float(0, 0));
                     infoMap.put(province, ie);
-                    Log.println("MMD: added empty entry for province ",
+                    LOG.debug("MMD: added empty entry for province {}",
                             province);
                 } else {
                     throw new MapException(

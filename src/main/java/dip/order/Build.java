@@ -21,7 +21,6 @@
 //
 package dip.order;
 
-import dip.misc.Log;
 import dip.misc.Utils;
 import dip.process.Adjudicator;
 import dip.process.OrderState;
@@ -37,12 +36,15 @@ import dip.world.RuleOptions.Option;
 import dip.world.RuleOptions.OptionValue;
 import dip.world.TurnState;
 import dip.world.Unit.Type;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of the Build order.
  */
 
 public class Build extends Order {
+    private static final Logger LOG = LoggerFactory.getLogger(Build.class);
     // il8n constants
     private static final String BUILD_MULTICOAST = "BUILD_MULTICOAST";
     private static final String BUILD_HOME_SUPPLY = "BUILD_HOME_SUPPLY";
@@ -230,8 +232,8 @@ public class Build extends Order {
      */
     @Override
     public void evaluate(final Adjudicator adjudicator) {
-        Log.println("--- evaluate() dip.order.Build ---");
-        Log.println("   order: ", this);
+        LOG.debug("--- evaluate() dip.order.Build ---");
+        LOG.debug("   order: {}", this);
 
         final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
 

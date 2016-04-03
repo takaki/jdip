@@ -33,9 +33,10 @@ import dip.gui.swing.AssocJComboBox;
 import dip.gui.swing.AssocJComboBox.AssociatedObj;
 import dip.gui.swing.XJFileChooser;
 import dip.misc.LRUCache;
-import dip.misc.Log;
 import dip.misc.SharedPrefs;
 import dip.misc.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -46,7 +47,6 @@ import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
@@ -58,6 +58,8 @@ import java.util.prefs.Preferences;
  * functionality.
  */
 public class GeneralPreferencePanel extends PreferencePanel {
+    private static final Logger LOG = LoggerFactory.getLogger(
+            GeneralPreferencePanel.class);
     // constants
     public static final int BORDER = 10;
 
@@ -421,7 +423,7 @@ public class GeneralPreferencePanel extends PreferencePanel {
             // get files
             final ArrayList al = new ArrayList(NUM_RECENT_FILES);
             for (int i = 0; i < NUM_RECENT_FILES; i++) {
-                final String s = prefs.get(NODE_RECENT_FILE + String.valueOf(i), "");
+                final String s = prefs.get(NODE_RECENT_FILE + i, "");
                 if (s != null && !s.isEmpty()) {
                     // do NOT add file if it doesn't exist.
                     final File file = new File(s);
@@ -516,7 +518,7 @@ public class GeneralPreferencePanel extends PreferencePanel {
             fileCache.clear();
             final Preferences prefs = SharedPrefs.getUserNode();
             for (int i = 0; i < NUM_RECENT_FILES; i++) {
-                prefs.remove(NODE_RECENT_FILE + String.valueOf(i));
+                prefs.remove(NODE_RECENT_FILE + i);
             }
 
             try {
@@ -543,14 +545,14 @@ public class GeneralPreferencePanel extends PreferencePanel {
                 final Entry mapEntry = (Entry) iter.next();
                 final File file = (File) mapEntry.getValue();
 
-                prefs.put(NODE_RECENT_FILE + String.valueOf(idx),
+                prefs.put(NODE_RECENT_FILE + idx,
                         file.getPath());
                 idx--;
             }
 
             // delete any empty entries.
             while (idx > 0) {
-                prefs.remove(NODE_RECENT_FILE + String.valueOf(idx));
+                prefs.remove(NODE_RECENT_FILE + idx);
                 idx--;
             }
 
@@ -604,7 +606,7 @@ public class GeneralPreferencePanel extends PreferencePanel {
         if (text != null) {
             file = new File(text);
             if (!file.isDirectory()) {
-                Log.println("GPP.getVariantDir(): not a directory : ", text);
+                LOG.debug("GPP.getVariantDir(): not a directory : {}", text);
                 return null;
             }
         }

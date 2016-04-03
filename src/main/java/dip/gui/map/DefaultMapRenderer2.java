@@ -406,7 +406,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
         execRenderCommand(new RenderCommand(this) {
             @Override
             public void execute() {
-                Log.println("DMR2: orderCreated(): ", order);
+                LOG.debug("DMR2: orderCreated(): {}", order);
 
                 final MapInfo mapInfo = new DMRMapInfo(turnState);
                 order.updateDOM(mapInfo);
@@ -426,7 +426,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
         execRenderCommand(new RenderCommand(this) {
             @Override
             public void execute() {
-                Log.println("DMR2: orderDeleted(): ", order);
+                LOG.debug("DMR2: orderDeleted(): {}", order);
 
                 final MapInfo mapInfo = new DMRMapInfo(turnState);
                 order.removeFromDOM(mapInfo);
@@ -494,7 +494,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
         execRenderCommand(new RenderCommand(this) {
             @Override
             public void execute() {
-                Log.println("DMR2: displayablePowersChanged()");
+                LOG.debug("DMR2: displayablePowersChanged()");
 
                 // update all orders
                 unsyncUpdateAllOrders();
@@ -649,7 +649,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      * tree and have no associated SVGElement.
      */
     protected void unsyncDestroyAllOrders() {
-        Log.println("DMR2::unsyncDestroyAllOrders()");
+        LOG.debug("DMR2::unsyncDestroyAllOrders()");
         final MapInfo mapInfo = new DMRMapInfo(turnState);
         final Iterator iter = turnState.getAllOrders().iterator();
         while (iter.hasNext()) {
@@ -727,7 +727,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      * Implements Influence mode. Saves and restores old mapRenderer settings.
      */
     protected void unsyncSetInfluenceMode(final boolean value) {
-        //Log.println("unsyncSetInfluenceMode(): ", String.valueOf(value));
+        //LOG.debug("unsyncSetInfluenceMode(): ", String.valueOf(value));
 
         // disable or enable certain View menu items
         final ClientMenu cm = mapPanel.getClientFrame().getClientMenu();
@@ -867,7 +867,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
      * <p>
      */
     protected void unsyncUpdateDependentOrders(final GUIOrder[] addedOrders) {
-        //Log.println("unsyncUpdateDependentOrders() : ", addedOrder);
+        //LOG.debug("unsyncUpdateDependentOrders() : ", addedOrder);
 
         // get ALL orders
         final MapInfo mapInfo = new DMRMapInfo(turnState);

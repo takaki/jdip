@@ -37,7 +37,7 @@ import java.io.StringReader;
  * Not looking for entity resolutions improves startup time.
  */
 public class FastEntityResolver implements EntityResolver {
-    public static final Logger LOG = LoggerFactory.getLogger(FastEntityResolver.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FastEntityResolver.class);
     private final boolean isValidating;
 
 

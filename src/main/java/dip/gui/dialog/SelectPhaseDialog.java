@@ -131,7 +131,7 @@ public class SelectPhaseDialog extends HeaderDialog {
         }// getPhase()
 
         public String toString() {
-            String sb = String.valueOf(num) +
+            String sb = num +
                     ".  " +
                     phase;
             return sb;

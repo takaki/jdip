@@ -25,12 +25,13 @@ package dip.gui.dialog.newgame;
 import dip.gui.ClientFrame;
 import dip.gui.dialog.HeaderDialog;
 import dip.gui.swing.SwingWorker;
-import dip.misc.Help;
 import dip.misc.Help.HelpID;
 import dip.misc.Log;
 import dip.misc.Utils;
 import dip.world.World;
 import dip.world.variant.data.Variant;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -43,6 +44,8 @@ import java.awt.event.WindowEvent;
  * A cached copy is kept, and is initially created at startup.
  */
 public class NewGameDialog extends HeaderDialog {
+    private static final Logger LOG = LoggerFactory.getLogger(
+            NewGameDialog.class);
     // i18n constants
     public static final String TITLE_F2F = "NGD.title.f2f";
     private static final String TITLE = "NGD.title";
@@ -133,7 +136,7 @@ public class NewGameDialog extends HeaderDialog {
 
                 loader.start(Thread.MIN_PRIORITY);
             } else {
-                Log.println("NGD waiting...");
+                LOG.debug("NGD waiting...");
                 dialogInstance = (NewGameDialog) loader.get();
                 loader = null;
             }

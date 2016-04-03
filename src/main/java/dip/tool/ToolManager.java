@@ -22,7 +22,6 @@
 //
 package dip.tool;
 
-import dip.misc.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +40,7 @@ import java.util.jar.Manifest;
  * Manages Tool plugins.
  */
 public class ToolManager {
-    public static final Logger LOG = LoggerFactory.getLogger(ToolManager.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ToolManager.class);
     // constants
     private static final String TOOL_EXT_JAR = "Tool.jar";
 
@@ -74,7 +73,7 @@ public class ToolManager {
             try {
                 foundToolURLs[i] = foundToolFiles[i].toURL();
             } catch (final java.net.MalformedURLException e) {
-                Log.println("ERROR: ToolManager: could not convert to URL: ",
+                LOG.debug("ERROR: ToolManager: could not convert to URL: {}",
                         foundToolFiles[i]);
             }
 
@@ -109,7 +108,7 @@ public class ToolManager {
                             .loadClass(mainClassNames[i]).newInstance();
                     list.add(tool);
                 } catch (final Throwable e) {
-                    Log.println("ERROR: loading Tool: " + e);
+                    LOG.debug("ERROR: loading Tool: {}", e);
                 }
             }
         }
@@ -144,14 +143,14 @@ public class ToolManager {
         final List<File> fileList = new ArrayList<>();
 
         for (File searchPath : searchPaths) {
-            Log.println("Searching for tools on: ", searchPath);
+            LOG.debug("Searching for tools on: {}", searchPath);
             final File[] list = searchPath.listFiles();
             if (list != null) {
                 for (File aList : list) {
                     if (aList.isFile()) {
                         final String fileName = aList.getPath();
                         if (fileName.endsWith(TOOL_EXT_JAR)) {
-                            Log.println("found tool: ", aList);
+                            LOG.debug("found tool: {}", aList);
                             fileList.add(aList);
                         }
                     }

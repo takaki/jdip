@@ -22,7 +22,6 @@
 //
 package dip.world.variant;
 
-import dip.misc.Log;
 import dip.misc.Resources;
 import dip.world.variant.data.MapGraphic;
 import dip.world.variant.data.SymbolPack;
@@ -74,7 +73,7 @@ import java.util.stream.Stream;
  * <br>
  */
 public final class VariantManager {
-    public static final Logger LOG = LoggerFactory.getLogger(VariantManager.class);
+    private static final Logger LOG = LoggerFactory.getLogger(VariantManager.class);
     /**
      * Version Constant representing the most recent version of a Variant or SymbolPack
      */
@@ -240,7 +239,7 @@ public final class VariantManager {
         // automatically. Log this method, though
         VersionNumber spVersion = symbolPackVersion;
         if (spVersion.compareTo(new VersionNumber(0, 0)) <= 0) {
-            Log.println(
+            LOG.debug(
                     "WARNING: VariantManager.getSymbolPack() called with symbolPackVersion of <= 0.0f. Check parameters.");
             spVersion = VERSION_NEWEST;
         }
@@ -354,7 +353,7 @@ public final class VariantManager {
                                 .of(new URL(String.format("jar:%s!/", txtUrl)));
                     } catch (final MalformedURLException e) {
                         LOG.debug("Could not convert {} to a JAR url.", url);
-                        LOG.debug("Exception: {}", e);
+                        LOG.debug("Exception: {}", e.toString());
                         return Optional.empty();
                     }
                 }));

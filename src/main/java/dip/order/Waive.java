@@ -21,19 +21,24 @@
 //
 package dip.order;
 
-import dip.misc.Log;
 import dip.misc.Utils;
 import dip.process.Adjudicator;
 import dip.process.OrderState;
 import dip.process.Tristate;
-import dip.world.*;
+import dip.world.Location;
+import dip.world.Power;
+import dip.world.RuleOptions;
+import dip.world.TurnState;
 import dip.world.Unit.Type;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A Waive order; a power may explicitly choose not to build a unit.
  * in that case, a Waive order may be issued.
  */
 public class Waive extends Order {
+    private static final Logger LOG = LoggerFactory.getLogger(Waive.class);
     // il8n constants
     private static final String WAIVE_FORMAT = "WAIVE_FORMAT";
 
@@ -78,7 +83,7 @@ public class Waive extends Order {
 
     @Override
     public String toBriefString() {
-        String sb = String.valueOf(power) +
+        String sb = power +
                 ": " +
                 orderNameBrief +
                 " build in " +
@@ -90,7 +95,7 @@ public class Waive extends Order {
 
     @Override
     public String toFullString() {
-        String sb = String.valueOf(power) +
+        String sb = power +
                 ": " +
                 orderNameFull +
                 " build in " +
@@ -156,8 +161,8 @@ public class Waive extends Order {
      */
     @Override
     public void evaluate(final Adjudicator adjudicator) {
-        Log.println("--- evaluate() dip.order.Waive ---");
-        Log.println("   order: ", this);
+        LOG.debug("--- evaluate() dip.order.Waive ---");
+        LOG.debug("   order: {}", this);
 
         final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
 

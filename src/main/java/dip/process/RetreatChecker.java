@@ -78,14 +78,14 @@ public final class RetreatChecker {
             // but we must take special action to make it work
             final World w = current.getWorld();
             if (w.getInitialTurnState() == current) {
-                //Log.println("     no previous turnstate, and we are first; creating results");
+                //LOG.debug("     no previous turnstate, and we are first; creating results");
                 results = new ArrayList();
             } else {
                 throw new IllegalStateException("No Previous Turn State!!");
             }
         } else {
             results = last.getResultList();
-            //Log.println("     last turnstate: ",last.getPhase());
+            //LOG.debug("     last turnstate: ",last.getPhase());
         }
 
         position = current.getPosition();

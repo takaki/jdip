@@ -23,6 +23,8 @@
 package dip.misc;
 
 import dip.gui.swing.SwingWorker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.help.HelpBroker;
 import javax.help.HelpSet;
@@ -34,6 +36,7 @@ import java.net.URL;
  * help to GUI elements.
  */
 public class Help {
+    private static final Logger LOG = LoggerFactory.getLogger(Help.class);
     private static final String HELP_FILE_NAME = "help/applicationhelp.hs";
     private static HKeeper hk = null;
     private static SwingWorker loaderThread = null;
@@ -67,10 +70,10 @@ public class Help {
                     final URL url = HelpSet
                             .findHelpSet(Utils.getClassLoader(), helpFileName,
                                     Utils.getLocale());
-                    Log.println("HelpSet URL: ", url);
+                    LOG.debug("HelpSet URL: {}", url);
                     keeper.helpSet = new HelpSet(null, url);
                 } catch (final Exception e) {
-                    Log.println("Help not available: ", e);
+                    LOG.debug("Help not available: {}", e);
                     //ErrorDialog.displaySerious(null, e);
                     return null;
                 }

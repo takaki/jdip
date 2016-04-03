@@ -25,7 +25,6 @@ package dip.judge.parser;
 import dip.judge.parser.AdjustmentParser.OwnerInfo;
 import dip.judge.parser.PositionParser.PositionInfo;
 import dip.judge.parser.TurnParser.Turn;
-import dip.misc.Log;
 import dip.misc.Utils;
 import dip.order.OrderException;
 import dip.order.OrderFactory;
@@ -49,6 +48,8 @@ import dip.world.metadata.GameMetadata;
 import dip.world.metadata.PlayerMetadata;
 import dip.world.variant.VariantManager;
 import dip.world.variant.data.Variant;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileReader;
@@ -68,6 +69,8 @@ import java.util.Objects;
  * <br>
  */
 public final class JudgeImport {
+    private static final Logger LOG = LoggerFactory.getLogger(JudgeImport.class);
+
     // resource constants
     private static final String JI_VARIANT_NOTFOUND = "JP.import.novariant";
     private static final String JI_NO_SUPPLY_INFO = "JP.import.nosupplyinfo";
@@ -165,7 +168,7 @@ public final class JudgeImport {
         }
 
         // set the 'explicit convoy' rule option (all nJudge games require this)
-        Log.println("JudgeImport: RuleOptions.VALUE_PATHS_EXPLICIT set");
+        LOG.debug("JudgeImport: RuleOptions.VALUE_PATHS_EXPLICIT set");
         final RuleOptions ruleOpts = world.getRuleOptions();
         ruleOpts.setOption(Option.OPTION_CONVOYED_MOVES,
                 OptionValue.VALUE_PATHS_EXPLICIT);

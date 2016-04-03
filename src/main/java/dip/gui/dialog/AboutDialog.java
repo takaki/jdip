@@ -25,10 +25,13 @@ package dip.gui.dialog;
 import cz.autel.dmi.HIGConstraints;
 import cz.autel.dmi.HIGLayout;
 import dip.gui.ClientFrame;
+import dip.gui.map.MapMetadata;
 import dip.gui.swing.SwingWorker;
 import dip.gui.swing.XJScrollPane;
 import dip.misc.Log;
 import dip.misc.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
@@ -46,6 +49,7 @@ import java.util.Properties;
  * The cached copy is created at startup. It really helps speed! (at the expense of memory...)
  */
 public class AboutDialog extends HeaderDialog {
+    private static final Logger LOG = LoggerFactory.getLogger(AboutDialog.class);
     // i18n constants
     public static final String TITLE = "AboutDialog.title";
     public static final String LOADING = "AboutDialog.loading";
@@ -101,7 +105,7 @@ public class AboutDialog extends HeaderDialog {
 
                 loader.start(Thread.MIN_PRIORITY);
             } else {
-                Log.println("AboutDialog waiting...");
+                LOG.debug("AboutDialog waiting...");
                 dialogInstance = (AboutDialog) loader.get();
                 loader = null;
             }

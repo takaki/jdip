@@ -209,7 +209,7 @@ public class TestParser {
                 // if marked as fail, and we succeed, it's a failure!
                 if (isMarkedFail) {
                     String sb = "Order line " +
-                            String.valueOf(orp.getLineNumber()) +
+                            orp.getLineNumber() +
                             "\"" +
                             orp.getOrder() +
                             "\"" +
@@ -223,7 +223,7 @@ public class TestParser {
                 // only count as a failure if RESULT line does NOT have a "FAIL" result.
                 if (!isMarkedFail) {
                     String sb = "Order line " +
-                            String.valueOf(orp.getLineNumber()) +
+                            orp.getLineNumber() +
                             " \"" +
                             orp.getOrder() +
                             "\"" +
@@ -306,7 +306,7 @@ public class TestParser {
         // validate name
         if (!name.equalsIgnoreCase(o.getFullName())) {
             String sb = "Order line " +
-                    String.valueOf(orp.getLineNumber()) +
+                    orp.getLineNumber() +
                     " \"" +
                     orp.getOrder() +
                     "\"" +
@@ -426,7 +426,7 @@ public class TestParser {
         // does tok match? if not, add to failed cases, return false
         if (power != thePower) {
             String sb = "Order line " +
-                    String.valueOf(orp.getLineNumber()) +
+                    orp.getLineNumber() +
                     " \"" +
                     orp.getOrder() +
                     "\"" +
@@ -458,7 +458,7 @@ public class TestParser {
         // cannot use identity-equals here
         if (!loc.equals(theLoc)) {
             String sb = "Order line " +
-                    String.valueOf(orp.getLineNumber()) +
+                    orp.getLineNumber() +
                     " \"" +
                     orp.getOrder() +
                     "\"" +
@@ -497,7 +497,7 @@ public class TestParser {
         // does tok match? if not, add to failed cases, return false
         if (ut != theUnitType) {
             String sb = "Order line " +
-                    String.valueOf(orp.getLineNumber()) +
+                    orp.getLineNumber() +
                     " \"" +
                     orp.getOrder() +
                     "\"" +
@@ -539,7 +539,7 @@ public class TestParser {
         // does tok match? if not, add to failed cases, return false
         if (bool != theBoolean) {
             String sb = "Order line " +
-                    String.valueOf(orp.getLineNumber()) +
+                    orp.getLineNumber() +
                     " \"" +
                     orp.getOrder() +
                     "\"" +

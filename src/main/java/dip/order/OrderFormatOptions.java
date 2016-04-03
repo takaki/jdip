@@ -21,9 +21,14 @@
 //
 package dip.order;
 
-import dip.misc.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 /**
  * This object controls, in detail, how orders are formatted.
@@ -44,6 +49,8 @@ import java.io.*;
  * <p>
  */
 public class OrderFormatOptions implements Cloneable {
+    private static final Logger LOG = LoggerFactory.getLogger(
+            OrderFormatOptions.class);
 
     // constants
     //
@@ -605,7 +612,7 @@ public class OrderFormatOptions implements Cloneable {
 
             d.close();
         } catch (final IOException e) {
-            Log.println("OrderFormatOptions::decode() error\n", e);
+            LOG.debug("OrderFormatOptions::decode() error\n", e);
         }
 
         return defaultOptions;
@@ -648,7 +655,7 @@ public class OrderFormatOptions implements Cloneable {
         try {
             return (OrderFormatOptions) super.clone();
         } catch (final CloneNotSupportedException e) {
-            Log.println("OrderFormat::clone() error: ", e);
+            LOG.debug("OrderFormat::clone() error: ", e);
             throw new IllegalStateException();
         }
     }

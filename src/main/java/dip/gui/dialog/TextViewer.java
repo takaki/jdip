@@ -27,9 +27,12 @@ import dip.gui.dialog.prefs.GeneralPreferencePanel;
 import dip.gui.swing.XJEditorPane;
 import dip.gui.swing.XJFileChooser;
 import dip.gui.swing.XJScrollPane;
+import dip.misc.Help;
 import dip.misc.Log;
 import dip.misc.SimpleFileFilter;
 import dip.misc.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
@@ -73,6 +76,7 @@ import java.util.regex.Pattern;
  * lazy-loading of text. This improves perceived responsiveness.
  */
 public class TextViewer extends HeaderDialog {
+    public static final Logger LOG = LoggerFactory.getLogger(Help.class);
     /**
      * "Loading" HTML message
      */
@@ -181,7 +185,7 @@ public class TextViewer extends HeaderDialog {
                     try {
                         doc.insertString(0, sb.toString(), null);
                     } catch (final BadLocationException ble) {
-                        Log.println("TextViewer error: ", ble);
+                        LOG.debug("TextViewer error: ", ble);
                     }
                 }
             }// processDroppedFiles()
@@ -237,7 +241,7 @@ public class TextViewer extends HeaderDialog {
                         // do nothing
                     } catch (final IllegalStateException ise) {
                         // could happen, say, if the clipboard is unavailable
-                        Log.println("TextViewer::exportToClipboard(): " + ise);
+                        LOG.debug("TextViewer::exportToClipboard(): {}", ise);
                     }
                 }
             }

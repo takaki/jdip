@@ -40,7 +40,7 @@ import java.util.ListIterator;
  * This is not a singleton.
  */
 public class UndoRedoManager extends UndoManager {
-    public static final Logger LOG = LoggerFactory
+    private static final Logger LOG = LoggerFactory
             .getLogger(UndoRedoManager.class);
     // the max number of undo/redo events we can hold
     private static final int MAX_UNDOS = 1000;
@@ -154,9 +154,9 @@ public class UndoRedoManager extends UndoManager {
      */
     public void dumpEdits() {
         if (Log.isLogging()) {
-            Log.println("UndoRedoManager: " + edits.size() + " edits");
+            LOG.debug("UndoRedoManager: {} edits", edits.size());
             for (int i = 0; i < edits.size(); i++) {
-                Log.println("  " + i + ": " + edits.get(i));
+                LOG.debug("  {}: {}", i, edits.get(i));
             }
         }
     }// dumpEdits()
@@ -204,7 +204,7 @@ public class UndoRedoManager extends UndoManager {
      * but cannot undo or see another power's moves.
      */
     public synchronized void filterF2F() {
-        Log.println("UndoRedoManager::filterF2F()");
+        LOG.debug("UndoRedoManager::filterF2F()");
 
         final ListIterator listIter = edits.listIterator(edits.size());
 
@@ -214,7 +214,7 @@ public class UndoRedoManager extends UndoManager {
             final int idx = listIter.previousIndex();
             final UndoableEdit ue = (UndoableEdit) listIter.previous();
 
-            //Log.println("  checking: ", String.valueOf(idx), ": ", ue.getClass().getName());
+            //LOG.debug("  checking: ", String.valueOf(idx), ": ", ue.getClass().getName());
 
             if (ue instanceof UndoResolve) {
                 break;
@@ -241,7 +241,7 @@ public class UndoRedoManager extends UndoManager {
      * the game.
      */
     public synchronized void simplify() {
-        Log.println("UndoRedoManager::simplify()");
+        LOG.debug("UndoRedoManager::simplify()");
 
         //dumpEdits();
 
@@ -262,7 +262,7 @@ public class UndoRedoManager extends UndoManager {
             final int idx = listIter.previousIndex();
             final UndoableEdit ue = (UndoableEdit) listIter.previous();
 
-            //Log.println("  checking: ", String.valueOf(idx), ": ", ue.getClass().getName());
+            //LOG.debug("  checking: ", String.valueOf(idx), ": ", ue.getClass().getName());
 
             if (ue instanceof UndoResolve) {
                 if (!foundResolved) {

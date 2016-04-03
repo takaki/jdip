@@ -27,6 +27,8 @@ import dip.misc.Log;
 import dip.world.variant.data.BorderData;
 import dip.world.variant.data.ProvinceData;
 import dip.world.variant.data.Variant;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.JAXB;
 import javax.xml.bind.Unmarshaller;
@@ -45,6 +47,8 @@ import java.util.Objects;
  * Parses an XML Variant description.
  */
 public class XMLVariantParser implements VariantParser {
+    private static final Logger LOG = LoggerFactory.getLogger(
+            XMLVariantParser.class);
 
     private final List<Variant> variantList;
 
@@ -67,7 +71,7 @@ public class XMLVariantParser implements VariantParser {
     public XMLVariantParser(final URL variantsXMLURL) {
         Objects.requireNonNull(variantsXMLURL);
 
-        Log.println("XMLVariantParser: Parsing: ", variantsXMLURL);
+        LOG.debug("XMLVariantParser: Parsing: {}", variantsXMLURL);
         final long time = System.currentTimeMillis();
 
         // cleanup cache (very important to remove references!)

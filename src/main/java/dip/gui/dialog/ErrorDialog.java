@@ -25,19 +25,28 @@ package dip.gui.dialog;
 import dip.gui.ClientFrame;
 import dip.misc.Log;
 import dip.misc.Utils;
-import dip.world.World;
 import dip.world.World.VariantInfo;
 import dip.world.variant.data.VersionNumber;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Various error dialogs, which use HTML templates to display errors.
@@ -136,9 +145,9 @@ public class ErrorDialog extends TextViewer {
         args[1] = getMsg(e);
         args[2] = getStackTrace(e);
 
-        Log.println("SeriousError: ", args[0]);
-        Log.println("  message: ", args[1]);
-        Log.println("  stack trace:\n", args[2]);
+        LOG.debug("SeriousError: {}", args[0]);
+        LOG.debug("  message: {}", args[1]);
+        LOG.debug("  stack trace:\n{}", args[2]);
 
         final String text = Utils.getText(Utils.getLocalString(SERIOUS_TEMPLATE));
 
@@ -173,9 +182,9 @@ public class ErrorDialog extends TextViewer {
         args[1] = getMsg(e);
         args[2] = getStackTrace(e);
 
-        Log.println("FatalError: ", args[0]);
-        Log.println("  message: ", args[1]);
-        Log.println("  stack trace:\n", args[2]);
+        LOG.debug("FatalError: {}", args[0]);
+        LOG.debug("  message: {}", args[1]);
+        LOG.debug("  stack trace:\n{}", args[2]);
 
         final String text = Utils.getText(Utils.getLocalString(FATAL_TEMPLATE));
         final ErrorDialog ed = ErrorDialog
@@ -207,10 +216,10 @@ public class ErrorDialog extends TextViewer {
         args[2] = getStackTrace(e);
         args[3] = fileName == null ? UNKNOWN : fileName;
 
-        Log.println("FileIOError: ", args[0]);
-        Log.println("  message: ", args[1]);
-        Log.println("  file: ", args[3]);
-        Log.println("  stack trace:\n", args[2]);
+        LOG.debug("FileIOError: {}", args[0]);
+        LOG.debug("  message: {}", args[1]);
+        LOG.debug("  file: {}", args[3]);
+        LOG.debug("  stack trace:\n{}", args[2]);
 
         String text;
         if (e instanceof FileNotFoundException) {
@@ -256,10 +265,10 @@ public class ErrorDialog extends TextViewer {
         args[2] = getStackTrace(e);
         args[3] = connection == null ? UNKNOWN : connection;
 
-        Log.println("NetworkIOError: ", args[0]);
-        Log.println("  message: ", args[1]);
-        Log.println("  connection: ", args[3]);
-        Log.println("  stack trace:\n", args[2]);
+        LOG.debug("NetworkIOError: {}", args[0]);
+        LOG.debug("  message: {}", args[1]);
+        LOG.debug("  connection: {}", args[3]);
+        LOG.debug("  stack trace:\n{}", args[2]);
 
         String text;
         boolean submittable = false;
@@ -302,9 +311,9 @@ public class ErrorDialog extends TextViewer {
         args[1] = getMsg(e);
         args[2] = getStackTrace(e);
 
-        Log.println("GeneralError: ", args[0]);
-        Log.println("  message: ", args[1]);
-        Log.println("  stack trace:\n", args[2]);
+        LOG.debug("GeneralError: {}", args[0]);
+        LOG.debug("  message: {}", args[1]);
+        LOG.debug("  stack trace:\n{}", args[2]);
 
         final String text = Utils.getText(Utils.getLocalString(GENERAL_TEMPLATE));
         final ErrorDialog ed = getOneButtonDialog(parent,
@@ -567,33 +576,33 @@ public class ErrorDialog extends TextViewer {
             sb.append("\n  URI: ");
             sb.append(pe.getURI());
             sb.append("\n  Line: ");
-            sb.append(String.valueOf(pe.getLineNumber()));
+            sb.append(pe.getLineNumber());
             sb.append("\n  Column: ");
-            sb.append(String.valueOf(pe.getColumnNumber()));
+            sb.append(pe.getColumnNumber());
             sb.append("\n");
         } else if (e instanceof org.apache.batik.script.InterpreterException) {
             final org.apache.batik.script.InterpreterException ie = (org.apache.batik.script.InterpreterException) e;
             sb.append("\nInterpreterException:");
             sb.append("\n  Line: ");
-            sb.append(String.valueOf(ie.getLineNumber()));
+            sb.append(ie.getLineNumber());
             sb.append("\n  Column: ");
-            sb.append(String.valueOf(ie.getColumnNumber()));
+            sb.append(ie.getColumnNumber());
             sb.append("\n");
         } else if (e instanceof org.apache.batik.css.parser.ParseException) {
             final org.apache.batik.css.parser.ParseException pe = (org.apache.batik.css.parser.ParseException) e;
             sb.append("\ncss.ParseException:");
             sb.append("\n  Line Number: ");
-            sb.append(String.valueOf(pe.getLineNumber()));
+            sb.append(pe.getLineNumber());
             sb.append("\n  Column: ");
-            sb.append(String.valueOf(pe.getColumnNumber()));
+            sb.append(pe.getColumnNumber());
             sb.append("\n");
         } else if (e instanceof org.apache.batik.parser.ParseException) {
             final org.apache.batik.parser.ParseException pe = (org.apache.batik.parser.ParseException) e;
             sb.append("\nParseException:");
             sb.append("\n  Line: ");
-            sb.append(String.valueOf(pe.getLineNumber()));
+            sb.append(pe.getLineNumber());
             sb.append("\n  Column: ");
-            sb.append(String.valueOf(pe.getColumnNumber()));
+            sb.append(pe.getColumnNumber());
             sb.append("\n");
         }
     }// appendBatikInfo()
@@ -699,15 +708,15 @@ public class ErrorDialog extends TextViewer {
                 }
             }
         } catch (final Exception e) {
-            Log.println("ERROR: could not send bug report.");
-            Log.println(e);
+            LOG.debug("ERROR: could not send bug report.");
+            LOG.debug(e.toString());
         } finally {
             try {
                 if (wr != null) {
                     wr.close();
                 }
             } catch (final Exception e) {
-                Log.println("ErrorDialog: ", e);
+                LOG.debug("ErrorDialog: ", e);
             }
 
             try {
@@ -715,7 +724,7 @@ public class ErrorDialog extends TextViewer {
                     rd.close();
                 }
             } catch (final Exception e) {
-                Log.println("ErrorDialog: ", e);
+                LOG.debug("ErrorDialog: ", e);
             }
         }
 

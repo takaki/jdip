@@ -381,7 +381,7 @@ public class SCHistoryWriter {
             sb.append("<td>");
 
             if (count > 0) {
-                sb.append(String.valueOf(count));
+                sb.append(count);
             } else {
                 sb.append("&nbsp;");
             }
@@ -390,7 +390,7 @@ public class SCHistoryWriter {
         }
 
         sb.append("<td>");
-        sb.append(String.valueOf(sumOfSquares / allPowers.length));
+        sb.append(sumOfSquares / allPowers.length);
         sb.append("</td>");
 
         sb.append("</tr>");
