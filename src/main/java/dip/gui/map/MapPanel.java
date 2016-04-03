@@ -270,7 +270,7 @@ public class MapPanel extends JPanel {
         super(new BorderLayout());
 
         startTime = System.currentTimeMillis();
-        Log.printTimed(startTime, "MapPanel() constructor start.");
+        LOG.debug(Log.printTimed(startTime, "MapPanel() constructor start."));
 
         this.clientFrame = clientFrame;
         statusBar = clientFrame.getStatusBar();
@@ -311,7 +311,7 @@ public class MapPanel extends JPanel {
         // setup default controlbar
         setControlBar(null);
 
-        Log.printTimed(startTime, "MapPanel() constructor end.");
+        LOG.debug(Log.printTimed(startTime, "MapPanel() constructor end."));
     }// MapPanel()
 
 
@@ -701,7 +701,7 @@ public class MapPanel extends JPanel {
 
         @Override
         public void gvtRenderingStarted(final GVTTreeRendererEvent e) {
-            Log.printTimed(startTime, "MapPanel() GVTRender start.");
+            LOG.debug(Log.printTimed(startTime, "MapPanel() GVTRender start."));
             if (!loaded) {
                 statusBar.incPBValue();
                 statusBar.setText(Utils.getLocalString(GVT_RENDER_STARTED));
@@ -710,7 +710,7 @@ public class MapPanel extends JPanel {
 
         @Override
         public void gvtRenderingCompleted(final GVTTreeRendererEvent e) {
-            Log.printTimed(startTime, "MapPanel() GVTRender completing...");
+            LOG.debug(Log.printTimed(startTime, "MapPanel() GVTRender completing..."));
             if (!loaded) {
                 statusBar.incPBValue();
                 statusBar.setText(Utils.getLocalString(GVT_RENDER_EXTRACTING));
@@ -796,7 +796,7 @@ public class MapPanel extends JPanel {
                 statusBar.setText(Utils.getLocalString(GVT_RENDER_COMPLETED));
                 //svgCanvas.removeGVTTreeRendererListener(this);
                 statusBar.hidePB();
-                Log.printTimed(startTime, "MapPanel() GVTRender completed.");
+                LOG.debug(Log.printTimed(startTime, "MapPanel() GVTRender completed."));
             }
             loaded = true;
         }// gvtRenderingCompleted()
@@ -810,7 +810,7 @@ public class MapPanel extends JPanel {
     private class MP_DocumentListener extends SVGDocumentLoaderAdapter {
         @Override
         public void documentLoadingStarted(final SVGDocumentLoaderEvent e) {
-            Log.printTimed(startTime, "MapPanel() DocumentLoad started.");
+            LOG.debug(Log.printTimed(startTime, "MapPanel() DocumentLoad started."));
             clientFrame.getClientMenu().setViewRenderItemsEnabled(false);
             statusBar.incPBValue();
             //statusBar.setText(Utils.getLocalString(DOC_LOAD_STARTED));
@@ -824,7 +824,7 @@ public class MapPanel extends JPanel {
 
         @Override
         public void documentLoadingCompleted(final SVGDocumentLoaderEvent e) {
-            Log.printTimed(startTime, "MapPanel() DocumentLoad completed.");
+            LOG.debug(Log.printTimed(startTime, "MapPanel() DocumentLoad completed."));
             statusBar.incPBValue();
             statusBar.setText(Utils.getLocalString(DOC_LOAD_COMPLETED));
             svgCanvas.removeSVGDocumentLoaderListener(this);
@@ -838,7 +838,7 @@ public class MapPanel extends JPanel {
     private class MP_GVTTreeBuilderListener extends GVTTreeBuilderAdapter {
         @Override
         public void gvtBuildStarted(final GVTTreeBuilderEvent e) {
-            Log.printTimed(startTime, "MapPanel() GVTTreeBuild completed.");
+            LOG.debug(Log.printTimed(startTime, "MapPanel() GVTTreeBuild completed."));
             statusBar.incPBValue();
             statusBar.setText(Utils.getLocalString(GVT_BUILD_STARTED));
         }// documentLoadingStarted()
@@ -851,7 +851,7 @@ public class MapPanel extends JPanel {
 
         @Override
         public void gvtBuildCompleted(final GVTTreeBuilderEvent e) {
-            Log.printTimed(startTime, "MapPanel() GVTTreeBuild completed.");
+            LOG.debug(Log.printTimed(startTime, "MapPanel() GVTTreeBuild completed."));
             statusBar.incPBValue();
             statusBar.setText(Utils.getLocalString(GVT_BUILD_COMPLETED));
             svgCanvas.removeGVTTreeBuilderListener(this);

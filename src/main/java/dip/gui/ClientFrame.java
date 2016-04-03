@@ -457,7 +457,7 @@ public class ClientFrame extends JFrame {
         splash.destroy();
         dtime = Log.printDelta(dtime, "CF: frame setup time: ");
 
-        Log.printTimed(ttime, "ClientFrame() startup time: ");
+        LOG.debug(Log.printTimed(ttime, "ClientFrame() startup time: "));
     }// ClientFrame()
 
 

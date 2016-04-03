@@ -214,7 +214,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
                                final SymbolPack sp) throws MapException {
         super(mp);
         symbolPack = sp;
-        Log.printTimed(mapPanel.startTime, "DMR2 constructor start");
+        LOG.debug(Log.printTimed(mapPanel.startTime, "DMR2 constructor start"));
 
         // init variables
         worldMap = mapPanel.getClientFrame().getWorld().getMap();
@@ -324,7 +324,7 @@ public class DefaultMapRenderer2 extends MapRenderer2 {
             });
         }
 
-        Log.printTimed(mapPanel.startTime, "DMR2 constructor end");
+        LOG.debug(Log.printTimed(mapPanel.startTime, "DMR2 constructor end"));
     }// DefaultMapRenderer()
 
 

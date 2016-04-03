@@ -81,7 +81,7 @@ public class Help {
                 keeper.helpBroker = keeper.helpSet
                         .createHelpBroker("main_help_window");
                 keeper.helpBroker.initPresentation();
-                Log.printTimed(time, "Help construct() complete: ");
+                LOG.debug(Log.printTimed(time, "Help construct() complete: "));
                 return keeper;
             }// construct()
         };

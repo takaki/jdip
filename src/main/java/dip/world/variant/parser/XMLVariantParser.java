@@ -81,7 +81,7 @@ public class XMLVariantParser implements VariantParser {
         variantList = rootVariants.variants;
         variantList.stream().forEach(
                 variant -> variant.setBaseURL(variantsXMLURL)); // FIXME
-        Log.printTimed(time, "   time: ");
+        LOG.debug(Log.printTimed(time, "   time: "));
     }// parse()
 
 

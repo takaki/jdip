@@ -160,7 +160,7 @@ public class XMLSymbolParser implements SymbolParser {
         } catch (SAXException | XPathExpressionException e) {
             throw new IllegalArgumentException(e);
         }
-        Log.printTimed(time, "    time: ");
+        LOG.debug(Log.printTimed(time, "    time: "));
 
     }// XMLProvinceParser()
 

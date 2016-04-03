@@ -56,11 +56,11 @@ public final class Log {
 
     private static final int LOG_BUFFER_SIZE = 150;
     private static int logLevel = LOG_NONE;
-    private static boolean isLogging = false;
-    private static BufferedWriter bw = null;
+    private static boolean isLogging;
+    private static BufferedWriter bw;
 
-    private static String[] buffer = null;
-    private static int bufferNext = 0;
+    private static String[] buffer;
+    private static int bufferNext;
 
 	/*
         HOW the buffer works
@@ -102,7 +102,8 @@ public final class Log {
      * Enables or disables logging; optionally allows logging to a file.
      * File may be null; null file with 'LOG_TO_FILE' logs to stdout.
      */
-    public synchronized static void setLogging(final int value, final File file) {
+    public static synchronized void setLogging(final int value,
+                                               final File file) {
         if (value != LOG_NONE && value != LOG_TO_MEMORY && value != LOG_TO_FILE) {
             throw new IllegalArgumentException(
                     "Bad setLogging() value: " + value);
@@ -123,7 +124,7 @@ public final class Log {
             if (file == null) {
                 // log to stdout (no file specified)
                 System.out.println("*********** logging started ***********");
-                System.out.println(new Date().toString());
+                System.out.println(new Date());
                 System.out.println("***************************************");
             } else {
                 // log to file
@@ -167,7 +168,7 @@ public final class Log {
     /**
      * Flushes and closes the log file (if writing to stdout, this has no effect)
      */
-    public synchronized static void close() {
+    public static synchronized void close() {
         if (bw != null) {
             try {
                 bw.flush();
@@ -188,7 +189,7 @@ public final class Log {
      * via the Object's toString() method. Follows with a
      * newline.
      */
-    protected static void println(final Object s) {
+    private static void println(final Object s) {
         if (isLogging) {
             synchronized (Log.class) {
                 final String str = s.toString();
@@ -212,31 +213,13 @@ public final class Log {
 
 
     /**
-     * Print text followed by a boolean
-     */
-    public static void println(final Object s0, final boolean b) {
-        if (isLogging) {
-            final StringBuffer sb = new StringBuffer(256);
-            sb.append(s0);
-            sb.append(b);
-            println(sb);
-        }
-    }// println()
-
-    /**
      * Print text followed timing delta and current time.
      */
-    public static void printTimed(final long lastTime, final Object s0) {
-        if (isLogging) {
-            final long now = System.currentTimeMillis();
-            final StringBuffer sb = new StringBuffer(256);
-            sb.append(s0);
-            sb.append(' ');
-            sb.append(now - lastTime);
-            sb.append(" ms [delta]; current: ");
-            sb.append(now);
-            println(sb);
-        }
+    public static String printTimed(final long lastTime, final Object s0) {
+        final long now = System.currentTimeMillis();
+        return String
+                .format("%s %d ms [delta]; current: %d", s0, now - lastTime,
+                        now);
     }// println()
 
     /**

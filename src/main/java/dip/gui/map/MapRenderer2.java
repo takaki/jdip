@@ -118,7 +118,7 @@ public abstract class MapRenderer2 {
      * JSVGCanvas and SVGDocument of MapPanel <b>must not be null</b>
      */
     public MapRenderer2(final MapPanel mp) throws MapException {
-        Log.printTimed(mp.startTime, "MR2 constructor start");
+        LOG.debug(Log.printTimed(mp.startTime, "MR2 constructor start"));
         mapPanel = mp;
 
         svgCanvas = mapPanel.getJSVGCanvas();
@@ -129,7 +129,7 @@ public abstract class MapRenderer2 {
 
         tempQueue = new LinkedList();
 
-        Log.printTimed(mp.startTime, "MR2 constructor end");
+        LOG.debug(Log.printTimed(mp.startTime, "MR2 constructor end"));
     }// MapRenderer()
 
     /**

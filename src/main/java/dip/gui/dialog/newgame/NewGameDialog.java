@@ -129,7 +129,7 @@ public class NewGameDialog extends HeaderDialog {
                         ngd = new NewGameDialog(parent);
                         ngd.pack();
                         ngd.setSize(Utils.getScreenSize(0.67f, 0.82f));
-                        Log.printTimed(time, "NGD construct() complete: ");
+                        LOG.debug(Log.printTimed(time, "NGD construct() complete: "));
                         return ngd;
                     }// construct()
                 };
