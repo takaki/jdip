@@ -96,7 +96,8 @@ import java.util.Locale;
  * <p>
  */
 public class ClientFrame extends JFrame {
-    private static final Logger LOG = LoggerFactory.getLogger(ClientFrame.class);
+    private static final Logger LOG = LoggerFactory
+            .getLogger(ClientFrame.class);
 
     // public property constants for PropertyChange events
     /**
@@ -250,7 +251,8 @@ public class ClientFrame extends JFrame {
 
         // parse command-line args
         parseCmdLine(args);
-        dtime = Log.printDelta(dtime, "CF: arg parse time: ");
+        LOG.debug(Log.printDelta(dtime, "CF: arg parse time: "));
+        dtime = System.currentTimeMillis();
 
         LOG.debug("   mem max: {}", Runtime.getRuntime().maxMemory());
         LOG.debug("   mem total: {}", Runtime.getRuntime().totalMemory());
@@ -327,7 +329,8 @@ public class ClientFrame extends JFrame {
             }
         }
 
-        dtime = Log.printDelta(dtime, "CF: LAF setup time: ");
+        LOG.debug(Log.printDelta(dtime, "CF: LAF setup time: "));
+        dtime = System.currentTimeMillis();
 
         // set exception handler
         GUIExceptionHandler.registerHandler();
@@ -356,7 +359,8 @@ public class ClientFrame extends JFrame {
         // parse variants
         initVariantManager();
 
-        dtime = Log.printDelta(dtime, "CF: variant setup time: ");
+        LOG.debug(Log.printDelta(dtime, "CF: variant setup time: "));
+        dtime = System.currentTimeMillis();
 
         // init Tools
         ToolManager.init(new File[]{toolDirPath});
@@ -365,7 +369,8 @@ public class ClientFrame extends JFrame {
         for (Tool tool : tools) {
             tool.setToolProxy(toolProxy);
         }
-        dtime = Log.printDelta(dtime, "CF: tool setup time: ");
+        LOG.debug(Log.printDelta(dtime, "CF: tool setup time: "));
+        dtime = System.currentTimeMillis();
 
 
         // set frame icon
@@ -373,12 +378,14 @@ public class ClientFrame extends JFrame {
 
         // init help system
         Help.init();
-        dtime = Log.printDelta(dtime, "CF: help init time: ");
+        LOG.debug(Log.printDelta(dtime, "CF: help init time: "));
+        dtime = System.currentTimeMillis();
 
         // setup menu
         clientMenu = new ClientMenu(this);
         setJMenuBar(clientMenu.getJMenuBar());
-        dtime = Log.printDelta(dtime, "CF: menu setup time: ");
+        LOG.debug(Log.printDelta(dtime, "CF: menu setup time: "));
+        dtime = System.currentTimeMillis();
 
         // init special filedialog class
         //
@@ -394,7 +401,8 @@ public class ClientFrame extends JFrame {
 
         // persistence (must come after menus are defined)
         persistMan = new PersistenceManager(this);
-        dtime = Log.printDelta(dtime, "CF: PersistenceManager setup time: ");
+        LOG.debug(Log.printDelta(dtime, "CF: PersistenceManager setup time: "));
+        dtime = System.currentTimeMillis();
 
         // frame listener, handles JFrame close events
         setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -411,7 +419,8 @@ public class ClientFrame extends JFrame {
 
         // setup drag-and-drop support
         new DropTarget(this, new CFDropTargetListener());
-        dtime = Log.printDelta(dtime, "CF: point A: ");
+        LOG.debug(Log.printDelta(dtime, "CF: point A: "));
+        dtime = System.currentTimeMillis();
 
         // create default split pane
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, false);
@@ -419,31 +428,35 @@ public class ClientFrame extends JFrame {
         splitPane.setVisible(false);
         splitPane.setDividerSize(10);
         splitPane.setResizeWeight(1);
-        dtime = Log.printDelta(dtime, "CF: point B: ");
+        LOG.debug(Log.printDelta(dtime, "CF: point B: "));
+        dtime = System.currentTimeMillis();
 
         // create statusbar
         statusBar = new StatusBar();
         statusBar.setText(ClientFrame.PROGRAM_NAME + " " + getVersion());
-        dtime = Log.printDelta(dtime, "CF: point c: ");
+        LOG.debug(Log.printDelta(dtime, "CF: point c: "));
+        dtime = System.currentTimeMillis();
 
         // PhaseSelector
         phaseSel = new PhaseSelector(this);
-        dtime = Log.printDelta(dtime, "CF: point d: ");
+        LOG.debug(Log.printDelta(dtime, "CF: point d: "));
+        dtime = System.currentTimeMillis();
 
         // add mode listener for this object
         addPropertyChangeListener(new ModeListener());
 
         // set initial mode
         fireChangeMode(MODE_NONE);
-        dtime = Log.printDelta(dtime, "CF: point e: ");
-
+        LOG.debug(Log.printDelta(dtime, "CF: point e: "));
+        dtime = System.currentTimeMillis();
         // register menu listeners
         final MenuHandler mh = new MenuHandler();
         mh.registerMenuItems();
 
         // get default order formatting options
         orderFormatOptions = DisplayPreferencePanel.getOrderFormatOptions();
-        dtime = Log.printDelta(dtime, "CF: point f: ");
+        LOG.debug(Log.printDelta(dtime, "CF: point f: "));
+        dtime = System.currentTimeMillis();
 
         // setup layout
         getContentPane().setLayout(new BorderLayout());
@@ -455,7 +468,7 @@ public class ClientFrame extends JFrame {
         fireChangeMode(MODE_NONE);
         toFront();
         splash.destroy();
-        dtime = Log.printDelta(dtime, "CF: frame setup time: ");
+        LOG.debug(Log.printDelta(dtime, "CF: frame setup time: "));
 
         LOG.debug(Log.printTimed(ttime, "ClientFrame() startup time: "));
     }// ClientFrame()
@@ -1137,15 +1150,6 @@ public class ClientFrame extends JFrame {
         }
 
         // do logging
-        if (argLogFile.isSet()) {
-            if ("stdout".equalsIgnoreCase(argLogFile.getFile().getName())) {
-                Log.setLogging(null);
-            } else {
-                Log.setLogging(argLogFile.getFile());
-            }
-        } else {
-            Log.setLogging(Log.LOG_TO_MEMORY, null);
-        }
 
         // set flags
         isValidating = validateOpt.isTrue();

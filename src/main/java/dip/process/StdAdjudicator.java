@@ -544,11 +544,9 @@ public final class StdAdjudicator implements Adjudicator {
             }
         }
 
-        if (Log.isLogging()) {
-            LOG.debug("order counts:");
-            LOG.debug("      moves to evaluate: {}", totalMoves);
-            LOG.debug("  non-moves to evaluate: {}", totalNonMoves);
-        }
+        LOG.debug("order counts:");
+        LOG.debug("      moves to evaluate: {}", totalMoves);
+        LOG.debug("  non-moves to evaluate: {}", totalNonMoves);
 
 
         // if we have no move orders, we have nothing to evaluate
@@ -875,30 +873,26 @@ public final class StdAdjudicator implements Adjudicator {
             // NOTE: if totalMoveOrderCount == 0, we cannot have a paradox.
             //
             if (totalMoveOrderCount > 0 && nMovesEvaluated <= lastNumMovesEvaluated && nNonMovesEvaluated <= lastNumNonMovesEvaluated) {
-                if (Log.isLogging()) {
-                    LOG.debug("**** PARADOX ****");
-                    LOG.debug(" 	nMovesEvaluated = {}", nMovesEvaluated);
-                    LOG.debug(" 	lastNumMovesEvaluated = {}",
-                            lastNumMovesEvaluated);
-                    LOG.debug(" 	nNonMovesEvaluated = {}",
-                            nNonMovesEvaluated);
-                    LOG.debug(" 	lastNumNonMovesEvaluated = {}",
-                            lastNumNonMovesEvaluated);
-                }
+                LOG.debug("**** PARADOX ****");
+                LOG.debug(" 	nMovesEvaluated = {}", nMovesEvaluated);
+                LOG.debug(" 	lastNumMovesEvaluated = {}",
+                        lastNumMovesEvaluated);
+                LOG.debug(" 	nNonMovesEvaluated = {}",
+                        nNonMovesEvaluated);
+                LOG.debug(" 	lastNumNonMovesEvaluated = {}",
+                        lastNumNonMovesEvaluated);
 
                 return false;
             }
 
             // print iteration statistics
-            if (Log.isLogging()) {
-                LOG.debug("-------- iteration statistics --------");
-                LOG.debug("    iteration: {}", iterations);
-                LOG.debug("       orders: {} of {} (non-move) evaluated",
-                        nNonMovesEvaluated, totalNonMoveOrderCount);
-                LOG.debug("  move orders: {} of {} evaluated", nMovesEvaluated,
-                        totalMoveOrderCount);
-                LOG.debug("--------------------------------------");
-            }
+            LOG.debug("-------- iteration statistics --------");
+            LOG.debug("    iteration: {}", iterations);
+            LOG.debug("       orders: {} of {} (non-move) evaluated",
+                    nNonMovesEvaluated, totalNonMoveOrderCount);
+            LOG.debug("  move orders: {} of {} evaluated", nMovesEvaluated,
+                    totalMoveOrderCount);
+            LOG.debug("--------------------------------------");
 
             // set last evaluated, so next iteration can be compared.
             lastNumMovesEvaluated = nMovesEvaluated;
@@ -947,16 +941,14 @@ public final class StdAdjudicator implements Adjudicator {
                     Utils.getLocalString(STDADJ_MV_UNRESOLVED_PARADOX,
                             paradoxBreakAttempt)));
 
-            if (Log.isLogging()) {
-                LOG.debug("paradox: order status:");
-                LOG.debug("======================");
+            LOG.debug("paradox: order status:");
+            LOG.debug("======================");
 
-                for (final OrderState os : orderStates) {
-                    LOG.debug("  > {} {}", os.getOrder(), os.getEvalState());
-                }
+            for (final OrderState os : orderStates) {
+                LOG.debug("  > {} {}", os.getOrder(), os.getEvalState());
+            }
 
-                LOG.debug("======================");
-            }// if(logging)
+            LOG.debug("======================");
 
             isUnRezParadox = true;
             return false;
@@ -1207,11 +1199,9 @@ public final class StdAdjudicator implements Adjudicator {
             }
         }
 
-        if (Log.isLogging()) {
-            LOG.debug("order counts:");
-            LOG.debug("      moves to evaluate: {}", totalMoves);
-            LOG.debug("  non-moves to evaluate: {}", totalNonMoves);
-        }
+        LOG.debug("order counts:");
+        LOG.debug("      moves to evaluate: {}", totalMoves);
+        LOG.debug("  non-moves to evaluate: {}", totalNonMoves);
 
         // evaluate the orders in a loop. There should NOT be a paradox here.
         //

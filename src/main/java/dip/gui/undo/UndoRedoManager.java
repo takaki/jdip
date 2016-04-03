@@ -25,7 +25,6 @@ package dip.gui.undo;
 import dip.gui.ClientFrame;
 import dip.gui.ClientMenu;
 import dip.gui.OrderDisplayPanel;
-import dip.misc.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -153,11 +152,9 @@ public class UndoRedoManager extends UndoManager {
      * For debugging: lists edits.
      */
     public void dumpEdits() {
-        if (Log.isLogging()) {
-            LOG.debug("UndoRedoManager: {} edits", edits.size());
-            for (int i = 0; i < edits.size(); i++) {
-                LOG.debug("  {}: {}", i, edits.get(i));
-            }
+        LOG.debug("UndoRedoManager: {} edits", edits.size());
+        for (int i = 0; i < edits.size(); i++) {
+            LOG.debug("  {}: {}", i, edits.get(i));
         }
     }// dumpEdits()
 

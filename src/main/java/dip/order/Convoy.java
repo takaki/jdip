@@ -21,7 +21,6 @@
 //
 package dip.order;
 
-import dip.misc.Log;
 import dip.misc.Utils;
 import dip.order.result.OrderResult.ResultType;
 import dip.process.Adjudicator;
@@ -353,13 +352,11 @@ public class Convoy extends Order {
         thisOS.setDefMax(thisOS.getSupport(false));
         thisOS.setDefCertain(thisOS.getSupport(true));
 
-        if (Log.isLogging()) {
-            LOG.debug("   order: {}", this);
-            LOG.debug("   initial evalstate: {}", thisOS.getEvalState());
-            LOG.debug("     def-max: {}", thisOS.getDefMax());
-            LOG.debug("    def-cert: {}", thisOS.getDefCertain());
-            LOG.debug("  # supports: {}", thisOS.getDependentSupports().size());
-        }
+        LOG.debug("   order: {}", this);
+        LOG.debug("   initial evalstate: {}", thisOS.getEvalState());
+        LOG.debug("     def-max: {}", thisOS.getDefMax());
+        LOG.debug("    def-cert: {}", thisOS.getDefCertain());
+        LOG.debug("  # supports: {}", thisOS.getDependentSupports().size());
 
         // determine evaluation state. This is important for Convoy orders, since
         // moves depend upon them. If we cannot determine, we will remain uncertain.

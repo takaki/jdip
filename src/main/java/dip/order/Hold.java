@@ -21,7 +21,6 @@
 //
 package dip.order;
 
-import dip.misc.Log;
 import dip.misc.Utils;
 import dip.process.Adjudicator;
 import dip.process.OrderState;
@@ -155,14 +154,12 @@ public class Hold extends Order {
         thisOS.setDefMax(thisOS.getSupport(false));
         thisOS.setDefCertain(thisOS.getSupport(true));
 
-        if (Log.isLogging()) {
-            LOG.debug("   order: {}", this);
-            LOG.debug("   initial evalstate: {}", thisOS.getEvalState());
-            LOG.debug("     def-max: {}", thisOS.getDefMax());
-            LOG.debug("    def-cert: {}", thisOS.getDefCertain());
-            LOG.debug("  # supports: {}", thisOS.getDependentSupports().size());
-            LOG.debug("  dislodged?: {}", thisOS.getDislodgedState());
-        }
+        LOG.debug("   order: {}", this);
+        LOG.debug("   initial evalstate: {}", thisOS.getEvalState());
+        LOG.debug("     def-max: {}", thisOS.getDefMax());
+        LOG.debug("    def-cert: {}", thisOS.getDefCertain());
+        LOG.debug("  # supports: {}", thisOS.getDependentSupports().size());
+        LOG.debug("  dislodged?: {}", thisOS.getDislodgedState());
 
 
         // if no moves against this order, we must succeed.

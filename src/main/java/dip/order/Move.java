@@ -21,7 +21,6 @@
 //
 package dip.order;
 
-import dip.misc.Log;
 import dip.misc.Utils;
 import dip.order.result.ConvoyPathResult;
 import dip.order.result.DependentMoveFailedResult;
@@ -923,20 +922,18 @@ public class Move extends Order {
         thisOS.setAtkSelfSupportCertain(thisOS.getSelfSupport(true));
 
 
-        if (Log.isLogging()) {
-            LOG.debug("   order: {}", this);
-            LOG.debug("   initial evalstate: {}", thisOS.getEvalState());
-            LOG.debug("     atk-max: {}", thisOS.getAtkMax());
-            LOG.debug("    atk-cert: {}", thisOS.getAtkCertain());
-            LOG.debug("     self-atk-max: {}", thisOS.getAtkSelfSupportMax());
-            LOG.debug("    self-atk-cert: {}",
-                    thisOS.getAtkSelfSupportCertain());
-            LOG.debug("  # nonself supports: {}",
-                    thisOS.getDependentSupports().size());
-            LOG.debug("  #    self supports: {}",
-                    thisOS.getDependentSelfSupports().size());
-            LOG.debug("  dislodged?: {}", thisOS.getDislodgedState());
-        }
+        LOG.debug("   order: {}", this);
+        LOG.debug("   initial evalstate: {}", thisOS.getEvalState());
+        LOG.debug("     atk-max: {}", thisOS.getAtkMax());
+        LOG.debug("    atk-cert: {}", thisOS.getAtkCertain());
+        LOG.debug("     self-atk-max: {}", thisOS.getAtkSelfSupportMax());
+        LOG.debug("    self-atk-cert: {}",
+                thisOS.getAtkSelfSupportCertain());
+        LOG.debug("  # nonself supports: {}",
+                thisOS.getDependentSupports().size());
+        LOG.debug("  #    self supports: {}",
+                thisOS.getDependentSelfSupports().size());
+        LOG.debug("  dislodged?: {}", thisOS.getDislodgedState());
 
 
         // evaluate
@@ -1025,23 +1022,21 @@ public class Move extends Order {
             LOG.debug("  # dep dest moves: {}", dml.size());
 
             for (final OrderState os : dml) {
-                if (Log.isLogging()) {
-                    LOG.debug(" checking against dependent move: {}",
-                            os.getOrder());
-                    LOG.debug("       :(dep) atkMax = {};  atkCertain = {}",
-                            os.getAtkMax(), os.getAtkCertain());
-                    LOG.debug(
-                            "       :(dep) selfAtkMax = {};  selfAtkCertain = {}",
-                            os.getAtkSelfSupportMax(),
-                            os.getAtkSelfSupportCertain());
-                    LOG.debug("       : isHeadToHead() = {}; evalState() = {};",
-                            os.isHeadToHead(), os.getEvalState());
-                    if (os.getDislodger() != null) {
-                        LOG.debug("       : dislodger = {}",
-                                os.getDislodger().getOrder());
-                    } else {
-                        LOG.debug("       : dislodger = {}", os.getDislodger());
-                    }
+                LOG.debug(" checking against dependent move: {}",
+                        os.getOrder());
+                LOG.debug("       :(dep) atkMax = {};  atkCertain = {}",
+                        os.getAtkMax(), os.getAtkCertain());
+                LOG.debug(
+                        "       :(dep) selfAtkMax = {};  selfAtkCertain = {}",
+                        os.getAtkSelfSupportMax(),
+                        os.getAtkSelfSupportCertain());
+                LOG.debug("       : isHeadToHead() = {}; evalState() = {};",
+                        os.isHeadToHead(), os.getEvalState());
+                if (os.getDislodger() != null) {
+                    LOG.debug("       : dislodger = {}",
+                            os.getDislodger().getOrder());
+                } else {
+                    LOG.debug("       : dislodger = {}", os.getDislodger());
                 }
 
                 if (os.getEvalState() == Tristate.SUCCESS) {

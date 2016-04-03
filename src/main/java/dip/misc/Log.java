@@ -23,10 +23,7 @@
 package dip.misc;
 
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Date;
 
 /**
  * A very simple logging class that logs all data to stdout. Note that this
@@ -54,7 +51,6 @@ public final class Log {
      */
     public static final int LOG_TO_FILE = 2;
 
-    private static final int LOG_BUFFER_SIZE = 150;
     private static int logLevel = LOG_NONE;
     private static boolean isLogging;
     private static BufferedWriter bw;
@@ -99,92 +95,6 @@ public final class Log {
 
 
     /**
-     * Enables or disables logging; optionally allows logging to a file.
-     * File may be null; null file with 'LOG_TO_FILE' logs to stdout.
-     */
-    public static synchronized void setLogging(final int value,
-                                               final File file) {
-        if (value != LOG_NONE && value != LOG_TO_MEMORY && value != LOG_TO_FILE) {
-            throw new IllegalArgumentException(
-                    "Bad setLogging() value: " + value);
-        }
-
-        if (value == LOG_NONE) {
-            close();
-            bw = null;
-            buffer = null;
-            bufferNext = 0;
-        } else {
-            // enable memory buffer
-            buffer = new String[LOG_BUFFER_SIZE];
-            bufferNext = 0;
-        }
-
-        if (value == LOG_TO_FILE) {
-            if (file == null) {
-                // log to stdout (no file specified)
-                System.out.println("*********** logging started ***********");
-                System.out.println(new Date());
-                System.out.println("***************************************");
-            } else {
-                // log to file
-                try {
-                    bw = new BufferedWriter(new FileWriter(file, true));
-                    bw.newLine();
-                    bw.write("*********** logging started ***********");
-                    bw.newLine();
-                    bw.write(new Date().toString());
-                    bw.newLine();
-                    bw.write("***************************************");
-                    bw.newLine();
-                    bw.flush();
-                } catch (final IOException e) {
-                    System.err.println(e);
-                }
-            }
-        }
-
-        logLevel = value;
-        isLogging = logLevel != LOG_NONE;
-    }// setLogging()
-
-
-    /**
-     * Enables logging to file. Null file logs to stdout.
-     */
-    public static void setLogging(final File file) {
-        setLogging(LOG_TO_FILE, file);
-    }// setLogging()
-
-
-    /**
-     * Check if logging is enabled or disabled
-     */
-    public static boolean isLogging() {
-        return isLogging;
-    }// isLogging()
-
-
-    /**
-     * Flushes and closes the log file (if writing to stdout, this has no effect)
-     */
-    public static synchronized void close() {
-        if (bw != null) {
-            try {
-                bw.flush();
-            } catch (final IOException e) {
-                System.err.println(e);
-            } finally {
-                try {
-                    bw.close();
-                } catch (final IOException e2) {
-                }
-            }
-        }
-    }// close()
-
-
-    /**
      * Print the given Object to the output file / stdout
      * via the Object's toString() method. Follows with a
      * newline.
@@ -225,20 +135,9 @@ public final class Log {
     /**
      * Print the delta from the given time. Return the new time.
      */
-    public static long printDelta(final long lastTime, final Object s0) {
-        if (isLogging) {
-            final long now = System.currentTimeMillis();
-            final StringBuffer sb = new StringBuffer(128);
-            sb.append(s0);
-            sb.append(' ');
-            sb.append(now - lastTime);
-            sb.append(" ms [delta]");
-            sb.append(now);
-            println(sb);
-            return now;
-        }
-
-        return 0L;
+    public static String printDelta(final long lastTime, final Object s0) {
+        final long now = System.currentTimeMillis();
+        return String.format("%s %d ms [delta]%d", s0, now - lastTime, now);
     }// printDelta()
 
 

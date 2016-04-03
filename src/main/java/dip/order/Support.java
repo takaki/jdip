@@ -514,20 +514,18 @@ public class Support extends Order {
         thisOS.setDefMax(thisOS.getSupport(false) - mod);
         thisOS.setDefCertain(thisOS.getSupport(true) - mod);
 
-        if (Log.isLogging()) {
-            LOG.debug("   order: {}", this);
-            LOG.debug("   initial evalstate: {}", thisOS.getEvalState());
-            LOG.debug("     def-max: {}", thisOS.getDefMax());
-            LOG.debug("    def-cert: {}", thisOS.getDefCertain());
-            LOG.debug("	atk-max:	{}", thisOS.getAtkMax());
-            LOG.debug("	atk-cert:	{}", thisOS.getAtkCertain());
-            LOG.debug("  # supports: {}", thisOS.getDependentSupports().size());
-            LOG.debug("  # supports to hold: {}",
-                    thisOS.getDependentSupports().size());
-            LOG.debug("  # of possible cuts: {}",
-                    thisOS.getDependentMovesToSource().size());
-            LOG.debug("  dislodged?: {}", thisOS.getDislodgedState());
-        }
+        LOG.debug("   order: {}", this);
+        LOG.debug("   initial evalstate: {}", thisOS.getEvalState());
+        LOG.debug("     def-max: {}", thisOS.getDefMax());
+        LOG.debug("    def-cert: {}", thisOS.getDefCertain());
+        LOG.debug("	atk-max:	{}", thisOS.getAtkMax());
+        LOG.debug("	atk-cert:	{}", thisOS.getAtkCertain());
+        LOG.debug("  # supports: {}", thisOS.getDependentSupports().size());
+        LOG.debug("  # supports to hold: {}",
+                thisOS.getDependentSupports().size());
+        LOG.debug("  # of possible cuts: {}",
+                thisOS.getDependentMovesToSource().size());
+        LOG.debug("  dislodged?: {}", thisOS.getDislodgedState());
 
         // 2) evaluate whether we are cut or not
         if (thisOS.getEvalState() == Tristate.UNCERTAIN) {
