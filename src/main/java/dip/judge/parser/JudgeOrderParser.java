@@ -22,13 +22,14 @@
 //
 package dip.judge.parser;
 
-import dip.misc.Log;
 import dip.order.NJudgeOrderParser;
 import dip.order.NJudgeOrderParser.NJudgeOrder;
 import dip.order.OrderException;
 import dip.order.OrderFactory;
 import dip.world.Phase.PhaseType;
 import dip.world.WorldMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -47,6 +48,9 @@ import java.util.regex.PatternSyntaxException;
  * This assumes that orders never span lines.
  */
 public class JudgeOrderParser {
+    private static final Logger LOG = LoggerFactory.getLogger(
+            JudgeOrderParser.class);
+
     // i18n
     private static final String WAIVED_BUILDS = "JOP.adjust.waived";
     private static final String UNUSABLE_WAIVED = "JOP.adjust.unusable.waived";
@@ -198,7 +202,7 @@ public class JudgeOrderParser {
                     orderList.add(parser
                             .parse(map, orderFactory, phaseType, line));
                 } else {
-                    Log.println("parseOrders() stopped at line: ", line);
+                    LOG.debug("parseOrders() stopped at line: {}", line);
                     break;
                 }
 

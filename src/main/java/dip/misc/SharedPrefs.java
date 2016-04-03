@@ -22,6 +22,9 @@
 //
 package dip.misc;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.awt.*;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
@@ -40,6 +43,8 @@ import java.util.prefs.Preferences;
  * if they desire.
  */
 public class SharedPrefs {
+    private static final Logger LOG = LoggerFactory.getLogger(SharedPrefs.class);
+
     // the class we want to be the root node.
     private static Class sharedRootNodeClass = null;
 
@@ -94,7 +99,7 @@ public class SharedPrefs {
         try {
             prefs.flush();
         } catch (final BackingStoreException bse) {
-            Log.println(bse);
+            LOG.debug(bse.toString());
         }
     }// savePrefs()
 

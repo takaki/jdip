@@ -37,6 +37,8 @@ import dip.world.RuleOptions;
 import dip.world.TurnState;
 import dip.world.Unit;
 import dip.world.Unit.Type;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Objects;
@@ -50,6 +52,7 @@ import java.util.Objects;
  * a specific type of support/hold/convoy order [typically of another power].
  */
 public class Support extends Order {
+    private static final Logger LOG = LoggerFactory.getLogger(Support.class);
     // il8n constants
     private static final String SUPPORT_VAL_NOSELF = "SUPPORT_VAL_NOSELF";
     private static final String SUPPORT_VAL_NOMOVE = "SUPPORT_VAL_NOMOVE";
@@ -494,7 +497,7 @@ public class Support extends Order {
      */
     @Override
     public void evaluate(final Adjudicator adjudicator) {
-        Log.println("--- evaluate() dip.order.Support ---");
+        LOG.debug("--- evaluate() dip.order.Support ---");
 
         final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
         // 1) calculate support (to prevent dislodgement)
@@ -511,20 +514,18 @@ public class Support extends Order {
         thisOS.setDefMax(thisOS.getSupport(false) - mod);
         thisOS.setDefCertain(thisOS.getSupport(true) - mod);
 
-        if (Log.isLogging()) {
-            Log.println("   order: ", this);
-            Log.println("   initial evalstate: ", thisOS.getEvalState());
-            Log.println("     def-max: ", thisOS.getDefMax());
-            Log.println("    def-cert: ", thisOS.getDefCertain());
-            Log.println("	atk-max:	", thisOS.getAtkMax());
-            Log.println("	atk-cert:	", thisOS.getAtkCertain());
-            Log.println("  # supports: ", thisOS.getDependentSupports().size());
-            Log.println("  # supports to hold: ",
-                    thisOS.getDependentSupports().size());
-            Log.println("  # of possible cuts: ",
-                    thisOS.getDependentMovesToSource().size());
-            Log.println("  dislodged?: ", thisOS.getDislodgedState());
-        }
+        LOG.debug("   order: {}", this);
+        LOG.debug("   initial evalstate: {}", thisOS.getEvalState());
+        LOG.debug("     def-max: {}", thisOS.getDefMax());
+        LOG.debug("    def-cert: {}", thisOS.getDefCertain());
+        LOG.debug("	atk-max:	{}", thisOS.getAtkMax());
+        LOG.debug("	atk-cert:	{}", thisOS.getAtkCertain());
+        LOG.debug("  # supports: {}", thisOS.getDependentSupports().size());
+        LOG.debug("  # supports to hold: {}",
+                thisOS.getDependentSupports().size());
+        LOG.debug("  # of possible cuts: {}",
+                thisOS.getDependentMovesToSource().size());
+        LOG.debug("  dislodged?: {}", thisOS.getDislodgedState());
 
         // 2) evaluate whether we are cut or not
         if (thisOS.getEvalState() == Tristate.UNCERTAIN) {
@@ -544,11 +545,11 @@ public class Support extends Order {
             for (final OrderState depMoveOS : depMovesToSrc) {
                 final Move depMove = (Move) depMoveOS.getOrder();
 
-                Log.println("  checking against move: ", depMove);
+                LOG.debug("  checking against move: {}", depMove);
 
                 if (getPower().equals(depMove.getPower())) {
                     // 2.b.2, 2.c.2
-                    Log.println("   -- move is of same power; not cut");
+                    LOG.debug("   -- move is of same power; not cut");
                     evalResult = pickState(evalResult, Tristate.SUCCESS);
                 } else {
                     if (!depMove.isConvoying()) {
@@ -556,7 +557,7 @@ public class Support extends Order {
                         //
                         if (getSupportedDest()
                                 .isProvinceEqual(depMove.getSource())) {
-                            Log.println(
+                            LOG.debug(
                                     "     --Unit attacking destination; not cut");
                             // 2.b.1 [support cannot be cut by an attack to where support is being given]
                             // determine if we *could* become dislodged. 2.b.1.a (we *are* dislodged)
@@ -566,7 +567,7 @@ public class Support extends Order {
                                 // 2.b.1.c
                                 // if the support is not given over a difficult passable border
                                 if (mod >= 0) {
-                                    Log.println(
+                                    LOG.debug(
                                             "     -- Support is not over DPB; not cut");
                                     evalResult = pickState(evalResult,
                                             Tristate.SUCCESS);
@@ -577,12 +578,12 @@ public class Support extends Order {
                                         Tristate.UNCERTAIN);
                             }
                         } else {
-                            Log.println(
+                            LOG.debug(
                                     "     --Unit attacking source; checking...");
                             // 2.b.3 with border rule check possible.
                             // If the dependant move succeeded, support cut;
                             if (depMoveOS.getEvalState() == Tristate.SUCCESS) {
-                                Log.println(
+                                LOG.debug(
                                         "\t --Dependant move succeeded; support cut");
                                 evalResult = pickState(evalResult,
                                         Tristate.FAILURE);
@@ -590,11 +591,11 @@ public class Support extends Order {
                             } else {
                                 // If the move failed, but did have the possibility of strength
                                 if (depMoveOS.getAtkMax() != 0) {
-                                    Log.println(
+                                    LOG.debug(
                                             "\t -- Unit move failed, but could still cut support...");
                                     // If there was a definate attack strength; support cut
                                     if (depMoveOS.getAtkCertain() != 0) {
-                                        Log.println(
+                                        LOG.debug(
                                                 "\t -- Unit has some strength left...");
                                         evalResult = pickState(evalResult,
                                                 Tristate.FAILURE);
@@ -611,11 +612,11 @@ public class Support extends Order {
                     } else {
                         // 2.c convoyed move
                         //
-                        Log.println("     -- move is convoying:");
+                        LOG.debug("     -- move is convoying:");
 
                         if (depMoveOS.getEvalState() == Tristate.FAILURE) {
                             // 2.c.1
-                            Log.println(
+                            LOG.debug(
                                     "        -- but move failed, so won't cut support.");
                             evalResult = pickState(evalResult,
                                     Tristate.SUCCESS);
@@ -624,7 +625,7 @@ public class Support extends Order {
                                     adjudicator, depMove);
                             final Path path = new Path(adjudicator);
 
-                            Log.println("     supporting convoy attack = ",
+                            LOG.debug("     supporting convoy attack = {}",
                                     convoy);
 
                             if (convoy != null) {
@@ -639,7 +640,7 @@ public class Support extends Order {
                                                 convoy.getSource(), null);
                                 cuttingMove = depMove;    // if we don't cut, this will just be ignored.
 
-                                Log.println("     convoy eval result = ",
+                                LOG.debug("     convoy eval result = {}",
                                         pathEvalResult);
 
                                 if (pathEvalResult == Tristate.SUCCESS) {
@@ -660,7 +661,7 @@ public class Support extends Order {
                                 // 2000 rules, comment out the above and just leave this order
                                 // uncertain.
                                 /*
-                                Log.println("** no 2000 rule used: leaving uncertain");
+                                LOG.debug("** no 2000 rule used: leaving uncertain");
 								evalResult = pickState(evalResult, Tristate.UNCERTAIN);
 								*/
                             } else {
@@ -702,12 +703,12 @@ public class Support extends Order {
             if (evalResult == Tristate.FAILURE) {
                 // If we ARE supporting over a difficult passable border...
                 if (mod < 0) {
-                    Log.println(
+                    LOG.debug(
                             " Unable to support through difficult passable border");
                     adjudicator.addResult(thisOS, ResultType.FAILURE,
                             Utils.getLocalString(SUPPORT_DIFF_PASS));
                 } else {
-                    Log.println(" ** support cut by move from ",
+                    LOG.debug(" ** support cut by move from {}",
                             cuttingMove.getSource());
                     adjudicator.addResult(thisOS, ResultType.FAILURE,
                             Utils.getLocalString(SUPPORT_EVAL_CUT,
@@ -716,7 +717,7 @@ public class Support extends Order {
 
             }
 
-            Log.println("   final evalstate: ", thisOS.getEvalState());
+            LOG.debug("   final evalstate: {}", thisOS.getEvalState());
         }
     }// evaluate()
 

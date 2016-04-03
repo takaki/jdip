@@ -21,7 +21,6 @@
 //
 package dip.order;
 
-import dip.misc.Log;
 import dip.misc.Utils;
 import dip.order.result.OrderResult.ResultType;
 import dip.process.Adjudicator;
@@ -35,6 +34,8 @@ import dip.world.RuleOptions;
 import dip.world.TurnState;
 import dip.world.Unit;
 import dip.world.Unit.Type;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,6 +50,7 @@ import java.util.stream.Collectors;
  */
 
 public class Retreat extends Move {
+    private static final Logger LOG = LoggerFactory.getLogger(Retreat.class);
     // il8n constants
     private static final String RETREAT_SRC_EQ_DEST = "RETREAT_SRC_EQ_DEST";
     private static final String RETREAT_CANNOT = "RETREAT_CANNOT";
@@ -210,11 +212,11 @@ public class Retreat extends Move {
         //
         thisOS.setRetreatStrength(thisOS.getSupport(false));
 
-        Log.println("--- evaluate() dip.order.Retreat ---");
-        Log.println("   order: ", this);
-        Log.println("   retreat strength: [dpb check]: ",
+        LOG.debug("--- evaluate() dip.order.Retreat ---");
+        LOG.debug("   order: {}", this);
+        LOG.debug("   retreat strength: [dpb check]: {}",
                 thisOS.getRetreatStrength());
-        Log.println("   # moves to dest: ",
+        LOG.debug("   # moves to dest: {}",
                 thisOS.getDependentMovesToDestination().size());
 
         // if other retreats to destination, we will succeed; otherwise, we will
@@ -225,7 +227,7 @@ public class Retreat extends Move {
 
             if (depMovesToDest.isEmpty()) {
                 // typical case
-                Log.println("    SUCCESS!");
+                LOG.debug("    SUCCESS!");
                 thisOS.setEvalState(Tristate.SUCCESS);
             } else {
                 // Modified for Difficult Passsable Border (see DATC 16-dec-03 10.K)
@@ -249,7 +251,7 @@ public class Retreat extends Move {
                         if (thisOS.getRetreatStrength() < depMoveOS
                                 .getRetreatStrength()) {
                             // only can be less when considering DPBs
-                            Log.println("    FAILURE! (<)",
+                            LOG.debug("    FAILURE! (<){}",
                                     depMoveOS.getOrder());
                             evalResult = Tristate.FAILURE;
                             adjudicator.addResult(thisOS, ResultType.FAILURE,
@@ -259,7 +261,7 @@ public class Retreat extends Move {
                         } else if (thisOS.getRetreatStrength() == depMoveOS
                                 .getRetreatStrength()) {
                             // the usual case
-                            Log.println("    FAILURE! (==)",
+                            LOG.debug("    FAILURE! (==){}",
                                     depMoveOS.getOrder());
                             evalResult = Tristate.FAILURE;
                             adjudicator.addResult(thisOS, ResultType.FAILURE,
@@ -269,14 +271,14 @@ public class Retreat extends Move {
                             break;
                         } else {// >
                             // we *may* be stronger than all others
-                            Log.println(
+                            LOG.debug(
                                     "    We may be stronger than all others...");
                             isStrongerThanAllOthers = true;
                         }
                     } else {
                         // remain uncertain. Dependent orderstate not yet evaluated.
-                        Log.println("    Uncertain: ", depMoveOS.getOrder(),
-                                " not yet evaluated.");
+                        LOG.debug("    Uncertain: {} not yet evaluated.",
+                                depMoveOS.getOrder());
                         isStrongerThanAllOthers = false;    // we don't know yet.
                         evalResult = Tristate.UNCERTAIN;
                     }
@@ -284,7 +286,7 @@ public class Retreat extends Move {
 
                 // if we are stronger than all others, we will succeed.
                 if (isStrongerThanAllOthers) {
-                    Log.println("    SUCCESS! [stronger than all others]");
+                    LOG.debug("    SUCCESS! [stronger than all others]");
                     evalResult = Tristate.UNCERTAIN;
                 }
 
@@ -292,7 +294,7 @@ public class Retreat extends Move {
             }
         }
 
-        Log.println("    final evalState() = ", thisOS.getEvalState());
+        LOG.debug("    final evalState() = {}", thisOS.getEvalState());
     }// evaluate()
 
 }// class Retreat

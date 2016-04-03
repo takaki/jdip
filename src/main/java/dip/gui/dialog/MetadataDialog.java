@@ -365,8 +365,7 @@ public class MetadataDialog extends HeaderDialog {
             for (int i = 0; i < email.length; i++) {
                 final int row = 2 + i * 2;
                 add(new JLabel(
-                        Utils.getLocalString(PDF_EMAIL) + " " + String
-                                .valueOf(i + 1)), c.rcwh(row, 6, 1, 1, "r"));
+                        Utils.getLocalString(PDF_EMAIL) + " " + (i + 1)), c.rcwh(row, 6, 1, 1, "r"));
                 add(email[i], c.rcwh(row, 8, 1, 1, "l"));
             }
         }// PlayerPanel()

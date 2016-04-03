@@ -21,7 +21,6 @@
 //
 package dip.order;
 
-import dip.misc.Log;
 import dip.misc.Utils;
 import dip.process.Adjudicator;
 import dip.process.OrderState;
@@ -32,12 +31,15 @@ import dip.world.Power;
 import dip.world.RuleOptions;
 import dip.world.TurnState;
 import dip.world.Unit.Type;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
  * Implementation of the Hold order.
  */
 public class Hold extends Order {
+    private static final Logger LOG = LoggerFactory.getLogger(Hold.class);
     // il8n
     private static final String HOLD_FORMAT = "HOLD_FORMAT";
 
@@ -144,7 +146,7 @@ public class Hold extends Order {
      */
     @Override
     public void evaluate(final Adjudicator adjudicator) {
-        Log.println("--- evaluate() dip.order.Hold ---");
+        LOG.debug("--- evaluate() dip.order.Hold ---");
 
         final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
 
@@ -152,14 +154,12 @@ public class Hold extends Order {
         thisOS.setDefMax(thisOS.getSupport(false));
         thisOS.setDefCertain(thisOS.getSupport(true));
 
-        if (Log.isLogging()) {
-            Log.println("   order: ", this);
-            Log.println("   initial evalstate: ", thisOS.getEvalState());
-            Log.println("     def-max: ", thisOS.getDefMax());
-            Log.println("    def-cert: ", thisOS.getDefCertain());
-            Log.println("  # supports: ", thisOS.getDependentSupports().size());
-            Log.println("  dislodged?: ", thisOS.getDislodgedState());
-        }
+        LOG.debug("   order: {}", this);
+        LOG.debug("   initial evalstate: {}", thisOS.getEvalState());
+        LOG.debug("     def-max: {}", thisOS.getDefMax());
+        LOG.debug("    def-cert: {}", thisOS.getDefCertain());
+        LOG.debug("  # supports: {}", thisOS.getDependentSupports().size());
+        LOG.debug("  dislodged?: {}", thisOS.getDislodgedState());
 
 
         // if no moves against this order, we must succeed.
@@ -169,7 +169,7 @@ public class Hold extends Order {
             thisOS.setEvalState(Tristate.SUCCESS);
             thisOS.setDislodgedState(Tristate.NO);
         }
-        Log.println("  final evalState: ", thisOS.getEvalState());
+        LOG.debug("  final evalState: {}", thisOS.getEvalState());
     }// evaluate()
 
 }// class Hold

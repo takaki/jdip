@@ -22,7 +22,8 @@
 //
 package dip.world.variant.parser;
 
-import dip.misc.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 
@@ -36,6 +37,7 @@ import java.io.StringReader;
  * Not looking for entity resolutions improves startup time.
  */
 public class FastEntityResolver implements EntityResolver {
+    private static final Logger LOG = LoggerFactory.getLogger(FastEntityResolver.class);
     private final boolean isValidating;
 
 
@@ -63,7 +65,7 @@ public class FastEntityResolver implements EntityResolver {
     public InputSource resolveEntity(final String publicID, final String systemID) {
         if (!isValidating) {
             // log the request
-            Log.println("XML:Entity resolution ignored: ", publicID, "; ",
+            LOG.debug("XML:Entity resolution ignored: {}; {}", publicID,
                     systemID);
 
             // return an empty InputSource

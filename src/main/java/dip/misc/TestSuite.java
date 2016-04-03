@@ -242,7 +242,6 @@ public final class TestSuite {
 
 
         if (isAdjudicatorLogged) {
-            Log.setLogging(null);
         }
 
         final TestSuite ts = new TestSuite();

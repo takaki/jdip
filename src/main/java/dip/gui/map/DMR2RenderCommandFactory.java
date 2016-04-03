@@ -22,13 +22,16 @@
 //
 package dip.gui.map;
 
-import dip.misc.Log;
 import dip.world.Power;
 import dip.world.Province;
 import dip.world.TurnState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.svg.SVGElement;
 
 public class DMR2RenderCommandFactory extends RenderCommandFactory {
+    private static final Logger LOG = LoggerFactory.getLogger(
+            DMR2RenderCommandFactory.class);
 
     /** */
     @Override
@@ -122,7 +125,7 @@ public class DMR2RenderCommandFactory extends RenderCommandFactory {
         return new RenderCommand(mr) {
             @Override
             public void execute() {
-                Log.println("DMR2RCF::createRCRenderAllForced()");
+                LOG.debug("DMR2RCF::createRCRenderAllForced()");
                 final DefaultMapRenderer2 dmr2 = (DefaultMapRenderer2) mr;
 
                 // destroy the existing orders
@@ -131,7 +134,7 @@ public class DMR2RenderCommandFactory extends RenderCommandFactory {
                 // for each province, update the province and orders.
                 dmr2.unsyncRecreateAllOrders();
                 dmr2.unsyncUpdateAllProvinces();
-                Log.println("  DMR2RCF::createRCRenderAllForced() complete.");
+                LOG.debug("  DMR2RCF::createRCRenderAllForced() complete.");
             }// execute()
         };
     }// RCRenderProvince()
@@ -144,7 +147,7 @@ public class DMR2RenderCommandFactory extends RenderCommandFactory {
         return new RenderCommand(mr) {
             @Override
             public void execute() {
-                Log.println("DMR2RCF::createRCRenderProvinceForced(): ",
+                LOG.debug("DMR2RCF::createRCRenderProvinceForced(): {}",
                         province);
                 final DefaultMapRenderer2 dmr2 = (DefaultMapRenderer2) mr;
                 dmr2.unsyncUpdateProvince(province, true);
@@ -161,7 +164,7 @@ public class DMR2RenderCommandFactory extends RenderCommandFactory {
         return new RenderCommand(mr) {
             @Override
             public void execute() {
-                Log.println("DMR2RCF::createRCUpdateSC(): ", province);
+                LOG.debug("DMR2RCF::createRCUpdateSC(): {}", province);
                 final DefaultMapRenderer2 dmr2 = (DefaultMapRenderer2) mr;
                 dmr2.unsyncUpdateSC(province);
             }// execute()
@@ -179,7 +182,7 @@ public class DMR2RenderCommandFactory extends RenderCommandFactory {
 
         @Override
         public void execute() {
-            Log.println("DMR2RCF::RCRenderAll()");
+            LOG.debug("DMR2RCF::RCRenderAll()");
             final DefaultMapRenderer2 dmr2 = (DefaultMapRenderer2) mr;
 
             // for each province, update the province and orders.
@@ -188,7 +191,7 @@ public class DMR2RenderCommandFactory extends RenderCommandFactory {
             // see RCRenderAllForced for details
             dmr2.unsyncRecreateAllOrders();
             dmr2.unsyncUpdateAllProvinces();
-            Log.println("  DMR2RCF::RCRenderAll() complete.");
+            LOG.debug("  DMR2RCF::RCRenderAll() complete.");
         }// execute()
     }// nested class RCRenderAll
 
@@ -203,7 +206,7 @@ public class DMR2RenderCommandFactory extends RenderCommandFactory {
 
         @Override
         public void execute() {
-            Log.println("DMR2RCF::RCSetTurnstate()");
+            LOG.debug("DMR2RCF::RCSetTurnstate()");
             final DefaultMapRenderer2 dmr2 = (DefaultMapRenderer2) mr;
 
             // set the TurnState
@@ -225,7 +228,7 @@ public class DMR2RenderCommandFactory extends RenderCommandFactory {
 
         @Override
         public void execute() {
-            Log.println("DMR2RCF::RCRenderProvince(): ", province);
+            LOG.debug("DMR2RCF::RCRenderProvince(): {}", province);
             final DefaultMapRenderer2 dmr2 = (DefaultMapRenderer2) mr;
             dmr2.unsyncUpdateProvince(province);
         }// execute()
@@ -241,7 +244,7 @@ public class DMR2RenderCommandFactory extends RenderCommandFactory {
 
         @Override
         public void execute() {
-            Log.println("DMR2RCF::RCSetLabel(): ", labelValue);
+            LOG.debug("DMR2RCF::RCSetLabel(): {}", labelValue);
             final DefaultMapRenderer2 dmr2 = (DefaultMapRenderer2) mr;
 
             Object newLabelValue = labelValue;
@@ -256,14 +259,14 @@ public class DMR2RenderCommandFactory extends RenderCommandFactory {
                     .getDisplayParamBoolean(MapMetadata.ATT_LABELS_FULL,
                             false)) {
                 newLabelValue = MapRenderer2.VALUE_LABELS_BRIEF;
-                Log.println("  degrading label to: ", newLabelValue);
+                LOG.debug("  degrading label to: {}", newLabelValue);
             }
 
             if (newLabelValue == MapRenderer2.VALUE_LABELS_BRIEF && !mmd
                     .getDisplayParamBoolean(MapMetadata.ATT_LABELS_BRIEF,
                             false)) {
                 newLabelValue = MapRenderer2.VALUE_LABELS_NONE;
-                Log.println("  degrading label to: ", newLabelValue);
+                LOG.debug("  degrading label to: {}", newLabelValue);
             }
 
             final SVGElement elBrief = dmr2.layerMap
@@ -295,7 +298,7 @@ public class DMR2RenderCommandFactory extends RenderCommandFactory {
 
         @Override
         public void execute() {
-            Log.println("DMR2RCF::RCSetDisplaySC()");
+            LOG.debug("DMR2RCF::RCSetDisplaySC()");
             final DefaultMapRenderer2 dmr2 = (DefaultMapRenderer2) mr;
             dmr2.setRenderSetting(MapRenderer2.KEY_SHOW_SUPPLY_CENTERS,
                     Boolean.valueOf(value));
@@ -313,7 +316,7 @@ public class DMR2RenderCommandFactory extends RenderCommandFactory {
 
         @Override
         public void execute() {
-            Log.println("DMR2RCF::RCSetDisplayUnits()");
+            LOG.debug("DMR2RCF::RCSetDisplayUnits()");
             final DefaultMapRenderer2 dmr2 = (DefaultMapRenderer2) mr;
             dmr2.setRenderSetting(MapRenderer2.KEY_SHOW_UNITS,
                     Boolean.valueOf(value));
@@ -330,7 +333,7 @@ public class DMR2RenderCommandFactory extends RenderCommandFactory {
 
         @Override
         public void execute() {
-            Log.println("DMR2RCF::RCSetDisplayDislodgedUnits()");
+            LOG.debug("DMR2RCF::RCSetDisplayDislodgedUnits()");
             final DefaultMapRenderer2 dmr2 = (DefaultMapRenderer2) mr;
             dmr2.setRenderSetting(MapRenderer2.KEY_SHOW_DISLODGED_UNITS,
                     Boolean.valueOf(value));
@@ -347,7 +350,7 @@ public class DMR2RenderCommandFactory extends RenderCommandFactory {
 
         @Override
         public void execute() {
-            Log.println("DMR2RCF::RCSetDisplayUnordered()");
+            LOG.debug("DMR2RCF::RCSetDisplayUnordered()");
             final DefaultMapRenderer2 dmr2 = (DefaultMapRenderer2) mr;
             dmr2.setRenderSetting(MapRenderer2.KEY_SHOW_UNORDERED,
                     Boolean.valueOf(value));
@@ -363,7 +366,7 @@ public class DMR2RenderCommandFactory extends RenderCommandFactory {
 
         @Override
         public void execute() {
-            Log.println("DMR2RCF::RCSetInfluenceMode()");
+            LOG.debug("DMR2RCF::RCSetInfluenceMode()");
             final DefaultMapRenderer2 dmr2 = (DefaultMapRenderer2) mr;
             dmr2.unsyncSetInfluenceMode(value);
         }// execute()
@@ -377,7 +380,7 @@ public class DMR2RenderCommandFactory extends RenderCommandFactory {
 
         @Override
         public void execute() {
-            Log.println("DMR2RCF::RCShowMap()");
+            LOG.debug("DMR2RCF::RCShowMap()");
             final DefaultMapRenderer2 dmr2 = (DefaultMapRenderer2) mr;
             dmr2.setRenderSetting(MapRenderer2.KEY_SHOW_MAP,
                     Boolean.valueOf(value));
@@ -397,7 +400,7 @@ public class DMR2RenderCommandFactory extends RenderCommandFactory {
 
         @Override
         public void execute() {
-            Log.println("DMR2RCF::RCSetPowerOrdersDisplayed()");
+            LOG.debug("DMR2RCF::RCSetPowerOrdersDisplayed()");
             final DefaultMapRenderer2 dmr2 = (DefaultMapRenderer2) mr;
             dmr2.setRenderSetting(MapRenderer2.KEY_SHOW_ORDERS_FOR_POWERS,
                     displayedPowers);

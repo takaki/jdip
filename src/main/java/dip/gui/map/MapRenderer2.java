@@ -32,10 +32,11 @@ import dip.order.Orderable;
 import dip.world.Location;
 import dip.world.Power;
 import dip.world.TurnState;
-import dip.world.Unit;
 import dip.world.Unit.Type;
 import org.apache.batik.swing.JSVGCanvas;
 import org.apache.batik.util.RunnableQueue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.svg.SVGDocument;
 
 import java.util.Iterator;
@@ -48,6 +49,7 @@ import java.util.LinkedList;
  * <code>renderQueue</code> object.
  */
 public abstract class MapRenderer2 {
+    private static final Logger LOG = LoggerFactory.getLogger(MapRenderer2.class);
 
     // constant key values for getRenderSetting()
     //
@@ -116,7 +118,7 @@ public abstract class MapRenderer2 {
      * JSVGCanvas and SVGDocument of MapPanel <b>must not be null</b>
      */
     public MapRenderer2(final MapPanel mp) throws MapException {
-        Log.printTimed(mp.startTime, "MR2 constructor start");
+        LOG.debug(Log.printTimed(mp.startTime, "MR2 constructor start"));
         mapPanel = mp;
 
         svgCanvas = mapPanel.getJSVGCanvas();
@@ -127,7 +129,7 @@ public abstract class MapRenderer2 {
 
         tempQueue = new LinkedList();
 
-        Log.printTimed(mp.startTime, "MR2 constructor end");
+        LOG.debug(Log.printTimed(mp.startTime, "MR2 constructor end"));
     }// MapRenderer()
 
     /**
@@ -148,7 +150,7 @@ public abstract class MapRenderer2 {
             }
         }
 
-        Log.println("MR2::getRunnableQueue(): RQ null ... exiting?");
+        LOG.debug("MR2::getRunnableQueue(): RQ null ... exiting?");
         return null;
     }// getRunnableQueue()
 
@@ -168,14 +170,14 @@ public abstract class MapRenderer2 {
 
             // dequeue pending events
             isReady = true;
-            Log.println("MR2:execRenderCommand(): first RCSetTurnstate: ", rc);
+            LOG.debug("MR2:execRenderCommand(): first RCSetTurnstate: {}", rc);
             clearAndExecute(rc, null);
 
             // dequeue pending events, if any
             if (!tempQueue.isEmpty()) {
-                Log.println(
-                        "MR2::execRenderCommand(): removing pending events from queue. size: ",
-                        String.valueOf(tempQueue.size()));
+                LOG.debug(
+                        "MR2::execRenderCommand(): removing pending events from queue. size: {}",
+                        tempQueue.size());
 
                 final RunnableQueue rq = getRunnableQueue();
                 if (rq != null) {
@@ -190,7 +192,7 @@ public abstract class MapRenderer2 {
         } else if (isReady) {
             // a RCSetTurnstate() has been issued. We can accept render events.
             // if we have queued events, add them.
-            Log.println("MR2::execRenderCommand(): adding to RunnableQueue: ",
+            LOG.debug("MR2::execRenderCommand(): adding to RunnableQueue: {}",
                     rc);
             final RunnableQueue rq = getRunnableQueue();
             if (rq != null) {
@@ -198,7 +200,7 @@ public abstract class MapRenderer2 {
             }
         } else {
             // we are not yet ready -- add the rendering events to a temporary queue.
-            Log.println("MR2::execRenderCommand(): adding to tempQueue: ", rc);
+            LOG.debug("MR2::execRenderCommand(): adding to tempQueue: {}", rc);
             tempQueue.add(rc);
         }
     }// execRenderCommand()
@@ -266,7 +268,7 @@ public abstract class MapRenderer2 {
      * Adds the given commands (or none, if null) to the queue.
      */
     protected void clearAndExecute(final RenderCommand rc1, final RenderCommand rc2) {
-        Log.println("MR2::clearAndExecute()");
+        LOG.debug("MR2::clearAndExecute()");
 
         final RunnableQueue rq = getRunnableQueue();
         if (rq != null) {
@@ -276,7 +278,7 @@ public abstract class MapRenderer2 {
                 while (iter.hasNext()) {
                     final Object obj = iter.next();
                     if (obj instanceof RenderCommand) {
-                        Log.println("   killing: ", obj);
+                        LOG.debug("   killing: {}", obj);
                         ((RenderCommand) obj).die();
                     }
                 }

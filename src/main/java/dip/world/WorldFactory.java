@@ -22,7 +22,6 @@
 //
 package dip.world;
 
-import dip.misc.Log;
 import dip.misc.Utils;
 import dip.order.OrderException;
 import dip.world.Province.Adjacency;
@@ -30,6 +29,8 @@ import dip.world.Unit.Type;
 import dip.world.variant.data.BorderData;
 import dip.world.variant.data.ProvinceData;
 import dip.world.variant.data.Variant;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -46,6 +47,8 @@ import java.util.stream.IntStream;
  * A WorldFactory creates World objects from XML map data.
  */
 public class WorldFactory {
+    private static final Logger LOG = LoggerFactory.getLogger(
+            WorldFactory.class);
     // il8n
     private static final String WF_PROV_NON_UNIQUE = "WF_PROV_NON_UNIQUE";
     private static final String WF_PROV_MISMATCH = "WF_PROV_MISMATCH";
@@ -88,7 +91,7 @@ public class WorldFactory {
     public static World createWorld(final Variant variant) {
         Objects.requireNonNull(variant);
 
-        Log.println("WorldFactory.createWorld(): " + variant.getName());
+        LOG.debug("WorldFactory.createWorld(): {}", variant.getName());
 
         // gather all province data, and create provinces
         final List<ProvinceData> provinceDataArray = variant.getProvinceData();

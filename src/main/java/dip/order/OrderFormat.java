@@ -21,12 +21,13 @@
 //
 package dip.order;
 
-import dip.misc.Log;
 import dip.world.Coast;
 import dip.world.Location;
 import dip.world.Power;
 import dip.world.Province;
 import dip.world.Unit.Type;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -108,7 +109,7 @@ import java.util.stream.Collectors;
  * by OrderFormatOptions.
  */
 public class OrderFormat {
-
+    private static final Logger LOG = LoggerFactory.getLogger(OrderFormat.class);
 
     // keywords
     private static final String ARROW = "_arrow_";
@@ -443,7 +444,7 @@ public class OrderFormat {
             final String[] tokens = text.split(":", 3);
 
             if (tokens.length == 0) {
-                Log.println("OrderFormat: cannot parse: {", text, "}");
+                LOG.debug("OrderFormat: cannot parse: {{}}", text);
                 return EMPTY;
             }
 
@@ -521,23 +522,23 @@ public class OrderFormat {
                 return cls.getMethod(name.substring(0, name.length() - 2),
                         (Class<?>) null).invoke(order, (Object) null);
             } catch (final Exception e) {
-                Log.println(
-                        "OrderFormat::getViaReflection() cannot reflect method \"",
-                        name, "\"");
-                Log.println(
-                        "OrderFormat::getViaReflection() exception details:\n",
-                        e);
+                LOG.debug(
+                        "OrderFormat::getViaReflection() cannot reflect method \"{}\"",
+                        name);
+                LOG.debug(
+                        "OrderFormat::getViaReflection() exception details:\n{}",
+                        e.toString());
             }
         } else {
             try {
                 return cls.getDeclaredField(name).get(order);
             } catch (final Exception e) {
-                Log.println(
-                        "OrderFormat::getViaReflection() cannot reflect field \"",
-                        name, "\"");
-                Log.println(
-                        "OrderFormat::getViaReflection() exception details:\n",
-                        e);
+                LOG.debug(
+                        "OrderFormat::getViaReflection() cannot reflect field \"{}\"",
+                        name);
+                LOG.debug(
+                        "OrderFormat::getViaReflection() exception details:\n{}",
+                        e.toString());
             }
         }
 

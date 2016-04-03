@@ -22,12 +22,6 @@
 //
 package dip.misc;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Date;
-
 /**
  * A very simple logging class that logs all data to stdout. Note that this
  * was implemented for speed and simplicity, rather than using the J2SDK
@@ -44,23 +38,8 @@ public final class Log {
      */
     public static final int LOG_NONE = 0;
 
-    /**
-     * Set logging to memory only
-     */
-    public static final int LOG_TO_MEMORY = 1;
-
-    /**
-     * Set logging to file only
-     */
-    public static final int LOG_TO_FILE = 2;
-
-    private static final int LOG_BUFFER_SIZE = 150;
-    private static int logLevel = LOG_NONE;
-    private static boolean isLogging = false;
-    private static BufferedWriter bw = null;
-
-    private static String[] buffer = null;
-    private static int bufferNext = 0;
+    private static String[] buffer;
+    private static int bufferNext;
 
 	/*
         HOW the buffer works
@@ -99,275 +78,22 @@ public final class Log {
 
 
     /**
-     * Enables or disables logging; optionally allows logging to a file.
-     * File may be null; null file with 'LOG_TO_FILE' logs to stdout.
-     */
-    public synchronized static void setLogging(final int value, final File file) {
-        if (value != LOG_NONE && value != LOG_TO_MEMORY && value != LOG_TO_FILE) {
-            throw new IllegalArgumentException(
-                    "Bad setLogging() value: " + value);
-        }
-
-        if (value == LOG_NONE) {
-            close();
-            bw = null;
-            buffer = null;
-            bufferNext = 0;
-        } else {
-            // enable memory buffer
-            buffer = new String[LOG_BUFFER_SIZE];
-            bufferNext = 0;
-        }
-
-        if (value == LOG_TO_FILE) {
-            if (file == null) {
-                // log to stdout (no file specified)
-                System.out.println("*********** logging started ***********");
-                System.out.println(new Date().toString());
-                System.out.println("***************************************");
-            } else {
-                // log to file
-                try {
-                    bw = new BufferedWriter(new FileWriter(file, true));
-                    bw.newLine();
-                    bw.write("*********** logging started ***********");
-                    bw.newLine();
-                    bw.write(new Date().toString());
-                    bw.newLine();
-                    bw.write("***************************************");
-                    bw.newLine();
-                    bw.flush();
-                } catch (final IOException e) {
-                    System.err.println(e);
-                }
-            }
-        }
-
-        logLevel = value;
-        isLogging = logLevel != LOG_NONE;
-    }// setLogging()
-
-
-    /**
-     * Enables logging to file. Null file logs to stdout.
-     */
-    public static void setLogging(final File file) {
-        setLogging(LOG_TO_FILE, file);
-    }// setLogging()
-
-
-    /**
-     * Check if logging is enabled or disabled
-     */
-    public static boolean isLogging() {
-        return isLogging;
-    }// isLogging()
-
-
-    /**
-     * Flushes and closes the log file (if writing to stdout, this has no effect)
-     */
-    public synchronized static void close() {
-        if (bw != null) {
-            try {
-                bw.flush();
-            } catch (final IOException e) {
-                System.err.println(e);
-            } finally {
-                try {
-                    bw.close();
-                } catch (final IOException e2) {
-                }
-            }
-        }
-    }// close()
-
-    /**
-     * Print the given Object to the output file / stdout
-     * via the Object's toString() method.
-     */
-    public static void print(final Object s) {
-        if (isLogging) {
-            synchronized (Log.class) {
-                final String str = s.toString();
-                memLog(str);
-                if (logLevel == LOG_TO_FILE) {
-                    if (bw == null) {
-                        System.out.print(s);
-                    } else {
-                        try {
-                            bw.write(str);
-                            bw.flush();
-                        } catch (final IOException e) {
-                            System.err.print(e);
-                        }
-                    }
-                }
-            }
-        }
-    }// print()
-
-
-    /**
-     * Print the given Object to the output file / stdout
-     * via the Object's toString() method. Follows with a
-     * newline.
-     */
-    public static void println(final Object s) {
-        if (isLogging) {
-            synchronized (Log.class) {
-                final String str = s.toString();
-                memLog(str);
-                if (logLevel == LOG_TO_FILE) {
-                    if (bw == null) {
-                        System.out.println(s);
-                    } else {
-                        try {
-                            bw.write(str);
-                            bw.newLine();
-                            bw.flush();
-                        } catch (final IOException e) {
-                            System.err.println(e);
-                        }
-                    }
-                }
-            }
-        }
-    }// println()
-
-
-    /**
-     * Print text followed by a boolean
-     */
-    public static void println(final Object s0, final boolean b) {
-        if (isLogging) {
-            final StringBuffer sb = new StringBuffer(256);
-            sb.append(s0);
-            sb.append(b);
-            println(sb);
-        }
-    }// println()
-
-    /**
-     * Print text followed by an array; comma-seperated array print; can be null
-     */
-    public static void println(final Object s0, final Object[] arr) {
-        if (isLogging) {
-            final StringBuffer sb = new StringBuffer(256);
-            sb.append(s0);
-            if (arr == null) {
-                sb.append("null");
-            } else {
-                sb.append('[');
-                for (int i = 0; i < arr.length; i++) {
-                    sb.append(arr[i]);
-                    if (i < arr.length - 1) {
-                        sb.append(',');
-                    }
-                }
-                sb.append(']');
-            }
-            println(sb);
-        }
-    }// println()
-
-    /**
-     * Print text followed by an int
-     */
-    public static void println(final Object s0, final int i0) {
-        if (isLogging) {
-            final StringBuffer sb = new StringBuffer(256);
-            sb.append(s0);
-            sb.append(i0);
-            println(sb);
-        }
-    }// println()
-
-    /**
      * Print text followed timing delta and current time.
      */
-    public static void printTimed(final long lastTime, final Object s0) {
-        if (isLogging) {
-            final long now = System.currentTimeMillis();
-            final StringBuffer sb = new StringBuffer(256);
-            sb.append(s0);
-            sb.append(' ');
-            sb.append(now - lastTime);
-            sb.append(" ms [delta]; current: ");
-            sb.append(now);
-            println(sb);
-        }
+    public static String printTimed(final long lastTime, final Object s0) {
+        final long now = System.currentTimeMillis();
+        return String
+                .format("%s %d ms [delta]; current: %d", s0, now - lastTime,
+                        now);
     }// println()
 
     /**
      * Print the delta from the given time. Return the new time.
      */
-    public static long printDelta(final long lastTime, final Object s0) {
-        if (isLogging) {
-            final long now = System.currentTimeMillis();
-            final StringBuffer sb = new StringBuffer(128);
-            sb.append(s0);
-            sb.append(' ');
-            sb.append(now - lastTime);
-            sb.append(" ms [delta]");
-            sb.append(now);
-            println(sb);
-            return now;
-        }
-
-        return 0L;
+    public static String printDelta(final long lastTime, final Object s0) {
+        final long now = System.currentTimeMillis();
+        return String.format("%s %d ms [delta]%d", s0, now - lastTime, now);
     }// printDelta()
-
-
-    /**
-     * Print the given objects to the log
-     */
-    public static void println(final Object s0, final Object s1) {
-        if (isLogging) {
-            final StringBuffer sb = new StringBuffer(256);
-            sb.append(s0);
-            sb.append(s1);
-            println(sb);
-        }
-    }// println()
-
-    /**
-     * Print the given objects to the log
-     */
-    public static void println(final Object s0, final Object s1, final Object s2) {
-        if (isLogging) {
-            final StringBuffer sb = new StringBuffer(256);
-            sb.append(s0);
-            sb.append(s1);
-            sb.append(s2);
-            println(sb);
-        }
-    }// println()
-
-
-    /**
-     * Print the given objects to the log
-     */
-    public static void println(final Object s0, final Object s1, final Object s2, final Object s3) {
-        if (isLogging) {
-            final StringBuffer sb = new StringBuffer(256);
-            sb.append(s0);
-            sb.append(s1);
-            sb.append(s2);
-            sb.append(s3);
-            println(sb);
-        }
-    }// println()
-
-
-    /**
-     * Add to the memory buffer. Unsynchronized!
-     */
-    private static void memLog(final String s) {
-        buffer[bufferNext] = s;
-        bufferNext++;
-        bufferNext = bufferNext >= buffer.length ? 0 : bufferNext;
-    }// memLog()
 
 
     /**

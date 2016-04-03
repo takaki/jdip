@@ -73,7 +73,7 @@ public class SubstitutedResult extends OrderResult {
      * This is intended for debugging only.
      */
     public String toString() {
-        String sb = String.valueOf(power) +
+        String sb = power +
                 ": [" +
                 resultType +
                 "] [order: " +

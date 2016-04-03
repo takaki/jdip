@@ -26,6 +26,8 @@ import dip.misc.Log;
 import dip.world.variant.data.Symbol;
 import dip.world.variant.data.SymbolPack;
 import dip.world.variant.data.SymbolPack.CSSStyle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -57,6 +59,8 @@ import java.util.stream.IntStream;
  * Parses a SymbolPack description.
  */
 public class XMLSymbolParser implements SymbolParser {
+    private static final Logger LOG = LoggerFactory.getLogger(
+            XMLSymbolParser.class);
 
     private final SymbolPack symbolPack;
 
@@ -79,7 +83,7 @@ public class XMLSymbolParser implements SymbolParser {
                     "http://apache.org/xml/features/nonvalidating/load-external-dtd",
                     Boolean.FALSE);
         } catch (final Exception e) {
-            Log.println("VM: Could not set XML feature.", e);
+            LOG.debug("VM: Could not set XML feature.", e);
         }
 
         dbf.setValidating(false);
@@ -91,7 +95,7 @@ public class XMLSymbolParser implements SymbolParser {
         docBuilder.setErrorHandler(new XMLErrorHandler());
         FastEntityResolver.attach(docBuilder);
 
-        Log.println("XMLSymbolParser: Parsing: ", symbolXMLURL);
+        LOG.debug("XMLSymbolParser: Parsing: {}", symbolXMLURL);
         final long time = System.currentTimeMillis();
 
         symbolPack = JAXB.unmarshal(symbolXMLURL, SymbolPack.class);
@@ -156,7 +160,7 @@ public class XMLSymbolParser implements SymbolParser {
         } catch (SAXException | XPathExpressionException e) {
             throw new IllegalArgumentException(e);
         }
-        Log.printTimed(time, "    time: ");
+        LOG.debug(Log.printTimed(time, "    time: "));
 
     }// XMLProvinceParser()
 

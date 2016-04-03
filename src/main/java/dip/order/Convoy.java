@@ -21,7 +21,6 @@
 //
 package dip.order;
 
-import dip.misc.Log;
 import dip.misc.Utils;
 import dip.order.result.OrderResult.ResultType;
 import dip.process.Adjudicator;
@@ -37,6 +36,8 @@ import dip.world.RuleOptions;
 import dip.world.TurnState;
 import dip.world.Unit;
 import dip.world.Unit.Type;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
@@ -45,6 +46,7 @@ import java.util.Optional;
  */
 
 public class Convoy extends Order {
+    private static final Logger LOG = LoggerFactory.getLogger(Convoy.class);
     // il8n constants
     private static final String CONVOY_SEA_FLEETS = "CONVOY_SEA_FLEETS";
     private static final String CONVOY_ONLY_ARMIES = "CONVOY_ONLY_ARMIES";
@@ -342,7 +344,7 @@ public class Convoy extends Order {
      */
     @Override
     public void evaluate(final Adjudicator adjudicator) {
-        Log.println("--- evaluate() dip.order.Convoy ---");
+        LOG.debug("--- evaluate() dip.order.Convoy ---");
 
         final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
 
@@ -350,13 +352,11 @@ public class Convoy extends Order {
         thisOS.setDefMax(thisOS.getSupport(false));
         thisOS.setDefCertain(thisOS.getSupport(true));
 
-        if (Log.isLogging()) {
-            Log.println("   order: ", this);
-            Log.println("   initial evalstate: ", thisOS.getEvalState());
-            Log.println("     def-max: ", thisOS.getDefMax());
-            Log.println("    def-cert: ", thisOS.getDefCertain());
-            Log.println("  # supports: ", thisOS.getDependentSupports().size());
-        }
+        LOG.debug("   order: {}", this);
+        LOG.debug("   initial evalstate: {}", thisOS.getEvalState());
+        LOG.debug("     def-max: {}", thisOS.getDefMax());
+        LOG.debug("    def-cert: {}", thisOS.getDefCertain());
+        LOG.debug("  # supports: {}", thisOS.getDependentSupports().size());
 
         // determine evaluation state. This is important for Convoy orders, since
         // moves depend upon them. If we cannot determine, we will remain uncertain.
@@ -379,7 +379,7 @@ public class Convoy extends Order {
             }
         }
 
-        Log.println("  final evalState: ", thisOS.getEvalState());
+        LOG.debug("  final evalState: {}", thisOS.getEvalState());
     }// evaluate()
 
 }// class Convoy

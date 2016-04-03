@@ -22,17 +22,53 @@
 //
 package dip.misc;
 
-import dip.order.*;
-import dip.world.*;
+import dip.order.Build;
+import dip.order.Convoy;
+import dip.order.DefineState;
+import dip.order.Disband;
+import dip.order.Move;
+import dip.order.Order;
+import dip.order.OrderException;
+import dip.order.OrderFactory;
+import dip.order.OrderParser;
+import dip.order.Remove;
+import dip.order.Retreat;
+import dip.order.Support;
+import dip.order.ValidationOptions;
+import dip.world.Location;
+import dip.world.Phase;
 import dip.world.Phase.PhaseType;
 import dip.world.Phase.SeasonType;
+import dip.world.Position;
+import dip.world.Power;
+import dip.world.Province;
+import dip.world.RuleOptions;
+import dip.world.TurnState;
+import dip.world.Unit;
 import dip.world.Unit.Type;
+import dip.world.World;
+import dip.world.WorldFactory;
+import dip.world.WorldMap;
 import dip.world.variant.VariantManager;
 import dip.world.variant.data.Variant;
-import jcmdline.*;
+import jcmdline.BooleanParam;
+import jcmdline.CmdLineHandler;
+import jcmdline.FileParam;
+import jcmdline.HelpCmdLineHandler;
+import jcmdline.Parameter;
+import jcmdline.VersionCmdLineHandler;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.LineNumberReader;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * A test harness that allows testing of the Order Parser (OrderParser.java).
@@ -154,7 +190,6 @@ public class TestParser {
         //Log.setLogging(isLogging);
         parseCaseFile(input);
         if (isLogging) {
-            Log.setLogging(null);
         }
         runTest();
     }// TestParser()
@@ -209,7 +244,7 @@ public class TestParser {
                 // if marked as fail, and we succeed, it's a failure!
                 if (isMarkedFail) {
                     String sb = "Order line " +
-                            String.valueOf(orp.getLineNumber()) +
+                            orp.getLineNumber() +
                             "\"" +
                             orp.getOrder() +
                             "\"" +
@@ -223,7 +258,7 @@ public class TestParser {
                 // only count as a failure if RESULT line does NOT have a "FAIL" result.
                 if (!isMarkedFail) {
                     String sb = "Order line " +
-                            String.valueOf(orp.getLineNumber()) +
+                            orp.getLineNumber() +
                             " \"" +
                             orp.getOrder() +
                             "\"" +
@@ -264,7 +299,8 @@ public class TestParser {
      * Originally, reflection was to be used but this is much easier,
      * though less flexible.
      */
-    private void checkORP(final ORPair orp, final Order o, final List failedCases) {
+    private void checkORP(final ORPair orp, final Order o,
+                          final List failedCases) {
         final String[] toks = getORPTokens(orp.getResult());
         if (toks.length == 0) {
             System.out.println(
@@ -306,7 +342,7 @@ public class TestParser {
         // validate name
         if (!name.equalsIgnoreCase(o.getFullName())) {
             String sb = "Order line " +
-                    String.valueOf(orp.getLineNumber()) +
+                    orp.getLineNumber() +
                     " \"" +
                     orp.getOrder() +
                     "\"" +
@@ -340,8 +376,7 @@ public class TestParser {
 
         // validate extended parameters
         if (name.equals("move")) {
-            if (!valLocation(orp, ((Move) o).getDest(), toks[4],
-                    failedCases)) {
+            if (!valLocation(orp, ((Move) o).getDest(), toks[4], failedCases)) {
                 return;
             }
 
@@ -360,8 +395,8 @@ public class TestParser {
                 return;
             }
 
-            if (!valUnitType(orp, ((Support) o).getSupportedUnitType(),
-                    toks[5], failedCases)) {
+            if (!valUnitType(orp, ((Support) o).getSupportedUnitType(), toks[5],
+                    failedCases)) {
                 return;
             }
 
@@ -391,7 +426,8 @@ public class TestParser {
     /**
      * Validate basic params -- for all orders; always 3 params
      */
-    private boolean valBasicParams(final ORPair orp, final Order o, final String[] toks,
+    private boolean valBasicParams(final ORPair orp, final Order o,
+                                   final String[] toks,
                                    final List failedCases) {
         boolean isOK = valPower(orp, o.getPower(), toks[1], failedCases);
 
@@ -411,8 +447,8 @@ public class TestParser {
     /**
      * Validate a Power
      */
-    private boolean valPower(final ORPair orp, final Power thePower, final String tok,
-                             final List failedCases) {
+    private boolean valPower(final ORPair orp, final Power thePower,
+                             final String tok, final List failedCases) {
         // is tok a valid Power name? if not, error-exit
         final Power power = map.getPower(tok);
         if (power == null) {
@@ -426,7 +462,7 @@ public class TestParser {
         // does tok match? if not, add to failed cases, return false
         if (power != thePower) {
             String sb = "Order line " +
-                    String.valueOf(orp.getLineNumber()) +
+                    orp.getLineNumber() +
                     " \"" +
                     orp.getOrder() +
                     "\"" +
@@ -442,8 +478,8 @@ public class TestParser {
     /**
      * Validate a Location
      */
-    private boolean valLocation(final ORPair orp, final Location theLoc, final String tok,
-                                final List failedCases) {
+    private boolean valLocation(final ORPair orp, final Location theLoc,
+                                final String tok, final List failedCases) {
         // is tok a valid Power name? if not, error-exit
         final Location loc = map.parseLocation(tok).orElse(null);
         if (loc == null) {
@@ -458,7 +494,7 @@ public class TestParser {
         // cannot use identity-equals here
         if (!loc.equals(theLoc)) {
             String sb = "Order line " +
-                    String.valueOf(orp.getLineNumber()) +
+                    orp.getLineNumber() +
                     " \"" +
                     orp.getOrder() +
                     "\"" +
@@ -482,8 +518,8 @@ public class TestParser {
     /**
      * Validate a Unit Type
      */
-    private boolean valUnitType(final ORPair orp, final Type theUnitType, final String tok,
-                                final List failedCases) {
+    private boolean valUnitType(final ORPair orp, final Type theUnitType,
+                                final String tok, final List failedCases) {
         // is tok a valid Power name? if not, error-exit
         final Type ut = Type.parse(tok);
         if (ut == null || ut == Type.UNDEFINED) {
@@ -497,7 +533,7 @@ public class TestParser {
         // does tok match? if not, add to failed cases, return false
         if (ut != theUnitType) {
             String sb = "Order line " +
-                    String.valueOf(orp.getLineNumber()) +
+                    orp.getLineNumber() +
                     " \"" +
                     orp.getOrder() +
                     "\"" +
@@ -519,8 +555,8 @@ public class TestParser {
     /**
      * Validate a Boolean
      */
-    private boolean valBoolean(final ORPair orp, final boolean theBoolean, final String tok,
-                               final List failedCases) {
+    private boolean valBoolean(final ORPair orp, final boolean theBoolean,
+                               final String tok, final List failedCases) {
         // is tok a valid Power name? if not, error-exit
         boolean bool = false;
         if (tok.equalsIgnoreCase("true")) {
@@ -539,7 +575,7 @@ public class TestParser {
         // does tok match? if not, add to failed cases, return false
         if (bool != theBoolean) {
             String sb = "Order line " +
-                    String.valueOf(orp.getLineNumber()) +
+                    orp.getLineNumber() +
                     " \"" +
                     orp.getOrder() +
                     "\"" +
@@ -642,7 +678,8 @@ public class TestParser {
      * A bunch of DefineState orders used to set unit positions
      * for subsequent order processing.
      */
-    private void setupPositions(final List<String> nonDislodged, final List<String> dislodged) {
+    private void setupPositions(final List<String> nonDislodged,
+                                final List<String> dislodged) {
         assert nonDislodged != null;
         assert dislodged != null;
         assert turnState != null;
@@ -893,8 +930,9 @@ public class TestParser {
         // add each unit to the turnState position.
         try {
             // no guessing (but not locked); we must ALWAYS specify the power.
-            final Order o = op.parse(OrderFactory.getDefault(), line, null, turnState,
-                    false, false);
+            final Order o = op
+                    .parse(OrderFactory.getDefault(), line, null, turnState,
+                            false, false);
 
             if (o instanceof DefineState) {
                 // we just want to check if the DefineState order does not have

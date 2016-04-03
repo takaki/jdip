@@ -25,6 +25,8 @@ package dip.world.variant.parser;
 import dip.misc.Log;
 import dip.world.variant.data.BorderData;
 import dip.world.variant.data.ProvinceData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.JAXB;
 import javax.xml.bind.annotation.XmlElement;
@@ -43,6 +45,8 @@ import java.util.List;
  * Parses an XML ProvinceData description.
  */
 public class XMLProvinceParser implements ProvinceParser {
+    private static final Logger LOG = LoggerFactory.getLogger(
+            XMLProvinceParser.class);
 
     private final List<ProvinceData> provinceList;
     private final List<BorderData> borderList;
@@ -67,7 +71,7 @@ public class XMLProvinceParser implements ProvinceParser {
                     .unmarshal(is, RootProvinces.class);
             borderList = rootProvinces.borderDatas;
             provinceList = rootProvinces.provinces;
-            Log.printTimed(time, "   province parse time: ");
+            LOG.debug(Log.printTimed(time, "   province parse time: "));
         } catch (final IOException e) {
             throw new UncheckedIOException(e);
         }

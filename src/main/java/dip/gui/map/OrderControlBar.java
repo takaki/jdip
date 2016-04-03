@@ -22,19 +22,26 @@
 //
 package dip.gui.map;
 
-import dip.gui.order.*;
+import dip.gui.order.GUIBuild;
+import dip.gui.order.GUIMove;
+import dip.gui.order.GUIOrder;
 import dip.gui.order.GUIOrder.StateInfo;
-import dip.misc.Log;
+import dip.gui.order.GUIOrderFactory;
+import dip.gui.order.GUIRetreat;
 import dip.misc.Utils;
 import dip.order.ValidationOptions;
 import dip.process.Adjustment;
 import dip.process.Adjustment.AdjustmentInfoMap;
-import dip.world.*;
+import dip.world.Location;
 import dip.world.Phase.PhaseType;
+import dip.world.Power;
+import dip.world.RuleOptions;
 import dip.world.RuleOptions.Option;
 import dip.world.RuleOptions.OptionValue;
 import dip.world.Unit.Type;
 import org.apache.batik.dom.events.DOMKeyEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.events.MouseEvent;
 
 import javax.swing.*;
@@ -54,6 +61,9 @@ import java.util.List;
  * Mnemonics not used -- they interfere with menubar functionality.
  */
 public class OrderControlBar extends ViewControlBar {
+    private static final Logger LOG = LoggerFactory.getLogger(
+            OrderControlBar.class);
+
     // action commands: movement phase
     private final static String MODE_HOLD = "MODE_HOLD";
     private final static String MODE_MOVE = "MODE_MOVE";
@@ -586,7 +596,7 @@ public class OrderControlBar extends ViewControlBar {
 
         final PhaseType phaseType = stateInfo.getTurnState().getPhase()
                 .getPhaseType();
-        Log.println("OCB:phase: ", stateInfo.getTurnState().getPhase());
+        LOG.debug("OCB:phase: {}", stateInfo.getTurnState().getPhase());
 
         if (phaseType == PhaseType.MOVEMENT) {
             text = GROUP_MOVEMENT_TEXT;

@@ -22,8 +22,9 @@
 //
 package dip.judge.parser;
 
-import dip.misc.Log;
 import dip.world.Phase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -42,6 +43,8 @@ import java.util.stream.Collectors;
  * Parses the Dislodged block
  */
 public class DislodgedParser {
+    private static final Logger LOG = LoggerFactory.getLogger(
+            DislodgedParser.class);
 
     /**
      * Header text to look for
@@ -176,7 +179,7 @@ public class DislodgedParser {
 
 
     private void parseInput(final String input) throws IOException {
-        Log.println("DislodgedParser::parseInput()");
+        LOG.debug("DislodgedParser::parseInput()");
 
         // Create HEADER_REGEX pattern, HEADER_END_REGEX pattern
         final Pattern header = Pattern.compile(HEADER_REGEX);

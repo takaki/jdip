@@ -22,7 +22,6 @@
 //
 package dip.order;
 
-import dip.misc.Log;
 import dip.misc.Utils;
 import dip.world.Coast;
 import dip.world.Location;
@@ -35,6 +34,8 @@ import dip.world.TurnState;
 import dip.world.Unit;
 import dip.world.Unit.Type;
 import dip.world.WorldMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -105,6 +106,7 @@ import java.util.stream.Collectors;
  * 	</pre>
  */
 public class OrderParser {
+    private static final Logger LOG = LoggerFactory.getLogger(OrderParser.class);
     private static OrderParser instance;
 
 
@@ -260,8 +262,8 @@ public class OrderParser {
         final WorldMap map = turnState.getWorld().getMap();
         final String preText = preprocess(text, map);
 
-        Log.println("OP: Input:", text);
-        Log.println("OP: preprocessed:", preText);
+        LOG.debug("OP: Input:{}", text);
+        LOG.debug("OP: preprocessed:{}", preText);
 
         return parse(preText, position, map, power, turnState, orderFactory,
                 locked, guess);
@@ -290,7 +292,7 @@ public class OrderParser {
         map.filterPowerNames(sb);
 
         // normalize coasts (Converts to /Xc format)
-        //Log.println("OP: pre-coast normalization:", sb);
+        //LOG.debug("OP: pre-coast normalization:", sb);
 
         final String ncOrd = Coast.normalize(sb.toString()).orElseThrow(
                 () -> new OrderException(
@@ -298,7 +300,7 @@ public class OrderParser {
         sb.setLength(0);
         sb.append(ncOrd);
 
-        //Log.println("OP: post-coast normalization:", sb);
+        //LOG.debug("OP: post-coast normalization:", sb);
 
 
         // get the 'power token' (or null).
@@ -355,19 +357,19 @@ public class OrderParser {
 
         // see if first token is a power; if so, parse it
         Power power = map.getFirstPower(ord).orElse(null);
-        //Log.println("OP:parse(): first token a power? ", power);
+        //LOG.debug("OP:parse(): first token a power? ", power);
 
         // eat up the token (we don't want to reparse it), but
         // only if it's NOT null (probably not a power)
         if (power != null) {
             getToken(st);    // eat token
             //String pTok = getToken(st);
-            //Log.println("  OP:parse(): eating token: ", pTok);
+            //LOG.debug("  OP:parse(): eating token: ", pTok);
         }
 
         // if we're not allowed to guess, and power is null, error.
         if (!guessing && power == null) {
-            Log.println("OrderException: order: ", ord);
+            LOG.debug("OrderException: order: {}", ord);
             final String pTok = getToken(st);
             throw new OrderException(
                     Utils.getLocalString(OF_POWER_NOT_RECOGNIZED, pTok));
@@ -381,7 +383,7 @@ public class OrderParser {
             assert power != null;
 
             if (!power.equals(defaultPower)) {
-                Log.println("OrderException: order: ", ord);
+                LOG.debug("OrderException: order: {}", ord);
                 throw new OrderException(
                         Utils.getLocalString(OF_POWER_LOCKED, defaultPower));
             }
@@ -432,7 +434,7 @@ public class OrderParser {
                     turnState, src);
             if (power != null) {
                 if (!tempPower.equals(power)) {
-                    Log.println("OrderException: order: ", ord);
+                    LOG.debug("OrderException: order: {}", ord);
                     throw new OrderException(
                             Utils.getLocalString(OF_BAD_FOR_POWER, power));
                 }
@@ -491,7 +493,7 @@ public class OrderParser {
                                         supPower, supUnitType, supDest);
                     } else if (!token.equals("h")) {
                         // anything BUT a hold is ok.
-                        Log.println("OrderException: order: ", ord);
+                        LOG.debug("OrderException: order: {}", ord);
                         throw new OrderException(
                                 Utils.getLocalString(OF_SUPPORT_NO_MOVE));
                     }
@@ -514,7 +516,7 @@ public class OrderParser {
                 token = getToken(st,
                         Utils.getLocalString(OF_CONVOY_NO_MOVE_OR_DEST));
                 if (!token.equalsIgnoreCase("m")) {
-                    Log.println("OrderException: order: ", ord);
+                    LOG.debug("OrderException: order: {}", ord);
                     throw new OrderException(
                             Utils.getLocalString(OF_CONVOY_NO_MOVE_SPEC));
                 }
@@ -546,7 +548,7 @@ public class OrderParser {
             case "definestate":
                 return orderFactory.createDefineState(power, src, srcUnitType);
             default:
-                Log.println("OrderException: order: ", ord);
+                LOG.debug("OrderException: order: {}", ord);
                 throw new OrderException(
                         Utils.getLocalString(OF_UNKNOWN_ORDER, orderType));
         }

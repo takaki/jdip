@@ -21,19 +21,24 @@
 //
 package dip.order;
 
-import dip.misc.Log;
 import dip.misc.Utils;
 import dip.process.Adjudicator;
 import dip.process.OrderState;
 import dip.process.Tristate;
-import dip.world.*;
+import dip.world.Location;
+import dip.world.Power;
+import dip.world.RuleOptions;
+import dip.world.TurnState;
 import dip.world.Unit.Type;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
  * Implementation of the Remove order.
  */
 public class Remove extends Order {
+    private static final Logger LOG = LoggerFactory.getLogger(Remove.class);
     // il8n constants
     private static final String REMOVE_FORMAT = "REMOVE_FORMAT";
 
@@ -78,7 +83,7 @@ public class Remove extends Order {
 
     @Override
     public String toBriefString() {
-        String sb = String.valueOf(power) +
+        String sb = power +
                 ": " +
                 orderNameBrief +
                 ' ' +
@@ -92,7 +97,7 @@ public class Remove extends Order {
 
     @Override
     public String toFullString() {
-        String sb = String.valueOf(power) +
+        String sb = power +
                 ": " +
                 orderNameFull +
                 ' ' +
@@ -150,8 +155,8 @@ public class Remove extends Order {
      */
     @Override
     public void evaluate(final Adjudicator adjudicator) {
-        Log.println("--- evaluate() dip.order.Disband ---");
-        Log.println("   order: ", this);
+        LOG.debug("--- evaluate() dip.order.Disband ---");
+        LOG.debug("   order: {}", this);
 
         final OrderState thisOS = adjudicator.findOrderStateBySrc(getSource());
         if (thisOS.getEvalState() == Tristate.UNCERTAIN) {

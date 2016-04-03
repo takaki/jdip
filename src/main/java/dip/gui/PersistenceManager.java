@@ -30,7 +30,6 @@ import dip.gui.swing.XJFileChooser;
 import dip.judge.gui.FlocImportDialog;
 import dip.judge.parser.JudgeImport;
 import dip.misc.Help.HelpID;
-import dip.misc.Log;
 import dip.misc.SimpleFileFilter;
 import dip.misc.Utils;
 import dip.world.Phase;
@@ -39,6 +38,8 @@ import dip.world.World;
 import dip.world.World.VariantInfo;
 import dip.world.variant.VariantManager;
 import dip.world.variant.data.Variant;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -58,6 +59,7 @@ import java.util.LinkedList;
  * Also sets the main frame title.
  */
 public class PersistenceManager {
+    private static final Logger LOG = LoggerFactory.getLogger(PersistenceManager.class);
     // i18n constants
     private static final String CONFIRM_TEXT = "PM.dialog.confirm.location.text";
     private static final String CONFIRM_TITLE = "PM.dialog.confirm.title";
@@ -168,22 +170,22 @@ public class PersistenceManager {
 
             // wait for any active threads in persistTG; if there are none,
             final int activeCount = persistTG.activeCount();
-            Log.println("PM::exit(): threads pending: ", activeCount);
+            LOG.debug("PM::exit(): threads pending: {}", activeCount);
 
             final Thread[] pendingThreads = new Thread[activeCount];
             final int actualCount = persistTG.enumerate(pendingThreads);
-            Log.println("PM::exit(): actual threads pending: ", actualCount);
+            LOG.debug("PM::exit(): actual threads pending: {}", actualCount);
 
             for (Thread pendingThread : pendingThreads) {
                 if (pendingThread.isAlive()) {
                     try {
-                        Log.println("PM::exit(): waiting on ",
+                        LOG.debug("PM::exit(): waiting on {}",
                                 pendingThread.getName());
                         pendingThread.join(THREAD_WAIT);
-                        Log.println("    done.");
+                        LOG.debug("    done.");
                     } catch (final Throwable t) {
-                        Log.println("PM::exit(): uncaught exception:");
-                        Log.println(t);
+                        LOG.debug("PM::exit(): uncaught exception:");
+                        LOG.debug(t.toString());
                     }
                 }
             }
@@ -196,9 +198,9 @@ public class PersistenceManager {
             try {
                 clientFrame.dispose();
             } catch (final Exception e) {
-                Log.println(
+                LOG.debug(
                         "PM::exit(): exception during clientFrame.dispose():");
-                Log.println(e);
+                LOG.debug(e.toString());
             }
 
             System.exit(0);
@@ -283,7 +285,7 @@ public class PersistenceManager {
         if (!(world.getGameSetup() instanceof GUIGameSetup)) {
             // use a default game setup, if none exists
             // note in log file.
-            Log.println("PM: no GuiGameSetup; creating a default.");
+            LOG.debug("PM: no GuiGameSetup; creating a default.");
             world.setGameSetup(new DefaultGUIGameSetup());
         }
     }// openWorld()
@@ -620,7 +622,7 @@ public class PersistenceManager {
         try {
             final World w = clientFrame.getWorld();
 
-            Log.println("PM::writeGameFile(): saving GUIGameSetup");
+            LOG.debug("PM::writeGameFile(): saving GUIGameSetup");
 
             // notify the GameSetup object to update its
             // state
@@ -630,10 +632,10 @@ public class PersistenceManager {
             }
 
             // save data, update saved flags
-            Log.println("PM::writeGameFile(): saving world....");
+            LOG.debug("PM::writeGameFile(): saving world....");
             World.save(fileName, w);
 
-            Log.println("PM::writeGameFile(): world saved ok.");
+            LOG.debug("PM::writeGameFile(): world saved ok.");
             setChanged(false);
             return true;
         } catch (final Exception e) {

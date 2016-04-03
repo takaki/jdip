@@ -22,9 +22,10 @@
 //
 package dip.gui.swing;
 
-import dip.misc.Log;
 import dip.misc.SimpleFileFilter;
 import dip.misc.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -46,6 +47,8 @@ import java.io.File;
  * <p>
  */
 public class XJFileChooser {
+    private static final Logger LOG = LoggerFactory.getLogger(
+            XJFileChooser.class);
     // constants
     private static final String OVERWRITE_TEXT = "XJFileChooser.dialog.overwrite.text.location";
     private static final String OVERWRITE_TITLE = "XJFileChooser.dialog.overwrite.title";
@@ -190,7 +193,7 @@ public class XJFileChooser {
         if (parent == null) {
             // this could lead to nonmodal behavior, and possibly we could
             // increment the refcount since we are not locked here...
-            Log.println(
+            LOG.debug(
                     "** WARNING ** XJFileChooser.display() called with NULL parent! **********");
         }
 
